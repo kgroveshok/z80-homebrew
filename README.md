@@ -109,20 +109,20 @@ References
 ----------
 
 I found so much great advice and inspiration around the net here are some of those that made the most
-impact:
+impact (in no particular order):
 
 
-[[https://maker.pro/pic/projects/z80-computer-project-part-1-the-cpu]]
-[[https://www.electromaker.io/blog/article/z80-computer-memory]]
-[[https://www.youtube.com/watch?v=yR566HNj0ao]]
-[[https://bread80.com/category/couch-to-64k/]]
-[[https://maggi9295.github.io/projects/z80computer/z80computer.html]]
-[[http://www.breakintoprogram.co.uk/projects/homebrew-z80/homebrew-z80-computer-part-1]]
-[[https://incoherency.co.uk/blog/stories/rc2014-frontpanel.html]]
-[[https://www.instructables.com/An-Easy-to-Build-Real-Homemade-Computer-Z80-MBC2/]]
-[[https://sites.google.com/view/erics-projects/z-80-projects-page/z-80-pio-ps2-keyboard-interface]]
-[[http://www.cpuville.com/Projects/Standalone-Z80-computer/Standalone-Z80-home.html]]
-[[http://www.blunk-electronic.de/train-z/]]
+* *[https://maker.pro/pic/projects/z80-computer-project-part-1-the-cpu]
+* [https://www.electromaker.io/blog/article/z80-computer-memory]
+* [https://www.youtube.com/watch?v=yR566HNj0ao]
+* [https://bread80.com/category/couch-to-64k/]
+* [https://maggi9295.github.io/projects/z80computer/z80computer.html]
+* [http://www.breakintoprogram.co.uk/projects/homebrew-z80/homebrew-z80-computer-part-1]
+* [https://incoherency.co.uk/blog/stories/rc2014-frontpanel.html]
+* [https://www.instructables.com/An-Easy-to-Build-Real-Homemade-Computer-Z80-MBC2/]
+* [https://sites.google.com/view/erics-projects/z-80-projects-page/z-80-pio-ps2-keyboard-interface]
+* [http://www.cpuville.com/Projects/Standalone-Z80-computer/Standalone-Z80-home.html]
+* [http://www.blunk-electronic.de/train-z/]
 
 
 

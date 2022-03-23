@@ -112,7 +112,7 @@ I found so much great advice and inspiration around the net here are some of tho
 impact (in no particular order):
 
 
-* *[https://maker.pro/pic/projects/z80-computer-project-part-1-the-cpu]
+* [https://maker.pro/pic/projects/z80-computer-project-part-1-the-cpu]
 * [https://www.electromaker.io/blog/article/z80-computer-memory]
 * [https://www.youtube.com/watch?v=yR566HNj0ao]
 * [https://bread80.com/category/couch-to-64k/]

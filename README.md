@@ -22,8 +22,8 @@ Therefore this project, is Z80 based. Turns out that is a good choice as the arc
 with a load of great chips that tie closely together. Makes for an easier life.
 
 
-Stage 1.0
----------
+Stage 1.0 DONE
+--------------
 
 Create a basic breadboard circuit with CPU, clock (for now 555 so I can watch it do things) and RAM.
 
@@ -34,8 +34,8 @@ See this stage at [![(Stage 1)](https://youtu.be/8DWXKSt4nWc)]
 ![](images/20220321_072123-stage1.jpg)
 
 
-Stage 1.5
----------
+Stage 1.5 DONE
+--------------
 
 Resolve the issue I have in manual bit bashing machine code into RAM.
 
@@ -43,8 +43,8 @@ Now fixed in [![Stage 1.5](https://youtu.be/Ls7xwXhakNc)]
 
 ![](images/20220322_210657-bitbashfixed.jpg)
 
-Stage 2.0
----------
+Stage 2.0 DONE
+--------------
 
 Now I have the sequence to program RAM by hand, speed it. Because I don't have an (E)EPROM 
 and programmer I will put a PIC to act as a bootstrap loader at Z80 startup and bit bash a simple 
@@ -53,6 +53,45 @@ monitor program into RAM which I can then use to load further code.
 First part will be to load the same simple program as used in the the Stage 1.5 test. Once that
 electronics is working I can then write larger programs to boot strap which will be where Stage 3.0 
 comes in...
+
+
+Testing shift register... [![Video](https://youtu.be/uMFlNMZjTEM)]
+
+
+![](images/20220324_191246.jpg)
+
+
+Testing shift reg sequence [![Video](https://youtu.be/3TNWDdLDNPk)]
+
+Ready to boot strap! [![Video](https://youtu.be/jSUHhDZqcws)]
+
+Another go which does'nt quite work... [![Video](https://youtu.be/zBmXrHQtJYk)]... Turns out 
+that powering down mid shift register loading fixes it. Will do a better fix with the 
+coding on the PIC :-)
+
+
+Stage 2.5 (NOW)
+---------------
+
+The breadboard is becoming quite full, and with the next stage focusing on RS232 where timing is 
+important, I think it might be a good idea to finish off the low speed parts first, then
+moving as much as I can off of the breadboard to strip board for the space and more stable 
+circuit at speed.
+
+In this stage then I want to perhaps add a second 32k RAM chip as the high address bit wire is
+currently unconnected. That will then provide a full 64k RAM, as well as the prospect that I
+could swap out either RAM and replace with a ROM further down the line. 
+
+I will also obviously add a couple of NAND gates to switch between them. I may also future
+proof the setup and consider tapping another address line and splitting the top half into 
+smaller sections so that I can slip in external device memory maps. That will depend on the
+requirements for the DART, SIO, PIO chips next. Of course moving to strip board using the
+stacking method I'm considering means that if I need to change page addressing, I will only
+need to swap out the card(s) affected and not the whole board. Bonus!
+
+To do this I *REALLY* need to document the board! :-) I will be using maybe Eagle or easyEDA for 
+the main schematic and then ancient VeeCAD for the strip board layout.
+
 
 Stage 3.0
 ---------
@@ -76,7 +115,7 @@ Where to go from here?
 ----------------------
 
 The DART chip provides more than one serial interface and considering I bought enough parts for 
-another Z*80 system perhaps I could build some kind of basic networking stack? That would be fun!
+another Z80 system perhaps I could build some kind of basic networking stack? That would be fun!
 
 Lots of things... Keyboards, screens, SD cards, general interfaces....
 
@@ -94,11 +133,12 @@ I think what would be good is if I at various stages of complete circuit put tho
 their own strip board (for now) and have the sections stackable. That would help in replacement of parts
 and in developing new bits. For example:
 
-* Layer 1 - CPU (and maybe clock)
-* Layer 2 - Memory and boot strap PIC
-* Layer 3 - Serial and other interfaces
-* Layer 4 - Control Panel (so I could remove the flashy lights and only attach for debug)
-* Layer 5 - LCD and keypad
+* Layer 1 - Power supply and clock selection
+* Layer 2 - CPU
+* Layer 3 - Memory and boot strap PIC
+* Layer 4 - Serial and other interfaces
+* Layer 5 - Control Panel (so I could remove the flashy lights and only attach for debug)
+* Layer 6 - LCD and keypad
 
 All a bit like the RC2014 but not :-)
 
@@ -123,9 +163,10 @@ impact (in no particular order):
 * [https://sites.google.com/view/erics-projects/z-80-projects-page/z-80-pio-ps2-keyboard-interface]
 * [http://www.cpuville.com/Projects/Standalone-Z80-computer/Standalone-Z80-home.html]
 * [http://www.blunk-electronic.de/train-z/]
-
-
-
+* [http://www.friendlywire.com/tutorials/pic-flash/]
+* [http://www.waveguide.se/?article=programming-pics-using-the-pickit2-and-pk2cmd]
+* [https://microcontrollerslab.com/74hc595-shift-register-interfacing-pic-microcontroller/]
+* [https://www.electroschematics.com/multiple-shift-registers-arduino-part-1/]
 
 
 

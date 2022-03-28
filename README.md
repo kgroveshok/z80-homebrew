@@ -135,10 +135,11 @@ and in developing new bits. For example:
 
 * Layer 1 - Power supply and clock selection
 * Layer 2 - CPU
-* Layer 3 - Memory and boot strap PIC
-* Layer 4 - Serial and other interfaces
-* Layer 5 - Control Panel (so I could remove the flashy lights and only attach for debug)
-* Layer 6 - LCD and keypad
+* Layer 3 - Memory
+# Layer 4 - Boot strap PIC
+* Layer 5 - Serial and other interfaces
+* Layer 6 - Control Panel (so I could remove the flashy lights and only attach for debug)
+* Layer 7 - LCD and keypad
 
 All a bit like the RC2014 but not :-)
 

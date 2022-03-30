@@ -93,6 +93,33 @@ To do this I *REALLY* need to document the board! :-) I will be using maybe Eagl
 the main schematic and then ancient VeeCAD for the strip board layout.
 
 
+Here we go, first draft. Not pretty as a number of things I need to clean up and be consistent
+about. But you should get the gist of it I hope. Also as far as the address decoder I don't have
+the chip that I found would make life easier so I may just sling in a PIC (yeah I know over kill)
+which can be adjusted in light of any requirements for the next stage. In the end I will of
+course replace with a fixed device when I know what is going on. This is a work in progress
+after all and not a finished project!
+
+
+![](stage2.0/CPU-Layer.svg)
+
+
+![](stage2.0/Front-Panel-Layer.svg)
+
+
+![](stage2.0/Memory-Layer.svg)
+
+
+![](stage2.0/PIC-Loader-Layer.svg)
+
+
+![](stage2.0/Power-Layer.svg)
+
+
+PDF versions can be found in the stage2.0 directory too.
+
+
+
 Stage 3.0
 ---------
 
@@ -137,7 +164,7 @@ and in developing new bits. For example:
 * Layer 2 - CPU
 * Layer 3 - Memory
 # Layer 4 - Boot strap PIC
-* Layer 5 - Serial and other interfaces
+* Layer 5 - Serial and other interfaces (CF card?)
 * Layer 6 - Control Panel (so I could remove the flashy lights and only attach for debug)
 * Layer 7 - LCD and keypad
 
@@ -170,4 +197,9 @@ impact (in no particular order):
 * [https://www.electroschematics.com/multiple-shift-registers-arduino-part-1/]
 
 
+https://z80project.wordpress.com/2015/07/06/z80-8-bit-compact-flash-card-interface-part-1/
 
+
+https://ciernioo.wordpress.com/2015/02/10/compact-flash-8255-interface-card/
+
+http://www.luke.maurits.id.au/projects/computers/lm512/

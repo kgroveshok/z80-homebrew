@@ -101,19 +101,19 @@ course replace with a fixed device when I know what is going on. This is a work 
 after all and not a finished project!
 
 
-![](stage2.0/CPU-Layer.svg)
+![](stage2.0/CPU-Layer.png)
 
 
-![](stage2.0/Front-Panel-Layer.svg)
+![](stage2.0/Front-Panel-Layer.png)
 
 
-![](stage2.0/Memory-Layer.svg)
+![](stage2.0/Memory-Layer.png)
 
 
-![](stage2.0/PIC-Loader-Layer.svg)
+![](stage2.0/PIC-Loader-Layer.png)
 
 
-![](stage2.0/Power-Layer.svg)
+![](stage2.0/Power-Layer.png)
 
 
 PDF versions can be found in the stage2.0 directory too.

@@ -119,6 +119,33 @@ after all and not a finished project!
 PDF versions can be found in the stage2.0 directory too.
 
 
+Stage 2.5
+---------
+
+Well that week was painful. Have to say easyEDA is not ideal for doing strip board layouts, lack of 
+random wire routing prevented all the traces being laid. So in the diagrams any feint blue lines
+and red ones are wires that need to be routed over the board surface. Horizontal blue lines are stripboard
+tracks. Also some passives (resistors and caps), all LEDs and three diodes take up a lot of room and in 
+this easyEDA don't allow for adjusting the leg positions which really helps with stripboard
+so some of them on the board layout are 'floating' with I hope some clue about where the should go
+if you adjust the legs. The white blocks are track cuts. All looking from front side of the board.
+
+I would say that the board layout gives approx position for the bits and some of the key connections.
+This should be enough to help wire it up. 
+
+The multilayer idea has been scalled back a bit to keep part costs down as board and more so the
+header strips are a little expensive for some reason:
+
+![](stage2.5/Front-Panel-Layer.png)
+![](stage2.5/Main_Board.png)
+![](PCB_PCB_z80-system-1.5_2022-04-09a.png)
+![](PCB_PCB_z80-system-1.5_2022-04-09.png)
+![](SCH_z80-system-1.5_2022-04-09.json)
+
+Hopefully will begin assembly soon. I will take loads of pictures of my protoytype too as
+that will help in checking my wiring.
+
+
 
 Stage 3.0
 ---------

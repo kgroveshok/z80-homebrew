@@ -70,7 +70,7 @@ that powering down mid shift register loading fixes it. Will do a better fix wit
 coding on the PIC :-)
 
 
-Stage 2.5 (NOW)
+Stage 2.5 (DONE)
 ---------------
 
 The breadboard is becoming quite full, and with the next stage focusing on RS232 where timing is 
@@ -119,8 +119,8 @@ after all and not a finished project!
 PDF versions can be found in the stage2.0 directory too.
 
 
-Stage 2.5
----------
+Stage 2.5 (NOW)
+---------------
 
 Well that week was painful. Have to say easyEDA is not ideal for doing strip board layouts, lack of 
 random wire routing prevented all the traces being laid. So in the diagrams any feint blue lines
@@ -145,16 +145,71 @@ header strips are a little expensive for some reason:
 Hopefully will begin assembly soon. I will take loads of pictures of my protoytype too as
 that will help in checking my wiring.
 
+NOTE: After I began to solder things up I noticed a number of problems on the board. I've 
+updated the details above on this schematic:
+
+
+![](stage2.5/Front-Panel-Layer-Fixed.png)
+
+
+Most important is it won't all fit so have had to move things around a little. 
+Another is that a front panel switch previously said MBUSREQ# but that should actually 
+go to MREQ#.
+
+Further problems were also found in less than ideal arrangement of pin outs for the PIC.
+I've therefore rearranged the allocation and this will affect the coding of the PIC.
+
+Shift Reg DS now on PIC pin 7, SHCP on PIC pin 12 and SPCP on PIC pin 11. PIC pin 6 is now MREQ#,
+PIC pin 12 now RESET#, PIC pin 13 now BUSREQ# and PIC pin 10 is WR#. That resulted in one spare LED
+and no LED for the DS pulse.
+
+I would then advise not following my stripboard layout and use it as a guide as to rough locations.
+The switches in the top right were way too tight and coupled with my poor soldering skills 
+(improving after all this though) it forced me to relocate one to the middle of the board which is now
+the MREQ#.
+
+Photos of construction below of the front panel without the PIC as that was being reflashed with 
+changes for the new pin layout:
+ 
+![](stage2.5/front-panel-finished.jpg)
+
+The red four switch DIP switch has so far two features active:
+
+* 1 - Enables power to the switches when in front panel programming mode - I could really do with
+replacing the manual switch with a transitior which activates the power when the BUSACK# line goes
+low. 
+
+* 2 - Powers on/off the PIC
+
+* 3 - Not yet connected, enables direction of the PIC clock to the CLK pin as yet another clock source.
+
+* 4 - Not connected.
+
+Next will be the main CPU construction now I know the front panel is working as that is
+the most complex of the wiring - really tested my soldering skills!
 
 
 Stage 3.0
 ---------
 
-Rig up the Z80 DART, SIO or PIO chip to add RS232 support and then program the to the boot loader 
-with a monitor program and remote program load function.
+Rig up the Z80 DART, SIO or PIO chip to add RS232 support and then program the the boot loader 
+with a monitor program and remote program load function. Perhaps too expose some I/O interface
+so I can have some future expansion/control features like a Pi.
 
 At this stage I will have serial terminal working and would therefore be a functional computer to
 some extent.
+
+Thinking about features for the boot loader/monitor that the PIC will bitbash into RAM:
+
+* Hex dump memory to check things have loaded OK
+* Change memory locations to manually load data or fix something if needed
+* Set program counter and run 
+* XModem/ASCII load of a hex file, or perhaps better still just raw binary load direct into memory
+* May be add the monitor to NMI to break into control should things be broken
+* Configure various properties of the system and have them saved to PIC flash??? Can't really though
+  as the pic pins are one way so essentially it can't be seen by the Z80. This was a design choice.
+* When SD or CF card support is added then have some control over loading/saving etc
+
 
 
 Stage 4.0
@@ -162,7 +217,8 @@ Stage 4.0
 
 Add some external interfaces to make it do other things would be useful. Perhaps even to drive a
 small LCD screen like those old Sharp handhend computers I remember. Would also need to add keypad
-support of somekind which then makes it a self contained computer.
+support of somekind which then makes it a self contained computer. Would be cool if I can then 
+place in a suitable case and have battery support.
 
 
 Where to go from here?
@@ -222,11 +278,14 @@ impact (in no particular order):
 * [http://www.waveguide.se/?article=programming-pics-using-the-pickit2-and-pk2cmd]
 * [https://microcontrollerslab.com/74hc595-shift-register-interfacing-pic-microcontroller/]
 * [https://www.electroschematics.com/multiple-shift-registers-arduino-part-1/]
+* [https://z80project.wordpress.com/2015/07/06/z80-8-bit-compact-flash-card-interface-part-1/]
+* [https://ciernioo.wordpress.com/2015/02/10/compact-flash-8255-interface-card/]
+* [http://www.luke.maurits.id.au/projects/computers/lm512/]
+* [https://github.com/monsonite/MINT]
+* [https://github.com/antbern/z80-monitor]
+* [https://github.com/fiskabollen/z80Monitor]
+* [https://github.com/chapmajs/glitchworks_monitor]
+* [http://ve7it.cowlug.org/cpm-monitor.html]
+* [https://www.instructables.com/Z80-Monitor-Type-Operating-System-and-SBC/]
+* ]http://www.vaxman.de/projects/tiny_z80/]
 
-
-https://z80project.wordpress.com/2015/07/06/z80-8-bit-compact-flash-card-interface-part-1/
-
-
-https://ciernioo.wordpress.com/2015/02/10/compact-flash-8255-interface-card/
-
-http://www.luke.maurits.id.au/projects/computers/lm512/

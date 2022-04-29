@@ -189,6 +189,10 @@ Next will be the main CPU construction now I know the front panel is working as 
 the most complex of the wiring - really tested my soldering skills!
 
 
+More mess.... Halfway wiring up the main board discovered I've made some mistakes in the
+reverse engineering of my bread board prototype. Going to have to redraw and work out
+how to get around my mistakes with what I've already wired. Drat.
+
 Stage 3.0
 ---------
 

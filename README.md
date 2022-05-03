@@ -193,6 +193,13 @@ More mess.... Halfway wiring up the main board discovered I've made some mistake
 reverse engineering of my bread board prototype. Going to have to redraw and work out
 how to get around my mistakes with what I've already wired. Drat.
 
+Updated main board with the fixes for the wrong LED taps etc:
+
+
+![](stage2.5/Schematic_z80-system-2.5-Fixed-main_2022-05-03.png)
+![](stage2.5/Schematic_z80-system-2.5-Fixed-main_2022-05-03.pdf)
+
+
 Stage 3.0
 ---------
 

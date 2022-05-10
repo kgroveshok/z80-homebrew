@@ -199,6 +199,13 @@ Updated main board with the fixes for the wrong LED taps etc:
 ![](stage2.5/Schematic_z80-system-2.5-Fixed-main_2022-05-03.png)
 ![](stage2.5/Schematic_z80-system-2.5-Fixed-main_2022-05-03.pdf)
 
+Both boards now built, however there is a slight bug in the main board. I suspect I have either
+missed a track cut or put a wire in the wrong hole. I will have to track that down I suppose!
+
+![](stage2.5/20220509_170108.jpg)
+![](stage2.5/20220509_170111.jpg)
+
+
 
 Stage 3.0
 ---------
@@ -220,7 +227,9 @@ Thinking about features for the boot loader/monitor that the PIC will bitbash in
 * Configure various properties of the system and have them saved to PIC flash??? Can't really though
   as the pic pins are one way so essentially it can't be seen by the Z80. This was a design choice.
 * When SD or CF card support is added then have some control over loading/saving etc
-
+* Have decided that the monitor will actually function as the main 'OS' simliar to the BASIC's of old
+  and it will be a Forth implentation so I can have a good compact and simple language at hand for
+  programming and hardware control.
 
 
 Stage 4.0
@@ -231,6 +240,10 @@ small LCD screen like those old Sharp handhend computers I remember. Would also 
 support of somekind which then makes it a self contained computer. Would be cool if I can then 
 place in a suitable case and have battery support.
 
+I know not quite retro enough but a small Rpi that can grab bus and read from 
+a screen memory mapped area and sling out on HDMI? Obivously would be nice
+to replace with a proper composite out if I ever get that but that is
+stretching my skills and have no knowledge (yet) of that tech.
 
 Where to go from here?
 ----------------------

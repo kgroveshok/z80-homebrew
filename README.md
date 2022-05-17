@@ -205,6 +205,14 @@ missed a track cut or put a wire in the wrong hole. I will have to track that do
 ![](stage2.5/20220509_170108.jpg)
 ![](stage2.5/20220509_170111.jpg)
 
+There still appears to be a problem. The BUSACK LED is still flashing, in fact many of the other
+LEDs are flashing in sync with the clock. I suspect something either power related, or there is
+a problem still with BUSREQ line and a constant on and off of BUSREQ. I can't see any solder 
+bridges and continuty of the lines work out right. 
+
+What I think I will do and this is very annoying is to redesign for a less dense set of boards,
+just have say CPU is on one board, clock on another, memory on another. That way I can break
+down the issue and hopefully reduce the amount of interference across tracks.
 
 
 Stage 3.0

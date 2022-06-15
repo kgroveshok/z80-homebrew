@@ -214,6 +214,20 @@ What I think I will do and this is very annoying is to redesign for a less dense
 just have say CPU is on one board, clock on another, memory on another. That way I can break
 down the issue and hopefully reduce the amount of interference across tracks.
 
+....
+
+I've now rebuilt the clock and CPU boards. Having tested them against the breadboard prototype
+and the initial stripboard all appears fine. Perhaps I didn't have a problem???
+
+Anyway now continuing with the memory board build and will then check that. 
+
+Here is a side-by-side setup of the two new smaller boards stacked (timer on the bottom and CPU
+on top), along with the very definately working original 'front panel' board so I can watch 
+the address lines ticking up the PC location and proving things are working.
+
+![](stage2.5/20220614_075833.jpg)
+![](stage2.5/20220614_075837.jpg)
+![](stage2.5/20220614_075842.jpg)
 
 Stage 3.0
 ---------

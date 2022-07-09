@@ -237,6 +237,18 @@ Been pretty delayed lately but finished off the memory board:
 Have discovered the problem with this new board. The BUSREQ# line is floating and/or not tied right (perhaps even got this pin and BUSAQ# confused) which is causing the CPU to give up the bus and then recover - hence the flashing.
 
 
+And at long last we are almost  back on track. Fixed a couple of odd hardware bugs. Mainly because I soldered wires in wrong holes. Grrr. Because I also feel that the front panel of the original
+might be a bit suspect (although I've not tried it since I fixed the board) I knocked up a quick stripboard with LEDs on the data and address lines to make sure things are working. In the 
+photos below you can see this board sat on top of the board stack which has the clock and power on the bottom, the CPU on the 2nd layer, memory on the 3rd.
+
+![](stage2.5/20220708_184036.jpg)
+
+Now, if I'm no longer using the original front panel which has the PIC memory bit basher loader on it, I then need to build a new PIC board. In the picture below the new PIC
+test circuit is being constructed to the left of the Z80 stack.
+
+![](stage2.5/20220709_123709.jpg)
+
+Once I finished the PIC loader I will be in a position to move to stage 3.0....
 
 
 Stage 3.0

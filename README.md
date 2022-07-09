@@ -229,6 +229,16 @@ the address lines ticking up the PC location and proving things are working.
 ![](stage2.5/20220614_075837.jpg)
 ![](stage2.5/20220614_075842.jpg)
 
+Been pretty delayed lately but finished off the memory board:
+
+
+![](stage2.5/20220630_084047.jpg)
+
+Have discovered the problem with this new board. The BUSREQ# line is floating and/or not tied right (perhaps even got this pin and BUSAQ# confused) which is causing the CPU to give up the bus and then recover - hence the flashing.
+
+
+
+
 Stage 3.0
 ---------
 

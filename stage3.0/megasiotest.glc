@@ -1,0 +1,907 @@
+version
+ author=2.6
+ required=2.6
+
+text
+ position=80,70
+ input_level=
+ output_level=
+ matrix=1,0,0,1
+ properties=text:Select RAM/ROM
+
+text
+ position=70,310
+ input_level=
+ output_level=
+ matrix=1,0,0,1
+ properties=text:MREQ
+
+text
+ position=70,210
+ input_level=
+ output_level=
+ matrix=1,0,0,1
+ properties=text:IORQ#
+
+text
+ position=780,70
+ input_level=
+ output_level=
+ matrix=1,0,0,1
+ properties=text:Mega Active
+
+text
+ position=1040,70
+ input_level=
+ output_level=
+ matrix=1,0,0,1
+ properties=text:SIO Active
+
+led
+ position=1060,220
+ input_level=0
+ output_level=
+ matrix=1,0,0,1
+ properties=
+
+led
+ position=1070,320
+ input_level=1
+ output_level=
+ matrix=1,0,0,1
+ properties=
+
+and
+ position=480,230
+ input_level=1,1
+ output_level=1
+ matrix=1,0,0,1
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
+
+and
+ position=480,340
+ input_level=1,0
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
+
+and
+ position=480,430
+ input_level=0,1
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
+
+and
+ position=490,540
+ input_level=0,0
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
+
+and
+ position=750,210
+ input_level=1,1
+ output_level=1
+ matrix=1,0,0,1
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
+
+and
+ position=740,300
+ input_level=0,1
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
+
+and
+ position=750,400
+ input_level=0,1
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
+
+and
+ position=730,530
+ input_level=0,1
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
+
+not
+ position=880,210
+ input_level=1
+ output_level=0
+ matrix=1,0,0,1
+ properties=tphl:0.0,tplh:0.0
+
+not
+ position=880,310
+ input_level=0
+ output_level=1
+ matrix=1,0,0,1
+ properties=tphl:0.0,tplh:0.0
+
+not
+ position=880,410
+ input_level=0
+ output_level=1
+ matrix=1,0,0,1
+ properties=tphl:0.0,tplh:0.0
+
+not
+ position=880,530
+ input_level=0
+ output_level=1
+ matrix=1,0,0,1
+ properties=tphl:0.0,tplh:0.0
+
+not
+ position=300,270
+ input_level=0
+ output_level=1
+ matrix=1,0,0,1
+ properties=tphl:0.0,tplh:0.0
+
+not
+ position=300,320
+ input_level=0
+ output_level=1
+ matrix=1,0,0,1
+ properties=tphl:0.0,tplh:0.0
+
+led
+ position=1040,410
+ input_level=1
+ output_level=
+ matrix=1,0,0,1
+ properties=
+
+led
+ position=1040,530
+ input_level=1
+ output_level=
+ matrix=1,0,0,1
+ properties=
+
+not
+ position=280,630
+ input_level=0
+ output_level=1
+ matrix=1,0,0,1
+ properties=tphl:0.0,tplh:0.0
+
+sw
+ position=220,630
+ input_level=
+ output_level=0
+ matrix=1,0,0,1
+ properties=initstate:0
+
+sw
+ position=240,320
+ input_level=
+ output_level=0
+ matrix=1,0,0,1
+ properties=initstate:0
+
+sw
+ position=240,220
+ input_level=
+ output_level=0
+ matrix=1,0,0,1
+ properties=initstate:0
+
+text
+ position=250,160
+ input_level=
+ output_level=
+ matrix=1,0,0,1
+ properties=text:1A0/A
+
+text
+ position=240,260
+ input_level=
+ output_level=
+ matrix=1,0,0,1
+ properties=text:1A1/B
+
+text
+ position=220,580
+ input_level=
+ output_level=
+ matrix=1,0,0,1
+ properties=text:1G
+
+text
+ position=1140,190
+ input_level=
+ output_level=
+ matrix=1,0,0,1
+ properties=text:1Y0
+
+text
+ position=1150,310
+ input_level=
+ output_level=
+ matrix=1,0,0,1
+ properties=text:1Y1
+
+text
+ position=1130,390
+ input_level=
+ output_level=
+ matrix=1,0,0,1
+ properties=text:1Y2
+
+text
+ position=1130,500
+ input_level=
+ output_level=
+ matrix=1,0,0,1
+ properties=text:1Y3
+
+led
+ position=860,120
+ input_level=0
+ output_level=
+ matrix=1,0,0,1
+ properties=
+
+led
+ position=1070,120
+ input_level=1
+ output_level=
+ matrix=1,0,0,1
+ properties=
+
+led
+ position=1200,700
+ input_level=1
+ output_level=
+ matrix=1,0,0,1
+ properties=
+
+led
+ position=1210,800
+ input_level=0
+ output_level=
+ matrix=1,0,0,1
+ properties=
+
+and
+ position=620,710
+ input_level=1,0
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
+
+and
+ position=620,820
+ input_level=1,1
+ output_level=1
+ matrix=1,0,0,1
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
+
+and
+ position=620,910
+ input_level=0,0
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
+
+and
+ position=630,1020
+ input_level=0,1
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
+
+and
+ position=890,690
+ input_level=0,1
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
+
+and
+ position=880,780
+ input_level=1,1
+ output_level=1
+ matrix=1,0,0,1
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
+
+and
+ position=890,880
+ input_level=0,1
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
+
+and
+ position=870,1010
+ input_level=0,1
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
+
+not
+ position=1020,690
+ input_level=0
+ output_level=1
+ matrix=1,0,0,1
+ properties=tphl:0.0,tplh:0.0
+
+not
+ position=1020,790
+ input_level=1
+ output_level=0
+ matrix=1,0,0,1
+ properties=tphl:0.0,tplh:0.0
+
+not
+ position=1020,890
+ input_level=0
+ output_level=1
+ matrix=1,0,0,1
+ properties=tphl:0.0,tplh:0.0
+
+not
+ position=1020,1010
+ input_level=0
+ output_level=1
+ matrix=1,0,0,1
+ properties=tphl:0.0,tplh:0.0
+
+not
+ position=440,750
+ input_level=1
+ output_level=0
+ matrix=1,0,0,1
+ properties=tphl:0.0,tplh:0.0
+
+not
+ position=440,800
+ input_level=0
+ output_level=1
+ matrix=1,0,0,1
+ properties=tphl:0.0,tplh:0.0
+
+led
+ position=1180,890
+ input_level=1
+ output_level=
+ matrix=1,0,0,1
+ properties=
+
+led
+ position=1180,1010
+ input_level=1
+ output_level=
+ matrix=1,0,0,1
+ properties=
+
+text
+ position=390,640
+ input_level=
+ output_level=
+ matrix=1,0,0,1
+ properties=text:xA0/A
+
+text
+ position=360,800
+ input_level=
+ output_level=
+ matrix=1,0,0,1
+ properties=text:xA1/B
+
+text
+ position=1280,670
+ input_level=
+ output_level=
+ matrix=1,0,0,1
+ properties=text:xY0
+
+text
+ position=1290,790
+ input_level=
+ output_level=
+ matrix=1,0,0,1
+ properties=text:xY1
+
+text
+ position=1270,870
+ input_level=
+ output_level=
+ matrix=1,0,0,1
+ properties=text:xY2
+
+text
+ position=1270,980
+ input_level=
+ output_level=
+ matrix=1,0,0,1
+ properties=text:xY3
+
+led
+ position=1370,160
+ input_level=1
+ output_level=
+ matrix=1,0,0,1
+ properties=
+
+led
+ position=1370,370
+ input_level=0
+ output_level=
+ matrix=1,0,0,1
+ properties=
+
+text
+ position=1400,90
+ input_level=
+ output_level=
+ matrix=1,0,0,1
+ properties=text:Low Bank
+
+text
+ position=1400,290
+ input_level=
+ output_level=
+ matrix=1,0,0,1
+ properties=text:High Bank
+
+sw
+ position=70,710
+ input_level=
+ output_level=1
+ matrix=1,0,0,1
+ properties=initstate:0
+
+text
+ position=40,650
+ input_level=
+ output_level=
+ matrix=1,0,0,1
+ properties=text:A15
+
+text
+ position=370,980
+ input_level=
+ output_level=
+ matrix=1,0,0,1
+ properties=text:2G
+
+sw
+ position=380,900
+ input_level=
+ output_level=0
+ matrix=1,0,0,1
+ properties=initstate:0
+
+not
+ position=400,1040
+ input_level=0
+ output_level=1
+ matrix=1,0,0,1
+ properties=tphl:0,tplh:0
+
+net
+ position=580,210,670,210
+
+net
+ position=670,210,670,180
+
+net
+ position=670,180,760,180
+
+net
+ position=850,190,890,190
+
+net
+ position=840,280,890,280
+
+net
+ position=890,280,890,290
+
+net
+ position=850,380,890,380
+
+net
+ position=890,380,890,390
+
+net
+ position=830,510,890,510
+
+net
+ position=590,520,610,520
+
+net
+ position=610,520,610,500
+
+net
+ position=610,500,740,500
+
+net
+ position=580,410,640,410
+
+net
+ position=640,410,640,380
+
+net
+ position=640,380,760,380
+
+net
+ position=760,380,760,370
+
+net
+ position=580,320,590,320
+
+net
+ position=590,320,590,270
+
+net
+ position=590,270,750,270
+
+net
+ position=1050,510,970,510
+
+net
+ position=490,220,470,220
+
+net
+ position=470,420,490,420
+
+net
+ position=470,220,470,250
+
+net
+ position=470,250,470,420
+
+net
+ position=470,250,390,250
+
+net
+ position=490,200,430,200
+
+net
+ position=430,200,430,310
+
+net
+ position=430,310,490,310
+
+net
+ position=430,310,390,310
+
+net
+ position=390,310,390,300
+
+net
+ position=760,200,690,200
+
+net
+ position=690,200,690,290
+
+net
+ position=750,290,690,290
+
+net
+ position=690,290,690,390
+
+net
+ position=760,390,690,390
+
+net
+ position=690,390,690,520
+
+net
+ position=740,520,690,520
+
+net
+ position=690,520,690,610
+
+net
+ position=690,610,370,610
+
+net
+ position=1000,190,970,190
+
+net
+ position=1000,200,1000,190
+
+net
+ position=1070,200,1000,200
+
+net
+ position=410,530,500,530
+
+net
+ position=490,330,410,330
+
+net
+ position=410,330,410,530
+
+net
+ position=410,330,410,200
+
+net
+ position=310,200,310,250
+
+net
+ position=410,200,310,200
+
+net
+ position=1080,290,1080,300
+
+net
+ position=1080,290,970,290
+
+net
+ position=1050,390,970,390
+
+net
+ position=1080,100,1080,130
+
+net
+ position=1050,390,1050,440
+
+net
+ position=1080,130,1210,130
+
+net
+ position=1050,440,1210,440
+
+net
+ position=1210,130,1210,440
+
+net
+ position=720,690,810,690
+
+net
+ position=810,690,810,660
+
+net
+ position=810,660,900,660
+
+net
+ position=990,670,1030,670
+
+net
+ position=980,760,1030,760
+
+net
+ position=1030,760,1030,770
+
+net
+ position=990,860,1030,860
+
+net
+ position=1030,860,1030,870
+
+net
+ position=970,990,1030,990
+
+net
+ position=730,1000,750,1000
+
+net
+ position=750,1000,750,980
+
+net
+ position=750,980,880,980
+
+net
+ position=720,890,780,890
+
+net
+ position=780,890,780,860
+
+net
+ position=780,860,900,860
+
+net
+ position=900,860,900,850
+
+net
+ position=720,800,730,800
+
+net
+ position=730,800,730,750
+
+net
+ position=730,750,890,750
+
+net
+ position=1190,990,1110,990
+
+net
+ position=630,700,610,700
+
+net
+ position=610,900,630,900
+
+net
+ position=610,700,610,730
+
+net
+ position=610,730,610,900
+
+net
+ position=610,730,530,730
+
+net
+ position=630,680,570,680
+
+net
+ position=570,680,570,790
+
+net
+ position=570,790,630,790
+
+net
+ position=570,790,530,790
+
+net
+ position=530,790,530,780
+
+net
+ position=1190,870,1110,870
+
+net
+ position=140,690,330,690
+
+net
+ position=330,690,330,700
+
+net
+ position=550,1010,640,1010
+
+net
+ position=330,700,360,700
+
+net
+ position=630,810,550,810
+
+net
+ position=550,810,550,1010
+
+net
+ position=360,700,360,640
+
+net
+ position=550,810,550,680
+
+net
+ position=360,640,450,640
+
+net
+ position=450,680,450,730
+
+net
+ position=550,680,450,680
+
+net
+ position=450,640,450,680
+
+net
+ position=1380,350,1380,760
+
+net
+ position=1380,760,1400,760
+
+net
+ position=1400,760,1400,770
+
+net
+ position=1220,770,1220,780
+
+net
+ position=1220,770,1110,770
+
+net
+ position=1400,770,1220,770
+
+net
+ position=1380,140,1340,140
+
+net
+ position=1140,670,1110,670
+
+net
+ position=1340,140,1340,620
+
+net
+ position=1140,680,1140,670
+
+net
+ position=1340,620,1210,620
+
+net
+ position=1210,680,1140,680
+
+net
+ position=1210,620,1210,680
+
+net
+ position=570,990,640,990
+
+net
+ position=630,880,570,880
+
+net
+ position=570,880,570,990
+
+net
+ position=570,880,450,880
+
+net
+ position=450,780,450,880
+
+net
+ position=900,680,830,680
+
+net
+ position=830,680,830,770
+
+net
+ position=890,770,830,770
+
+net
+ position=430,510,500,510
+
+net
+ position=490,400,430,400
+
+net
+ position=430,400,430,510
+
+net
+ position=870,100,180,100
+
+net
+ position=430,400,310,400
+
+net
+ position=310,400,310,300
+
+net
+ position=180,100,180,400
+
+net
+ position=180,400,310,400
+
+net
+ position=830,770,830,870
+
+net
+ position=900,870,830,870
+
+net
+ position=490,1020,530,1020
+
+net
+ position=830,870,830,1000
+
+net
+ position=880,1000,830,1000
+
+net
+ position=530,1020,530,1040
+
+net
+ position=830,1000,830,1040
+
+net
+ position=530,1040,830,1040
+
+net
+ position=410,1020,330,1020
+
+net
+ position=330,1020,330,1040
+
+net
+ position=180,400,180,1040
+
+net
+ position=330,1040,180,1040
+

@@ -1,0 +1,230 @@
+version
+ author=2.6
+ required=2.6
+
+text
+ position=80,70
+ input_level=
+ output_level=
+ matrix=1,0,0,1
+ properties=text:Select RAM/ROM
+
+text
+ position=60,510
+ input_level=
+ output_level=
+ matrix=1,0,0,1
+ properties=text:Select SIO
+
+sw
+ position=260,150
+ input_level=
+ output_level=0
+ matrix=1,0,0,1
+ properties=initstate:0
+
+sw
+ position=270,550
+ input_level=
+ output_level=0
+ matrix=1,0,0,1
+ properties=initstate:0
+
+text
+ position=150,140
+ input_level=
+ output_level=
+ matrix=1,0,0,1
+ properties=text:WantRAMBank
+
+text
+ position=170,530
+ input_level=
+ output_level=
+ matrix=1,0,0,1
+ properties=text:WantSIOBank
+
+text
+ position=150,200
+ input_level=
+ output_level=
+ matrix=1,0,0,1
+ properties=text:WantMemory
+
+sw
+ position=260,210
+ input_level=
+ output_level=0
+ matrix=1,0,0,1
+ properties=initstate:0
+
+text
+ position=930,80
+ input_level=
+ output_level=
+ matrix=1,0,0,1
+ properties=text:RAM Active
+
+text
+ position=930,180
+ input_level=
+ output_level=
+ matrix=1,0,0,1
+ properties=text:ROM Active
+
+text
+ position=930,330
+ input_level=
+ output_level=
+ matrix=1,0,0,1
+ properties=text:SIO Active
+
+text
+ position=930,500
+ input_level=
+ output_level=
+ matrix=1,0,0,1
+ properties=text:Text
+
+led
+ position=940,130
+ input_level=0
+ output_level=
+ matrix=1,0,0,1
+ properties=
+
+led
+ position=950,230
+ input_level=1
+ output_level=
+ matrix=1,0,0,1
+ properties=
+
+and
+ position=510,270
+ input_level=0,0
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2,tphl:0,tplh:0
+
+led
+ position=960,400
+ input_level=0
+ output_level=
+ matrix=1,0,0,1
+ properties=
+
+not
+ position=360,480
+ input_level=0
+ output_level=1
+ matrix=1,0,0,1
+ properties=tphl:0,tplh:0
+
+and
+ position=480,540
+ input_level=1,0
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2,tphl:0,tplh:0
+
+not
+ position=640,330
+ input_level=0
+ output_level=1
+ matrix=1,0,0,1
+ properties=tphl:0,tplh:0
+
+net
+ position=790,250,790,110
+
+net
+ position=790,110,950,110
+
+net
+ position=890,200,960,200
+
+net
+ position=960,200,960,210
+
+net
+ position=330,130,460,130
+
+net
+ position=460,130,460,240
+
+net
+ position=460,240,520,240
+
+net
+ position=520,270,520,260
+
+net
+ position=470,270,520,270
+
+net
+ position=470,280,470,270
+
+net
+ position=390,280,470,280
+
+net
+ position=390,190,390,280
+
+net
+ position=330,190,390,190
+
+net
+ position=330,190,330,320
+
+net
+ position=330,320,370,320
+
+net
+ position=370,320,540,320
+
+net
+ position=370,460,370,320
+
+net
+ position=450,460,450,510
+
+net
+ position=450,510,490,510
+
+net
+ position=340,530,490,530
+
+net
+ position=580,520,900,520
+
+net
+ position=900,520,900,410
+
+net
+ position=900,410,970,410
+
+net
+ position=970,410,970,380
+
+net
+ position=890,330,890,200
+
+net
+ position=730,310,850,310
+
+net
+ position=850,330,890,330
+
+net
+ position=850,310,850,330
+
+net
+ position=650,310,610,310
+
+net
+ position=610,250,790,250
+
+net
+ position=610,310,610,250
+

@@ -1,5 +1,9 @@
 org 0h
-loop:     ld hl,(0x3f3)
-          inc hl
-          ld (0x5f3), hl
+          jp loop
+counter:
+          nop
+          nop
+loop:     ld a,(counter)
+          inc a
+          ld (counter), a
           jp loop

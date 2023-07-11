@@ -1,0 +1,1539 @@
+# File sio.asm
+0000			;10/7/20  
+0000			;Add CPM3 boot command  
+0000			;Add command to save cpm3 loader in CF  
+0000			; EPROM monitor for SSIO, Z80 with SIO2  
+0000			; program copied from SSIO_selfboot v0.4  
+0000			; 7/2/19  
+0000			stackp:		equ 07000h           
+0000			SIOAData:	equ 0		;location of SIO chan A data  
+0000			SIOACmd:	equ 1		;location of SIO A command/status reg  
+0000			SIOBData:	equ 2		;location of SIO chan B data  
+0000			SIOBCmd:	equ 3		;location of SIO B command/status reg  
+0000			;CFdata:   	equ 90h    	;CF data register  
+0000			;CFerr:    	equ 91h    	;CF error reg  
+0000			;CFsectcnt: equ 92h    	;CF sector count reg  
+0000			;CF07:     	equ 93h   	;CF LA0-7  
+0000			;CF815:    	equ 94h       	;CF LA8-15  
+0000			;CF1623:   	equ 95h       	;CF LA16-23  
+0000			;CF2427:  	equ 96h       	;CF LA24-27  
+0000			;CFstat:   	equ 97h       	;CF status/command reg  
+0000			  
+0000				org 0  
+0000			start:  
+0000 c3 91 00			jp mainjmp  
+0003			  
+0003			;	org 0b100h  
+0003			;move some messages to free up program memory below $C000  
+0003			;copywarn$:     db 10,13,"Program will be overwritten, enter Y to prceed ",0  
+0003			;xwarn$:	   db 10,13,"Drive will be formatted, enter Y to proceed ",0  
+0003			;copycf$:	db "opy to CF disk",10,13  
+0003			;	db "0--boot,",10,13  
+0003			;;	db "1--User Apps,",10,13  
+0003			;	db "2--CP/M2.2,",10,13  
+0003			;	db "3--CP/M3: "  
+0003			;	db 0  
+0003			;clrdir$:	db " clear disk directories",10,13  
+0003			;	db "A -- drive A,",10,13  
+0003			;	db "B -- drive B,",10,13  
+0003			;	db "C -- drive C,",10,13  
+0003			;	db "D -- drive D: "	  
+0003			;	db 0  
+0003			;bootcpm$:	db "oot CP/M",10,13  
+0003			;;	db "1--User Apps,",10,13  
+0003			;	db "2--CP/M2.2,",10,13  
+0003			;	db "3--CP/M3: "  
+0003			;	db 0  
+0003 .. 0d 0a		HELPstr:	db "elp",13,10  
+0008 .. 0d 0a			db "G <addr> CR",13,10  
+0015 .. 0d 0a			db "D <start addr> <end addr>",13,10  
+0030 .. 0d 0a			db "I <port>",13,10  
+003a .. 0d 0a			db "O <value> <port>",13,10  
+004c .. 0d 0a			db "L <start addr> <end addr>",13,10  
+0067				;db "Z CR",13,10  
+0067				;db "F CR",13,10  
+0067				;db "T CR",13,10  
+0067 .. 0d 0a 00		db "E <addr>",13,10,0  
+0072			;HELPCF$:	db "R <track> <sector>",13,10  
+0072			;	db "X <options> CR",13,10  
+0072			;	db "B <options> CR",13,10  
+0072			;	db "C <options> CR",13,10  
+0072			;	db 0  
+0072			;track$:	db " track:0x",0  
+0072			;sector$:	db " sector:0x",0  
+0072			;read$:	db "ead CF disk",0  
+0072			;RDmore$:	db 10,13,"carriage return for next sector, any other key for command prompt",10,13,0  
+0072			;notsame$:	db 10,13,"Data NOT same as previous read",10,13,  
+0072 0a 0d .. 0a 0d 00	issame:	db 10,13,"Data same as previous read",10,13,0  
+0091			; variable area  
+0091			;	org 0b400h  
+0091			mainjmp:  
+0091 c3 a1 00			jp main  
+0094 c3 ce 00			jp clrRx		;warm boot starting point  
+0097 c3 e3 04			jp cin		;console input  
+009a c3 f8 04			jp cout		;console output  
+009d 00...		testseed:       ds 2		; RAM test seed value  
+009f 00...		addr3116:	ds 2		; high address for Intel Hex format 4  
+00a1			;RDsector:	ds 1		; current RAM disk sector  
+00a1			;RDtrack:	ds 1		; current RAM disk track   
+00a1			;RDaddr:	        ds 2		; current RAM disk address   
+00a1			;sectoff:	ds 2		; offset from a track & sector  
+00a1			;fCFRdy:	        ds 1		;flag indicate CF disk is present  
+00a1			main:  
+00a1			;if R16 is grounded (this is an engineering change up to ver1.2 pcb)  
+00a1			;  copy to lower 64K of RAM   
+00a1			;otherwise this is copy to upper 64K of RAM  
+00a1			;	ld hl,0		;copy EPROM into RAM  
+00a1			;	ld de,0  
+00a1			;	ld bc,100h	;copy page 0   
+00a1			;	ldir  
+00a1			;	ld hl,0b100h	;copy program starting from 0xb100  
+00a1			;	ld de,0b100h  
+00a1			;	ld bc,1000h	;copy 4K of program  
+00a1			;	ldir  
+00a1			;	ld hl,0ff00h	;copy program at top of memory (shadow mover)  
+00a1			;	ld de,0ff00h  
+00a1			;	ld bc,0100h	;copy page $FF  
+00a1			;	ldir  
+00a1			;if R16 is grounded (this is an engineering change up to ver1.2 pcb)  
+00a1			;  copy to upper 64K of RAM   
+00a1			;otherwise this is duplicated copy to upper 64K of RAM  
+00a1 3e 18			ld a,18h  
+00a3 d3 03			out (SIOBCmd),a	;reset Wr0   
+00a5 3e 11			ld a,11h		;Wr0 point to reg1 + reset ex st int  
+00a7 d3 03			out (SIOBCmd),a  
+00a9 3e 40			ld a,40h  
+00ab d3 03			out (SIOBCmd),a	;Wr1 No Tx interrupts, set READY high  
+00ad			;	ld hl,0		;copy EPROM into RAM  
+00ad			;	ld de,0  
+00ad			;	ld bc,100h	;copy page 0   
+00ad			;	ldir  
+00ad			;	ld hl,0b100h	;copy program starting from 0xb100  
+00ad			;	ld de,0b100h  
+00ad			;	ld bc,1000h	;copy 4K of program  
+00ad			;	ldir  
+00ad			;	ld hl,0ff00h	;copy program at top of memory (shadow mover)  
+00ad			;	ld de,0ff00h  
+00ad			;	ld bc,0100h	;copy page $FF  
+00ad			;	ldir  
+00ad			  
+00ad 0e 01			ld c,SIOACmd	;initialize SIO chan A  
+00af 21 d1 04		          ld hl,SIOAIni     	;Point to initialisation data  
+00b2 06 09		          ld b,9	 	;Length of ini data  
+00b4 ed b3		          otir                ;Write data to output port C  
+00b6 0e 03		          ld c,SIOBCmd      ;initialize SIO chan B  
+00b8 21 da 04		          ld hl,SIOBIni      ;Point to initialization data  
+00bb 06 09		          ld b,9            ;length of init data  
+00bd ed b3		          otir  
+00bf			; memory is now all RAM  
+00bf 31 00 70			ld sp,stackp 	;set up stack below monitor  
+00c2 21 03 05			ld hl,signon  
+00c5 cd c6 04			call strout  
+00c8				;call chkCFRdy	;check for CF present, fCFRdy set and Z flag not set if CF present  
+00c8				;jr z,seedRAM	;skip over CF initialization if CF not present  
+00c8				;ld hl,CFpresent	;note that CF disk is detected  
+00c8				;call strout  
+00c8				;ld a,0e0h		;;8 set up LBA mode  
+00c8				;out (CF2427),a	;;8  
+00c8				;ld a,1		;;8 set feature to 8-bit interface  
+00c8				;out (CFerr),a	;;8  
+00c8				;ld a,0efh		;;8 set feature command  
+00c8				;out (CFstat),a	;;8  
+00c8				;call readbsy	;;8 wait until busy flag is cleared  
+00c8			seedRAM:  
+00c8 21 fb 00			ld hl,251		; initialize RAM test seed value  
+00cb 22 9d 00			ld (testseed),hl	; save it  
+00ce			clrRx:    
+00ce db 01		        	IN A,(SIOACmd)	; read on-chip UART receive status  
+00d0 e6 01		        	AND 1		; data available?  
+00d2 28 04		        	jr z,CMD  
+00d4 db 00		        	IN A,(SIOAData)	; read clear the input buffer  
+00d6 18 f6			jr clrRx  
+00d8			CMD:  
+00d8 21 24 05			ld hl,promptstr  
+00db cd c6 04			call strout  
+00de			CMDLP1:  
+00de cd ef 04			call cinq  
+00e1 fe 3a			cp ':'		; Is this Intel load file?  
+00e3 28 40			jr z,initload  
+00e5 fe 0a			cp 0ah		; ignore line feed  
+00e7 28 f5			jr z,CMDLP1  
+00e9 fe 0d			cp 0dh		; carriage return get a new prompt  
+00eb 28 eb			jr z,CMD  
+00ed cd f8 04			CALL cout		; echo character  
+00f0 e6 5f		        	AND 5Fh  
+00f2 fe 48			cp 'H'		; help command  
+00f4 ca 7c 02			jp z,HELP  
+00f7			  
+00f7 fe 44		cp 'D'  
+00f9			  
+00f9 ca 13 03		        JP Z,MEMDMP  
+00fc fe 45		        CP 'E'  
+00fe ca c4 02		        JP Z,EDMEM  
+0101 fe 49		        cp 'I'         ; read data from specified I/O port in page 0  
+0103 ca ba 01			jp z,INPORT  
+0106 fe 4f			cp 'O'		; write data to specified I/O port in page 0  
+0108 ca db 01			jp z,OUTPORT  
+010b fe 4c			cp 'L'		; list memory as Intel Hex format  
+010d ca 00 02			jp z,LISTHEX  
+0110 fe 47		        	CP 'G'  
+0112 ca 85 02		        	JP Z,go  
+0115				;cp a,'R'		;read a CF sector  
+0115				;jp z,READCF  
+0115				;cp a,'Z'		; fill memory with zeros  
+0115				;jp z,fillZ  
+0115				;cp a,'F'		; fill memory with ff  
+0115				;jp z,fillF  
+0115				;cp a,'T'		; testing RAM   
+0115				;jp z,TESTRAM  
+0115				;cp a,'X'		;initialize CF drives  
+0115				;jp z,format  
+0115				;cp a,'C'  
+0115				;jp z,COPYCF	;copy memory into CF disk  
+0115				;cp a,'B'  
+0115				;jp z,BootCPM	;boot CP/M   
+0115			what:  
+0115 21 29 05		        	LD HL, whatstr  
+0118 cd c6 04		        	CALL strout  
+011b 18 bb		        	jr CMD  
+011d			abort:  
+011d 21 57 05			ld hl,abortstr	; print command not executed  
+0120 cd c6 04			call strout  
+0123 18 b3			jr CMD  
+0125			; initialize for file load operation  
+0125			initload:  
+0125 21 00 00			ld hl,0		; clear the high address in preparation for file load  
+0128 22 9f 00			ld (addr3116),hl	; addr3116 modified with Intel Hex format 4   
+012b			; load Intel file  
+012b			fileload:  
+012b cd 7b 04			call GETHEXQ	; get two ASCII char (byte count) into hex byte in reg A  
+012e 57				ld d,a		; save byte count to reg D  
+012f 4f				ld c,a		; save copy of byte count to reg C  
+0130 47				ld b,a		; initialize the checksum  
+0131 cd 7b 04			call GETHEXQ	; get MSB of address  
+0134 67				ld h,a		; HL points to memory to be loaded  
+0135 80				add a,b		; accumulating checksum  
+0136 47				ld b,a		; checksum is kept in reg B  
+0137 cd 7b 04			call GETHEXQ	; get LSB of address  
+013a 6f				ld l,a  
+013b 80				add a,b		; accumulating checksum  
+013c 47				ld b,a		; checksum is kept in reg B  
+013d cd 7b 04			call GETHEXQ	; get the record type, 0 is data, 1 is end  
+0140 fe 00			cp 0  
+0142 ca 86 01			jp z,filesave  
+0145 fe 01			cp 1		; end of file transfer?  
+0147 28 28			jr z,fileend  
+0149 fe 04			cp 4		; Extended linear address?  
+014b c2 ab 01			jp nz,unknown	; if not, print a 'U'  
+014e			; Extended linear address for greater than 64K  
+014e			; this is where addr3116 is modified  
+014e 80				add a,b		; accumulating checksum of record type  
+014f 47				ld b,a		; checksum is kept in reg B  
+0150 7a				ld a,d		; byte count should always be 2  
+0151 fe 02			cp 2  
+0153 20 56			jr nz,unknown  
+0155 cd 7b 04			call GETHEXQ	; get first byte (MSB) of high address  
+0158 32 a0 00			ld (addr3116+1),a	; save to addr3116+1  
+015b 80				add a,b		; accumulating checksum  
+015c 47				ld b,a		; checksum is kept in reg B  
+015d			; Little Endian format.  MSB in addr3116+1, LSB in addr3116  
+015d cd 7b 04			call GETHEXQ	; get the 2nd byte (LSB) of of high address  
+0160 32 9f 00			ld (addr3116),a	; save to addr3116  
+0163 80				add a,b		; accumulating checksum  
+0164 47				ld b,a		; checksum is kept in reg B  
+0165 cd 7b 04			call GETHEXQ	; get the checksum  
+0168 ed 44			neg 		; 2's complement  
+016a b8				cp b		; compare to checksum accumulated in reg B  
+016b 20 3a			jr nz,badload	; checksum not match, put '?'  
+016d 3e 45			ld a,'E'		; denote a successful Extended linear addr update  
+016f 18 31			jr filesav2  
+0171			; end of the file load  
+0171			fileend:  
+0171 cd 7b 04			call GETHEXQ	; flush the line, get the last byte  
+0174 3e 58			ld a,'X'		; mark the end with 'X'  
+0176 cd f8 04			call cout  
+0179 3e 0a			ld a,10			; carriage return and line feed  
+017b cd f8 04			call cout  
+017e 3e 0d			ld a,13  
+0180 cd f8 04			call cout  
+0183 c3 d8 00			jp CMD  
+0186			; the assumption is the data is good and will be saved to the destination memory  
+0186			filesave:  
+0186 80				add a,b		; accumulating checksum of record type  
+0187 47				ld b,a		; checksum is kept in reg B  
+0188 dd 21 00 c0		ld ix,0c000h	; 0c000h is buffer for incoming data  
+018c			filesavx:  
+018c cd 7b 04			call GETHEXQ	; get a byte  
+018f 77				ld (hl),a		;Z80SBC save data to destination  
+0190 80				add a,b		; accumulating checksum  
+0191 47				ld b,a		; checksum is kept in reg B  
+0192 dd 23			inc ix  
+0194 23				inc hl		;Z80SBC   
+0195 15				dec d  
+0196 20 f4			jr nz,filesavx  
+0198 cd 7b 04			call GETHEXQ	; get the checksum  
+019b ed 44			neg 		; 2's complement  
+019d b8				cp b		; compare to checksum accumulated in reg B  
+019e 20 07			jr nz,badload	; checksum not match, put '?'  
+01a0			  
+01a0 3e 2e			ld a,'.'		; checksum match, put '.'  
+01a2			filesav2:  
+01a2 cd f8 04			call cout  
+01a5 18 09			jr flushln	; repeat until record end  
+01a7			badload:  
+01a7 3e 3f			ld a,'?'		; checksum not match, put '?'  
+01a9 18 f7			jr filesav2  
+01ab			unknown:  
+01ab 3e 55			ld a,'U'		; put out a 'U' and wait for next record  
+01ad cd f8 04			call cout  
+01b0			flushln:  
+01b0 cd ef 04			call cinq		; keep on reading until ':' is encountered  
+01b3 fe 3a			cp ':'  
+01b5 20 f9			jr nz,flushln  
+01b7 c3 2b 01			jp fileload  
+01ba			INPORT:  
+01ba			; read data from specified I/O port in page 0  
+01ba			; command format is "I port#"  
+01ba			;   
+01ba 21 7a 05			ld hl,inportstr	; print command 'I' prompt  
+01bd cd c6 04			call strout  
+01c0 cd 49 04			call GETHEX	; get port # into reg A  
+01c3 da d8 00			jp c,CMD		;abort for non-hexdecimal input  
+01c6 ca d8 00			jp z,CMD	  
+01c9 c5				push bc		; save register  
+01ca 4f				ld c,a		; load port # in reg C  
+01cb ed 40			in b,(c)		; get data from port # into reg B  
+01cd 21 8a 05			ld hl,invaluestr  
+01d0 cd c6 04			call strout  
+01d3 78				ld a,b  
+01d4 cd 99 03			call HEXOUT  
+01d7 c1				pop bc		; restore reg  
+01d8 c3 d8 00			jp CMD  
+01db			OUTPORT:  
+01db			; write data to specified I/O port in page 0  
+01db			; command format is "O value port#"  
+01db 21 93 05			ld hl,outportstr	; print command 'O' prompt  
+01de cd c6 04			call strout  
+01e1 cd 49 04			call GETHEX	; get value to be output  
+01e4 da d8 00			jp c,CMD		;abort for non-hexdecimal input  
+01e7 ca d8 00			jp z,CMD	  
+01ea c5				push bc		; save register  
+01eb 47				ld b,a		; load value in reg B  
+01ec 21 9a 05			ld hl,outport2str	; print additional prompt for command 'O'  
+01ef cd c6 04			call strout  
+01f2 cd 49 04			call GETHEX	; get port number into reg A  
+01f5 38 05			jr c,OUTPORT9	;abort for non-hexdecimal input  
+01f7 28 03			jr z,OUTPORT9	  
+01f9 4f				ld c,a  
+01fa ed 41			out (c),b		; output data in regB to port in reg C  
+01fc			OUTPORT9:  
+01fc c1				pop bc  
+01fd c3 d8 00			jp CMD  
+0200			LISTHEX:  
+0200			; list memory as Intel Hex format  
+0200			; the purpose of command is to save memory as Intel Hex format to console  
+0200 21 a4 05			ld hl,listhexstr	; print command 'L' prompt  
+0203 cd c6 04			call strout  
+0206 cd c2 03			call ADRIN	; get address word into reg DE  
+0209 ca d8 00			jp z,CMD		;return to command prompt if illegal input  
+020c d5				push de		; save for later use  
+020d 21 cc 05			ld hl,listhex1str	; print second part of 'L' command prompt  
+0210 cd c6 04			call strout  
+0213 cd c2 03			call ADRIN	; get end address into reg DE  
+0216 ca d8 00			jp z,CMD		;return to command prompt if illegal input  
+0219			listhex1:  
+0219 21 2d 05			ld hl,CRLFstr	; put out a CR, LF	  
+021c cd c6 04			call strout  
+021f 0e 10			ld c,10h		; each line contains 16 bytes  
+0221 41				ld b,c		; reg B is the running checksum  
+0222 3e 3a			ld a,':'		; start of Intel Hex record  
+0224 cd f8 04			call cout  
+0227 79				ld a,c		; byte count  
+0228 cd 99 03			call HEXOUT  
+022b e1				pop hl		; start address in HL  
+022c cd b9 03			call ADROUT	; output start address  
+022f 78				ld a,b		; get the checksum  
+0230 84				add a,h		; accumulate checksum  
+0231 85				add a,l		; accumulate checksum  
+0232 47				ld b,a		; checksum is kept in reg B  
+0233 af				xor a		  
+0234 cd 99 03			call HEXOUT	; record type is 00 (data)  
+0237			listhex2:  
+0237 7e				ld a,(hl)		; get memory pointed by hl  
+0238 cd 99 03			call HEXOUT	; output the memory value in hex  
+023b 7e				ld a,(hl)		; get memory again  
+023c 80				add a,b		; accumulate checksum  
+023d 47				ld b,a		; checksum is kept in reg B  
+023e 23				inc hl  
+023f 0d				dec c  
+0240 c2 37 02			jp nz,listhex2  
+0243 78				ld a,b		; get the checksum  
+0244 ed 44			neg   
+0246 cd 99 03			call HEXOUT	; output the checksum  
+0249			; output 16 memory location, check if reached the end address (saved in reg DE)  
+0249			; unsign compare: if reg A < reg N, C flag set, if reg A > reg N, C flag clear  
+0249 e5				push hl		; save current address pointer  
+024a 7c				ld a,h		; get MSB of current address  
+024b ba				cp d		; reg DE contain the end address  
+024c			;	jp nc,hexend	; if greater, output end-of-file record  
+024c da 19 02			jp c,listhex1	; if less, output more record  
+024f c2 57 02			jp nz,hexend	;if greater (no carry and not equal), output end-of-file record  
+0252			; if equal, compare the LSB value of the current address pointer  
+0252 7d				ld a,l		; now compare the LSB of current address  
+0253 bb				cp e  
+0254 da 19 02			jp c,listhex1	; if less, output another line of Intel Hex  
+0257			hexend:  
+0257			; end-of-record is :00000001FF  
+0257 21 2d 05			ld hl,CRLFstr  
+025a cd c6 04			call strout  
+025d 3e 3a			ld a,':'		; start of Intel Hex record  
+025f cd f8 04			call cout  
+0262 af				xor a  
+0263 cd 99 03			call HEXOUT	; output "00"  
+0266 af				xor a  
+0267 cd 99 03			call HEXOUT	; output "00"  
+026a af				xor a  
+026b cd 99 03			call HEXOUT	; output "00"  
+026e 3e 01			ld a,1  
+0270 cd 99 03			call HEXOUT	; output "01"  
+0273 3e ff			ld a,0ffh  
+0275 cd 99 03			call HEXOUT	; output "FF"  
+0278			  
+0278 e1				pop hl		; clear up the stack  
+0279			  
+0279 c3 d8 00			jp CMD  
+027c			  
+027c			; print help message  
+027c			HELP:  
+027c 21 03 00			ld hl,HELPstr	; print help message  
+027f cd c6 04			call strout  
+0282				;ld a,(fCFRdy)	;check CF present flag before print CF related helps  
+0282				;cp 0  
+0282				;jp z,CMD  
+0282				;ld hl,HELPCF$	;print CF related help commands   
+0282				;call strout  
+0282 c3 d8 00			jp CMD  
+0285			;fillZ:  
+0285			;	ld hl,fill0$	; print fill memory with 0 message  
+0285			;	call strout  
+0285			;	ld b,0		; fill memory with 0  
+0285			;	jp dofill  
+0285			;fillF:  
+0285			;	ld hl,fillf$	; print fill memory with F message  
+0285			;	call strout  
+0285			;	ld b,0ffh		; fill memory with ff  
+0285			;dofill:  
+0285			;	ld hl,confirm$	; get confirmation before executing  
+0285			;	call strout  
+0285			;	call tstCRLF	; check for carriage return  
+0285			;	jp nz,abort  
+0285			;	ld hl,PROGEND	; start from end of this program  
+0285			;;	ld a,0ffh		; end address in reg A  
+0285			;filla:  
+0285			;	ld (hl),b		; write memory location  
+0285			;	inc hl  
+0285			;	cp h		; reached 0xFF00?  
+0285			;	jp nz,filla	; continue til done  
+0285			;	cp l		; reached 0xFFFF?  
+0285			;	jp nz,filla  
+0285			;	ld hl,0b000h	; fill value from 0xB000 down to 0x0100  
+0285			;fillb:  
+0285			;	dec hl  
+0285			;	ld a,h		;do until h=0  
+0285			;	cp 0  
+0285			;	jp z,CMD  
+0285			;	ld (hl),b		; write memory location with desired value  
+0285			;	jr fillb  
+0285			;TESTRAM:  
+0285			;; test memory from top of this program to 0xFFFE   
+0285			;	ld hl,testram$	; print test ram message  
+0285			;	call strout  
+0285			;	ld hl,confirm$	; get confirmation before executing  
+0285			;	call strout  
+0285			;	call tstCRLF	; check for carriage return  
+0285			;	jp nz,abort  
+0285			;	ld iy,(testseed)	; a prime number seed, another good prime number is 211  
+0285			;TRagain:  
+0285			;	ld hl,PROGEND	; start testing from the end of this program  
+0285			;	ld de,137		; increment by prime number  
+0285			;TRLOOP:  
+0285			;	push iy		; bounce off stack  
+0285			;	pop bc  
+0285			;	ld (hl),c		; write a pattern to memory  
+0285			;	inc hl  
+0285			;	ld (hl),b  
+0285			;	inc hl  
+0285			;	add iy,de		; add a prime number  
+0285			;	ld a,0ffh		; compare h to 0xff  
+0285			;	cp h  
+0285			;	jp nz,TRLOOP	; continue until reaching 0xFFFE  
+0285			;	ld a,0feh		; compare l to 0xFE  
+0285			;	cp l  
+0285			;	jp nz,TRLOOP  
+0285			;	ld hl,0b000h	; test memory from 0xAFFF down to 0x0000  
+0285			;TR1LOOP:  
+0285			;	push iy  
+0285			;	pop bc		; bounce off stack  
+0285			;	dec hl  
+0285			;	ld (hl),b		; write MSB  
+0285			;	dec hl  
+0285			;	ld (hl),c		; write LSB  
+0285			;	add iy,de		; add a prime number  
+0285			;	ld a,h		; check h=l=0  
+0285			;	or l  
+0285			;	jp nz,TR1LOOP  
+0285			;	ld hl,PROGEND	; verify starting from the end of this program  
+0285			;	ld iy,(testseed)	; starting seed value  
+0285			;TRVER:  
+0285			;	push iy		; bounce off stack  
+0285			;	pop bc  
+0285			;	ld a,(hl)		; get LSB  
+0285			;	cp c		; verify  
+0285			;	jp nz,TRERROR  
+0285			;	inc hl  
+0285			;	ld a,(hl)		; get MSB  
+0285			;	cp b  
+0285			;	jp nz,TRERROR  
+0285			;	inc hl  
+0285			;	add iy,de		; next reference value  
+0285			;	ld a,0ffh		; compare h to 0xff  
+0285			;	cp h  
+0285			;	jp nz,TRVER	; continue verifying til end of memory  
+0285			;	ld a,0feh		; compare l to 0xFE  
+0285			;	cp l  
+0285			;	jp nz,TRVER  
+0285			;	ld hl,0b000h	; verify memory from 0xB000 down to 0x0000  
+0285			;TR1VER:  
+0285			;	push iy		; bounce off stack  
+0285			;	pop bc  
+0285			;	dec hl  
+0285			;	ld a,(hl)		; get MSB from memory  
+0285			;	cp b		; verify  
+0285			;	jp nz,TRERROR  
+0285			;	dec hl  
+0285			;	ld a,(hl)		; get LSB from memory  
+0285			;	cp c  
+0285			;	jp nz,TRERROR  
+0285			;	add iy,de  
+0285			;	ld a,h		; check h=l=0  
+0285			;	or l  
+0285			;	jp nz,TR1VER  
+0285			;	call SPCOUT	; a space delimiter  
+0285			;	ld a,'O'		; put out 'OK' message  
+0285			;	call cout  
+0285			;	ld a,'K'  
+0285			;	call cout  
+0285			;	ld (testseed),iy	; save seed value  
+0285			;  
+0285			;	IN A,(SIOACmd)	; read on-chip UART receive status  
+0285			;        	AND 1				;;Z data available?  
+0285			;        	JP Z,TRagain	; no char, do another iteration of memory test  
+0285			;	ld a,0c3h		;restore 'jp mainjmp' instruction in 0x00  
+0285			;	ld (0),a		;instruction in binary is 0xc3, 0x00, 0xb4  
+0285			;	xor a  
+0285			;	ld (1),a  
+0285			;	ld a,0b4h  
+0285			;	ld (2),a  
+0285			;	jp clrRx		; clear the UART receive buffer and return to CMD  
+0285			;TRERROR:  
+0285			;	call SPCOUT	; a space char to separate the 'r' command  
+0285			;	ld a,'H'		; display content of HL reg  
+0285			;	call cout		; print the HL label  
+0285			;	ld a,'L'  
+0285			;	call cout  
+0285			;	call SPCOUT	  
+0285			;	call ADROUT	; output the content of HL 	  
+0285			;	jp CMD  
+0285			  
+0285			;Get an address and jump to it  
+0285			go:  
+0285 21 69 05			ld hl,gostr		; print go command message  
+0288 cd c6 04			call strout  
+028b cd c2 03		        	CALL ADRIN  
+028e ca d8 00			jp z,CMD		;return to command prompt if illegal input  
+0291 62			        	LD H,D  
+0292 6b			        	LD L,E  
+0293 e5				push hl		; save go address  
+0294 21 30 05			ld hl,confirm	; get confirmation before executing  
+0297 cd c6 04			call strout  
+029a cd a8 02			call tstCRLF	; check for carriage return  
+029d e1				pop hl  
+029e c2 1d 01			jp nz,abort  
+02a1 e9				jp (hl)		; jump to address if CRLF  
+02a2			;test for 'Y'. Echo back, set Z flag if 'Y' received  
+02a2			tstY:  
+02a2 cd e3 04			call cin		; get a character					  
+02a5 fe 59			cp 'Y'  
+02a7 c9				ret  
+02a8			  
+02a8			; test for CR or LF.  Echo back. return 0  
+02a8			tstCRLF:  
+02a8 cd e3 04			call cin		; get a character					  
+02ab fe 0d			cp 0dh		; if carriage return, output LF  
+02ad ca b6 02			jp z,tstCRLF1  
+02b0 fe 0a			cp 0ah		; if line feed, output CR   
+02b2 ca bd 02			jp z,tstCRLF2  
+02b5 c9				ret  
+02b6			tstCRLF1:  
+02b6 3e 0a			ld a,0ah		; put out a LF  
+02b8 cd f8 04			call cout  
+02bb af				xor a		; set Z flag  
+02bc c9				ret  
+02bd			tstCRLF2:  
+02bd 3e 0d			ld a,0dh		; put out a CR  
+02bf cd f8 04			call cout  
+02c2 af				xor a		; set Z flag  
+02c3 c9				ret  
+02c4			; Read CF disk  
+02c4			; data buffer is at 0x1000  
+02c4			; previous data is at 0x2000 for comparison to current data  
+02c4			;READCF:  
+02c4			;	ld hl,read$	; put out read command message  
+02c4			;	call strout  
+02c4			;	ld hl,track$	; enter track in hex value  
+02c4			;	call strout  
+02c4			;	call GETHEX	; get a byte of hex value as track  
+02c4			;	jp c,CMD		;abort for non-hexdecimal input  
+02c4			;	jp z,CMD	  
+02c4			;	ld (RDtrack),a	; save it   
+02c4			;	ld hl,sector$	; enter sector in hex value  
+02c4			;	call strout  
+02c4			;	call GETHEX	; get a byte of hex value as sector  
+02c4			;	jp c,CMD		;abort for non-hexdecimal input  
+02c4			;	jp z,CMD	  
+02c4			;	ld (RDsector),a	; save it  
+02c4			;READRD1:  
+02c4			;	ld hl,1000h	; copy previous block to 2000h  
+02c4			;	ld de,2000h  
+02c4			;	ld bc,200h	; copy 512 bytes  
+02c4			;	ldir		; block copy  
+02c4			;  
+02c4			;	ld a,0e0h		; set Logical Address addressing mode  
+02c4			;	out (CF2427),a  
+02c4			;	ld a,1		; read 1 sector  
+02c4			;	out (CFsectcnt),a	; write to sector count with 1  
+02c4			;	ld a,0		; read first sector  
+02c4			;	out (CF1623),a	; high byte of track is always 0  
+02c4			;	ld a,(RDsector)	;Z80SBC get sector value  
+02c4			;	out (CF07),a	; write sector  
+02c4			;	ld a,(RDtrack)  
+02c4			;	out (CF815),a  
+02c4			;	ld a,20h		; read sector command  
+02c4			;	out (CFstat),a	; issue the read sector command  
+02c4			;	call chkdrq	; check data request bit set before write CF data  
+02c4			;	ld hl,1000h	; store CF data starting from 1000h  
+02c4			;	ld c,CFdata	; reg C points to CF data reg  
+02c4			;	ld b,0h		; sector has 256 16-bit data  
+02c4			;	inir		;Z80SBC  
+02c4			;	ld b,0h		;Z80SBC 2nd half of 512-byte sector  
+02c4			;	inir  
+02c4			  
+02c4			;dumpdata:  
+02c4			;	ld d,32		; 32 lines of data  
+02c4			;	ld hl,1000h	; display 512 bytes of data  
+02c4			;dmpdata1:  
+02c4			;	push hl		; save hl  
+02c4			;	ld hl,CRLF$	; add a CRLF per line  
+02c4			;	call strout  
+02c4			;	pop hl		; hl is the next address to display  
+02c4			;	call DMP16TS	; display 16 bytes per line  
+02c4			;	dec d  
+02c4			;	jp nz,dmpdata1  
+02c4			;  
+02c4			;	ld hl,1000h	; compare with data block in 2000h  
+02c4			;	ld bc,200h  
+02c4			;	ld de,2000h  
+02c4			;blkcmp:  
+02c4			;	ld a,(de)		; get a byte from block in 2000h  
+02c4			;	inc de  
+02c4			;	cpi		; compare with corresponding data in 1000h  
+02c4			;	jp po,blkcmp1	; exit at end of block compare  
+02c4			;	jp z,blkcmp	; exit if data not compare  
+02c4			;	ld hl,notsame$	; send out message that data not same as previous read  
+02c4			;	call strout  
+02c4			;	jp chkRDmore  
+02c4			;blkcmp1:	  
+02c4			;	ld hl,issame	; send out message that data read is same as before  
+02c4			;	call strout  
+02c4			  
+02c4			;chkRDmore:  
+02c4			;	ld hl,0		;clear sector offset value  
+02c4			;	ld (sectoff),hl  
+02c4			;	ld hl,RDmore$	; carriage return for next sector of data  
+02c4			;	call strout  
+02c4			;	call tstCRLF	; look for CRLF  
+02c4			;	jp nz,CMD		;   
+02c4			;	ld hl,(RDsector)	; load track & sector as 16-bit value  
+02c4			;	inc hl		; increment by 1  
+02c4			;	ld (RDsector),hl	; save updated values  
+02c4			;	ld hl,track$	; print track & sector value  
+02c4			;	call strout  
+02c4			;	ld a,(RDtrack)  
+02c4			;	call HEXOUT  
+02c4			;	ld hl,sector$  
+02c4			;	call strout  
+02c4			;	ld a,(RDsector)  
+02c4			;	call HEXOUT  
+02c4			;	jp READRD1  
+02c4			;chkCFRdy:  
+02c4			;;check CF disk is present  
+02c4			;;set fCFRdy if present  
+02c4			;;return   
+02c4			;	ld hl,0  
+02c4			;	ld b,5		;pass count of 5 is about 1 seconds  
+02c4			;	xor a  
+02c4			;	ld (fCFRdy),a	;clear CF present flag  
+02c4			;	call waitBsy	;wait up to 1 second  
+02c4			;	ret nz  
+02c4			;	ld hl,waitCF$	;waiting on CF  
+02c4			;	call strout  
+02c4			;	ld hl,0  
+02c4			;	ld b,15		;pass count of 15 is about 3 seconds  
+02c4			;	call waitBsy	;wait 3 more seconds  
+02c4			;	ret nz  
+02c4			;	ld hl,timeoutCF$  
+02c4			;	call strout  
+02c4			;	xor a		;set Z flag  
+02c4			;	ret		;return with Z set and fCFRdy = 0  
+02c4			;waitBsy:			;inner loop is 48 clocks or 200mS per inner loop  
+02c4			;	in a,(CFstat)	;(11) read CF status   
+02c4			;	and 80h		;(7) mask off all except busy bit  
+02c4			;	jr z,CFfound	;(10)  
+02c4			;	inc hl		;(6)  
+02c4			;	cp h		;(4) regA is 80h for this comparison  
+02c4			;	jr nz,waitBsy	;(10)  
+02c4			;	ld hl,0		;(10)  
+02c4			;	dec b		;(4) decrease loop count until zero  
+02c4			;	jr nz,waitBsy	;(10)  
+02c4			;	ret  
+02c4			;CFfound:  
+02c4			;	inc a		;regA is now not zero  
+02c4			;	ld (fCFRdy),a	;CF present flag is set  
+02c4			;	ret		  
+02c4			;readbsy:  
+02c4			;; spin on CF status busy bit  
+02c4			;	in a,(CFstat)	; read CF status   
+02c4			;	and 80h		; mask off all except busy bit  
+02c4			;	jr nz,readbsy  
+02c4			;	ret  
+02c4			;chkdrq:  
+02c4			;	in a,(CFstat)	; check data request bit set before write CF data  
+02c4			;	and 8		; bit 3 is DRQ, wait for it to set  
+02c4			;	jr z,chkdrq  
+02c4			;	ret  
+02c4			;; format CF drives directories   
+02c4			;; drive A directory is track 1, sectors 0-0x1F  
+02c4			;; drive B directory is track 0x40, sectors 0-0x1F  
+02c4			;; drive C directory is track 0x80, sectors 0-0x1F  
+02c4			;; drive D directory is track 0xC0, sectors 0-0x1F  
+02c4			;format:  
+02c4			;	ld hl,clrdir$	; command message  
+02c4			;	call strout  
+02c4			;	call cin  
+02c4			;	cp 'A'  
+02c4			;	jr z,formatA	; fill track 1 sectors 0-0x1F with 0xE5  
+02c4			;	cp 'B'  
+02c4			;	jr z,formatB	; fill track 0x40 sectors 0-0x1F with 0xE5  
+02c4			;	cp 'C'  
+02c4			;	jr z,formatC	; fill track 0x80 sectors 0-0x1F with 0xE5  
+02c4			;	cp 'D'  
+02c4			;	jr z,formatD	; fill track 0xC0 sectors 0-0x1F with 0xE5  
+02c4			;	jp abort		; abort command if not in the list of options  
+02c4			;formatA:  
+02c4			;	ld de,100h	; start with track 1 sector 0  
+02c4			;	jr doformat  
+02c4			;formatB:  
+02c4			;	ld de,4000h	; start with track 0x40 sector 0  
+02c4			;	jr doformat  
+02c4			;formatC:  
+02c4			;	ld de,8000h	; start with track 0x80 sector 0  
+02c4			;	jr doformat  
+02c4			;formatD:  
+02c4			;	ld de,0c000h	; start with track 0xC0 sector 0  
+02c4			;doformat:  
+02c4			;	ld hl,confirm$	; confirm command execution  
+02c4			;	ld hl,xwarn$  
+02c4			;	call strout  
+02c4			;	call tstY  
+02c4			;;	call tstCRLF  
+02c4			;	jp nz,abort	; abort command if not CRLF  
+02c4			;	ld a,0e0h		; set Logical Address addressing mode  
+02c4			;	out (CF2427),a  
+02c4			;	xor a		; clear reg A  
+02c4			;	out (CF1623),a	; MSB track is 0  
+02c4			;	ld a,d		; reg D contains the track info  
+02c4			;	out (CF815),a  
+02c4			;	ld c,CFdata	; reg C points to CF data reg  
+02c4			;	ld hl,0e5e5h	; value for empty directories  
+02c4			;wrCFf:  
+02c4			;	ld a,1		; write 1 sector  
+02c4			;	out (CFsectcnt),a	; write to sector count with 1  
+02c4			;	ld a,e		; write CPM sector  
+02c4			;	cp 20h		; format sector 0-0x1F  
+02c4			;	jp z,wrCFdonef	; done formatting  
+02c4			;	out (CF07),a	;   
+02c4			;	ld a,30h		; write sector command  
+02c4			;	out (CFstat),a	; issue the write sector command  
+02c4			;	call chkdrq	; check data request bit set before write CF data  
+02c4			;  
+02c4			;	ld b,0h		; sector has 256 16-bit data  
+02c4			;loopf:  
+02c4			;	out (c),h		;z80 writes 2 bytes to CF  
+02c4			;	out (c),h	  
+02c4			;	inc b  
+02c4			;	jp nz,loopf  
+02c4			;	call readbsy	;wait on CF status busy bit  
+02c4			;  
+02c4			;	inc e		; write next sector  
+02c4			;	jp wrCFf  
+02c4			;wrCFdonef:  
+02c4			;	ld hl,done$  
+02c4			;	call strout  
+02c4			;	jp CMD  
+02c4			;; boot CPM  
+02c4			;; copy program from LA9-LA26 (9K) to 0xDC00  
+02c4			;; jump to 0xF200 after copy is completed.  
+02c4			;BootCPM:  
+02c4			;	ld hl,bootcpm$	; print command message  
+02c4			;	call strout  
+02c4			;	call cin		; get input  
+02c4			;;	cp '1'		; '1' is user apps  
+02c4			;;	jp z,bootApps  
+02c4			;	cp '2'		; '2' is cpm2.2  
+02c4			;	jp z,boot22  
+02c4			;	cp '3'		; '3' is cpm3, not implemented  
+02c4			;	jp z,boot3  
+02c4			;	jp what  
+02c4			;boot3:  
+02c4			;	ld hl,confirm$	; CRLF to execute the command  
+02c4			;	call strout  
+02c4			;	call tstCRLF  
+02c4			;	jp nz,abort	; abort command if no CRLF  
+02c4			;	ld a,0e0h		; set Logical Address addressing mode  
+02c4			;	out (CF2427),a  
+02c4			;	xor a		; clear reg A  
+02c4			;	out (CF1623),a	; track 0  
+02c4			;	out (CF815),a  
+02c4			;	ld hl,1100h	; CPM3LDR starts from 0x1100  
+02c4			;	ld c,CFdata	; reg C points to CF data reg  
+02c4			;	ld d,1h		; read from LA 1 to LA 0x0f, 7K--much bigger than needed  
+02c4			;readCPM3:  
+02c4			;	ld a,1		; read 1 sector  
+02c4			;	out (CFsectcnt),a	; write to sector count with 1  
+02c4			;	ld a,d		; read CPM sector  
+02c4			;	cp 10h		; between LA1 and LA0fh  
+02c4			;	jp z,goCPM3	; done copying, execute CPM  
+02c4			;	out (CF07),a	;   
+02c4			;	ld a,20h		; read sector command  
+02c4			;	out (CFstat),a	; issue the read sector command  
+02c4			;	call chkdrq	;check data request bit set before write CF data  
+02c4			;	ld b,0h		; sector has 256 16-bit data  
+02c4			;	inir		;z80 read 256 bytes  
+02c4			;	ld b,0h		;z80  
+02c4			;	inir		;z80 read 256 bytes  
+02c4			;  
+02c4			;	inc d		; read next sector  
+02c4			;	jp readCPM3  
+02c4			;goCPM3:  
+02c4			;	jp 01100h		; BIOS starting address of CP/M  
+02c4			;  
+02c4			;boot22:  
+02c4			;	ld hl,confirm$	; CRLF to execute the command  
+02c4			;	call strout  
+02c4			;	call tstCRLF  
+02c4			;	jp nz,abort	; abort command if no CRLF  
+02c4			;	ld a,0e0h		; set Logical Address addressing mode  
+02c4			;	out (CF2427),a  
+02c4			;	xor a		; clear reg A  
+02c4			;	out (CF1623),a	; track 0  
+02c4			;	out (CF815),a  
+02c4			;	ld hl,0dc00h	; CPM starts from 0xDC00 to 0xFFFF  
+02c4			;	ld c,CFdata	; reg C points to CF data reg  
+02c4			;	ld d,80h		; read from LA 0x80 to LA 0x92  
+02c4			;readCPM1:  
+02c4			;	ld a,1		; read 1 sector  
+02c4			;	out (CFsectcnt),a	; write to sector count with 1  
+02c4			;	ld a,d		; read CPM sector  
+02c4			;	cp 92h		; between LA80h and LA91h  
+02c4			;	jp z,goCPM	; done copying, execute CPM  
+02c4			;	out (CF07),a	;   
+02c4			;	ld a,20h		; read sector command  
+02c4			;	out (CFstat),a	; issue the read sector command  
+02c4			;	call chkdrq	; check data request bit set before write CF data  
+02c4			;	ld b,0h		; sector has 256 16-bit data  
+02c4			;	inir		;z80 read 256 bytes  
+02c4			;	ld b,0h		;z80  
+02c4			;	inir		;z80 read 256 bytes  
+02c4			;  
+02c4			;	inc d		; read next sector  
+02c4			;	jp readCPM1  
+02c4			;goCPM:  
+02c4			;	jp 0f200h		; BIOS starting address of CP/M  
+02c4			  
+02c4			;bootApps:  
+02c4			;copy user application from page 0 0x4000-0x7FFF to common area  
+02c4			;then copy from common area to normal 0x0-0x3FFF  
+02c4			;common area is 4K, 0xA000-0xAFFF  
+02c4			;jump into 0x0 when done  
+02c4			;	ld hl,confirm$	; CRLF to execute the command  
+02c4			;	call strout  
+02c4			;	call tstCRLF  
+02c4			;	jp nz,abort	; abort command if no CRLF  
+02c4			;  
+02c4			;	ld de,0		;copy 4K from bootstrap page 0x4000  
+02c4			;	ld hl,4000h	;to normal page 0x0  
+02c4			;	call copy2norm  
+02c4			;	ld de,1000h	;copy 4K from bootstrap page 0x5000  
+02c4			;	ld hl,5000h	;to normal page 0x1000  
+02c4			;	call copy2norm  
+02c4			;	ld de,2000h	;copy 4K from bootstrap page 0x6000  
+02c4			;	ld hl,6000h	;to normal page 0x2000  
+02c4			;	call copy2norm  
+02c4			;	ld de,3000h	;copy 4K from bootstrap page 0x7000  
+02c4			;	ld hl,7000h	;to normal page 0x3000  
+02c4			;	call copy2norm  
+02c4			  
+02c4			;	jp 0		;start execution of user apps  
+02c4			  
+02c4				; Write CF  
+02c4			;  allowable parameters are '0' for boot sector & ZZMon, '1' for 32K apps,   
+02c4			;   '2' for CPM2.2, '3' for CPM3  
+02c4			; Set page I/O to 0, afterward set it back to 0FEh  
+02c4			;COPYCF:  
+02c4			;	ld hl,copycf$	; print copy message  
+02c4			;	call strout  
+02c4			;	call cin		; get write parameters  
+02c4			;;	cp '0'  
+02c4			;;	jp z,cpboot  
+02c4			;;	cp '1'  
+02c4			;;	jp z,cpAPPS  
+02c4			;	cp '2'  
+02c4			;	jp z,CopyCPM2  
+02c4			;	cp '3'  
+02c4			;	jp z,CopyCPM3  
+02c4			;	jp what		; error, abort command  
+02c4			;  
+02c4			;	jp CMD  
+02c4			  
+02c4			; write CPM to CF  
+02c4			; write data from 0xDC00 to 0xFFFF to CF LA128-LA146 (9K)  
+02c4			;CopyCPM2:  
+02c4			;	ld hl,0dc00h	; CPM starts from 0xDC00 to 0xFFFF  
+02c4			;	ld de,8092h	; reg DE contains beginning sector and end sector values  
+02c4			;	jp wrCF  
+02c4			;CopyCPM3:  
+02c4			;	ld hl,1100h	; CPMLDR starts from 0x1100  
+02c4			;	ld de,0110h	; reg DE contains beginning sector and end sector values  
+02c4			;	jp wrCF  
+02c4			;cpAPPS:  
+02c4			; 16K of user application such as SCMonitor is stored in page 0, 0x4000 to 0x7FFF  
+02c4			; This assuiming the user application is already loaded from 0x0 to 0x3FFF  
+02c4			;copy 4K to common area, 0xA000-0xAFFF and then copy into page 0  
+02c4			;	ld hl,confirm$	; carriage return to execute the program  
+02c4			;	call strout  
+02c4			;	call tstCRLF  
+02c4			;	jp nz,CMD		; abort command if not CR or LF  
+02c4			;	ld hl,0		;copy 4K from normal page 0x0  
+02c4			;	ld de,4000h	;to bootstrap page 0x4000		  
+02c4			;	call copy2boot  
+02c4			;	ld hl,1000h	;copy 4K from normal page 0x1000  
+02c4			;	ld de,5000h	;to bootstrap page 0x5000  
+02c4			;	call copy2boot  
+02c4			;	ld hl,2000h	;copy 4K from normal page 0x2000  
+02c4			;	ld de,6000h	;to bootstrap page 0x6000  
+02c4			;	call copy2boot  
+02c4			;	ld hl,3000h	;copy 4K from normal page 0x3000  
+02c4			;	ld de,7000h	;to bootstrap page 0x7000  
+02c4			;	call copy2boot  
+02c4			;	xor a		; set to normal page to protect the bootstrap area  
+02c4			;	out (bankReg),a	;   
+02c4			;	jp CMD		; jump back to command handler  
+02c4			  
+02c4			;  
+02c4			;wrCF:  
+02c4			;	push hl		; save value  
+02c4			;;	ld hl,confirm$	; carriage return to execute the program  
+02c4			;	ld hl,copywarn$	;warning file will be overwritten  
+02c4			;	call strout  
+02c4			;	pop hl  
+02c4			;;	call tstCRLF  
+02c4			;	call tstY  
+02c4			;	jp nz,abort	;abort command if not 'Y'  
+02c4			;	ld a,0e0h		; set Logical Address addressing mode  
+02c4			;	out (CF2427),a  
+02c4			;	xor a		; clear reg A  
+02c4			;	out (CF1623),a	; track 0  
+02c4			;	out (CF815),a  
+02c4			;	ld c,CFdata	; reg C points to CF data reg  
+02c4			;wrCF1:  
+02c4			;	ld a,1		; write 1 sector  
+02c4			;	out (CFsectcnt),a	; write to sector count with 1  
+02c4			;	ld a,d		; write CPM sector  
+02c4			;	cp e		; reg E contains end sector value  
+02c4			;	jp z,wrCFdone	; done copying, execute CPM  
+02c4			;	out (CF07),a	;   
+02c4			;	ld a,30h		; write sector command  
+02c4			;	out (CFstat),a	; issue the write sector command  
+02c4			;	call chkdrq	; check data request bit set before write CF data  
+02c4			;	ld b,0h		; sector has 256 16-bit data  
+02c4			;	otir		;z80 write 256 bytes  
+02c4			;	ld b,0h		;z80  
+02c4			;	otir		;z80 wrute 256 bytes  
+02c4			;  
+02c4			;	call readbsy	;wait until busy flag is cleared  
+02c4			;  
+02c4			;	inc d		; write next sector  
+02c4			;	jp wrCF1  
+02c4			;wrCFdone:  
+02c4			;	ld hl,done$	;command completed message  
+02c4			;	call strout  
+02c4			;	jp CMD  
+02c4			  
+02c4			;Edit memory from a starting address until X is  
+02c4			;pressed. Display mem loc, contents, and results  
+02c4			;of write.  
+02c4 cd c0 04		EDMEM:  	CALL SPCOUT  
+02c7 cd c2 03		        	CALL ADRIN  
+02ca ca d8 00			jp z,CMD		;abort command if illegal input  
+02cd 62			        	LD H,D  
+02ce 6b			        	LD L,E  
+02cf			EDMEM1:    	  
+02cf 3e 0d			LD A,13  
+02d1 cd f8 04		        	CALL cout  
+02d4 3e 0a		        	LD A,10  
+02d6 cd f8 04		        	CALL cout  
+02d9 cd b9 03		        	CALL ADROUT  
+02dc cd c0 04		        	CALL SPCOUT  
+02df 3e 3a		        	LD A,':'  
+02e1 cd f8 04		        	CALL cout  
+02e4 cd c0 04		        	CALL SPCOUT  
+02e7 cd 94 03		        	CALL DMPLOC  
+02ea cd c0 04		        	CALL SPCOUT  
+02ed cd 49 04		        	CALL GETHEX  
+02f0 da d8 00			jp c,CMD		;abort for illegal input  
+02f3 ca 01 03		 	jp z,EDMEM2	;handle CR, -, x inputs  
+02f6 77			        	LD (HL),A  
+02f7 cd c0 04		        	CALL SPCOUT  
+02fa cd 94 03		        	CALL DMPLOC  
+02fd 23			        	INC HL  
+02fe c3 cf 02		        	JP EDMEM1  
+0301			EDMEM2:  
+0301			;handle non-hexdecimal input of CR, -, x or X  
+0301 fe 2d			cp '-'		;go to previous location  
+0303 c2 0a 03			jp nz,EDMEM3  
+0306 2b				dec hl  
+0307 c3 cf 02			jp EDMEM1  
+030a			EDMEM3:  
+030a fe 0d			cp 0dh		;go to next location  
+030c c2 d8 00			jp nz,CMD		;abort command for all other non-hex input  
+030f 23				inc hl  
+0310 c3 cf 02			jp EDMEM1  
+0313			  
+0313			;Dump memory between two address locations  
+0313 cd c0 04		MEMDMP: 	CALL SPCOUT  
+0316 cd c2 03		        	CALL ADRIN  
+0319 ca d8 00			jp z,CMD		;abort command if illegal input  
+031c 62				ld h,d  
+031d 6b				ld l,e		;starting location is in HL  
+031e 0e 10		        	ld c,10h  
+0320 cd c0 04		        	CALL SPCOUT  
+0323 cd c2 03		        	CALL ADRIN	;end location is in DE  
+0326 ca d8 00			jp z,CMD		;abort command if illegal input  
+0329 3e 0d		MD1:    	LD A,13  
+032b cd f8 04		        	CALL cout  
+032e 3e 0a		        	LD A,10  
+0330 cd f8 04		        	CALL cout  
+0333 cd 5c 03		        	CALL DMP16  
+0336			;HL is advanced by $10 after DMP16  
+0336			;HL = $000x is special case because it means a 64K rollover has occurred  
+0336			; stop displaying if HL=$000x  
+0336 7c				ld a,h  
+0337 fe 00			cp 0		;check for H=0  
+0339 c2 44 03			jp nz,not000x  
+033c 7d				ld a,l		;check for HL=000x  
+033d e6 f0			and 0f0h		;ignore lowest nibble  
+033f fe 00			cp 0  
+0341 ca d8 00			jp z,CMD  
+0344			not000x:  
+0344 7a			        	LD A,D  
+0345 bc			        	CP H  
+0346			;        	JP M,CMD  
+0346 da d8 00			jp c,CMD  
+0349 c2 29 03			jp nz,MD1		;if equal, compare LSB byte  
+034c 7b			        	LD A,E  
+034d bd			        	CP L  
+034e			;	jp m,CMD  
+034e da d8 00			jp c,CMD  
+0351			;        	JP M,MD2  
+0351 c3 29 03		        	JP MD1  
+0354 7a			MD2:    	LD A,D  
+0355 bc			        	CP H  
+0356 c2 29 03		        	JP NZ,MD1  
+0359 c3 d8 00		        	JP CMD  
+035c			  
+035c			;DMP16TS:  
+035c			;; dump memory pointed by HL,   
+035c			;; print offset from the given track & sector values  
+035c			;;  as the address field  
+035c			;	push hl		; save reg  
+035c			;	ld a,'+'		;print offset symbol  
+035c			;	call cout  
+035c			;	ld hl,(sectoff)	;get offset from track&sector base  
+035c			;	call ADROUT	; output A23..A8  
+035c			;	push bc		;save reg  
+035c			;	ld bc,10h		;add 16 to offset  
+035c			;	add hl,bc  
+035c			;	pop bc  
+035c			;	ld (sectoff),hl	;save it  
+035c			;	pop hl		; restore reg  
+035c			;	jp DMP16D		; display the 16 data field  
+035c			;  
+035c			;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+035c			;DMP16 -- Dump 16 consecutive memory locations  
+035c			;  
+035c			;pre: HL pair contains starting memory address  
+035c			;post: memory from HL to HL + 16 printed  
+035c			;post: HL incremented to HL + 16  
+035c			;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+035c cd b9 03		DMP16:  	CALL ADROUT  
+035f			DMP16D:			; 16 consecutive data  
+035f cd c0 04		        	CALL SPCOUT  
+0362 3e 3a		        	LD A,':'  
+0364 cd f8 04		        	CALL cout  
+0367 0e 10		        	LD C,10h  
+0369 e5				push hl		; save location for later use  
+036a cd c0 04		DM1:    	CALL SPCOUT  
+036d cd 94 03		        	CALL DMPLOC  
+0370 23			        	INC HL		  
+0371 0d			        	DEC C  
+0372 c2 6a 03			jp nz,DM1  
+0375			  
+0375			; display the ASCII equivalent of the hex values  
+0375 e1				pop hl		; retrieve the saved location  
+0376 0e 10			ld c,10h		; print 16 characters  
+0378 cd c0 04			call SPCOUT	; insert two space  
+037b cd c0 04			call SPCOUT	;   
+037e			dm2:  
+037e 7e				ld a,(hl)		; read the memory location  
+037f fe 20			cp ' '  
+0381 fa 89 03			jp m,printdot	; if lesser than 0x20, print a dot  
+0384 fe 7f			cp 7fh  
+0386 fa 8b 03			jp m,printchar  
+0389			printdot:  
+0389			; for value lesser than 0x20 or 0x7f and greater, print '.'  
+0389 3e 2e			ld a,'.'  
+038b			printchar:  
+038b			; output printable character  
+038b cd f8 04			call cout  
+038e 23				inc hl  
+038f 0d				dec c  
+0390 c8				ret z  
+0391 c3 7e 03			jp dm2  
+0394			  
+0394			;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+0394			;DMPLOC -- Print a byte at HL to console  
+0394			;  
+0394			;pre: HL pair contains address of byte  
+0394			;post: byte at HL printed to console  
+0394			;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+0394 7e			DMPLOC: 	LD A,(HL)  
+0395 cd 99 03		        	CALL HEXOUT  
+0398 c9			        	RET  
+0399			  
+0399			;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+0399			;HEXOUT -- Output byte to console as hex  
+0399			;  
+0399			;pre: A register contains byte to be output  
+0399			;post: byte is output to console as hex  
+0399			;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+0399 c5			HEXOUT: 	PUSH BC  
+039a 47			        	LD B,A  
+039b 0f			        	RRCA  
+039c 0f			        	RRCA  
+039d 0f			        	RRCA  
+039e 0f			        	RRCA  
+039f e6 0f		        	AND 0Fh  
+03a1 cd b2 03		        	CALL HEXASC  
+03a4 cd f8 04		        	CALL cout  
+03a7 78			        	LD A,B  
+03a8 e6 0f		        	AND 0Fh  
+03aa cd b2 03		        	CALL HEXASC  
+03ad cd f8 04		        	CALL cout  
+03b0 c1			        	POP BC  
+03b1 c9			        	RET  
+03b2			  
+03b2			;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+03b2			;HEXASC -- Convert nybble to ASCII char  
+03b2			;  
+03b2			;pre: A register contains nybble  
+03b2			;post: A register contains ASCII char  
+03b2			;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+03b2 c6 90		HEXASC: 	ADD 90h  
+03b4 27			        	DAA  
+03b5 ce 40		        	ADC A,40h  
+03b7 27			        	DAA  
+03b8 c9			        	RET  
+03b9			  
+03b9			;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+03b9			;ADROUT -- Print an address to the console  
+03b9			;  
+03b9			;pre: HL pair contains address to print  
+03b9			;post: HL printed to console as hex  
+03b9			;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+03b9 7c			ADROUT: 	LD A,H  
+03ba cd 99 03		        	CALL HEXOUT  
+03bd 7d			        	LD A,L  
+03be cd 99 03		        	CALL HEXOUT  
+03c1 c9			        	RET  
+03c2			  
+03c2			;ADRIN -- Get up to 4 bytes address from console in reg DE  
+03c2			; if illegal address, set Z flag  
+03c2			;  
+03c2			;pre: none  
+03c2			;post: DE contains address from console  
+03c2			ADRIN:  
+03c2 11 00 00			ld de,0		  
+03c5 cd e3 04			call cin  
+03c8 cd 90 04			call ASCHEX	;get a hex value  
+03cb			; none hex value will end command  
+03cb 28 74			jr z,exit0  
+03cd 5f				ld e,a		;save  
+03ce			backup1:		  
+03ce cd e3 04			call cin  
+03d1 fe 08			cp 8		;backspace?  
+03d3 28 ed			jr z,ADRIN	;start over  
+03d5 cd 90 04		  	call ASCHEX  
+03d8			;possible options here are   
+03d8			; backspace  
+03d8			; space to advance command  
+03d8			; other none hex to terminate command  
+03d8 28 5f			jr z,exit123  
+03da cb 23			sla e  
+03dc cb 23			sla e  
+03de cb 23			sla e  
+03e0 cb 23			sla e  
+03e2 b3				or e  
+03e3 5f				ld e,a		;save to reg E  
+03e4			getChar3:  
+03e4 cd e3 04			call cin  
+03e7 fe 08			cp 8  
+03e9 28 1d			jr z,backupE  
+03eb cd 90 04			call ASCHEX  
+03ee 28 49			jr z,exit123  
+03f0 cd 26 04			call addChar  
+03f3 cd e3 04			call cin  
+03f6 fe 08			cp 8  
+03f8 28 18			jr z,delChar  
+03fa cd 90 04			call ASCHEX  
+03fd 28 3a			jr z,exit123	;exit with 3 characters entered  
+03ff cd 26 04			call addChar  
+0402 fe 00			cp 0		;force clear Z flag   
+0404 c0				ret nz		;return with Zflag cleared  
+0405 fe 01			cp 1  
+0407 c9				ret		;return with Z flag cleared  
+0408			backupE:  
+0408			;shift regE back a nibble  
+0408 cb 3b			srl e  
+040a cb 3b			srl e  
+040c cb 3b			srl e  
+040e cb 3b			srl e  
+0410 18 bc			jr backup1  
+0412			delChar:  
+0412			;shift DE back a nibble  
+0412 cb 2a			sra d  
+0414 cb 1b			rr e  
+0416 cb 2a			sra d  
+0418 cb 1b			rr e  
+041a cb 2a			sra d  
+041c cb 1b			rr e  
+041e cb 2a			sra d  
+0420 cb 1b			rr e  
+0422 16 00			ld d,0  
+0424 18 be			jr getChar3  
+0426			addChar:  
+0426			;shift DE forward a nibble and add reg A  
+0426 cb 23			sla e  
+0428 cb 12			rl d  
+042a cb 23			sla e  
+042c cb 12			rl d  
+042e cb 23			sla e  
+0430 cb 12			rl d  
+0432 cb 23			sla e  
+0434 cb 12			rl d  
+0436 b3				or e  
+0437 5f				ld e,a  
+0438 c9				ret  
+0439			exit123:  
+0439			;if space or CR, return with Z flag cleared and valid data in DE  
+0439 fe 20			cp ' '  
+043b 28 06			jr z,exitGood  
+043d fe 0d			cp 0dh  
+043f 28 02			jr z,exitGood  
+0441			exit0:  
+0441 af				xor a		;set Z flag  
+0442 c9				ret  
+0443			exitGood:  
+0443 b7				or a		;regA is either space or CR, so this will clear Z flag  
+0444 c9				ret  
+0445			  
+0445			;Get hex in regA  
+0445			; set C flag to abort the operation <-expect calling routine to chk C flag first  
+0445			; set Z flag to signal different action for calling routine:  
+0445			;  x terminate command  
+0445			;  - go back to previous memory location  
+0445			;  CR next memory location  
+0445			GETHEX0:  
+0445 cd f8 04			call cout		;echo back  
+0448 d1				pop de		;start over but first undo the regDE push  
+0449			GETHEX:  
+0449 cd e3 04		        	CALL cin  
+044c cd 90 04		        	CALL ASCHEX  
+044f			;valid first character are:  
+044f			; hexdecimal value  
+044f			;  CR,x,-  to be handled by calling routine  
+044f			;    
+044f c8				ret z		;not valid hex  
+0450 d5				push de  
+0451 57			        	LD D,A		;save to combine with 2nd input  
+0452 cd ef 04		        	CALL cinq		;don't automatic echo back on 2nd character  
+0455						;supress echo back of CR  
+0455			;valid second character are:  
+0455			; hexdecimal value,  
+0455			; CR: one digit input  
+0455			; BS: go back to beginning  
+0455			; otherwise abort the command using C flag for signalling  
+0455 fe 08			cp 8		;back space?  
+0457 28 ec			jr z,GETHEX0	;start over  
+0459 fe 0d			cp 0dh		;no echo back for CR  
+045b 20 04			jr nz,GE0  
+045d b7				or a		;clear Z flag  
+045e 7a				ld a,d		;restore the one digit result  
+045f d1				pop de  
+0460 c9				ret  
+0461			GE0:  
+0461 cd f8 04			call cout		;echo back  
+0464 cd 90 04			call ASCHEX  
+0467 ca 78 04			jp z,GE2  
+046a cb 22			sla d		;shift first hex input to high nibble  
+046c cb 22			sla d  
+046e cb 22			sla d  
+0470 cb 22			sla d  
+0472 b2			        	or d		;combine with 2nd hex input  
+0473			        	                  ;be careful, this operation may set Z flag is result is zero  
+0473 16 01		        	ld d,1            ;take care of the case when result is 0 and Z flag set  
+0475 14				inc d		;this will clear the Z flag  
+0476 d1			GE1:    	pop de  
+0477 c9				ret  
+0478 37			GE2:    	scf  
+0479 d1				pop de  
+047a c9				ret  
+047b			  
+047b			; get hex without echo back  
+047b			GETHEXQ:  
+047b d5				push de		; save register   
+047c cd ef 04		        	CALL cinq  
+047f cd 90 04		        	CALL ASCHEX  
+0482 07			        	RLCA  
+0483 07			        	RLCA  
+0484 07			        	RLCA  
+0485 07			        	RLCA  
+0486 57			        	LD D,A  
+0487 cd ef 04		        	CALL cinq  
+048a cd 90 04		        	CALL ASCHEX  
+048d b2			        	OR D   
+048e d1			  	pop de			;restore register  
+048f c9			        	RET  
+0490			  
+0490			;ASCHEX, convert ASCII to low nibble  
+0490			;return Z flag set if not 0-9, A-F  
+0490			; original value in regA returned if not hexdecimal character  
+0490			ASCHEX: 	  
+0490 d6 30			sub 30h		;ascii 0 is 0x30  
+0492 fa b0 04			jp m,illegalx  
+0495 fe 0a			cp 0ah		;0-9?  
+0497 f8				ret m  
+0498 d6 11			sub 11h		;ascii A is 0x41  
+049a fa ae 04			jp m,illegaly  
+049d c6 0a			add 0ah		;return values from 0xA to 0xF  
+049f fe 10			cp 10h		;A-F?  
+04a1 f8				ret m  
+04a2 d6 2a			sub 2ah		;ascii a is 0x61  
+04a4 fa ac 04			jp m,illegalz  
+04a7 c6 0a			add 0ah		;return values from 0xA to 0xF  
+04a9 fe 10			cp 10h		;a-f?  
+04ab f8				ret m  
+04ac			illegalz:  
+04ac c6 16			add 20h-0ah	;return reg A to original value  
+04ae			illegaly:  
+04ae c6 11			add 11h  
+04b0			illegalx:  
+04b0 c6 30			add 30h  
+04b2 bf				cp a		;set Z flag  
+04b3 c9				ret		;return with original regA and Z flag set  
+04b4			  
+04b4			;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+04b4			;GOBYT -- Push a two-byte instruction and RET  
+04b4			;         and jump to it  
+04b4			;  
+04b4			;pre: B register contains operand  
+04b4			;pre: C register contains opcode  
+04b4			;post: code executed, returns to caller  
+04b4			;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+04b4 21 00 00		GOBYT:  	LD HL,0000  
+04b7 39			        	ADD HL,SP  
+04b8 2b			        	DEC HL  
+04b9 36 c9		        	LD (HL),0C9h  
+04bb 2b			        	DEC HL  
+04bc 70			        	LD (HL),B  
+04bd 2b			        	DEC HL  
+04be 71			        	LD (HL),C  
+04bf e9			        	JP (HL)  
+04c0			  
+04c0			;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+04c0			;SPCOUT -- Print a space to the console  
+04c0			;  
+04c0			;pre: none  
+04c0			;post: 0x20 printed to console  
+04c0			;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+04c0 3e 20		SPCOUT: 	LD A,' '  
+04c2 cd f8 04		        	CALL cout  
+04c5 c9			        	RET  
+04c6			  
+04c6			; send null terminated string pointed by HL  
+04c6			strout:  
+04c6 7e				ld a,(hl)		;get the character  
+04c7 fe 00			cp 0		;null terminator?  
+04c9 c8				ret z  
+04ca cd f8 04			call cout		;output the character  
+04cd 23				inc hl		;next character  
+04ce c3 c6 04			jp strout  
+04d1			  
+04d1			; SIO channel initialisation data  
+04d1 18			SIOAIni:    DB  18h     ; Wr0 Channel reset  
+04d2			  
+04d2 14			            DB  14h    ; Wr0 Pointer R4 + reset ex st int  
+04d3 c4			            DB  0c4h     ; Wr4 /64, async mode, no parity  
+04d4 03			            DB  3     ; Wr0 Pointer R3  
+04d5 c1			            DB  0c1h     ; Wr3 Receive enable, 8 bit   
+04d6 05			            DB  5     ; Wr0 Pointer R5  
+04d7 ea			            DB  0eah     ; Wr5 Transmit enable, 8 bit, flow ctrl  
+04d8 11			            DB  11h     ; Wr0 Pointer R1 + reset ex st int  
+04d9 00			            DB  0     ; Wr1 No Tx interrupts, set READY low (lower 64K RAM bank)  
+04da			;            DB  40h     ; Wr1 No Tx interrupts, set READY high  
+04da			; SIO channel initialisation data  
+04da 18			SIOBIni:    DB  18h     ; Wr0 Channel reset  
+04db			  
+04db 14			            DB  14h    ; Wr0 Pointer R4 + reset ex st int  
+04dc c4			            DB  0c4h     ; Wr4 /64, async mode, no parity  
+04dd 03			            DB  3     ; Wr0 Pointer R3  
+04de c1			            DB  0c1h     ; Wr3 Receive enable, 8 bit   
+04df 05			            DB  5     ; Wr0 Pointer R5  
+04e0 ea			            DB  0eah     ; Wr5 Transmit enable, 8 bit, flow ctrl  
+04e1 11			            DB  11h     ; Wr0 Pointer R1 + reset ex st int  
+04e2			;            DB  0     ; Wr1 No Tx interrupts, set READY low (lower 64K RAM bank)  
+04e2 40			            DB  40h     ; Wr1 No Tx interrupts, set READY high  
+04e3			cin:  
+04e3 db 01			in a,(SIOACmd)	;check data ready  
+04e5 cb 47			bit 0,a  
+04e7 28 fa			jr z,cin  
+04e9 db 00			in a,(SIOAData)	;get data in reg A  
+04eb cd f8 04			call cout		;echo character  
+04ee c9				ret  
+04ef			cinq:  
+04ef			; no echo back  
+04ef db 01			in a,(SIOACmd)	;check data ready  
+04f1 cb 47			bit 0,a  
+04f3 28 fa			jr z,cinq  
+04f5 db 00			in a,(SIOAData)	;get data in reg A  
+04f7 c9				ret	  
+04f8			cout:  
+04f8 f5				push af		;save register  
+04f9			cout1:  
+04f9 db 01			in a,(SIOACmd)	;get status  
+04fb cb 57			bit 2,a		;transmit reg full?  
+04fd 28 fa			jr z,cout1  
+04ff f1				pop af		;restore reg  
+0500 d3 00			out (SIOAData),a	;transmit the character  
+0502 c9				ret  
+0503			  
+0503			;copydone: db 0ah,0dh,"Boot completed",0ah,0dh,0  
+0503 .. 0a 0d 00	signon:	db "Simple80 Monitor v0.81 5/30/23",0ah,0dh,0  
+0524 0d 0a 0a 3e 00	promptstr:	db 13, 10, 10, ">", 0  
+0529 0d 0a 3f 00	whatstr:   	db 13, 10, "?", 0  
+052d 0d 0a 00		CRLFstr:	db 13,10,0  
+0530			;CFpresent:	db "CF disk detected",0ah,0dh,0  
+0530			;waitCF$:	db "Waiting for CF ready... ",0  
+0530			;timeoutCF$: db "CF not present",0ah,0dh,0  
+0530 .. 00		confirm:	db " press Return to execute command",0  
+0551 .. 00		#done$:	db " done",0  
+0557 0d 0a .. 00	abortstr:	db 13,10,"command aborted",0  
+0569 .. 00		gostr:	db "o to address: 0x",0  
+057a .. 00		inportstr:	db "nput from port ",0  
+058a 0a 0d .. 00	invaluestr:	db 10,13,"Value=",0  
+0593 .. 00		outportstr:	db "utput ",0  
+059a .. 00		outport2str:	db " to port ",0  
+05a4 .. 00		listhexstr:	db "ist memory as Intel Hex, start address=",0  
+05cc .. 00		listhex1str:	db " end address=",0  
+05da .. 0a 0d 00	#fillf$:	db "ill memory with 0xFF",10,13,0  
+05f1 .. 0a 0d 00	#fill0$:	db "ero memory",10,13,0  
+05fe .. 0a 0d 00	#testram$:	db "est memory",10,13,0  
+060b			;move some message to 0b100 to free up memory below 0c000  
+060b			PROGEND:	equ 0c000h  
+060b			;	org 0ff00h  
+060b			;shadow mover of SC108 is implemented here  
+060b			;;	jp 07f06h  
+060b			;;	jp 07f12h  
+060b			;7f06h:  
+060b			;get high RAM pointed by (DE) into regA  
+060b			;;	ld a,80h  
+060b			;;	out (38h),a  
+060b			;;	ld a,(de)  
+060b			;;	ld c,a  
+060b			;;	ld a,0  
+060b			;;	out (38h),a  
+060b			;;	ld a,c  
+060b			;;	ret  
+060b			;7f12h:  
+060b			;put reg A into high RAM pointed by (DE)  
+060b			;;	ld c,a  
+060b			;;	ld a,80h  
+060b			;;	out (38h),a  
+060b			;;	ld a,c  
+060b			;;	ld (de),a  
+060b			;;	ld a,0  
+060b			;;	out (38h),a  
+060b			;;	ret  
+060b			  
+060b			;	jp getHiRAM  
+060b			;putHiRAM:  
+060b			;;put regA into high RAM pointed by (DE)  
+060b			;	ld c,a		;save regA  
+060b			;	ld a,11h		;Wr0 points to reg1 + reset ex st int  
+060b			;	out (SIOBCmd),a  
+060b			;	ld a,40h		;Wr1 No Tx interrupts, set READY high  
+060b			;	out (SIOBCmd),a  
+060b			;	ld a,c  
+060b			;	ld (de),a  
+060b			;	ld a,11h		;Wr0 points to reg 1 + reset ex st int  
+060b			;	out (SIOBCmd),a  
+060b			;	ld a,0		;Wr1 No Tx interrupts, set READY low  
+060b			;	out (SIOBCmd),a  
+060b			;	ret   
+060b			;getHiRAM:  
+060b			;;get high RAM pointed by (DE) into regA  
+060b			;	ld a,11h		;Wr0 points to reg1 + reset ex st int  
+060b			;	out (SIOBCmd),a  
+060b			;	ld a,40h		;Wr1 No Tx interrupts, set READY high  
+060b			;	out (SIOBCmd),a  
+060b			;	ld a,(de)  
+060b			;	ld c,a  
+060b			;	ld a,11h		;Wr0 points to reg 1 + reset ex st int  
+060b			;	out (SIOBCmd),a  
+060b			;	ld a,0		;Wr1 No Tx interrupts, set READY low  
+060b			;	out (SIOBCmd),a  
+060b			;	ld a,c  
+060b			;	ret  
+060b			  
+060b			end	  
+# End of file sio.asm
+060b

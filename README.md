@@ -251,6 +251,21 @@ test circuit is being constructed to the left of the Z80 stack.
 Once I finished the PIC loader I will be in a position to move to stage 3.0....
 
 
+#2023-07-11# 
+
+Been a while since I've touched this. Had to tear most of it apart to try and remember what is broken. Turns out clock and CPU board are possibly OK.
+Memory board may have some address line dry joints. Have been looking at using real RAM but with lack of an EEPROM programmer for ROM I've looked
+around for Ardiuno Mega programmers. Mixed results for some reason. Intermittent data loss or error writing and reading. Then I've had a try with
+battery backed RAM to help and that seems to hold charge OK. 
+
+Found another Z80 simple system using the SIO so had a look along with a Mega simulated RAM/ROM, hacked that about a bit to do extra stuff and happy
+that what I'm doing is viable. Though Mega clock speed is well below the min clock speed for the SIO testing to remote terminal so need to get
+the RAM loaded with a monitor code that may or may not work and try it at full speed. 
+
+Lacking so many bits for this....
+
+
+
 Stage 3.0
 ---------
 

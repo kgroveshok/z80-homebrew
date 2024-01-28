@@ -119,8 +119,8 @@ after all and not a finished project!
 PDF versions can be found in the stage2.0 directory too.
 
 
-Stage 2.5 (NOW)
----------------
+Stage 2.5
+---------
 
 Well that week was painful. Have to say easyEDA is not ideal for doing strip board layouts, lack of 
 random wire routing prevented all the traces being laid. So in the diagrams any feint blue lines
@@ -266,8 +266,23 @@ Lacking so many bits for this....
 
 
 
-Stage 3.0
----------
+Stage 3.0 (NOW)
+---------------
+
+Been many months since I last looked at this mainly because of issues with bit bashing the RAM, and I have since located an EEPROM device. July 2023 I created the circuit and PCB in the stage3.0 dir and Jan 2024 got around to testing it (28/Jan/2024).
+
+After discovering a few soldering issues I'm not up to the point of the Mega being able to test the CPU stepping through and using simulated RAM/ROM as well as checking that the address decocoder can select the various devices and memory banks:
+
+	Device A - out (001h), a
+	Device B SIO - out (040h), a
+	Device C - out (080h), a
+	Device D - out (0C0h), a
+
+Next step is to attach RAM, ROM, and SIO and write some code to control the SIO with real clock speeds (will need to attach the scope to monitor 
+
+
+TODO
+----
 
 Rig up the Z80 DART, SIO or PIO chip to add RS232 support and then program the the boot loader 
 with a monitor program and remote program load function. Perhaps too expose some I/O interface
@@ -304,38 +319,12 @@ a screen memory mapped area and sling out on HDMI? Obivously would be nice
 to replace with a proper composite out if I ever get that but that is
 stretching my skills and have no knowledge (yet) of that tech.
 
-Where to go from here?
-----------------------
-
-The DART chip provides more than one serial interface and considering I bought enough parts for 
-another Z80 system perhaps I could build some kind of basic networking stack? That would be fun!
-
-Lots of things... Keyboards, screens, SD cards, general interfaces....
-
 
 
 Parts
 -----
 
 At each stage I will document and attach the schematics for mostly for my own reference should things go wrong.
-
-Final Construction
-------------------
-
-I think what would be good is if I at various stages of complete circuit put those working bits down on to
-their own strip board (for now) and have the sections stackable. That would help in replacement of parts
-and in developing new bits. For example:
-
-* Layer 1 - Power supply and clock selection
-* Layer 2 - CPU
-* Layer 3 - Memory
-# Layer 4 - Boot strap PIC
-* Layer 5 - Serial and other interfaces (CF card?)
-* Layer 6 - Control Panel (so I could remove the flashy lights and only attach for debug)
-* Layer 7 - LCD and keypad
-
-All a bit like the RC2014 but not :-)
-
 
 
 

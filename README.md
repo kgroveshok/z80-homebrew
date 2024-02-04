@@ -281,6 +281,53 @@ After discovering a few soldering issues I'm not up to the point of the Mega bei
 Next step is to attach RAM, ROM, and SIO and write some code to control the SIO with real clock speeds (will need to attach the scope to monitor 
 
 
+...
+
+
+Found PulseView and sigrok via the Rasp Pico can give me 16bit bus. Also has op code decoding of the data bus which is handy.
+
+Did show that while RD and M1 and some address pins are broadcasting data, nothing is appearing on the data bus. 
+
+TODO check solder of pins on the ROM. Happy that the signals are leaving the CPU as they appear on the bus connector. Do they reach the ROM?
+TODO check continutity of address and data pins between Z80 and ROM socket.
+TODO Building another pico and check that the ROM pins to enable the chip are working.
+
+
+
+
+
+A - Spare???? -> Trigger for next batch of decoding???
+B - SIO
+C - PIO
+D - CF
+
+Extending the address decoding to cover more devices would be good.
+* DART
+* Keyboard
+* Video
+* Sound
+* Network
+* RTC
+* I2C
+* Canbus???
+* As many spare as possible
+
+Memory Map
+----------
+First 32k - ROM
+Device ports
+Monitor
+Forth OS?
+
+Second 32k - RAM
+Program area
+Screen Memory? 20 x 40 chars
+Stack
+Intel monitor input buffer
+Vars
+
+
+
 TODO
 ----
 

@@ -304,6 +304,16 @@ Stage 3.1 TODO
 
 LCD and keyboard matrix...
 
+Taking the design from the wonderful Stephen Cousins website ![here](https://smallcomputercentral.com/example-alphanumeric-lcd/) I was able to hack
+his code about to fit my assembler and some of my support code to produce a result. That validates the code and new PIO circuit and gives me something
+to adjust for my own needs that I know works. LCD now working. Keyboard next.
+
+![](stage3.1/lcd1.jpg)
+![](stage3.1/lcd2.jpg)
+
+
+
+
 Stage 3.2 TODO
 --------------
 

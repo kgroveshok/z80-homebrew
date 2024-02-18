@@ -132,6 +132,17 @@ ld sp, 0e000h
             LD   DE, MsgLiNC80
             CALL fLCD_Str       ;Display string pointed to by DE
 
+; Display text on second line
+            LD   A, kLCD_Line3
+            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   DE, MsgLiNC80
+            CALL fLCD_Str       ;Display string pointed to by DE
+
+; Display text on second line
+            LD   A, kLCD_Line4
+            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   DE, MsgLiNC80
+            CALL fLCD_Str       ;Display string pointed to by DE
 ;		halt
 
 ; Define custom character(s)
@@ -298,7 +309,7 @@ BitMaps:
 kLCD_Line1: EQU 0x00 
 kLCD_Line2: EQU 0x40 
 kLCD_Line3: EQU kLCD_Line1+kLCDWidth
-kLCD_Line4: EQU kLCD_Line1+kLCDWidth 
+kLCD_Line4: EQU kLCD_Line2+kLCDWidth 
 
 ; Instructions to send as A register to fLCD_Inst
 kLCD_Clear: EQU 00000001b     ;LCD clear

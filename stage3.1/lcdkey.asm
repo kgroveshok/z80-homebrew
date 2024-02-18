@@ -116,7 +116,7 @@ ld sp, 0e000h
             LD   A, 11001111b
             OUT  (portbctl), A  ;Port A = PIO 'control' mode
             LD   A, 00000000b
-           ; #LD   A, 00001111b
+          ;  LD   A, 00001111b
             OUT  (portbctl),A   ;Port A = all lines are outputs
 ; Initialise alphanumeric LCD module
             CALL fLCD_Init      ;Initialise LCD module
@@ -147,7 +147,6 @@ keyscan:
             CALL fLCD_Pos       ;Position cursor to location in A
             LD   DE, scanline4
             CALL fLCD_Str       ;Display string pointed to by DE
-		halt
 
 ; Define custom character(s)
 ;            LD   A, 0           ;First character to define (0 to 7)
@@ -170,6 +169,21 @@ keyscan:
 ;            CALL fLCD_Data     ;Write character in A at cursor
 
 
+	    ld a, 255
+		out (portbdata),a
+		call delay1s
+            LD   A, kLCD_Line1
+            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   DE, scanline1
+            CALL fLCD_Str       ;Display string pointed to by DE
+	    ld a, 0
+out (portbdata),a
+		call delay1s
+
+
+
+	jp keyscan
+		halt		
 
 
 ; config port b all outputs and add an led to any pin on port b and flash it

@@ -116,7 +116,7 @@ ld sp, 0e000h
             LD   A, 11001111b
             OUT  (portbctl), A  ;Port A = PIO 'control' mode
             LD   A, 00000000b
-            ;LD   A, 00001111b
+           ; #LD   A, 00001111b
             OUT  (portbctl),A   ;Port A = all lines are outputs
 ; Initialise alphanumeric LCD module
             CALL fLCD_Init      ;Initialise LCD module
@@ -133,44 +133,127 @@ keyscan:
 ; Display text on second line
             LD   A, kLCD_Line2
             CALL fLCD_Pos       ;Position cursor to location in A
-            LD   DE, MsgLiNC80
+            LD   DE, scanline2
             CALL fLCD_Str       ;Display string pointed to by DE
 
 ; Display text on second line
             LD   A, kLCD_Line3
             CALL fLCD_Pos       ;Position cursor to location in A
-            LD   DE, MsgLiNC80
+            LD   DE, scanline3
             CALL fLCD_Str       ;Display string pointed to by DE
 
 ; Display text on second line
             LD   A, kLCD_Line4
             CALL fLCD_Pos       ;Position cursor to location in A
-            LD   DE, MsgLiNC80
+            LD   DE, scanline4
             CALL fLCD_Str       ;Display string pointed to by DE
-;		halt
+		halt
 
 ; Define custom character(s)
-            LD   A, 0           ;First character to define (0 to 7)
-            LD   DE, BitMaps    ;Pointer to start of bitmap data
-            LD   B, 2           ;Number of characters to define
-DefLoop:   CALL fLCD_Def       ;Define custom character
-            DJNZ DefLoop       ;Repeat for each character
+;            LD   A, 0           ;First character to define (0 to 7)
+;            LD   DE, BitMaps    ;Pointer to start of bitmap data
+;            LD   B, 2           ;Number of characters to define
+;DefLoop:   CALL fLCD_Def       ;Define custom character
+;            DJNZ DefLoop       ;Repeat for each character
 
 
 ; Display custom character 0
-            LD   A, kLCD_Line1+14
-            CALL fLCD_Pos       ;Position cursor to location in A
-            LD   A, 0
-            CALL fLCD_Data      ;Write character in A at cursor
+;            LD   A, kLCD_Line1+14
+;            CALL fLCD_Pos       ;Position cursor to location in A
+;            LD   A, 0
+;            CALL fLCD_Data      ;Write character in A at cursor
 
 ; Display custom character 1
-            LD   A, kLCD_Line2+14
-            CALL fLCD_Pos      ;Position cursor to location in A
-            LD   A, 1
-            CALL fLCD_Data     ;Write character in A at cursor
+;            LD   A, kLCD_Line2+14
+;            CALL fLCD_Pos      ;Position cursor to location in A
+;            LD   A, 1
+;            CALL fLCD_Data     ;Write character in A at cursor
+
+
 
 
 ; config port b all outputs and add an led to any pin on port b and flash it
+
+
+; scan keyboard row 1
+	ld a, 128
+	out (portbdata),a
+	in a,(portbdata)
+	ld de, row1
+	call rowscan
+
+	jp keyscan
+
+; pass de as row display flags
+rowscan:
+	; reset flags for the row 
+	push de
+	ld hl, flagreset
+	ld bc,4	
+	ldir
+	pop hl	
+	ld b,'+'
+	bit 0,a
+	jr z, p1on
+	ld (hl), b
+
+p1on:	inc hl
+	bit 1,a
+	jr z, p2on
+	ld (hl), b
+
+p2on:	inc hl
+	bit 2,a
+	jr z, p3on
+	ld (hl), b
+
+p3on:	inc hl
+	bit 3,a
+	jr z, rscandone
+	ld (hl), b
+rscandone: ret
+
+
+flagreset:   db "----",0,0,0,0
+	
+	
+kr1p2:
+kr1p3:
+kr1p4:
+
+donescan: jp keyscan
+
+scanline1:   DB  "Scan Line 1: "
+row1:	     db "....    "
+		db 0
+
+
+;scanline1:   DB  "Scan Line 1: ",
+;kr1p1:	     db "_ "
+;kr1p2:	     db "_ "
+;kr1p3:	     db "_ "
+;kr1p4:	     db "_"
+;		db 0
+
+scanline2:   DB  "Scan Line 2: "
+kr2p1:	     db "_ "
+kr2p2:	     db "_ "
+kr2p3:	     db "_ "
+kr2p4:	     db "_"
+		db 0
+scanline3:   DB  "Scan Line 3: "
+kr3p1:	     db "_ "
+kr3p2:	     db "_ "
+kr3p3:	     db "_ "
+kr3p4:	     db "_"
+		db 0
+
+scanline4:   DB  "Scan Line 4: "
+kr4p1:	     db "_ "
+kr4p2:	     db "_ "
+kr4p3:	     db "_ "
+kr4p4:	     db "_"
+		db 0
 flash:
 	    ld a, 255
 		out (portbdata),a

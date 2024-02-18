@@ -84,6 +84,9 @@ kDataReg:   EQU 0xc0           ;PIO port A data register
 kContReg:   EQU 0xc1           ;PIO port A control register
 
 
+portbdata:  equ 0xc2    ; port b data
+portbctl:   equ 0xc3    ; port b control
+
 ; LCD constants required by LCD support module
 kLCDPrt:    EQU kDataReg       ;LCD port is the PIO port A data reg
 kLCDBitRS:  EQU 2              ;Port bit for LCD RS signal
@@ -110,6 +113,10 @@ ld sp, 0e000h
             LD   A, 00000000b
             OUT  (kContReg),A   ;Port A = all lines are outputs
 
+            LD   A, 11001111b
+            OUT  (portbctl), A  ;Port A = PIO 'control' mode
+            LD   A, 00000000b
+            OUT  (portbctl),A   ;Port A = all lines are outputs
 ; Initialise alphanumeric LCD module
             CALL fLCD_Init      ;Initialise LCD module
 
@@ -147,6 +154,19 @@ DefLoop:   CALL fLCD_Def       ;Define custom character
             LD   A, 1
             CALL fLCD_Data     ;Write character in A at cursor
 
+
+; config port b all outputs and add an led to any pin on port b and flash it
+flash:
+	    ld a, 255
+		out (portbdata),a
+		call delay1s
+	    ld a, 0
+		out (portbdata),a
+		call delay1s
+
+
+
+		jp flash
 		halt		
 
 ; Some other things to do

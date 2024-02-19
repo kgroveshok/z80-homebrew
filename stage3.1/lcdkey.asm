@@ -132,22 +132,22 @@ keyscan:
             CALL fLCD_Str       ;Display string pointed to by DE
 
 ; Display text on second line
-            LD   A, kLCD_Line2
-            CALL fLCD_Pos       ;Position cursor to location in A
-            LD   DE, scanline2
-            CALL fLCD_Str       ;Display string pointed to by DE
+;            LD   A, kLCD_Line2
+;            CALL fLCD_Pos       ;Position cursor to location in A
+;            LD   DE, scanline2
+;            CALL fLCD_Str       ;Display string pointed to by DE
 
 ; Display text on second line
-            LD   A, kLCD_Line3
-            CALL fLCD_Pos       ;Position cursor to location in A
-            LD   DE, scanline3
-            CALL fLCD_Str       ;Display string pointed to by DE
+;            LD   A, kLCD_Line3
+;            CALL fLCD_Pos       ;Position cursor to location in A
+;            LD   DE, scanline3
+;            CALL fLCD_Str       ;Display string pointed to by DE
 
 ; Display text on second line
-            LD   A, kLCD_Line4
-            CALL fLCD_Pos       ;Position cursor to location in A
-            LD   DE, scanline4
-            CALL fLCD_Str       ;Display string pointed to by DE
+;            LD   A, kLCD_Line4
+;            CALL fLCD_Pos       ;Position cursor to location in A
+;            LD   DE, scanline4
+;            CALL fLCD_Str       ;Display string pointed to by DE
 
 ; Define custom character(s)
 ;            LD   A, 0           ;First character to define (0 to 7)
@@ -181,13 +181,24 @@ keyscan:
 out (portbdata),a
 		call delay1s
 
-;
+            LD   A, kLCD_Line2
+            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   DE, yes
+		in a, (portbdata)
+;		ld a, 0
+		bit 0 ,a
+		jr nz, s1
+		ld de, no			
+s1:            CALL fLCD_Str       ;Display string pointed to by DE
 ;
 	jp keyscan
 ;		halt		
 
 
 ; config port b all outputs and add an led to any pin on port b and flash it
+
+yes:	db "yes",0
+no:	db "no",0
 
 
 ; scan keyboard row 1

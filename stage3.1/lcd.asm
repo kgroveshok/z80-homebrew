@@ -81,10 +81,10 @@
 
 ; Constants used by this code module
 kDataReg:   EQU 0xc0           ;PIO port A data register
-kContReg:   EQU 0xc1           ;PIO port A control register
+kContReg:   EQU 0xc2           ;PIO port A control register
 
 
-portbdata:  equ 0xc2    ; port b data
+portbdata:  equ 0xc1    ; port b data
 portbctl:   equ 0xc3    ; port b control
 
 ; LCD constants required by LCD support module

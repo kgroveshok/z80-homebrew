@@ -102,8 +102,8 @@ after all and not a finished project!
 PDF versions can be found in the stage2.0 directory too.
 
 
-Stage 2.5
----------
+Stage 2.5 (DONE)
+----------------
 
 Well that week was painful. Have to say easyEDA is not ideal for doing strip board layouts, lack of 
 random wire routing prevented all the traces being laid. So in the diagrams any feint blue lines
@@ -249,8 +249,10 @@ Lacking so many bits for this....
 
 
 
-Stage 3.0 (NOW)
----------------
+Stage 3.0 (DONE)
+----------------
+
+Jan 2024
 
 Been many months since I last looked at this mainly because of issues with bit bashing the RAM, and I have since located an EEPROM device. July 2023 I created the circuit and PCB in the stage3.0 dir and Jan 2024 got around to testing it (28/Jan/2024).
 
@@ -299,8 +301,10 @@ Let's draw a line under this stage of proof.
 Happy now!
 
 
-Stage 3.1 TODO
---------------
+Stage 3.1 (DONE)
+----------------
+
+Feb 2024
 
 LCD and keyboard matrix...
 
@@ -311,15 +315,78 @@ to adjust for my own needs that I know works. LCD now working. Keyboard next.
 ![](stage3.1/lcd1.jpg)
 ![](stage3.1/lcd2.jpg)
 
+Basic keyboard via port B mapping of the two nibbles on the port to a 4 x 4 matrix keyboard is working. Have a slight problem with column axis if more than
+one button is pressed at once which is odd as the rows are individually emergised. Might be a short or a coding issue. Had to tie the columns to a resistor 
+to ground to prevent floating phantom inputs. (Diagram to follow)
+
+At least single key presses work and should be enough to get a basic keyboard working although cumbersome to use. 
+
+Next will be to focus on a set of firmware with utility functinos to support keyboard and screen. After that can then look at external storage.
+
+
+![](stage3.1/keyboarddemo.jpg)
+![Video](https://youtu.be/FRKDuX9m0I0)
+
+
+Stage 3.2 (NOW)
+----------------
+
+
+Firmware and utility functions.
+
+Need a video memory area for reading and writing video updates to save on having to keep reading and writing the screen. Or do I? I have a spare line on port A
+I could use for read enable of the LCD??? Would that require some strange control stuff? Otherwise easier to use a screen frame buffer to write out.
+
+Also need screen functions for:
+
+* Scroll up and down
+* Scroll left and right
+* Clear screen
+* Position cursor
+* Write string
+* Read char at pos
+* Draw cursor
+* Can I use control chars to set attributes such as inverse? Might need double byte buffer or certain bits to generate from frame bufffer
+* Multiple framebuffers for window layers???
+
+Keyboard functions:
+
+* Scan keyboard in raw
+* Key scan to char conversion
+* Abstract away the keyboard configuration to enable different keyboard layouts (e.g. mobile phone style vs full ascii keyboard)
+* Key debounce
+* Repeat key timer
+* Control key functions
+* Prompt box with keyboard state indicators
+
+    1       2       3       A
+    abc     def     ghi     bs
+    ![]     “-      £+	
+
+    4       5       6       B
+    jkl	    mno     pqr     break
+    $=\     %{}     @#^	
+
+    7       8       9      C
+    stu     vwx     yz	
+     &:;    *,/     ().?	
+
+    *       0       #      D
+    symbol  space   shift  enter
 
 
 
-Stage 3.2 TODO
---------------
+
+
+
+
+
+Stage 3.3 TODO
+----------------
 
 Storage. CF or could I make use of the stack of serial eeproms I bought for a data logger? A CF would be storage overkill but the serial EEPROMS are small and easy to daisy chain for unlimited storage. Could try that. 
 
-Stage 3.3 TODO
+Stage 3.4 TODO
 --------------
 
 Power. Could I add battery support so it is portable? Recharge circuit I would need to add though could pull that in from a Pi battery charger.

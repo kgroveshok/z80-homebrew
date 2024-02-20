@@ -101,6 +101,11 @@ org 0000h
 
 highmem:  equ   0a000h
 
+row1: equ 0e000h
+row2: equ 0e100h
+row3: equ 0e200h
+row4: equ 0e300h
+
 di
 ld sp, 0e000h
 ; SCMonAPI functions used
@@ -124,18 +129,6 @@ ld sp, 0e000h
 
 keyscan:
 
-; Display text on first line
-            LD   A, kLCD_Line1
-            CALL fLCD_Pos       ;Position cursor to location in A
-            LD   DE, scanline1
-            ;LD   DE, MsgHello
-            CALL fLCD_Str       ;Display string pointed to by DE
-
-; Display text on second line
-;            LD   A, kLCD_Line2
-;            CALL fLCD_Pos       ;Position cursor to location in A
-;            LD   DE, scanline2
-;            CALL fLCD_Str       ;Display string pointed to by DE
 
 ; Display text on second line
 ;            LD   A, kLCD_Line3
@@ -170,73 +163,114 @@ keyscan:
 ;            CALL fLCD_Data     ;Write character in A at cursor
 
 
-	    ld a, 128
-		out (portbdata),a
-		call delay1s
-            LD   A, kLCD_Line1
-            CALL fLCD_Pos       ;Position cursor to location in A
-            LD   DE, scanline1
-            CALL fLCD_Str       ;Display string pointed to by DE
-	    ld a, 64
-out (portbdata),a
-		call delay1s
-
-            LD   A, kLCD_Line2
-            CALL fLCD_Pos       ;Position cursor to location in A
-            LD   DE, yes
-		in a, (portbdata)
-;		ld a, 0
-		bit 0 ,a
-		jr nz, s1
-		ld de, no			
-s1:            CALL fLCD_Str       ;Display string pointed to by DE
+;	    ld a, 128
+;		out (portbdata),a
+;		call delay1s
+;            LD   A, kLCD_Line1
+;            CALL fLCD_Pos       ;Position cursor to location in A
+;            LD   DE, scanline1
+;            CALL fLCD_Str       ;Display string pointed to by DE
+;	    ld a, 64
+;out (portbdata),a
+;		call delay1s
 ;
-	jp keyscan
+;            LD   A, kLCD_Line2
+;            CALL fLCD_Pos       ;Position cursor to location in A
+;            LD   DE, yes
+;		in a, (portbdata)
+;;		ld a, 0
+;		bit 0 ,a
+;		jr nz, s1
+;		ld de, no			
+;s1:            CALL fLCD_Str       ;Display string pointed to by DE
+;;
+;	jp keyscan
 ;		halt		
 
 
 ; config port b all outputs and add an led to any pin on port b and flash it
 
-yes:	db "yes",0
-no:	db "no",0
 
 
 ; scan keyboard row 1
 	ld a, 128
-	out (portbdata),a
-	in a,(portbdata)
-	ld de, row1
+	ld hl, row1
 	call rowscan
 
+	ld a, 64
+	ld hl, row2
+	call rowscan
+
+	ld a, 32
+	ld hl, row3
+	call rowscan
+
+	ld a, 16
+	ld hl, row4
+	call rowscan
+
+; Display text on first line
+            LD   A, kLCD_Line1
+            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   DE, row1
+            ;LD   DE, MsgHello
+            CALL fLCD_Str       ;Display string pointed to by DE
+
+; Display text on second line
+            LD   A, kLCD_Line2
+            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   DE, row2
+            CALL fLCD_Str       ;Display string pointed to by DE
+            LD   A, kLCD_Line3
+            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   DE, row3
+            CALL fLCD_Str       ;Display string pointed to by DE
+            LD   A, kLCD_Line4
+            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   DE, row4
+            CALL fLCD_Str       ;Display string pointed to by DE
 	jp keyscan
 
 ; pass de as row display flags
-rowscan:
+rowscan: 
+	out (portbdata),a
+	in a,(portbdata)
+
 	; reset flags for the row 
-	push de
-	ld hl, flagreset
-	ld bc,4	
-	ldir
-	pop hl	
-	ld b,'+'
+	ld b,'*'
 	bit 0,a
 	jr z, p1on
+	ld b,'-'
+p1on:
 	ld (hl), b
+	inc hl
 
-p1on:	inc hl
-	bit 1,a
+	ld b,'*'
+	bit 0,a
 	jr z, p2on
+	ld b,'-'
+p2on:
 	ld (hl), b
+	inc hl
 
-p2on:	inc hl
-	bit 2,a
+	ld b,'*'
+	bit 0,a
 	jr z, p3on
+	ld b,'-'
+p3on:
+	ld (hl), b
+	inc hl
+
+	ld b,'*'
+	bit 0,a
+	jr z, p4on
+	ld b,'-'
+p4on:
+	ld (hl), b
+	inc hl
+	ld b,0
 	ld (hl), b
 
-p3on:	inc hl
-	bit 3,a
-	jr z, rscandone
-	ld (hl), b
 rscandone: ret
 
 
@@ -249,9 +283,9 @@ kr1p4:
 
 donescan: jp keyscan
 
-scanline1:   DB  "Scan Line 1: "
-row1:	     db ".... "
-		db 0
+;scanline1:   DB  "Scan Line 1: "
+;row1:	     db ".... "
+;		db 0
 
 
 ;scanline1:   DB  "Scan Line 1: ",
@@ -261,12 +295,13 @@ row1:	     db ".... "
 ;kr1p4:	     db "_"
 ;		db 0
 
-scanline2:   DB  "Scan Line 2: "
-kr2p1:	     db "_"
-kr2p2:	     db "_"
-kr2p3:	     db "_"
-kr2p4:	     db "_"
-		db 0
+;scanline2:   DB  "Scan Line 2: "
+;row2:	     db ".... "
+;kr2p1:	     db "_"
+;kr2p2:	     db "_"
+;kr2p3:	     db "_"
+;kr2p4:	     db "_"
+;		db 0
 scanline3:   DB  "Scan Line 3: "
 kr3p1:	     db "_"
 kr3p2:	     db "_"
@@ -280,6 +315,8 @@ kr4p2:	     db "_"
 kr4p3:	     db "_"
 kr4p4:	     db "_"
 		db 0
+yes:	db "yes",0
+no:	db "no",0
 flash:
 	    ld a, 255
 		out (portbdata),a

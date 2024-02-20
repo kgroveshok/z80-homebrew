@@ -190,7 +190,6 @@ keyscan:
 
 ; config port b all outputs and add an led to any pin on port b and flash it
 
-	call delay1s
 
 ; scan keyboard row 1
 	ld a, 128
@@ -229,6 +228,7 @@ keyscan:
             CALL fLCD_Pos       ;Position cursor to location in A
             LD   DE, row4
             CALL fLCD_Str       ;Display string pointed to by DE
+	call delay1s
 	jp keyscan
 
 ; pass de as row display flags

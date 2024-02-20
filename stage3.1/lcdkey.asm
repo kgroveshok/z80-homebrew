@@ -228,7 +228,9 @@ keyscan:
             CALL fLCD_Pos       ;Position cursor to location in A
             LD   DE, row4
             CALL fLCD_Str       ;Display string pointed to by DE
-	call delay1s
+
+;	call delay1s
+	call delay250ms
 	jp keyscan
 
 ; pass de as row display flags
@@ -237,40 +239,40 @@ rowscan:
 	in a,(portbdata)
 	ld c,a
 	; reset flags for the row 
-	ld b,'*'
+	ld b,'.'
 	and 1
 	jr z, p1on
-	ld b,'-'
+	ld b,'#'
 p1on:
 	ld (hl), b
 	inc hl
 
-	ld b,'*'
+	ld b,'.'
 	ld a,c
 	and 2
 ;	bit 0,a
 	jr z, p2on
-	ld b,'-'
+	ld b,'#'
 p2on:
 	ld (hl), b
 	inc hl
 ;
-	ld b,'*'
+	ld b,'.'
 	ld a,c
 	and 4
 ;;	bit 0,a
 	jr z, p3on
-	ld b,'-'
+	ld b,'#'
 p3on:
 	ld (hl), b
 	inc hl
 ;;
-	ld b,'*'
+	ld b,'.'
 ;;	bit 0,a
 	ld a,c
 	and 8
 	jr z, p4on
-	ld b,'-'
+	ld b,'#'
 p4on:
 	ld (hl), b
 	inc hl

@@ -31,49 +31,13 @@
 ;   Output bit 7 = DB7
 ; Display's R/W is connected to 0v so it is always in write mode
 ;
-; For further details see the LCD support code
-;
-; LiNC80 PIO address 0x18 to 0x1B (included on LiNC80 SBC1)
-;   0x18 = Port A data
-;   0x19 = Port B data
-;   0x1A = Port A control
-;   0x1B = Port B control
-;
-; RC2014 PIO address 0x68 to 0x6B (using module SC103 Z80 PIO)
-;   0x68 = Port A data
-;   0x69 = Port B data
-;   0x6A = Port A control
-;   0x6B = Port B control
-;
-; Z280RC PIO address 0x68 to 0x6B (using module SC103 Z80 PIO)
-;   0x68 = Port A data
-;   0x69 = Port B data
-;   0x6A = Port A control
-;   0x6B = Port B control
-;
-; SC129 simple digital I/O module set to address 0x0D
 ; This set up should work with any system supporting the RC2014 bus
 
 ; To set up PIO port A in mode 3 (control) using LiNC80 as example
 ;   I/O address 0x1A = 0b11001111 (0xCF)   Select mode 3 (control)
 ;   I/O address 0x1A = 0b00000000 (0x00)   All pins are output
 ;
-; To write a data byte to the output port using LiNC80 as example
-;   I/O address 0x18 = <data byte>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
-;
-
 ; **********************************************************************
-
-; Select target system
-;#DEFINE    LINC80              ;Using built in PIO to connect LCD
-;#DEFINE    RC2014              ;Using PIO module to connect LCD
-;#DEFINE    Z280RC              ;Using PIO module to connect LCD
-;#DEFINE     SC129               ;Any system using SC129 to connect LCD
-
-
-;CodeORG:    EQU $8000          ;Loader code runs here
-;DataORG:    EQU $8F00          ;Start of data section
-
 
 ; **********************************************************************
 ; **  Constants
@@ -91,23 +55,15 @@ portbctl:   equ 0xc3    ; port b control
 kLCDPrt:    EQU kDataReg       ;LCD port is the PIO port A data reg
 kLCDBitRS:  EQU 2              ;Port bit for LCD RS signal
 kLCDBitE:   EQU 3              ;Port bit for LCD E signal
-kLCDWidth:  EQU 20             ;Width in characters
+kLCDWidth:  EQU lcd_cols             ;Width in characters
 
 ; **********************************************************************
 ; **  Code library usage
 ; **********************************************************************
 
-org 0000h
 
-highmem:  equ   0a000h
+keylcd_init:
 
-row1: equ 0e000h
-row2: equ 0e100h
-row3: equ 0e200h
-row4: equ 0e300h
-
-di
-ld sp, 0e000h
 ; SCMonAPI functions used
 
 ; Alphanumeric LCD functions used
@@ -126,172 +82,312 @@ ld sp, 0e000h
 ; Initialise alphanumeric LCD module
             CALL fLCD_Init      ;Initialise LCD module
 
+	ret
+
+; keyboard scanning 
+
+
+; key_rows: equ 4
+; key_cols: equ 4
+; keyscan_table: edu ( tos-stacksize-(key_rows*key_cols))
+
+; key_scanr: equ key_row_bitmask
+; key_scanc: equ key_col_bitmask
+
+; key_char_map: equ key_map
+
+
+
+; character in from keyboard
+; TODO add the key modifier state to what cin returns
+
+cin: 	push hl
+	push de
+	push bc
+	call keyscan
+	; map key matrix to ascii value of key face
+
+	ld hl, key_face_map
+	ld de, keyscan_table
+
+	; get how many keys to look at
+	ld b, keyscan_table_len
+	
+
+	; at this stage fall out on first key hit
+	; TODO handle multiple key press
+
+map1:	ld a,(hl)
+	cp '#'
+	jr z, keyhit
+	inc hl
+	inc de
+	dec b
+	jr nz, map1
+nohit:	ld a, 0
+	jr keydone
+keyhit: push de
+	pop hl
+	ld a,(hl)
+keydone:
+	push bc
+	push de
+ 	push hl
+	ret 
+
+
+; send character to current cursor position
+; wraps and/or scrolls screen automatically
+
+cout: 
+	ret
+
+
+
+
+
+; scan physical key matrix
+
 
 keyscan:
 
-
-; Display text on second line
-;            LD   A, kLCD_Line3
-;            CALL fLCD_Pos       ;Position cursor to location in A
-;            LD   DE, scanline3
-;            CALL fLCD_Str       ;Display string pointed to by DE
-
-; Display text on second line
-;            LD   A, kLCD_Line4
-;            CALL fLCD_Pos       ;Position cursor to location in A
-;            LD   DE, scanline4
-;            CALL fLCD_Str       ;Display string pointed to by DE
-
-; Define custom character(s)
-;            LD   A, 0           ;First character to define (0 to 7)
-;            LD   DE, BitMaps    ;Pointer to start of bitmap data
-;            LD   B, 2           ;Number of characters to define
-;DefLoop:   CALL fLCD_Def       ;Define custom character
-;            DJNZ DefLoop       ;Repeat for each character
-
-
-; Display custom character 0
-;            LD   A, kLCD_Line1+14
-;            CALL fLCD_Pos       ;Position cursor to location in A
-;            LD   A, 0
-;            CALL fLCD_Data      ;Write character in A at cursor
-
-; Display custom character 1
-;            LD   A, kLCD_Line2+14
-;            CALL fLCD_Pos      ;Position cursor to location in A
-;            LD   A, 1
-;            CALL fLCD_Data     ;Write character in A at cursor
-
-
-;	    ld a, 128
-;		out (portbdata),a
-;		call delay1s
-;            LD   A, kLCD_Line1
-;            CALL fLCD_Pos       ;Position cursor to location in A
-;            LD   DE, scanline1
-;            CALL fLCD_Str       ;Display string pointed to by DE
-;	    ld a, 64
-;out (portbdata),a
-;		call delay1s
-;
-;            LD   A, kLCD_Line2
-;            CALL fLCD_Pos       ;Position cursor to location in A
-;            LD   DE, yes
-;		in a, (portbdata)
-;;		ld a, 0
-;		bit 0 ,a
-;		jr nz, s1
-;		ld de, no			
-;s1:            CALL fLCD_Str       ;Display string pointed to by DE
-;;
-;	jp keyscan
-;		halt		
-
-
-; config port b all outputs and add an led to any pin on port b and flash it
-
+; for each key_row use keyscanr bit mask for out
+; then read in for keyscanc bitmask
+; save result of row scan to keyscantable
 
 ; scan keyboard row 1
-	ld a, 128
-	ld hl, row1
-	call rowscan
 
-	ld a, 64
-	ld hl, row2
-	call rowscan
+	ld b, key_rows
+	ld hl, key_scanr
+	ld de, keyscan_table
 
-	ld a, 32
-	ld hl, row3
-	call rowscan
+rowloop:
 
-	ld a, 16
-	ld hl, row4
+	ld a,(hl)		; out bit mask to energise keyboard row
 	call rowscan
+	inc hl
+	dec b
+	jr nz, rowloop
 
-; Display text on first line
-            LD   A, kLCD_Line1
-            CALL fLCD_Pos       ;Position cursor to location in A
-            LD   DE, row1
-            ;LD   DE, MsgHello
-            CALL fLCD_Str       ;Display string pointed to by DE
+	ret
+
+
+	
+
+
+
+;	ld a, 128
+;	ld hl, row1
+;	call rowscan
+;
+;	ld a, 64
+;	ld hl, row2
+;	call rowscan
+;
+;	ld a, 32
+;	ld hl, row3
+;	call rowscan
+
+;	ld a, 16
+;	ld hl, row4
+;	call rowscan
+;
+;; Display text on first line
+;            LD   A, kLCD_Line1
+;            CALL fLCD_Pos       ;Position cursor to location in A
+;            LD   DE, row1
+;            ;LD   DE, MsgHello
+;            CALL fLCD_Str       ;Display string pointed to by DE
 
 ; Display text on second line
-            LD   A, kLCD_Line2
-            CALL fLCD_Pos       ;Position cursor to location in A
-            LD   DE, row2
-            CALL fLCD_Str       ;Display string pointed to by DE
-            LD   A, kLCD_Line3
-            CALL fLCD_Pos       ;Position cursor to location in A
-            LD   DE, row3
-            CALL fLCD_Str       ;Display string pointed to by DE
-            LD   A, kLCD_Line4
-            CALL fLCD_Pos       ;Position cursor to location in A
-            LD   DE, row4
-            CALL fLCD_Str       ;Display string pointed to by DE
+;            LD   A, kLCD_Line2
+;            CALL fLCD_Pos       ;Position cursor to location in A
+;            LD   DE, row2
+;            CALL fLCD_Str       ;Display string pointed to by DE
+;            LD   A, kLCD_Line3
+;            CALL fLCD_Pos       ;Position cursor to location in A
+;            LD   DE, row3
+;            CALL fLCD_Str       ;Display string pointed to by DE
+;            LD   A, kLCD_Line4
+;            CALL fLCD_Pos       ;Position cursor to location in A
+;            LD   DE, row4
+;            CALL fLCD_Str       ;Display string pointed to by DE
 
-;	call delay1s
-	call delay250ms
-	jp keyscan
+;;	call delay1s
+;	call delay250ms
+;	jp keyscan
 
-; pass de as row display flags
+; pass a out bitmask, b row number
 rowscan: 
+	push bc
+
+	ld d, b
+
+	; calculate buffer location for this row
+
+	ld hl, keyscan_table	
+kbufr:  ld e, key_cols
+kbufc:	inc hl
+	dec e
+	jr nz, kbufc
+	dec d
+	jr nz, kbufr
+
+	; energise row and read columns
+
 	out (portbdata),a
 	in a,(portbdata)
 	ld c,a
+
+
+	; save buffer loc
+
+	ld (keybufptr), hl
+
+	ld hl, key_scanc
+	ld d, key_cols
+
+	; for each column check each bit mask
+
+colloop:
+	
+
 	; reset flags for the row 
-	ld b,'.'
-	and 1
-	jr z, p1on
-	ld b,'#'
-p1on:
-	ld (hl), b
-	inc hl
 
 	ld b,'.'
-	ld a,c
-	and 2
-;	bit 0,a
-	jr z, p2on
+	and (hl)
+	jr z, maskskip
 	ld b,'#'
-p2on:
+maskskip:
+	; save  key state
+	push hl
+	ld hl, (keybufptr)
 	ld (hl), b
 	inc hl
+	ld (keybufptr), hl
+
+	; move to next bit mask
+	pop hl
+	inc hl
+
+	dec d
+	jr nz, colloop
+
+	ret
+
+
 ;
-	ld b,'.'
-	ld a,c
-	and 4
-;;	bit 0,a
-	jr z, p3on
-	ld b,'#'
-p3on:
-	ld (hl), b
+; lcd functions
+;
+;
+
+; what is at cursor position 
+
+get_cursor:	ld de, (cursor_row)   ;  row + col
+		call curptr
+		ret
+
+
+; take current custor pos in de (d=row,e=col) and return a pointer to the frame buffer
+
+curptr:
+	push bc
+	ld hl, lcd_fb_active
+cpr:	
+	; loop for cursor whole row
+	ld c, lcd_cols
+cpr1:	inc hl
+	dec c
+	jr nz, cpr1
+	dec b
+	jr nz, cpr
+
+	; add col	
+
+cpr2:	inc hl
+	dec e
+	jr nz, cpr2
+
+	pop bc
+	ret
+	
+
+
+
+
+clear_display:
+	ld b,lcd_fb_len
+	ld hl, lcd_fb_active
+	ld a, ' '
+cd1:	ld (hl),a
 	inc hl
+	dec b
+	jr nz, cd1
+	ld a,0
+	ld (hl),a
+	ret
+
+
+; write the active frame buffer to lcd
+
+update_display: 
+	; ensure zero term at end of buffer
+	ld a,0
+	ld (lcd_fb_active+lcd_fb_len-1),a
+
+
+            LD   A, 0
+            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   DE, lcd_fb_active
+            CALL fLCD_Str       ;Display string pointed to by DE
+		ret
+
+;
+;	ld b,'.'
+;	ld a,c
+;	and 2
+;	bit 0,a
+;	jr z, p2on
+;	ld b,'#'
+;p2on:
+;	ld (hl), b
+;	inc hl
 ;;
-	ld b,'.'
-;;	bit 0,a
-	ld a,c
-	and 8
-	jr z, p4on
-	ld b,'#'
-p4on:
-	ld (hl), b
-	inc hl
+;	ld b,'.'
+;	ld a,c
+;	and 4
+;;;	bit 0,a
+;	jr z, p3on
+;	ld b,'#'
+;p3on:
+;	ld (hl), b
+;	inc hl
+;;;
+;	ld b,'.'
+;;;	bit 0,a
+;	ld a,c
+;	and 8
+;	jr z, p4on
+;	ld b,'#'
+;p4on:
+;	ld (hl), b
+;	inc hl
+;
+;; zero term
+;	ld b,0
+;	ld (hl), b
 
-; zero term
-	ld b,0
-	ld (hl), b
-
-rscandone: ret
+;rscandone: ret
 
 
-flagreset:   db "----",0,0,0,0
+;flagreset:   db "----",0,0,0,0
 	
 	
-kr1p2:
-kr1p3:
-kr1p4:
+;kr1p2:
+;kr1p3:
+;kr1p4:
 
-donescan: jp keyscan
+;donescan: jp keyscan
 
 ;scanline1:   DB  "Scan Line 1: "
 ;row1:	     db ".... "
@@ -312,75 +408,71 @@ donescan: jp keyscan
 ;kr2p3:	     db "_"
 ;kr2p4:	     db "_"
 ;		db 0
-scanline3:   DB  "Scan Line 3: "
-kr3p1:	     db "_"
-kr3p2:	     db "_"
-kr3p3:	     db "_"
-kr3p4:	     db "_"
-		db 0
+;scanline3:   DB  "Scan Line 3: "
+;kr3p1:	     db "_"
+;kr3p2:	     db "_"
+;kr3p3:	     db "_"
+;kr3p4:	     db "_"
+;		db 0
 
-scanline4:   DB  "Scan Line 4: "
-kr4p1:	     db "_"
-kr4p2:	     db "_"
-kr4p3:	     db "_"
-kr4p4:	     db "_"
-		db 0
-yes:	db "yes",0
-no:	db "no",0
-flash:
-	    ld a, 255
-		out (portbdata),a
-		call delay1s
-	    ld a, 0
-		out (portbdata),a
-		call delay1s
-
-
-
-		jp flash
-		halt		
+;scanline4:   DB  "Scan Line 4: "
+;kr4p1:	     db "_"
+;kr4p2:	     db "_"
+;kr4p3:	     db "_"
+;kr4p4:	     db "_"
+;		db 0
+;yes:	db "yes",0
+;no:	db "no",0
+;flash:
+;	    ld a, 255
+;		out (portbdata),a
+;		call delay1s
+;	    ld a, 0
+;		out (portbdata),a
+;		call delay1s
+;
+;
+;
+;		jp flash
+;		halt		
 
 ; Some other things to do
-            LD   A, kLCD_Clear ;Display clear
-            LD   A, kLCD_Blink ;Display on with blinking block cursor
-            LD   A, kLCD_Under ;Display on with underscore cursor
-            LD   A, kLCD_On     ;Display on with no cursor
-            ;LD   A, kLCD_Off   ;Display off
-            CALL fLCD_Inst      ;Send instruction to display
-
-
-            halt
-
-
-MsgHello:   DB  "Hello World!",0
-MsgLiNC80:   DB  "From my Z80-homebrew",0
+;            LD   A, kLCD_Clear ;Display clear
+;            LD   A, kLCD_Blink ;Display on with blinking block cursor
+;            LD   A, kLCD_Under ;Display on with underscore cursor
+;            LD   A, kLCD_On     ;Display on with no cursor
+;            ;LD   A, kLCD_Off   ;Display off
+;            CALL fLCD_Inst      ;Send instruction to display
+;
+;
+;            halt
+;
+;
+;MsgHello:   DB  "Hello World!",0
+;MsgLiNC80:   DB  "From my Z80-homebrew",0
 
 ; Custom characters 5 pixels wide by 8 pixels high
 ; Up to 8 custom characters can be defined
-BitMaps:    
-; Character 0x00 = Battery icon
-            DB  01110b
-            DB  11011b
-            DB  10001b
-            DB  10001b
-            DB  11111b
-            DB  11111b
-            DB  11111b
-            DB  11111b
-; Character 0x01 = Bluetooth icon
-            DB  01100b
-            DB  01010b
-            DB  11100b
-            DB  01000b
-            DB  11100b
-            DB  01010b
-            DB  01100b
-            DB  00000b
-
-
-
-
-
+;BitMaps:    
+;; Character 0x00 = Battery icon
+;            DB  01110b
+;            DB  11011b
+;            DB  10001b
+;            DB  10001b
+;            DB  11111b
+;            DB  11111b
+;            DB  11111b
+;            DB  11111b
+;; Character 0x01 = Bluetooth icon
+;            DB  01100b
+;            DB  01010b
+;            DB  11100b
+;            DB  01000b
+;            DB  11100b
+;            DB  01010b
+;            DB  01100b
+;            DB  00000b
+;
 
 
 ; **********************************************************************
@@ -661,12 +753,12 @@ LCDDelay:   PUSH DE
             RET
 
 
-; **********************************************************************
-; **  Variables
-; **********************************************************************
 
 
-; No variables used
+
+; Delay loops
+
+
 
 aDelayInMS:
 	push bc
@@ -708,3 +800,18 @@ delayloop:
     ; 65536 iterations * 55 states = 3604480 states = 2.00248 seconds
 	;pop de
 	ret
+
+; strcpy hl = dest, de source
+
+strcpy:   LD   A, (DE)        ;Get character from string
+            OR   A              ;Null terminator?
+            RET  Z              ;Yes, so finished
+		ld (hl),a
+            INC  DE             ;Point to next character
+		inc hl
+            JR   strcpy       ;Repeat
+		ret
+
+
+; eof
+

@@ -190,7 +190,7 @@ keyscan:
 
 ; config port b all outputs and add an led to any pin on port b and flash it
 
-
+	call delay1s
 
 ; scan keyboard row 1
 	ld a, 128
@@ -235,10 +235,10 @@ keyscan:
 rowscan: 
 	out (portbdata),a
 	in a,(portbdata)
-
+	ld c,a
 	; reset flags for the row 
 	ld b,'*'
-	bit 0,a
+	and 1
 	jr z, p1on
 	ld b,'-'
 p1on:
@@ -246,28 +246,36 @@ p1on:
 	inc hl
 
 	ld b,'*'
-	bit 0,a
+	ld a,c
+	and 2
+;	bit 0,a
 	jr z, p2on
 	ld b,'-'
 p2on:
 	ld (hl), b
 	inc hl
-
+;
 	ld b,'*'
-	bit 0,a
+	ld a,c
+	and 4
+;;	bit 0,a
 	jr z, p3on
 	ld b,'-'
 p3on:
 	ld (hl), b
 	inc hl
-
+;;
 	ld b,'*'
-	bit 0,a
+;;	bit 0,a
+	ld a,c
+	and 8
 	jr z, p4on
 	ld b,'-'
 p4on:
 	ld (hl), b
 	inc hl
+
+; zero term
 	ld b,0
 	ld (hl), b
 

@@ -18,6 +18,7 @@ keyscan_table_row1: equ tos-stacksize-key_cols-1
 keyscan_table_row2: equ keyscan_table_row1-key_cols-1
 keyscan_table_row3: equ keyscan_table_row2-key_cols-1
 keyscan_table_row4: equ keyscan_table_row3-key_cols-1
+keyscan_table: equ keyscan_table_row4-(key_cols*key_rows)-1
 ;keyscan_table_len: equ key_rows*key_cols
 ;keybufptr: equ keyscan_table - 2
 ;keysymbol: equ keybufptr - 1
@@ -43,9 +44,10 @@ cursor_col: equ lcd_fb_active-1
 cursor_row: equ cursor_col-1
 
 
+scratch: equ cursor_row-255
 
 ; change below to point to last memory alloc above
-topusermem:  equ   0f000h
+topusermem:  equ   scratch
 
 
 ; bios jump points via rst
@@ -77,83 +79,6 @@ topusermem:  equ   0f000h
 	; jp		 ; rst 028h
 
 ;$08, $10, $18, $20, $28, $30 or $38
-
-
-; bit mask for each scan column and row for testing the matrix
-
-; out 
-key_row_bitmask:    db 128, 64, 32, 16
-; in
-key_col_bitmask:    db 1, 2, 4, 8
-
-; row/col to character map
-
-; char, state use   123xxsss   - bit 8,7,6 this key selects specified state, s is this key is member of that state
-;  
-
-; physical key matrix map to face of key
-
-key_map_face: 
-		db '1'
-		db '2'
-		db '3'
-		db 'A'
-
-		db '4'
-		db '5'
-		db '6'
-		db 'B'
-
-		db '7'
-		db '8'
-		db '9'
-		db 'C'
-
-		db '*'
-		db '0'
-		db '#'
-		db 'D'
-
-; map the physical key to a char dependant on state
-
-key_map: 
-		db '1',000000000b
-		db '2',000000000b
-		db '3',000000000b
-		db 'A',000000000b
-
-		db '4',000000000b
-		db '5',000000000b
-		db '6',000000000b
-		db 'B',000000000b
-		db '7',000000000b
-		db '8',000000000b
-		db '9',000000000b
-		db 'C',000000000b
-		db '*',010000000b
-		db '0',000000000b
-		db '#',000000000b
-		db 'D',000000000b
-
-		db 0,000000000b
-
-
-		db 'a',000000010b
-		db 'b',000000010b
-		db 'c',000000010b
-		db 'd',000000010b
-		db 'e',000000010b
-		db 'f',000000010b
-		db 'g',000000010b
-		db 'h',000000010b
-		db 'i',000000010b
-		db 'j',000000010b
-		db 'k',000000010b
-		db 'l',000000010b
-		db '*',010000010b
-		db 'm',000000010b
-		db '#',00000100b
-		db 'n',000000010b
 
 
 
@@ -200,7 +125,24 @@ cloop:
 ;	ld (hl),a
 ;	call delay250ms
 
-	jp matrix
+	call cin
+
+	cp 0
+	jr z, cloop
+	; we have a key press what is it?
+
+	ld hl,scratch
+	ld (hl),a
+	inc hl
+	ld a,0
+	ld (hl),a
+
+
+            LD   A, kLCD_Line1
+            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   DE, scratch
+            CALL fLCD_Str       ;Display string pointed to by DE
+
 	nop
 	jp main
 

@@ -1,4 +1,81 @@
 
+DEBUG_KEY: equ 1
+
+; bit mask for each scan column and row for testing the matrix
+
+; out 
+key_row_bitmask:    db 128, 64, 32, 16
+; in
+key_col_bitmask:    db 1, 2, 4, 8
+
+; row/col to character map
+
+; char, state use   123xxsss   - bit 8,7,6 this key selects specified state, s is this key is member of that state
+;  
+
+; physical key matrix map to face of key
+
+key_map_face: 
+		db '1'
+		db '2'
+		db '3'
+		db 'A'
+
+		db '4'
+		db '5'
+		db '6'
+		db 'B'
+
+		db '7'
+		db '8'
+		db '9'
+		db 'C'
+
+		db '*'
+		db '0'
+		db '#'
+		db 'D'
+
+; map the physical key to a char dependant on state
+
+key_map: 
+		db '1',000000000b
+		db '2',000000000b
+		db '3',000000000b
+		db 'A',000000000b
+
+		db '4',000000000b
+		db '5',000000000b
+		db '6',000000000b
+		db 'B',000000000b
+		db '7',000000000b
+		db '8',000000000b
+		db '9',000000000b
+		db 'C',000000000b
+		db '*',010000000b
+		db '0',000000000b
+		db '#',000000000b
+		db 'D',000000000b
+
+		db 0,000000000b
+
+
+		db 'a',000000010b
+		db 'b',000000010b
+		db 'c',000000010b
+		db 'd',000000010b
+		db 'e',000000010b
+		db 'f',000000010b
+		db 'g',000000010b
+		db 'h',000000010b
+		db 'i',000000010b
+		db 'j',000000010b
+		db 'k',000000010b
+		db 'l',000000010b
+		db '*',010000010b
+		db 'm',000000010b
+		db '#',00000100b
+		db 'n',000000010b
 
 
 key_init:
@@ -34,7 +111,69 @@ key_init:
 ; character in from keyboard
 ; TODO add the key modifier state to what cin returns
 
-cin: 	ret
+matrix_to_char: db "D#0*C987B654A321"
+
+cin: 	
+
+; scan keyboard row 1
+	ld a, 128
+	ld hl, keyscan_table
+	call rowscan
+
+	ld a, 64
+	ld hl, keyscan_table+key_cols
+	call rowscan
+
+	ld a, 32
+	ld hl, keyscan_table+(key_cols*2)
+	call rowscan
+
+	ld a, 16
+	ld hl, keyscan_table+(key_cols*3)
+	call rowscan
+
+if DEBUG_KEY
+            LD   A, kLCD_Line4
+            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   DE, keyscan_table
+            CALL fLCD_Str       ;Display string pointed to by DE
+endif
+
+	; scan key matrix table for any held key
+
+	ld hl, keyscan_table
+	ld de, matrix_to_char
+	ld b,key_cols*key_rows
+
+cin1:	ld a,(hl)
+	cp '#'
+	jr z, cinhit
+	inc hl
+	inc de
+	dec b
+	jr nz, cin1
+	; no key found held
+	ld a,0
+	ret
+cinhit: push de
+	pop hl
+	ld a,(hl)
+	ret
+
+	
+	
+
+
+
+
+
+
+
+
+
+
+	ret
+
 ;	push hl
 ;	push de
 ;	push bc

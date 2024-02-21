@@ -14,18 +14,21 @@ stacksize: equ 128
 ; memory allocation 
 key_rows: equ 4
 key_cols: equ 4
-keyscan_table: equ  tos-stacksize-(key_rows*key_cols)
-keyscan_table_len: equ key_rows*key_cols
-keybufptr: equ keyscan_table - 2
-keysymbol: equ keybufptr - 1
-keyshift: equ keysymbol - 1
+keyscan_table_row1: equ tos-stacksize-key_cols-1
+keyscan_table_row2: equ keyscan_table_row1-key_cols-1
+keyscan_table_row3: equ keyscan_table_row2-key_cols-1
+keyscan_table_row4: equ keyscan_table_row3-key_cols-1
+;keyscan_table_len: equ key_rows*key_cols
+;keybufptr: equ keyscan_table - 2
+;keysymbol: equ keybufptr - 1
+keyshift: equ keyscan_table_row4
 
 
-key_scanr: equ key_row_bitmask
-key_scanc: equ key_col_bitmask
+;key_scanr: equ key_row_bitmask
+;key_scanc: equ key_col_bitmask
 
-key_char_map: equ key_map
-key_face_map: equ key_map_face
+;key_char_map: equ key_map
+;key_face_map: equ key_map_face
 
 ; lcd allocation
 
@@ -35,9 +38,10 @@ lcd_cols: equ 20
 lcd_fb_len: equ (lcd_rows*lcd_cols)+lcd_rows ; extra byte per row for 0 term
 
 lcd_fb_active: equ  keyshift-lcd_fb_len
-; can load into de directory
+;; can load into de directory
 cursor_col: equ lcd_fb_active-1
 cursor_row: equ cursor_col-1
+
 
 
 ; change below to point to last memory alloc above
@@ -152,9 +156,6 @@ key_map:
 		db 'n',000000010b
 
 
-bootmsg:	db "z80-homebrew OS v0.1",0
-bootmsg1:	db "by Kevin Groves",0
-
 
 ; start system
 
@@ -170,7 +171,7 @@ coldstart:
 
 	; init keyboard and screen hardware
 
-	call keylcd_init
+	call hardware_init
 
 	
 
@@ -178,35 +179,32 @@ coldstart:
 
 	;call clear_display
 
-	
-            LD   A, kLCD_Line2
-            CALL fLCD_Pos       ;Position cursor to location in A
-	ld de, bootmsg
-            CALL fLCD_Str       ;Display string pointed to by DE
 
-stop:	nop
-	jp stop
+;	ld de, bootmsg
+;	ld hl,lcd_fb_active
+;	call strcpy
+;
+;	ld d, 1
+;	ld e, 0
 
-	call delay1s
-	call delay1s
-            LD   A, kLCD_Line2
-            CALL fLCD_Pos       ;Position cursor to location in A
-	ld de, bootmsg
-            CALL fLCD_Str       ;Display string pointed to by DE
-	call delay1s
-	call delay1s
-
-	ld de, bootmsg
-	ld hl,lcd_fb_active
-	call strcpy
-
-	ld d, 1
-	ld e, 0
+;stop:	nop
+;	jp stop
 
 main:
-	call update_display
+;	call update_display
 
-cloop:	call cin
+cloop:	
+;call cin
+
+;	ld hl,lcd_fb_active
+;	ld (hl),a
+;	call delay250ms
+
+	jp matrix
+	nop
+	jp main
+
+
 	cp 0
 	jr z, cloop
 

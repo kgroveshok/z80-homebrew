@@ -2,52 +2,6 @@
 ;
 ;
 
-; main constants (used here and in firmware)
-
-
-
-tos:	equ 0ffffh
-stacksize: equ 128
-
-; keyscan table needs rows x cols buffer
-
-; memory allocation 
-key_rows: equ 4
-key_cols: equ 4
-keyscan_table_row1: equ tos-stacksize-key_cols-1
-keyscan_table_row2: equ keyscan_table_row1-key_cols-1
-keyscan_table_row3: equ keyscan_table_row2-key_cols-1
-keyscan_table_row4: equ keyscan_table_row3-key_cols-1
-keyscan_table: equ keyscan_table_row4-(key_cols*key_rows)-1
-;keyscan_table_len: equ key_rows*key_cols
-;keybufptr: equ keyscan_table - 2
-;keysymbol: equ keybufptr - 1
-keyshift: equ keyscan_table_row4
-
-
-;key_scanr: equ key_row_bitmask
-;key_scanc: equ key_col_bitmask
-
-;key_char_map: equ key_map
-;key_face_map: equ key_map_face
-
-; lcd allocation
-
-lcd_rows: equ 4
-lcd_cols: equ 20
-
-lcd_fb_len: equ (lcd_rows*lcd_cols)+lcd_rows ; extra byte per row for 0 term
-
-lcd_fb_active: equ  keyshift-lcd_fb_len
-;; can load into de directory
-cursor_col: equ lcd_fb_active-1
-cursor_row: equ cursor_col-1
-
-
-scratch: equ cursor_row-255
-
-; change below to point to last memory alloc above
-topusermem:  equ   scratch
 
 
 ; bios jump points via rst
@@ -81,6 +35,7 @@ topusermem:  equ   scratch
 ;$08, $10, $18, $20, $28, $30 or $38
 
 
+include "firmware.asm"
 
 ; start system
 
@@ -167,6 +122,5 @@ backspace:
 
 
 
-include "firmware.asm"
 
 

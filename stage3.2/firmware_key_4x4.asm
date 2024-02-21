@@ -1,5 +1,4 @@
 
-DEBUG_KEY: equ 1
 
 ; bit mask for each scan column and row for testing the matrix
 
@@ -111,26 +110,49 @@ key_init:
 ; character in from keyboard
 ; TODO add the key modifier state to what cin returns
 
-matrix_to_char: db "D#0*C987B654A321"
+.matrix_to_char: db "D#0*C987B654A321"
 
-cin: 	
+cin: 	call .mtoc
+
+	; no key held
+	cp 0
+	ret z
+
+
+
+	; process key state effects
+
+
+	; detect char cycle for key held if still
+
+
+
+
+
+	ret
+
+	
+
+; map mamtrix key held to char on face of key
+
+.mtoc:
 
 ; scan keyboard row 1
 	ld a, 128
 	ld hl, keyscan_table
-	call rowscan
+	call .rowscan
 
 	ld a, 64
 	ld hl, keyscan_table+key_cols
-	call rowscan
+	call .rowscan
 
 	ld a, 32
 	ld hl, keyscan_table+(key_cols*2)
-	call rowscan
+	call .rowscan
 
 	ld a, 16
 	ld hl, keyscan_table+(key_cols*3)
-	call rowscan
+	call .rowscan
 
 if DEBUG_KEY
             LD   A, kLCD_Line4
@@ -142,20 +164,20 @@ endif
 	; scan key matrix table for any held key
 
 	ld hl, keyscan_table
-	ld de, matrix_to_char
+	ld de, .matrix_to_char
 	ld b,key_cols*key_rows
 
-cin1:	ld a,(hl)
+.cin1:	ld a,(hl)
 	cp '#'
-	jr z, cinhit
+	jr z, .cinhit
 	inc hl
 	inc de
 	dec b
-	jr nz, cin1
+	jr nz, .cin1
 	; no key found held
 	ld a,0
 	ret
-cinhit: push de
+.cinhit: push de
 	pop hl
 	ld a,(hl)
 	ret
@@ -311,7 +333,7 @@ cout:
 
 ; test function to display hardware view of matrix state
 
-matrix:
+.matrix:
 
 
 ; Display text on second line
@@ -378,19 +400,19 @@ matrix:
 ; scan keyboard row 1
 	ld a, 128
 	ld hl, keyscan_table_row1
-	call rowscan
+	call .rowscan
 
 	ld a, 64
 	ld hl, keyscan_table_row2
-	call rowscan
+	call .rowscan
 
 	ld a, 32
 	ld hl, keyscan_table_row3
-	call rowscan
+	call .rowscan
 
 	ld a, 16
 	ld hl, keyscan_table_row4
-	call rowscan
+	call .rowscan
 
 ; Display text on first line
             LD   A, kLCD_Line1
@@ -415,19 +437,19 @@ matrix:
 
 ;	call delay1s
 	call delay250ms
-	jp matrix
+	jp .matrix
 
 ; pass de as row display flags
-rowscan: 
+.rowscan: 
 	out (portbdata),a
 	in a,(portbdata)
 	ld c,a
 	; reset flags for the row 
 	ld b,'.'
 	and 1
-	jr z, p1on
+	jr z, .p1on
 	ld b,'#'
-p1on:
+.p1on:
 	ld (hl), b
 	inc hl
 
@@ -435,9 +457,9 @@ p1on:
 	ld a,c
 	and 2
 ;	bit 0,a
-	jr z, p2on
+	jr z, .p2on
 	ld b,'#'
-p2on:
+.p2on:
 	ld (hl), b
 	inc hl
 ;
@@ -445,9 +467,9 @@ p2on:
 	ld a,c
 	and 4
 ;;	bit 0,a
-	jr z, p3on
+	jr z, .p3on
 	ld b,'#'
-p3on:
+.p3on:
 	ld (hl), b
 	inc hl
 ;;
@@ -455,9 +477,9 @@ p3on:
 ;;	bit 0,a
 	ld a,c
 	and 8
-	jr z, p4on
+	jr z, .p4on
 	ld b,'#'
-p4on:
+.p4on:
 	ld (hl), b
 	inc hl
 
@@ -465,4 +487,4 @@ p4on:
 	ld b,0
 	ld (hl), b
 
-rscandone: ret
+.rscandone: ret

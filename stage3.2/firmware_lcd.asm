@@ -52,6 +52,13 @@ kLCDWidth:  EQU lcd_cols             ;Width in characters
 ; **  Code library usage
 ; **********************************************************************
 
+; send character to current cursor position
+; wraps and/or scrolls screen automatically
+
+cout: 
+	ret
+
+
 
 lcd_init:
 

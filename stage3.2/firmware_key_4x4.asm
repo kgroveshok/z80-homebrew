@@ -14,67 +14,21 @@ key_col_bitmask:    db 1, 2, 4, 8
 
 ; physical key matrix map to face of key
 
-key_map_face: 
-		db '1'
-		db '2'
-		db '3'
-		db 'A'
 
-		db '4'
-		db '5'
-		db '6'
-		db 'B'
-
-		db '7'
-		db '8'
-		db '9'
-		db 'C'
-
-		db '*'
-		db '0'
-		db '#'
-		db 'D'
-
-; map the physical key to a char dependant on state
-
-key_map: 
-		db '1',000000000b
-		db '2',000000000b
-		db '3',000000000b
-		db 'A',000000000b
-
-		db '4',000000000b
-		db '5',000000000b
-		db '6',000000000b
-		db 'B',000000000b
-		db '7',000000000b
-		db '8',000000000b
-		db '9',000000000b
-		db 'C',000000000b
-		db '*',010000000b
-		db '0',000000000b
-		db '#',000000000b
-		db 'D',000000000b
-
-		db 0,000000000b
+;      	1	2	3	A
+;   	abc”	def&	ghi$	s1
+;			
+;	4	5	6	B
+; 	jkl,	mno.	pqr:	s2
+;			
+; 	7	8	9	C
+;	stu;	vwx@	yz?!	s3
+;			
+; 	*	0	#	D
+; 	shift lck '	Space < >	Enter ( )	s4
+;       tab bs 		
 
 
-		db 'a',000000010b
-		db 'b',000000010b
-		db 'c',000000010b
-		db 'd',000000010b
-		db 'e',000000010b
-		db 'f',000000010b
-		db 'g',000000010b
-		db 'h',000000010b
-		db 'i',000000010b
-		db 'j',000000010b
-		db 'k',000000010b
-		db 'l',000000010b
-		db '*',010000010b
-		db 'm',000000010b
-		db '#',00000100b
-		db 'n',000000010b
 
 
 key_init:
@@ -112,24 +66,169 @@ key_init:
 
 .matrix_to_char: db "D#0*C987B654A321"
 
+
+; map the physical key to a char dependant on state
+
+.key_map_fa: 
+
+		db 'D'
+		db 13    ; TODO cr
+		db ' '
+		db  0   ; TODO Shift lock
+		db 'C'
+		db 'y'
+		db 'v'
+		db 's'
+		db 'B'
+		db 'p'
+		db 'm'
+		db 'j'
+		db 'A'
+		db 'g'
+		db 'd'
+		db 'a'
+
+.key_map_fb:
+
+		db 'A'
+		db '(' 
+		db '<'
+		db  "'"  
+
+		db 'A'
+		db 'z'
+		db 'w'
+		db 't'
+		db 'A'
+		db 'q'
+		db 'n'
+		db 'k'
+		db 'A'
+		db 'h'
+		db 'e'
+ 		db 'b'
+
+.key_map_fc: 
+
+
+		db 'A'
+		db ')' 
+		db '>'
+		db  9   	; TODO tab
+		db 'A'
+		db '?'
+		db 'x'
+		db 'u'
+		db 'A'
+		db 'r'
+		db 'o'
+		db 'l'
+		db 'A'
+		db 'i'
+		db 'f'
+		db 'c'
+
+	
+.key_map_fd:
+
+		db 'A'
+		db 0  ; TODO spare
+		db 0  ; TODO spare
+		db 0   ; TODO back space
+		db 'A'
+		db '!'
+		db '@'
+		db ';'
+		db 'A'
+		db ':'
+		db '.'
+		db ','
+		db 'A'
+		db '$'
+		db '&'
+	 	db '"'
+
+; add cin and cin_wait
+
+cin_wait: 	call cin
+	cp 0
+	jr z, cin_wait   ; block until key press
+
+
+.cin_wait1:	call cin
+	cp 0
+	jr nz, .cin_wait1  	; wait for key release
+
+	ret
+
+
 cin: 	call .mtoc
+
+; TODO change mtoc to not not return to the modifer buttons chars but to set the flags instead
 
 	; no key held
 	cp 0
 	ret z
 
+	; TODO store original key face
 
+;	ld hl,key_face_held
+;	ld (hl),a
 
-	; process key state effects
+;	; apply modifier keys if pressed
+;
+;	ld hl, key_fa	
+;	ld de,key_map_fa
+;	call .cin_map_modifier
 
+;	ld hl, key_fb
+;	ld de,key_map_fb
+;	call .cin_map_modifier
 
-	; detect char cycle for key held if still
+;	ld hl, key_fc	
+;	ld de,key_map_fc
+;	call .cin_map_modifier
 
+;	ld hl, key_fd
+;	ld de,key_map_fd
+;	call .cin_map_modifier
 
-
-
-
+;	ld hl,key_actual_pressed
+;	ld a,(hl)
 	ret
+
+; detect keyboard modifier key press and apply new overlay to the face key held
+; hl is the key modifer flag, de map to apply to key_face_held and store in key_actual_pressed
+
+;.cin_map_modifier: 
+;	ld a, (hl)
+;	and 255
+;	ret NZ		; modifier key not flagged
+;
+;	; get key face
+;
+;	ld b,(key_face_held)
+;
+;	ld b, key_cols * key_rows
+;
+;	push de
+;	pop hl
+;
+;.mmod1: ld a,(hl)   ; get map test
+;	cp b
+;	jr z, .mmod2
+;
+;
+;
+;.mmod2: inc hl    ; 
+;
+;	
+;
+;	
+;
+;	ld hl,key_actual_pressed
+;	ld (hl),a,
+;	ret
 
 	
 
@@ -142,29 +241,72 @@ cin: 	call .mtoc
 	ld hl, keyscan_table
 	call .rowscan
 
+	 
+
 	ld a, 64
 	ld hl, keyscan_table+key_cols
 	call .rowscan
+
+
+
 
 	ld a, 32
 	ld hl, keyscan_table+(key_cols*2)
 	call .rowscan
 
+
+
 	ld a, 16
 	ld hl, keyscan_table+(key_cols*3)
 	call .rowscan
 
-if DEBUG_KEY
+
+	; flag if key D is held down and remove from reporting
+	ld bc, .key_map_fd  
+	ld hl, keyscan_table
+	ld de, key_fd
+	call .key_shift_hold
+	cp 255
+	jr z, .cinmap
+	; flag if key C is held down and remove from reporting
+	ld bc, .key_map_fc  
+	ld hl, keyscan_table+key_cols
+	ld de, key_fc
+	call .key_shift_hold
+	cp 255
+	jr z, .cinmap
+	; flag if key B is held down and remove from reporting
+	ld bc, .key_map_fb  
+	ld hl, keyscan_table+(key_cols*2)
+	ld de, key_fb
+	call .key_shift_hold
+	cp 255
+	jr z, .cinmap
+	; flag if key A is held down and remove from reporting
+	ld bc, .key_map_fa  
+	ld hl, keyscan_table+(key_cols*3)
+	ld de, key_fa
+	call .key_shift_hold
+	cp 255
+	jr z, .cinmap
+
+	ld de, .matrix_to_char
+
+.cinmap: 
+	if DEBUG_KEY
             LD   A, kLCD_Line4
             CALL fLCD_Pos       ;Position cursor to location in A
+		push de
             LD   DE, keyscan_table
             CALL fLCD_Str       ;Display string pointed to by DE
-endif
+		pop de
+	endif
 
 	; scan key matrix table for any held key
 
+	; de holds either the default matrix or one selected above
+
 	ld hl, keyscan_table
-	ld de, .matrix_to_char
 	ld b,key_cols*key_rows
 
 .cin1:	ld a,(hl)
@@ -180,6 +322,26 @@ endif
 .cinhit: push de
 	pop hl
 	ld a,(hl)
+	ret
+
+; flag a control key is held 
+; hl is key pin, de is flag indicator
+
+.key_shift_hold:
+	push bc
+	ld b, 0
+	ld a, (hl)
+	cp '.'
+	jr z, .key_shift1
+	ld b, 255
+	ld a, '+'    ; hide key from later scans
+	ld (hl),a
+.key_shift1:
+	; write flag indicator
+	ld a,b
+	ld (de),a
+
+	pop de    ; de now holds the key map ptr
 	ret
 
 	
@@ -230,13 +392,6 @@ endif
 ; 	push hl
 ;	ret 
 ;
-
-; send character to current cursor position
-; wraps and/or scrolls screen automatically
-
-cout: 
-	ret
-
 
 
 
@@ -435,7 +590,6 @@ cout:
             LD   DE, keyscan_table_row4
             CALL fLCD_Str       ;Display string pointed to by DE
 
-;	call delay1s
 	call delay250ms
 	jp .matrix
 

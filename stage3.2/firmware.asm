@@ -26,7 +26,13 @@ keyscan_table: equ keyscan_table_row4-(key_cols*key_rows)-1
 key_held: equ keyscan_table-1	; currently held
 key_held_prev: equ key_held - 1   ; previously held (to detect bounce and cycle of key if required)
 key_repeat_ct: equ key_held_prev - 4 ; timers (two words)
-key_symbol: equ key_repeat_ct - 1 
+key_fa: equ key_repeat_ct -1 ;
+key_fb: equ key_fa -1 ;
+key_fc: equ key_fb -1 ;
+key_fd: equ key_fc -1 ;
+key_face_held: equ key_fd - 1 
+key_actual_pressed: equ key_face_held - 1 
+key_symbol: equ key_actual_pressed - 1 
 key_shift: equ key_symbol - 1 
 
 ; lcd allocation

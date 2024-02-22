@@ -188,7 +188,8 @@ input_str:
 		; TODO stop back space if at start of string
 
 		dec hl
-		ld a,0
+		ld a,' '
+		;ld a,0
 		ld (hl),a
 		ld (input_ptr),hl
 		

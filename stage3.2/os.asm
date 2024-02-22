@@ -34,7 +34,8 @@
 
 ;$08, $10, $18, $20, $28, $30 or $38
 
-str1: db "Enter some text:",0
+str1: db "Enter some text...",0
+clear: db "                    ",0
 
 include "firmware.asm"
 
@@ -85,6 +86,10 @@ main:
             LD   DE, str1
             CALL fLCD_Str       ;Display string pointed to by DE
 cloop:	
+            LD   A, kLCD_Line3
+            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   DE, clear
+            CALL fLCD_Str       ;Display string pointed to by DE
 ;call cin
 
 ;	ld hl,lcd_fb_active
@@ -97,6 +102,18 @@ cloop:
 	ld hl, scratch	
 	call input_str
 
+            LD   A, kLCD_Line1
+            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   DE, clear
+            CALL fLCD_Str       ;Display string pointed to by DE
+            LD   A, kLCD_Line1
+            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   DE, scratch
+            CALL fLCD_Str       ;Display string pointed to by DE
+
+		ld a,0
+	ld hl, scratch
+	ld (hl),a
 ;	cp 0
 ;	jr z, cloop
 	; we have a key press what is it?

@@ -31,7 +31,14 @@ key_fb: equ key_fa -1 ;
 key_fc: equ key_fb -1 ;
 key_fd: equ key_fc -1 ;
 key_face_held: equ key_fd - 1 
-key_actual_pressed: equ key_face_held - 1 
+
+input_ptr:  equ key_face_held - 2    ; ptr to the current cursor position of string currently being edited  on entry starting 
+input_start:  equ input_ptr - 2    ; ptr to the start of string 
+input_size: equ input_start -1  ; number of chars
+input_cursor: equ input_size - 1 ; offset of cursor to current start of string
+
+
+key_actual_pressed: equ input_cursor - 1 
 key_symbol: equ key_actual_pressed - 1 
 key_shift: equ key_symbol - 1 
 
@@ -65,6 +72,18 @@ kContReg:   EQU 0xc2           ;PIO port A control register
 
 portbdata:  equ 0xc1    ; port b data
 portbctl:   equ 0xc3    ; port b control
+
+
+
+KEY_CR:   equ 13
+KEY_TAB:  equ 9
+KEY_BS: equ 8
+KEY_HOME: equ 2
+KEY_SHIFTLOCK: equ 4
+
+
+
+
 
 
 hardware_init:	call key_init

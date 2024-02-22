@@ -34,6 +34,7 @@
 
 ;$08, $10, $18, $20, $28, $30 or $38
 
+str1: db "Enter some text:",0
 
 include "firmware.asm"
 
@@ -70,9 +71,19 @@ coldstart:
 ;stop:	nop
 ;	jp stop
 
+
 main:
 ;	call update_display
 
+	; init scratch input area for testing
+	ld hl, scratch	
+	ld a,0
+	ld (hl),a
+
+            LD   A, kLCD_Line2
+            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   DE, str1
+            CALL fLCD_Str       ;Display string pointed to by DE
 cloop:	
 ;call cin
 
@@ -80,47 +91,51 @@ cloop:
 ;	ld (hl),a
 ;	call delay250ms
 
-	call cin
+;	call cin
+	ld bc, 0
+	ld d, 10
+	ld hl, scratch	
+	call input_str
 
-	cp 0
-	jr z, cloop
+;	cp 0
+;	jr z, cloop
 	; we have a key press what is it?
 
-	ld hl,scratch
-	ld (hl),a
-	inc hl
-	ld a,0
-	ld (hl),a
+;	ld hl,scratch
+;	ld (hl),a
+;	inc hl
+;	ld a,0
+;	ld (hl),a
 
 
-            LD   A, kLCD_Line1
-            CALL fLCD_Pos       ;Position cursor to location in A
-            LD   DE, scratch
-            CALL fLCD_Str       ;Display string pointed to by DE
+ ;           LD   A, kLCD_Line1
+ ;           CALL fLCD_Pos       ;Position cursor to location in A
+ ;           LD   DE, scratch
+ ;           CALL fLCD_Str       ;Display string pointed to by DE
 
 	nop
-	jp main
+	jp cloop
 
 
-	cp 0
-	jr z, cloop
-
-	cp '#'
-	jr z, backspace
-
-	call curptr
-	ld (hl),a
-	inc e
-	
-
-	jp main
-
-
-backspace:
-	jp main
-
-
+;	cp 0
+;	jr z, cloop
+;
+;	cp '#'
+;	jr z, backspace
+;
+;	call curptr
+;	ld (hl),a
+;	inc e
+;	
+;
+;	jp main
+;
+;
+;backspace:
+;	jp main
 
 
 
+
+; eof
 

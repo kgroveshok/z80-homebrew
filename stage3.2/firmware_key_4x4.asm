@@ -72,9 +72,9 @@ key_init:
 .key_map_fa: 
 
 		db 'D'
-		db 13    ; TODO cr
+		db KEY_CR    ; TODO cr
 		db ' '
-		db  0   ; TODO Shift lock
+		db  KEY_SHIFTLOCK   ; TODO Shift lock
 		db 'C'
 		db 'y'
 		db 'v'
@@ -114,7 +114,7 @@ key_init:
 		db 'A'
 		db ')' 
 		db '>'
-		db  9   	; TODO tab
+		db  KEY_TAB   	; TODO tab
 		db 'A'
 		db '?'
 		db 'x'
@@ -134,7 +134,7 @@ key_init:
 		db 'A'
 		db 0  ; TODO spare
 		db 0  ; TODO spare
-		db 0   ; TODO back space
+		db KEY_BS  ; TODO back space
 		db 'A'
 		db '!'
 		db '@'
@@ -147,6 +147,70 @@ key_init:
 		db '$'
 		db '&'
 	 	db '"'
+
+
+; input text string, end on cr with zero term
+; bc is row and column to start prompt
+; d is max length
+; e is current cursor position
+; hl is ptr to where string will be stored
+
+input_str: 
+		ld (input_ptr), hl
+		ld (input_start), hl
+		ld a,d
+		ld (input_size), a
+		ld a,0
+		ld (input_cursor),a
+.instr1:	
+
+		; display entered text
+        	LD   A, kLCD_Line3    ; TODO position cursor for now just put at second line
+            	CALL fLCD_Pos       ;Position cursor to location in A
+            	LD   de, (input_start)
+            	CALL fLCD_Str       ;Display string pointed to by DE
+
+		call cin
+		cp 0
+		jr z, .instr1
+
+		; proecess keyboard controls first
+
+		ld hl,(input_ptr)
+
+		cp KEY_CR	 ; pressing enter ends input
+		ret z
+
+		cp KEY_BS 	; back space
+		jr nz, .instr2
+		; process back space
+
+		; TODO stop back space if at start of string
+
+		dec hl
+		ld a,0
+		ld (hl),a
+		ld (input_ptr),hl
+		
+
+		jr .instr1
+
+.instr2:	; no special key pressed to see if we have room to store it
+
+		; TODO do string size test
+
+		ld (hl),a
+		inc hl
+		ld a,0
+		ld (hl),a
+
+		ld (input_ptr),hl
+		
+		jr .instr1
+
+
+		
+	
 
 ; add cin and cin_wait
 
@@ -164,37 +228,21 @@ cin_wait: 	call cin
 
 cin: 	call .mtoc
 
-; TODO change mtoc to not not return to the modifer buttons chars but to set the flags instead
-
 	; no key held
 	cp 0
 	ret z
 
-	; TODO store original key face
+	; stop key bounce
 
-;	ld hl,key_face_held
-;	ld (hl),a
+;	ld (key_held),a		 ; save it
+	ld b, a
 
-;	; apply modifier keys if pressed
-;
-;	ld hl, key_fa	
-;	ld de,key_map_fa
-;	call .cin_map_modifier
-
-;	ld hl, key_fb
-;	ld de,key_map_fb
-;	call .cin_map_modifier
-
-;	ld hl, key_fc	
-;	ld de,key_map_fc
-;	call .cin_map_modifier
-
-;	ld hl, key_fd
-;	ld de,key_map_fd
-;	call .cin_map_modifier
-
-;	ld hl,key_actual_pressed
-;	ld a,(hl)
+.cina1:	push bc
+	call .mtoc
+	pop bc
+	cp b
+	jr z, .cina1
+	ld a,b		
 	ret
 
 ; detect keyboard modifier key press and apply new overlay to the face key held

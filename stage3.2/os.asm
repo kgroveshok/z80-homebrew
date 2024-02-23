@@ -292,8 +292,10 @@ pop af
 
 jump:	
 
-	ld hl,(scratch+2)
-	call fourehexhl
+	ld hl,scratch+2
+	call get_word_hl
+	;ld hl,(scratch+2)
+	;call fourehexhl
 
 	ld (os_cur_ptr),hl	
 

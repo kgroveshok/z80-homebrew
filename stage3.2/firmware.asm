@@ -114,7 +114,7 @@ hardware_init:
 		call clear_display
 	call update_display
 	call delay1s
-	ld a,'-'
+	ld a,'+'
 	call fill_display
 	call update_display
 	call delay1s

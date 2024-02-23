@@ -57,12 +57,13 @@ display_fb2: equ  display_fb1-display_fb_len
 ;
 ; pointer to active frame buffer
 display_fb_active: equ display_fb2 - 2
+display_write_tmp: equ display_fb_active - 2
 
 
 ;
 
 ;; can load into de directory
-cursor_col: equ display_fb_active-1
+cursor_col: equ display_write_tmp-1
 cursor_row: equ cursor_col-1
 cursor_ptr: equ cursor_row - 1     ;  actual offset into lcd memory for row and col combo
 cursor_shape: equ cursor_ptr - 1   ; char used for the current cursor 

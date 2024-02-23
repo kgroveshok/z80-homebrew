@@ -117,15 +117,59 @@ cpr2:	inc hl
 
 
 
-; write the frame buffer given in de to hardware 
-write_display: 
-            LD   A, 0
+; write the frame buffer given in hl to hardware 
+write_display: ld (display_write_tmp), hl 	 
+	ld a, kLCD_Line1
             CALL fLCD_Pos       ;Position cursor to location in A
-            CALL fLCD_Str       ;Display string pointed to by DE
+	ld b, display_cols
+	ld de, (display_write_tmp)
+	call write_len_string
 	
+	
+	ld hl, (display_write_tmp)
+	ld de, display_cols
+	add hl,de
+	ld (display_write_tmp),hl
+
+	
+	ld a, kLCD_Line2
+            CALL fLCD_Pos       ;Position cursor to location in A
+	ld b, display_cols
+	ld de, (display_write_tmp)
+	call write_len_string
+	
+	ld hl, (display_write_tmp)
+	ld de, display_cols
+	add hl,de
+	ld (display_write_tmp),hl
+
+	
+	ld a, kLCD_Line3
+            CALL fLCD_Pos       ;Position cursor to location in A
+	ld b, display_cols
+	ld de, (display_write_tmp)
+	call write_len_string
+	
+	ld hl, (display_write_tmp)
+	ld de, display_cols
+	add hl,de
+	ld (display_write_tmp),hl
+
+	
+	ld a, kLCD_Line4
+            CALL fLCD_Pos       ;Position cursor to location in A
+	ld b, display_cols
+	ld de, (display_write_tmp)
+	call write_len_string
 		ret
 	
-	
+	; write out a fixed length string given in b from de
+
+write_len_string:   LD   A, (DE)        ;Get character from string
+            CALL fLCD_Data      ;Write character to display
+	inc de
+	djnz write_len_string
+	ret
 
 ; Some other things to do
 ;            LD   A, kLCD_Clear ;Display clear
@@ -250,10 +294,11 @@ write_display:
 
 ; general line offsets in any frame buffer
 
+
 display_row_1: equ 0
-display_row_2: equ 0x40
-display_row_3: equ display_row_1 + display_cols
-display_row_4: equ display_row_2 + display_cols
+display_row_2: equ display_row_1+display_cols
+display_row_3: equ display_row_2 + display_cols
+display_row_4: equ display_row_3 + display_cols
 
 ; Cursor position values for the start of each line
 kLCD_Line1: EQU 0x00 

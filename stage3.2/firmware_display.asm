@@ -46,10 +46,10 @@ str_at_display:    ld hl,(display_fb_active)
 ; using current frame buffer write to physical display
 
 update_display:
-	push de
-	ld de, (display_fb_active)
+	push hl
+	ld hl, (display_fb_active)
 	call write_display
-	pop de
+	pop hl
 	ret
 
 ; TODO scrolling

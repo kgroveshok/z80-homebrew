@@ -120,12 +120,50 @@ cli:
 	jp z,jump			; j xxxx     jump and run code at xxxx
 	cp 'e'
 	jp z,enter                ; e xxxx     start entering of single bytes storing at address until empty string
+	cp 't'
+	jp z,testenter                ; e xxxx     start entering of single bytes storing at address until empty string
+	cp 'j'
+	jp z,testenter2                ; e xxxx     start entering of single bytes storing at address until empty string
 
 
 	nop
 	jp cli
 
 
+asc: db "1A2F"
+
+testenter2:  
+	ld hl,scratch+50
+	ld (os_cur_ptr),hl
+	jp cli
+
+testenter: 
+
+	ld hl,asc
+;	ld a,(hl)
+;	call nibble2val
+	call get_byte
+
+
+;	ld a,(hl)
+;	call atohex
+
+;	call fourehexhl
+	ld (scratch+50),a
+
+
+
+	ld hl,asc+2
+;	ld a, (hl)
+;	call nibble2val
+	call get_byte
+
+;	call fourehexhl
+	ld (scratch+52),a
+	
+	ld hl,scratch+50
+	ld (os_cur_ptr),hl
+	jp cli
 
 enter:	
 	ld a,(scratch+4)
@@ -133,30 +171,22 @@ enter:
 	jr z, .entercont
 	; no, not a null term line so has an address to work out....
 
-	ld hl,(scratch+2)
-	call fourehexhl
+	ld hl,scratch+2
+	call get_word_hl
 
 	ld (os_cur_ptr),hl	
+	jp cli
 
 
 .entercont: 
 
-	ld a, (scratch+2)
-	call atohex
-		SRL A
-		SRL A
-		SRL A
-		SRL A
-	ld b, a
-	ld a,(scratch+3)
-	inc hl
-	call atohex
-	add b
-	ld hl,(os_cur_ptr)
-	ld (hl),a
-	inc hl
-	ld (os_cur_ptr),hl
-	jp cli
+	ld hl, scratch+2
+	call get_byte
+
+   	ld hl,(os_cur_ptr)
+		ld (hl),a
+		inc hl
+		ld (os_cur_ptr),hl
 	
 ; get byte 
 
@@ -173,8 +203,8 @@ dump:	; see if we are cotinuing on from the last command by not uncluding any ad
 
 	; no, not a null term line so has an address to work out....
 
-	ld hl,(scratch+2)
-	call fourehexhl
+	ld hl,scratch+2
+	call get_word_hl
 
 	ld (os_cur_ptr),hl	
 
@@ -234,7 +264,7 @@ pop af
 .dumpbyte:
 	push bc
 	push af
-   		ld hl,(os_cur_ptr)
+   	ld hl,(os_cur_ptr)
 		ld a,(hl)
 		inc hl
 		ld (os_cur_ptr),hl

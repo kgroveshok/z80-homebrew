@@ -69,20 +69,146 @@ coldstart:
 ;	jp stop
 
 
-
-
+os_last_cmd: equ scratch+30
+os_cur_ptr: equ scratch+33
+os_word_scratch: equ scratch+38
 
 main:
 	call clear_display
 	call update_display
 
-	call demo
+	;call demo
+
+
+	; init scratch input area for cli commands
+
+	ld hl, scratch	
+	ld a,0
+	ld (hl),a
+
+	ld a,0
+	ld (os_last_cmd),a	; current command in use to enable repeated use with an enter etc
+
+	ld (os_cur_ptr),a	; ptr to whatever is needed for this command
+	ld (os_cur_ptr+1),a	
+
+	ld (os_word_scratch),a	; byte or word being used in parsing for this command
+	ld (os_word_scratch+1),a	
+	
+
+cli:
+	; show cli prompt
+
+	ld a, display_row_4
+	ld de, prompt
+	call str_at_display
+
+	call update_display
+
+	ld a, kLCD_Line4+1	 ; TODO using direct screen line writes. Correct this to frame buffer
+	ld d, 10
+	ld hl, scratch	
+	call input_str
+
+
+	; look for monitor commands
+
+	ld a,(scratch)
+	cp 'd'
+	jp dump			; d xxxx    dump 4 bytes. repeated pressing of enter dumps another row and scrolls
+	cp 'g'
+	jp jump			; j xxxx     jump and run code at xxxx
+	cp 'e'
+	jp enter                ; e xxxx     start entering of single bytes storing at address until empty string
+
+
+	nop
+	jp cli
+
+
+
+enter:	jp cli
+
+dump:	; see if we are cotinuing on from the last command by not uncluding any address
+		ld a, display_row_1
+		ld de, dumping
+		call str_at_display
+
+	ld de, dump_cont
+	ld a,(scratch+1)
+	cp 0
+	jr z, .dumpcont
+
+	; no, not a null term line so has an address to work out....
+
+	ld hl,(scratch+2)
+	call fourehexhl
+
+	ld (os_cur_ptr),hl	
+
+	ld de, dump_new
+
+
+.dumpcont:
+
+		ld a, display_row_1+15
+		call str_at_display
+		call update_display
+
+; display decoding address
+   	ld hl,(os_cur_ptr)
+
+	ld a,h
+	ld hl, os_word_scratch
+	call hexout
+   	ld hl,(os_cur_ptr)
+
+	ld a,l
+	ld hl, os_word_scratch+2
+	call hexout
+	ld hl, os_word_scratch+4
+	ld a, 0
+	ld (hl),a
+	push hl
+	pop de
+		ld a, display_row_3
+		call str_at_display
+		call update_display
+
+
+	
+	
+
+   ld hl,(os_cur_ptr)
+		ld a,(hl)
+		inc hl
+		ld (os_cur_ptr),hl
+
+		ld hl, os_word_scratch
+
+		call tohex
+
+		ld a,"-"
+		ld (os_word_scratch+2),a
+		ld a,0
+		ld (os_word_scratch+3),a
+
+		ld a, display_row_2
+		ld de, os_word_scratch
+		call str_at_display
+		call update_display
+	
+
+	jp cli
+
+jump:	jp cli
+
+
 
 
 ; TODO implement a basic monitor mode to start with
 
 
-	jp main
 
 
 
@@ -95,7 +221,9 @@ main:
 
 str1: db "Enter some text...",0
 clear: db "                    ",0
-
+dumping: db "Dumping...",0
+dump_cont: db "Cont.",0
+dump_new: db "New",0
 
 demo:
 

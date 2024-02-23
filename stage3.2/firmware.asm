@@ -48,7 +48,7 @@ key_shift: equ key_symbol - 1
 display_rows: equ 4
 display_cols: equ 20
 
-display_fb_len: equ (display_rows*display_cols)
+display_fb_len: equ display_rows*display_cols
 
 ; primary frame buffer
 display_fb0: equ  key_shift-display_fb_len-display_fb_len

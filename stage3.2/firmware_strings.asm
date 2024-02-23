@@ -114,6 +114,7 @@ strcpy:   LD   A, (DE)        ;Get character from string
 ; from z80uartmonitor
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
 ; OUTPUT VALUE OF A IN HEX ONE NYBBLE AT A TIME
+; pass hl for where to put the text
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
 hexout:	PUSH BC
 		PUSH AF
@@ -123,14 +124,16 @@ hexout:	PUSH BC
 		SRL A
 		SRL A
 		SRL A
-		CALL TOHEX
-		CALL cout   ; TODO should be going to frame buffer and not direct lcd
+		CALL tohex
+		ld (hl),a
+		inc hl	
 		
 		; Lower nybble
 		LD A, B
 		AND 0FH
-		CALL TOHEX
-		CALL cout
+		CALL tohex
+		ld (hl),a
+		inc hl	
 		
 		POP AF
 		POP BC
@@ -139,7 +142,7 @@ hexout:	PUSH BC
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
 ; TRANSLATE value in lower A TO 2 HEX CHAR CODES FOR DISPLAY
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
-TOHEX:
+tohex:
 		PUSH HL
 		PUSH DE
 		LD D, 0
@@ -172,11 +175,42 @@ TOHEX:
 ;; 	ASCII char code for 0-9,A-F in A to single hex digit
 ;;    subtract $30, if result > 9 then subtract $7 more
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-ATOHEX:
+atohex:
 		SUB $30
 		CP 10
 		RET M		; If result negative it was 0-9 so we're done
 		SUB $7		; otherwise, subtract $7 more to get to $0A-$0F
 		RET		
+
+fourehexhl: 
+	ld a,(hl)
+	call atohex
+		SRL A
+		SRL A
+		SRL A
+		SRL A
+	ld b, a
+	inc hl
+	ld a,(hl)
+	inc hl
+	call atohex
+	add b
+	ld d,a
+	ld a,(hl)
+	call atohex
+		SRL A
+		SRL A
+		SRL A
+		SRL A
+	ld b, a
+	inc hl
+	ld a,(hl)
+	inc hl
+	call atohex
+	add b
+	ld e, a
+	push de
+	pop hl
+	ret
 ; eof
 

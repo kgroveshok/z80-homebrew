@@ -2,7 +2,7 @@
 ; main constants (used here and in firmware)
 
 
-DEBUG_KEY: equ 1
+DEBUG_KEY: equ 0
 
 
 tos:	equ 0ffffh

@@ -127,7 +127,43 @@ cli:
 
 
 
-enter:	jp cli
+enter:	
+	ld a,(scratch+4)
+	cp 0
+	jr z, .entercont
+	; no, not a null term line so has an address to work out....
+
+	ld hl,(scratch+2)
+	call fourehexhl
+
+	ld (os_cur_ptr),hl	
+
+
+.entercont: 
+
+	ld a, (scratch+2)
+	call atohex
+		SRL A
+		SRL A
+		SRL A
+		SRL A
+	ld b, a
+	ld a,(scratch+3)
+	inc hl
+	call atohex
+	add b
+	ld hl,(os_cur_ptr)
+	ld (hl),a
+	inc hl
+	ld (os_cur_ptr),hl
+	jp cli
+	
+; get byte 
+
+
+
+	jp cli
+
 
 dump:	; see if we are cotinuing on from the last command by not uncluding any address
 
@@ -224,8 +260,14 @@ pop af
 
 	ret
 
-jump:	jp cli
+jump:	
 
+	ld hl,(scratch+2)
+	call fourehexhl
+
+	ld (os_cur_ptr),hl	
+
+	jp (hl)
 
 
 

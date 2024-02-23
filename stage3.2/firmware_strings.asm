@@ -2,14 +2,19 @@
 
 ; TODO string len
 ; input text string, end on cr with zero term
-; bc is row and column to start prompt
+; a offset into frame buffer to start prompt
 ; d is max length
 ; e is current cursor position
 ; hl is ptr to where string will be stored
 
-input_str: 
-		ld (input_ptr), hl
+input_str:	ld (input_at_pos), a
 		ld (input_start), hl
+		ld a,1			; add cursor
+		ld (hl),a
+		inc hl
+		ld a,0
+		ld (hl),a
+		ld (input_ptr), hl
 		ld a,d
 		ld (input_size), a
 		ld a,0
@@ -20,7 +25,7 @@ input_str:
 		; TODO switch cursor depending on the modifer key
 
 		; display entered text
-        	LD   A, kLCD_Line3    ; TODO position cursor for now just put at second line
+		ld a,(input_at_pos)
             	CALL fLCD_Pos       ;Position cursor to location in A
             	LD   de, (input_start)
             	CALL fLCD_Str       ;Display string pointed to by DE
@@ -34,17 +39,20 @@ input_str:
 		ld hl,(input_ptr)
 
 		cp KEY_CR	 ; pressing enter ends input
-		ret z
+		jr z, .instrcr
 
 		cp KEY_BS 	; back space
 		jr nz, .instr2
 		; process back space
 
 		; TODO stop back space if at start of string
-
 		dec hl
-		ld a,' '
+		dec hl ; to over write cursor
+		ld a,(cursor_shape)
 		;ld a,0
+		ld (hl),a
+		inc hl
+		ld a," "
 		ld (hl),a
 		ld (input_ptr),hl
 		
@@ -55,6 +63,10 @@ input_str:
 
 		; TODO do string size test
 
+		dec hl ; to over write cursor
+		ld (hl),a
+		inc hl
+		ld a,(cursor_shape)
 		ld (hl),a
 		inc hl
 		ld a,0
@@ -63,6 +75,10 @@ input_str:
 		ld (input_ptr),hl
 		
 		jr .instr1
+.instrcr:	dec hl		; remove cursor
+		ld a,0
+		ld (hl),a
+		ret
 
 
 ; strcpy hl = dest, de source

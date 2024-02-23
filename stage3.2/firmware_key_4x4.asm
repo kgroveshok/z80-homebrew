@@ -49,12 +49,14 @@ key_init:
 	; TODO Configure cursor shapes
 
 	; Load cursor shapes 
-            LD   A, 0           ;First character to define (0 to 7)
+            LD   A, 1           ;First character to define (0 to 7)
             LD   DE, .cursor_shapes    ;Pointer to start of bitmap data
             LD   B, 2           ;Number of characters to define
 .DefLoop:   CALL fLCD_Def       ;Define custom character
             DJNZ .DefLoop       ;Repeat for each character
 
+		ld a, 1
+	ld (cursor_shape),a
 	ret
 
 ; Custom characters for cursor shapes 5 pixels wide by 8 pixels high
@@ -328,6 +330,7 @@ cin: 	call .mtoc
 
 	ld de, .matrix_to_char
 
+
 .cinmap: 
 	if DEBUG_KEY
             LD   A, kLCD_Line4
@@ -365,6 +368,8 @@ cin: 	call .mtoc
 
 .key_shift_hold:
 	push bc
+	ld a, 1
+	ld (cursor_shape),a
 	ld b, 0
 	ld a, (hl)
 	cp '.'
@@ -372,6 +377,8 @@ cin: 	call .mtoc
 	ld b, 255
 	ld a, '+'    ; hide key from later scans
 	ld (hl),a
+	ld a, 2
+	ld (cursor_shape),a
 .key_shift1:
 	; write flag indicator
 	ld a,b

@@ -108,32 +108,44 @@ demo:
 	ld a,0
 	ld (hl),a
 
-            LD   A, kLCD_Line2
-            CALL fLCD_Pos       ;Position cursor to location in A
-            LD   DE, str1
-            CALL fLCD_Str       ;Display string pointed to by DE
-cloop:	
-            LD   A, kLCD_Line3
-            CALL fLCD_Pos       ;Position cursor to location in A
-            LD   DE, clear
-            CALL fLCD_Str       ;Display string pointed to by DE
 
-	ld bc, 0
+            LD   A, display_row_2
+;            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   DE, str1
+	call str_at_display
+
+;            CALL fLCD_Str       ;Display string pointed to by DE
+cloop:	
+            LD   A, display_row_3
+;            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   DE, clear
+ ;           CALL fLCD_Str       ;Display string pointed to by DE
+		call str_at_display
+	ld a, display_row_4
+	ld de, prompt
+
+		call str_at_display
+	call update_display
+
+	ld a, kLCD_Line4+1	 ; TODO using direct screen line writes. Correct this to frame buffer
 	ld d, 10
 	ld hl, scratch	
 	call input_str
 
-	call clear_display
-	call update_display
+;	call clear_display
+;'	call update_display
 
-            LD   A, kLCD_Line1
-            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   A, display_row_1
+;            CALL fLCD_Pos       ;Position cursor to location in A
             LD   DE, clear
-            CALL fLCD_Str       ;Display string pointed to by DE
-            LD   A, kLCD_Line1
-            CALL fLCD_Pos       ;Position cursor to location in A
+		call str_at_display
+;            CALL fLCD_Str       ;Display string pointed to by DE
+            LD   A, display_row_1
+;            CALL fLCD_Pos       ;Position cursor to location in A
             LD   DE, scratch
-            CALL fLCD_Str       ;Display string pointed to by DE
+;            CALL fLCD_Str       ;Display string pointed to by DE
+		call str_at_display
+	call update_display
 
 		ld a,0
 	ld hl, scratch
@@ -144,7 +156,9 @@ cloop:
 
 
 
+; OS Prompt
 
+prompt: db ">",0
 
 
 ; eof

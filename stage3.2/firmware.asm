@@ -36,7 +36,8 @@ key_face_held: equ key_fd - 1
 input_ptr:  equ key_face_held - 2    ; ptr to the current cursor position of string currently being edited  on entry starting 
 input_start:  equ input_ptr - 2    ; ptr to the start of string 
 input_size: equ input_start -1  ; number of chars
-input_cursor: equ input_size - 1 ; offset of cursor to current start of string
+input_at_pos: equ input_size - 1 ; frame buffer offset for start of input
+input_cursor: equ input_at_pos - 1 ; offset of cursor to current start of string
 
 key_actual_pressed: equ input_cursor - 1 
 key_symbol: equ key_actual_pressed - 1 
@@ -119,6 +120,10 @@ hardware_init:
 	call update_display
 	call delay1s
 	ld a,'*'
+	call fill_display
+	call update_display
+	call delay1s
+	ld a,'-'
 	call fill_display
 	call update_display
 	call delay1s

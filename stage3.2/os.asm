@@ -115,11 +115,11 @@ cli:
 
 	ld a,(scratch)
 	cp 'd'
-	jp dump			; d xxxx    dump 4 bytes. repeated pressing of enter dumps another row and scrolls
+	jp z, dump			; d xxxx    dump 4 bytes. repeated pressing of enter dumps another row and scrolls
 	cp 'g'
-	jp jump			; j xxxx     jump and run code at xxxx
+	jp z,jump			; j xxxx     jump and run code at xxxx
 	cp 'e'
-	jp enter                ; e xxxx     start entering of single bytes storing at address until empty string
+	jp z,enter                ; e xxxx     start entering of single bytes storing at address until empty string
 
 
 	nop
@@ -130,11 +130,7 @@ cli:
 enter:	jp cli
 
 dump:	; see if we are cotinuing on from the last command by not uncluding any address
-		ld a, display_row_1
-		ld de, dumping
-		call str_at_display
 
-	ld de, dump_cont
 	ld a,(scratch+1)
 	cp 0
 	jr z, .dumpcont
@@ -146,20 +142,34 @@ dump:	; see if we are cotinuing on from the last command by not uncluding any ad
 
 	ld (os_cur_ptr),hl	
 
-	ld de, dump_new
 
 
 .dumpcont:
 
-		ld a, display_row_1+15
-		call str_at_display
-		call update_display
+
+	; dump bytes at ptr
+
+	ld a, display_row_1
+	call .dumpbyterow
+
+	ld a, display_row_2
+	call .dumpbyterow
+
+
+	ld a, display_row_3
+	call .dumpbyterow
+
+		jp cli
+
+.dumpbyterow:
+
+	push af
 
 ; display decoding address
    	ld hl,(os_cur_ptr)
 
 	ld a,h
-	ld hl, os_word_scratch
+	ld hl, os_word_scratch		; TODO do direct write to frame buffer instead and drop the str_at_display
 	call hexout
    	ld hl,(os_cur_ptr)
 
@@ -167,39 +177,52 @@ dump:	; see if we are cotinuing on from the last command by not uncluding any ad
 	ld hl, os_word_scratch+2
 	call hexout
 	ld hl, os_word_scratch+4
+	ld a, ':'
+	ld (hl),a
+	inc hl
 	ld a, 0
 	ld (hl),a
-	push hl
-	pop de
-		ld a, display_row_3
+	ld de, os_word_scratch
+	pop af
+	push af
+;		ld a, display_row_2
 		call str_at_display
 		call update_display
 
 
-	
-	
+pop af
+	add 5
 
-   ld hl,(os_cur_ptr)
+	ld b, 5
+
+.dumpbyte:
+	push bc
+	push af
+   		ld hl,(os_cur_ptr)
 		ld a,(hl)
 		inc hl
 		ld (os_cur_ptr),hl
 
 		ld hl, os_word_scratch
 
-		call tohex
+		call hexout
 
-		ld a,"-"
-		ld (os_word_scratch+2),a
 		ld a,0
-		ld (os_word_scratch+3),a
+		ld (os_word_scratch+2),a
+		pop af
+		push af
 
-		ld a, display_row_2
 		ld de, os_word_scratch
 		call str_at_display
 		call update_display
+		pop af
+		pop bc
+		add 3
+	djnz .dumpbyte
+
 	
 
-	jp cli
+	ret
 
 jump:	jp cli
 
@@ -221,9 +244,6 @@ jump:	jp cli
 
 str1: db "Enter some text...",0
 clear: db "                    ",0
-dumping: db "Dumping...",0
-dump_cont: db "Cont.",0
-dump_new: db "New",0
 
 demo:
 

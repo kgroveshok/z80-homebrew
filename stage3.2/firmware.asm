@@ -123,7 +123,7 @@ hardware_init:
 	call update_display
 	call delay1s
 
-	; splash screen
+; boot splash screen
 	
             ld a, display_row_1
 	ld de, bootmsg

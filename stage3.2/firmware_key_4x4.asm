@@ -45,7 +45,54 @@ key_init:
             LD   A, 00001111b
             OUT  (portbctl),A   ;Port A = all lines are outputs
 
+
+	; TODO Configure cursor shapes
+
+	; Load cursor shapes 
+            LD   A, 0           ;First character to define (0 to 7)
+            LD   DE, .cursor_shapes    ;Pointer to start of bitmap data
+            LD   B, 2           ;Number of characters to define
+.DefLoop:   CALL fLCD_Def       ;Define custom character
+            DJNZ .DefLoop       ;Repeat for each character
+
 	ret
+
+; Custom characters for cursor shapes 5 pixels wide by 8 pixels high
+; Up to 8 custom characters can be defined
+.cursor_shapes:    
+;; Character 0x00 = Normal
+            DB  11111b
+            DB  11111b
+            DB  11111b
+            DB  11111b
+            DB  11111b
+            DB  11111b
+            DB  11111b
+            DB  11111b
+;; Character 0x01 = Modifier
+            DB  11111b
+            DB  11011b
+            DB  11011b
+            DB  11011b
+            DB  11011b
+            DB  11111b
+            DB  11011b
+            DB  11111b
+
+
+
+
+; Display custom character 0
+;            LD   A, kLCD_Line1+14
+;            CALL fLCD_Pos       ;Position cursor to location in A
+;            LD   A, 0
+;            CALL fLCD_Data      ;Write character in A at cursor
+
+; Display custom character 1
+;            LD   A, kLCD_Line2+14
+;            CALL fLCD_Pos      ;Position cursor to location in A
+;            LD   A, 1
+;            CALL fLCD_Data     ;Write character in A at cursor
 
 ; keyboard scanning 
 
@@ -62,7 +109,6 @@ key_init:
 
 
 ; character in from keyboard
-; TODO add the key modifier state to what cin returns
 
 .matrix_to_char: db "D#0*C987B654A321"
 
@@ -72,7 +118,7 @@ key_init:
 .key_map_fa: 
 
 		db 'D'
-		db KEY_CR    ; TODO cr
+		db KEY_CR    ; cr
 		db ' '
 		db  KEY_SHIFTLOCK   ; TODO Shift lock
 		db 'C'
@@ -134,7 +180,7 @@ key_init:
 		db 'A'
 		db 0  ; TODO spare
 		db 0  ; TODO spare
-		db KEY_BS  ; TODO back space
+		db KEY_BS  ; back space
 		db 'A'
 		db '!'
 		db '@'
@@ -147,68 +193,6 @@ key_init:
 		db '$'
 		db '&'
 	 	db '"'
-
-
-; input text string, end on cr with zero term
-; bc is row and column to start prompt
-; d is max length
-; e is current cursor position
-; hl is ptr to where string will be stored
-
-input_str: 
-		ld (input_ptr), hl
-		ld (input_start), hl
-		ld a,d
-		ld (input_size), a
-		ld a,0
-		ld (input_cursor),a
-.instr1:	
-
-		; display entered text
-        	LD   A, kLCD_Line3    ; TODO position cursor for now just put at second line
-            	CALL fLCD_Pos       ;Position cursor to location in A
-            	LD   de, (input_start)
-            	CALL fLCD_Str       ;Display string pointed to by DE
-
-		call cin
-		cp 0
-		jr z, .instr1
-
-		; proecess keyboard controls first
-
-		ld hl,(input_ptr)
-
-		cp KEY_CR	 ; pressing enter ends input
-		ret z
-
-		cp KEY_BS 	; back space
-		jr nz, .instr2
-		; process back space
-
-		; TODO stop back space if at start of string
-
-		dec hl
-		ld a,' '
-		;ld a,0
-		ld (hl),a
-		ld (input_ptr),hl
-		
-
-		jr .instr1
-
-.instr2:	; no special key pressed to see if we have room to store it
-
-		; TODO do string size test
-
-		ld (hl),a
-		inc hl
-		ld a,0
-		ld (hl),a
-
-		ld (input_ptr),hl
-		
-		jr .instr1
-
 
 		
 	
@@ -281,9 +265,12 @@ cin: 	call .mtoc
 
 	
 
-; map mamtrix key held to char on face of key
+; map matrix key held to char on face of key
 
 .mtoc:
+
+
+	; TODO optimise the code....
 
 ; scan keyboard row 1
 	ld a, 128
@@ -539,66 +526,6 @@ cin: 	call .mtoc
 
 .matrix:
 
-
-; Display text on second line
-;            LD   A, kLCD_Line3
-;            CALL fLCD_Pos       ;Position cursor to location in A
-;            LD   DE, scanline3
-;            CALL fLCD_Str       ;Display string pointed to by DE
-
-; Display text on second line
-;            LD   A, kLCD_Line4
-;            CALL fLCD_Pos       ;Position cursor to location in A
-;            LD   DE, scanline4
-;            CALL fLCD_Str       ;Display string pointed to by DE
-
-; Define custom character(s)
-;            LD   A, 0           ;First character to define (0 to 7)
-;            LD   DE, BitMaps    ;Pointer to start of bitmap data
-;            LD   B, 2           ;Number of characters to define
-;DefLoop:   CALL fLCD_Def       ;Define custom character
-;            DJNZ DefLoop       ;Repeat for each character
-
-
-; Display custom character 0
-;            LD   A, kLCD_Line1+14
-;            CALL fLCD_Pos       ;Position cursor to location in A
-;            LD   A, 0
-;            CALL fLCD_Data      ;Write character in A at cursor
-
-; Display custom character 1
-;            LD   A, kLCD_Line2+14
-;            CALL fLCD_Pos      ;Position cursor to location in A
-;            LD   A, 1
-;            CALL fLCD_Data     ;Write character in A at cursor
-
-
-;	    ld a, 128
-;		out (portbdata),a
-;		call delay1s
-;            LD   A, kLCD_Line1
-;            CALL fLCD_Pos       ;Position cursor to location in A
-;            LD   DE, scanline1
-;            CALL fLCD_Str       ;Display string pointed to by DE
-;	    ld a, 64
-;out (portbdata),a
-;		call delay1s
-;
-;            LD   A, kLCD_Line2
-;            CALL fLCD_Pos       ;Position cursor to location in A
-;            LD   DE, yes
-;		in a, (portbdata)
-;;		ld a, 0
-;		bit 0 ,a
-;		jr nz, s1
-;		ld de, no			
-;s1:            CALL fLCD_Str       ;Display string pointed to by DE
-;;
-;	jp keyscan
-;		halt		
-
-
-; config port b all outputs and add an led to any pin on port b and flash it
 
 
 ; scan keyboard row 1

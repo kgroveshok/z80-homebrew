@@ -11,6 +11,9 @@
 
 	jp coldstart     ; rst 0 - cold boot
 
+;	org 05h		; null out bdos call
+;	ret
+
 ;	org 08h
 ;
 ;	jp cin		; rst 8 - char in
@@ -21,21 +24,24 @@
 ;
 ;	org 01bh  
 ;
-;	;jp 		; rst 01bh
+;	;jp  		; rst 01bh   - write string to display
 ;
 ;
 ;	org 020h
 ;
-;	; jp		 ; rst 020h
+;	; jp		 ; rst 020h - read char at screen location
 ;
 ;	org 028h
 
-	; jp		 ; rst 028h
+	; jp		 ; rst 028h  - storage i/o
 
-;$08, $10, $18, $20, $28, $30 or $38
+; org 030h
+; $30 
+; org 038h
+; $38
 
-str1: db "Enter some text...",0
-clear: db "                    ",0
+; TODO any more important entry points to add to jump table for easier coding use?
+
 
 include "firmware.asm"
 
@@ -59,21 +65,41 @@ coldstart:
 
 
 
-	;call clear_display
-
-
-;	ld de, bootmsg
-;	ld hl,lcd_fb_active
-;	call strcpy
-;
-;	ld d, 1
-;	ld e, 0
-
 ;stop:	nop
 ;	jp stop
 
 
+
+
+
 main:
+
+
+	call demo
+
+
+; TODO implement a basic monitor mode to start with
+
+
+	jp main
+
+
+
+
+
+
+
+; testing and demo code during development
+
+
+str1: db "Enter some text...",0
+clear: db "                    ",0
+
+
+demo:
+
+
+
 ;	call update_display
 
 	; init scratch input area for testing
@@ -90,13 +116,7 @@ cloop:
             CALL fLCD_Pos       ;Position cursor to location in A
             LD   DE, clear
             CALL fLCD_Str       ;Display string pointed to by DE
-;call cin
 
-;	ld hl,lcd_fb_active
-;	ld (hl),a
-;	call delay250ms
-
-;	call cin
 	ld bc, 0
 	ld d, 10
 	ld hl, scratch	
@@ -114,42 +134,11 @@ cloop:
 		ld a,0
 	ld hl, scratch
 	ld (hl),a
-;	cp 0
-;	jr z, cloop
-	; we have a key press what is it?
-
-;	ld hl,scratch
-;	ld (hl),a
-;	inc hl
-;	ld a,0
-;	ld (hl),a
-
-
- ;           LD   A, kLCD_Line1
- ;           CALL fLCD_Pos       ;Position cursor to location in A
- ;           LD   DE, scratch
- ;           CALL fLCD_Str       ;Display string pointed to by DE
 
 	nop
 	jp cloop
 
 
-;	cp 0
-;	jr z, cloop
-;
-;	cp '#'
-;	jr z, backspace
-;
-;	call curptr
-;	ld (hl),a
-;	inc e
-;	
-;
-;	jp main
-;
-;
-;backspace:
-;	jp main
 
 
 

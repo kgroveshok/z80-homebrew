@@ -185,61 +185,6 @@ cd1:	ld (hl),a
 ;flagreset:   db "----",0,0,0,0
 	
 	
-;kr1p2:
-;kr1p3:
-;kr1p4:
-
-;donescan: jp keyscan
-
-;scanline1:   DB  "Scan Line 1: "
-;row1:	     db ".... ",0
-;row2:	     db ".... ",0
-;row3:	     db ".... ",0
-;row4:	     db ".... ",0
-;		db 0
-
-
-;scanline1:   DB  "Scan Line 1: ",
-;kr1p1:	     db "_ "
-;kr1p2:	     db "_ "
-;kr1p3:	     db "_ "
-;kr1p4:	     db "_"
-;		db 0
-
-;scanline2:   DB  "Scan Line 2: "
-;row2:	     db ".... "
-;kr2p1:	     db "_"
-;kr2p2:	     db "_"
-;kr2p3:	     db "_"
-;kr2p4:	     db "_"
-;		db 0
-;scanline3:   DB  "Scan Line 3: "
-;kr3p1:	     db "_"
-;kr3p2:	     db "_"
-;kr3p3:	     db "_"
-;kr3p4:	     db "_"
-;		db 0
-
-;scanline4:   DB  "Scan Line 4: "
-;kr4p1:	     db "_"
-;kr4p2:	     db "_"
-;kr4p3:	     db "_"
-;kr4p4:	     db "_"
-;		db 0
-;yes:	db "yes",0
-;no:	db "no",0
-;flash:
-;	    ld a, 255
-;		out (portbdata),a
-;		call delay1s
-;	    ld a, 0
-;		out (portbdata),a
-;		call delay1s
-;
-;
-;
-;		jp flash
-;		halt		
 
 ; Some other things to do
 ;            LD   A, kLCD_Clear ;Display clear
@@ -558,10 +503,6 @@ LCDDelay:   PUSH DE
             RET
 
 
-
-
-
-; Delay loops
 
 
 ; eof

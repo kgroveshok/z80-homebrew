@@ -109,6 +109,7 @@ hardware_init:
 
 	call key_init
 
+	; lcd test sequence
 		
 		call clear_display
 	call update_display
@@ -121,36 +122,30 @@ hardware_init:
 	call fill_display
 	call update_display
 	call delay1s
+
+	; splash screen
 	
             ld a, display_row_1
-            ;LD   A, kLCD_Line2
-;            CALL fLCD_Pos       ;Position cursor to location in A
 	ld de, bootmsg
 	call str_at_display
-;            CALL fLCD_Str       ;Display string pointed to by DE
 	call update_display
 
 
 	call delay1s
 	call delay1s
-            LD   A, display_row_2
-;            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   A, display_row_3+2
 	ld de, bootmsg1
- ;           CALL fLCD_Str       ;Display string pointed to by DE
 	call str_at_display
 	call update_display
 	call delay1s
 	call delay1s
 
-	ld a, display_row_3
+	ld a, display_row_4+3
 	ld de, bootmsg2
-;#            CALL fLCD_Str       ;Display string pointed to by DE
 	call str_at_display
 	call update_display
 	call delay1s
 	call delay1s
-
-stop:    jp stop
 
 		ret
 

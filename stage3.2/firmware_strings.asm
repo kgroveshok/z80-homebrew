@@ -24,6 +24,13 @@ input_str:	ld (input_at_pos), a
 		; TODO do block cursor
 		; TODO switch cursor depending on the modifer key
 
+		; update cursor shape change on key hold
+
+		ld hl, (input_ptr)
+		dec hl
+		ld a,(cursor_shape)
+		ld (hl), a
+
 		; display entered text
 		ld a,(input_at_pos)
             	CALL fLCD_Pos       ;Position cursor to location in A

@@ -46,7 +46,7 @@
 kLCDPrt:    EQU kDataReg       ;LCD port is the PIO port A data reg
 kLCDBitRS:  EQU 2              ;Port bit for LCD RS signal
 kLCDBitE:   EQU 3              ;Port bit for LCD E signal
-kLCDWidth:  EQU lcd_cols             ;Width in characters
+kLCDWidth:  EQU display_cols             ;Width in characters
 
 ; **********************************************************************
 ; **  Code library usage
@@ -94,10 +94,10 @@ lcd_init:
 
 curptr:
 	push bc
-	ld hl, lcd_fb_active
+	ld hl, display_fb0
 cpr:	
 	; loop for cursor whole row
-	ld c, lcd_cols
+	ld c, display_cols
 cpr1:	inc hl
 	dec c
 	jr nz, cpr1
@@ -117,72 +117,13 @@ cpr2:	inc hl
 
 
 
-clear_display:
-	ld b,lcd_fb_len
-	ld hl, lcd_fb_active
-	ld a, ' '
-cd1:	ld (hl),a
-	inc hl
-	dec b
-	jr nz, cd1
-	ld a,0
-	ld (hl),a
-	ret
-
-
-; write the active frame buffer to lcd
-
-;update_display: 
-;	; ensure zero term at end of buffer
-;	ld a,0
-;	ld (lcd_fb_active+lcd_fb_len-1),a
-;
-;
-;            LD   A, 0
-;            CALL fLCD_Pos       ;Position cursor to location in A
-;            LD   DE, lcd_fb_active
-;            CALL fLCD_Str       ;Display string pointed to by DE
-;		ret
-;
-;;
-;;	ld b,'.'
-;;	ld a,c
-;;	and 2
-;;	bit 0,a
-;;	jr z, p2on
-;;	ld b,'#'
-;;p2on:
-;;	ld (hl), b
-;;	inc hl
-;;;
-;;	ld b,'.'
-;;	ld a,c
-;	and 4
-;;;	bit 0,a
-;	jr z, p3on
-;	ld b,'#'
-;p3on:
-;	ld (hl), b
-;	inc hl
-;;;
-;	ld b,'.'
-;;;	bit 0,a
-;	ld a,c
-;	and 8
-;	jr z, p4on
-;	ld b,'#'
-;p4on:
-;	ld (hl), b
-;	inc hl
-;
-;; zero term
-;	ld b,0
-;	ld (hl), b
-
-;rscandone: ret
-
-
-;flagreset:   db "----",0,0,0,0
+; write the frame buffer given in de to hardware 
+write_display: 
+            LD   A, 0
+            CALL fLCD_Pos       ;Position cursor to location in A
+            CALL fLCD_Str       ;Display string pointed to by DE
+	
+		ret
 	
 	
 
@@ -306,6 +247,13 @@ cd1:	ld (hl),a
 ;kLCDBitRS: EQU 2              ;Port bit for LCD RS signal
 ;kLCDBitE:  EQU 3              ;Port bit for LCD E signal
 ;kLCDWidth: EQU 20             ;Width in characters
+
+; general line offsets in any frame buffer
+
+display_row_1: equ 0
+display_row_2: equ 0x40
+display_row_3: equ display_row_1 + display_cols
+display_row_4: equ display_row_2 + display_cols
 
 ; Cursor position values for the start of each line
 kLCD_Line1: EQU 0x00 

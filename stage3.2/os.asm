@@ -73,7 +73,8 @@ coldstart:
 
 
 main:
-
+	call clear_display
+	call update_display
 
 	call demo
 
@@ -121,6 +122,9 @@ cloop:
 	ld d, 10
 	ld hl, scratch	
 	call input_str
+
+	call clear_display
+	call update_display
 
             LD   A, kLCD_Line1
             CALL fLCD_Pos       ;Position cursor to location in A

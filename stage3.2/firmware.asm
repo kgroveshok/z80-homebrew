@@ -42,18 +42,27 @@ key_actual_pressed: equ input_cursor - 1
 key_symbol: equ key_actual_pressed - 1 
 key_shift: equ key_symbol - 1 
 
-; lcd allocation
+; Display allocation
 
-lcd_rows: equ 4
-lcd_cols: equ 20
+display_rows: equ 4
+display_cols: equ 20
 
-lcd_fb_len: equ (lcd_rows*lcd_cols)+lcd_rows ; extra byte per row for 0 term
+display_fb_len: equ (display_rows*display_cols)
 
-; active frame buffer
-lcd_fb_active: equ  key_shift-lcd_fb_len
+; primary frame buffer
+display_fb0: equ  key_shift-display_fb_len-display_fb_len
+; working frame buffers
+display_fb1: equ  display_fb0-display_fb_len-display_fb_len
+display_fb2: equ  display_fb1-display_fb_len
+;
+; pointer to active frame buffer
+display_fb_active: equ display_fb2 - 2
+
+
+;
 
 ;; can load into de directory
-cursor_col: equ lcd_fb_active-1
+cursor_col: equ display_fb_active-1
 cursor_row: equ cursor_col-1
 cursor_ptr: equ cursor_row - 1     ;  actual offset into lcd memory for row and col combo
 cursor_shape: equ cursor_ptr - 1   ; char used for the current cursor 
@@ -89,37 +98,65 @@ KEY_SHIFTLOCK: equ 4
 
 hardware_init:
 
+		; init primary frame buffer area
+		ld hl, display_fb0
+		ld (display_fb_active), hl
+
+
+
 		call lcd_init		; lcd hardware first as some screen functions called during key_init e.g. cursor shapes
 
 	call key_init
 
 		
+		call clear_display
+	call update_display
+	call delay1s
+	ld a,'-'
+	call fill_display
+	call update_display
+	call delay1s
+	ld a,'*'
+	call fill_display
+	call update_display
+	call delay1s
 	
-            LD   A, kLCD_Line2
-            CALL fLCD_Pos       ;Position cursor to location in A
+            ld a, display_row_1
+            ;LD   A, kLCD_Line2
+;            CALL fLCD_Pos       ;Position cursor to location in A
 	ld de, bootmsg
-            CALL fLCD_Str       ;Display string pointed to by DE
+	call str_at_display
+;            CALL fLCD_Str       ;Display string pointed to by DE
+	call update_display
 
 
 	call delay1s
 	call delay1s
-            LD   A, kLCD_Line2
-            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   A, display_row_2
+;            CALL fLCD_Pos       ;Position cursor to location in A
 	ld de, bootmsg1
-            CALL fLCD_Str       ;Display string pointed to by DE
+ ;           CALL fLCD_Str       ;Display string pointed to by DE
+	call str_at_display
+	call update_display
 	call delay1s
 	call delay1s
+
+	ld a, display_row_3
 	ld de, bootmsg2
-            CALL fLCD_Str       ;Display string pointed to by DE
+;#            CALL fLCD_Str       ;Display string pointed to by DE
+	call str_at_display
+	call update_display
 	call delay1s
 	call delay1s
+
+stop:    jp stop
 
 		ret
 
 
 bootmsg:	db "z80-homebrew OS v0.1",0
-bootmsg1:	db "  by Kevin Groves   ",0
-bootmsg2:	db "   Firmware v0.1   ",0
+bootmsg1:	db "by Kevin Groves",0
+bootmsg2:	db "Firmware v0.1",0
 
 ; a 4x20 lcd
 ; cout for display, low level positioning and writing functions (TODO) for hardware abstraction

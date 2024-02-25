@@ -488,7 +488,7 @@ Timeout:   POP  DE
 ;             Z flagged if no error
 ;             BC DE HL IX IY I AF' BC' DE' HL' preserved
 cfTstErr:   IN   A,(CF_STATUS)  ;Read status register
-            AND  0b00100101     ;General error or write error or correctable
+            AND  000100101b     ;General error or write error or correctable
             JR   Z,Success     ;No, so successful
             BIT  2,A            ;Correctable error?
             JR   NZ,ErCorrect  ;Yes, so report it

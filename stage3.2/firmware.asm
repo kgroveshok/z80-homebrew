@@ -3,7 +3,7 @@
 
 
 DEBUG_KEY: equ 0
-
+DEBUG_STORE: equ 1
 
 tos:	equ 0ffffh
 stacksize: equ 255
@@ -109,6 +109,7 @@ hardware_init:
 		call lcd_init		; lcd hardware first as some screen functions called during key_init e.g. cursor shapes
 
 	call key_init
+	call storage_init
 
 	; lcd test sequence
 		
@@ -162,12 +163,27 @@ bootmsg2:	db "Firmware v0.1",0
 ; a 4x20 lcd
 ; cout for display, low level positioning and writing functions (TODO) for hardware abstraction
 include "firmware_lcd.asm"
+;
+; TODO use the low spare two pins on port a of display pio to bit bang a serial out video display to an esp
+; TODO abstract the bit bang video out interface for dual display
+; TODO wire video out to tx pin on rc2014 bus
 
 ; must supply cin, and cin_wait for low level hardware abstraction 
 ; moved text_input entry points to here and leave the firmware hardware modules as abstraction layer
 ; test scancode
 include "firmware_key_4x4.asm"
 
+; storage hardware interface
+
+; use microchip serial eeprom for storage
+; include "firmware_spi.asm"
+; include "firmware_seeprom.asm"
+
+; use cf card for storage
+include "firmware_cf.asm"
+
+; load up high level storage hardward abstractions
+include "firmware_storage.asm"
 
 ; support routines for above hardware abstraction layer
 

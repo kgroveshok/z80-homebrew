@@ -41,7 +41,7 @@ key_init:
 
             LD   A, 11001111b
             OUT  (portbctl), A  ;Port A = PIO 'control' mode
-            LD   A, 00000000b
+;            LD   A, 00000000b
             LD   A, 00001111b
             OUT  (portbctl),A   ;Port A = all lines are outputs
 

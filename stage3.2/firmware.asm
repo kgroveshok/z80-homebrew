@@ -68,7 +68,16 @@ cursor_col: equ display_write_tmp-1
 cursor_row: equ cursor_col-1
 cursor_ptr: equ cursor_row - 1     ;  actual offset into lcd memory for row and col combo
 cursor_shape: equ cursor_ptr - 1   ; char used for the current cursor 
-scratch: equ cursor_shape-255
+
+; storage vars
+
+iErrorNum:  equ cursor_shape-1         ;Error number
+iErrorReg:  equ iErrorNum -1              ;Error register
+iErrorVer:  equ iErrorReg - 1              ;Verify error flag
+
+
+
+scratch: equ iErrorVer-255
 
 ; change below to point to last memory alloc above
 topusermem:  equ   scratch

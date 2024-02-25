@@ -836,9 +836,9 @@ cfDirData:  DB $E5,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$20,$00,$00,$00,$00
 
  ;           .DATA               ;Data section
 ;TODO may need to relocate???
-iErrorNum:  DB  0              ;Error number
-iErrorReg:  DB  0              ;Error register
-iErrorVer:  DB  0              ;Verify error flag
+;iErrorNum:  DB  0              ;Error number
+;iErrorReg:  DB  0              ;Error register
+;iErrorVer:  DB  0              ;Verify error flag
 
 
 

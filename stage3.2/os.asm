@@ -225,6 +225,7 @@ dump:	; see if we are cotinuing on from the last command by not uncluding any ad
 	ld a, display_row_3
 	call .dumpbyterow
 
+	call update_display
 		jp cli
 
 .dumpbyterow:
@@ -253,7 +254,7 @@ dump:	; see if we are cotinuing on from the last command by not uncluding any ad
 	push af
 ;		ld a, display_row_2
 		call str_at_display
-		call update_display
+;		call update_display
 
 
 pop af
@@ -280,7 +281,7 @@ pop af
 
 		ld de, os_word_scratch
 		call str_at_display
-		call update_display
+;		call update_display
 		pop af
 		pop bc
 		add 3

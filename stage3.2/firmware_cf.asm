@@ -15,9 +15,28 @@ storage_init:
 ;            OUT  (storage_actl), A  ;Port A = PIO 'control' mode
 ;            LD   A,000100000b
 ;            OUT  (storage_actl),;Port A
+	call cfTstErr
+	ld de, .cf_init_ok
+	cp 0
+	jr z, .show_err
+	ld de, .cf_init_fail
+.show_err:
+	ld a, display_row_2
+	call str_at_display
+	call update_display
+	call delay1s
+	call delay1s
+
+	call delay1s
+	call delay1s
+	
+
+
 	ret
 
 .cf_init:   db "Init CF interface...",0
+.cf_init_ok:   db "CF Card present",0
+.cf_init_fail:   db "CF Card not present",0
 
 ; **********************************************************************
 ; **  Compact Flash support                     by Stephen C Cousins  **

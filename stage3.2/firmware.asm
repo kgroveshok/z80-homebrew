@@ -113,6 +113,7 @@ hardware_init:
 		ld hl, display_fb0
 		ld (display_fb_active), hl
 
+		call clear_display
 
 
 		call lcd_init		; lcd hardware first as some screen functions called during key_init e.g. cursor shapes
@@ -122,7 +123,6 @@ hardware_init:
 
 	; lcd test sequence
 		
-		call clear_display
 	call update_display
 	call delay1s
 	ld a,'+'

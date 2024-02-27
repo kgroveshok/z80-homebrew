@@ -1,7 +1,7 @@
 ; persistent storage - cf hardware layer
 
 storage_init:
-
+	call clear_display
 	ld a, display_row_1
 	ld de, .cf_init
 	call str_at_display
@@ -17,12 +17,41 @@ storage_init:
 ;            OUT  (storage_actl),;Port A
 	call cfTstErr
 	ld de, .cf_init_ok
+	ld c,a
 	cp 0
 	jr z, .show_err
 	ld de, .cf_init_fail
 .show_err:
 	ld a, display_row_2
+	push bc
 	call str_at_display
+	pop bc
+	ld a,c
+	ld hl,scratch
+	call hexout
+	ld hl, scratch+2
+	ld a, 0
+	ld (hl),a
+	ld de, scratch
+	ld a,display_row_3
+;		ld a, display_row_2
+		call str_at_display
+
+
+	call cfDiagnose
+
+	ld hl,scratch
+	call hexout
+	ld hl, scratch+2
+	ld a, 0
+	ld (hl),a
+	ld de, scratch
+	ld a,display_row_4
+;		ld a, display_row_2
+		call str_at_display
+
+
+	
 	call update_display
 	call delay1s
 	call delay1s

@@ -124,12 +124,17 @@ cli:
 	jp z,testenter                ; e xxxx     start entering of single bytes storing at address until empty string
 	cp 'j'
 	jp z,testenter2                ; e xxxx     start entering of single bytes storing at address until empty string
-;if DEBUG_STORE
-;	cp 's'		; test store a byte
-;	call z,storageput
-;	cp 'r'		; test read stroe a byte
-;	call z,storageread
-;endif
+if DEBUG_STORE
+	cp 'w'		; test store a byte
+	call z,storageput
+	cp 'r'		; test read stroe a byte
+	call z,storageread
+	cp 'p'		; test read stroe a byte
+	jp nz, cli
+	ld hl, store_page
+	ld (os_cur_ptr),hl
+
+endif
 	nop
 	jp cli
 

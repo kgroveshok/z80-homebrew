@@ -77,7 +77,8 @@ iErrorVer:  equ iErrorReg - 1              ;Verify error flag
 
 
 
-scratch: equ iErrorVer-255
+store_page: equ iErrorVer-1024
+scratch: equ store_page-255
 
 ; change below to point to last memory alloc above
 topusermem:  equ   scratch

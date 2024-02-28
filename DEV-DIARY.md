@@ -391,7 +391,7 @@ display features etc.
 Will now port the Pico python code over to Z80 asm and make sure the SPI is working with some test commands on the CLI. If that works then can update the schemetics and 
 fabricate a new PCB for version 4. 
 
-
+Serial EEPROM code is partly working writing now on the Z80. Dropping some bytes so may be a timing issue. Can work on that.
 
 
 

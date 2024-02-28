@@ -1,14 +1,16 @@
 # simulate spi via the pico which is and easier change/test cycle than asm
-import machine import pin
+from machine import Pin
+import time
 
-
-DI=Pin(16,mode=Pin.IN)      #pico pin 21
-DO=Pin(17,mode=Pin.OUT)    # pico pin 22
-SCLK=Pin(18,mode=Pin.OUT)   # pico pin 24
-CE=Pin(19,mode=Pin.OUT)     # pico pin 25
+DI=Pin(16,mode=Pin.OUT)      #pico pin 21  eprom 5
+DO=Pin(17,mode=Pin.IN)    # pico pin 22   eprom 2
+SCLK=Pin(18,mode=Pin.OUT)   # pico pin 24  eprom 6
+CE=Pin(19,mode=Pin.OUT)     # pico pin 25  eprom 1
 
 
 CE.high()
+SCLK.low()
+DI.low()
 
 READ=3   # ; Read data from memory array beginning at selected address
 WRITE=2  #;  Write data to memory array beginning at selected address
@@ -19,34 +21,41 @@ def clockbyteout(byte):
    # msb first
 
     print("byte "+str(byte))
-    for n in range(1..8):
-        SCLK.high()
-        print("clock high")
+    for n in range(7,-1,-1):
+        
+        #print("clock high")
         if ( byte & ( 1<<n)) :
-            DO.high()
-            print( "bit "+str(n)+" high")
+            DI.high()
+            #print( " bit "+str(n)+" high  1")
             
         else:
-            DO.low()
-            print( "bit "+str(n)+" low")
+            DI.low()
+            #print( " bit "+str(n)+" low   0")
+        #time.sleep(0.025)
+        SCLK.high()
         SCLK.low()
-        print("clock low")
+        #time.sleep(0.025)
+        #print("clock low")
 
 def clockbytein():
    # msb first
-
-    for n in range(1..8):
+    b=""
+    for n in range(7,-1,-1):
         SCLK.high()
-        print("clock high")
+        #print("clock high")
+
+        #print("clock low")
+        bit=DO.value()
         SCLK.low()
-        print("clock low")
-        bit=DI.value
         if bit  :
-            print( "bit "+str(n)+" is high")
+            #print( " bit "+str(n)+" is high   1")
+            b=b+"1"
             
         else:
-            print( "bit "+str(n)+" is low")
+            #print( " bit "+str(n)+" is low 0")
+            b=b+"0"
 
+    print(b)
 
         
 
@@ -58,11 +67,12 @@ def writebyte(byte,addressh,addressl):
     #;CS low
     #
 
-    print("write "+str(byte)+" to "+str(addressl))
+    print("* write "+str(byte)+" to "+str(addressl))
     CE.low()
     print("ce low")
     #;clock out wren instruction
 
+    print("* wren")
     clockbyteout(WREN)
 
     #;cs high to enable write latch
@@ -77,21 +87,22 @@ def writebyte(byte,addressh,addressl):
     #
 
     CE.low()
-    print("ce low")
+    #print("ce low")
 
     #; clock out write instruction
     #
-
+    print("* write")
     clockbyteout(WRITE)
 
     #; clock out address (depending on address size)
     #
-
+    print("* address")
     clockbyteout(addressh)
     clockbyteout(addressl)
 
     #; clock out byte(s) for page
 
+    print("* data")
     clockbyteout(byte)
 
     CE.high()
@@ -107,7 +118,7 @@ def readbyte(addressh,addressl):
     #
 
     CE.low()
-    print("ce low")
+    #print("ce low")
     #;clock out read instruction
 
     clockbyteout(READ)
@@ -130,12 +141,26 @@ def readbyte(addressh,addressl):
 
 
 writebyte(1,0,1)
+#writebyte(2,0,2)
 writebyte(2,0,2)
 writebyte(3,0,3)
 writebyte(0,0,4)
+writebyte(ord('H'),0,5)
+#writebyte(ord('H'),0,5)
+writebyte(ord('e'),0,6)
+#writebyte(ord('e'),0,6)
+writebyte(ord('l'),0,7)
+writebyte(ord('l'),0,8)
+writebyte(ord('o'),0,9)
+writebyte(ord('!'),0,10)
 
-readbyte(0,3)
+
 readbyte(0,1)
+readbyte(0,2)
+readbyte(0,3)
+readbyte(0,5)
+readbyte(0,6)
+readbyte(0,7)
 
 
 

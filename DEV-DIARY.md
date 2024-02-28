@@ -332,22 +332,22 @@ Stage 3.2 (NOW)
 ----------------
 
 
-Firmware and utility functions.
+Firmware and utility functions: Keyboard, Screen and Storage
 
 Need a video memory area for reading and writing video updates to save on having to keep reading and writing the screen. Or do I? I have a spare line on port A
 I could use for read enable of the LCD??? Would that require some strange control stuff? Otherwise easier to use a screen frame buffer to write out.
 
 Also need screen functions for:
 
-* Scroll up and down
-* Scroll left and right
+* TODO Scroll up and down
+* TODO Scroll left and right
 * Clear screen
 * Position cursor
 * Write string
-* Read char at pos
+* Read char at pos (using frame buffer so direct memory access)
 * Draw cursor
-* Can I use control chars to set attributes such as inverse? Might need double byte buffer or certain bits to generate from frame bufffer
-* Multiple framebuffers for window layers???
+* TODO Can I use control chars to set attributes such as inverse? Might need double byte buffer or certain bits to generate from frame bufffer
+* Multiple framebuffers for window layers and function to switch active frame buffer
 
 Keyboard functions:
 
@@ -355,7 +355,7 @@ Keyboard functions:
 * Key scan to char conversion
 * Abstract away the keyboard configuration to enable different keyboard layouts (e.g. mobile phone style vs full ascii keyboard)
 * Key debounce
-* Repeat key timer
+* Repeat key timer (No repeat)
 * Control key functions
 * Prompt box with keyboard state indicators
 
@@ -375,7 +375,21 @@ Keyboard functions:
     symbol  space   shift  enter
 
 
+... 
 
+Wired up CF card using schemtics from the wonderful work my Steven Cousins, however card timeouts. Not sure if card, electrical or software releated. Will bake that circuit to the new
+PCB anyway and hope for the best
+
+What I have got working at least in prototype using a Pico is SPI read and write to a Microchip Serial EEPROM. If I use the smaller 64k versions I can keep the code simple enough
+to provide 320Kb onboard storage and 512Kb cartridge on the PIO port B interface. That works for me and is easier to scale up to using the larger chips just by changing the code
+to clock out the additional address data.
+
+Also I have a SPI interface I can use for other stuff too. Could use for a larger screen perhaps? That is possible I suppose. Nice.
+If I use say page 0 of the storage array for BIOS data I could have bit switches to enable and disable hardware such as which keyboard to use and if using different
+display features etc.
+
+Will now port the Pico python code over to Z80 asm and make sure the SPI is working with some test commands on the CLI. If that works then can update the schemetics and 
+fabricate a new PCB for version 4. 
 
 
 

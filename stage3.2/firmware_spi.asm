@@ -6,8 +6,8 @@ SPI_DI: equ 0       ; chip pin 5 - port a0   pin 15
 SPI_DO: equ 1      ; chip pin 2 - port a1   pin 14
 SPI_SCLK: equ 2      ; chip pin 6 - port a2  - pin 13
 
-; chip pin 3, 7 and 4 gnd
-; chip pin 8 +5
+; chip pin 3 (WP), 7 (HOLD) and 8 (VCC) +5v
+; chip pin 4 gnd
 
 
 SPI_CE0: equ 3      ; chip pin 1 - port a3 - pin 12

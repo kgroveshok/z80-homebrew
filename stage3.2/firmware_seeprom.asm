@@ -35,8 +35,8 @@ storage_init:
 
             LD   A, 11001111b
             OUT  (storage_actl), A  ;Port A = PIO 'control' mode
-;            LD   A, 00000000b
-            LD   A, SPI_DO      ; only one input line  the rest are outputs
+            LD   A, 00000000b
+;            LD   A, SPI_DO      ; only one input line  the rest are outputs
             OUT  (storage_actl),A   ;Port A = all lines are outputs
 
 		; ensure the spi bus is in a default stable state
@@ -66,7 +66,7 @@ store_wren_ins: equ 000000110b   ;  Set the write enable latch (enable write ope
 ; address in hl 
 se_writebyte:
        
-       ld c, a
+    ;   ld c, a
         push af
         push hl
 
@@ -91,6 +91,7 @@ se_writebyte:
        out (storage_adata),a
        ld (spi_portbyte), a
 
+	nop
     ;
     ; intial write data
     ;
@@ -140,13 +141,16 @@ storageput:
 ;    ld a,'l'
 ;    ld hl,2
 ;    call se_writebyte
-;    ld a,'l'
-;    ld hl,3
-;    call se_writebyte
+    ld a,0
+    ld hl,1
+    call se_writebyte
+    ld a,'l'
+    ld hl,3
+    call se_writebyte
 ;    ld a,'o'
 ;    ld hl,4
 ;    call se_writebyte
-    ld a,255
+    ld a,'!'
     ld hl,5
     call se_writebyte
     ret

@@ -32,8 +32,8 @@ SPI_CE4: equ 7
 
 se_stable_spi:  
 
-	 ; set DO high, CE high , SCLK low
-	ld a, SPI_DO | SPI_CE0
+	 ; set DI high, CE high , SCLK low
+	ld a, SPI_DI | SPI_CE0
 	 out (storage_adata),a
 	ld (spi_portbyte),a
 
@@ -51,11 +51,11 @@ spi_send_byte:
 	ld b, 8
 .ssb1:
 	; clear so bit 
-	res SPI_DO, a
+	res SPI_DI, a
 	rl c
 	; if bit 7 is set then carry is set
 	jr nc, .ssb2
-	set SPI_DO,a
+	set SPI_DI,a
 .ssb2:  ; output bit to ensure it is stable
 	out (storage_adata),a
 	nop
@@ -74,8 +74,37 @@ spi_send_byte:
 
 ; TODO low level get byte into A on spi
 
-spi_get_byte: ret
+spi_get_byte: 
 
+	; save byte to send for bit mask shift out
+        ld c,0
+	ld a,(spi_portbyte)
+	 
+	; clock out	each bit of the byte msb first
+
+	ld b, 8
+.ssb1:
+	; clear so bit 
+	res SPI_DI, a
+	rl c
+	; if bit 7 is set then carry is set
+	jr nc, .ssb2
+	set SPI_DI,a
+.ssb2:  ; output bit to ensure it is stable
+	out (storage_adata),a
+	nop
+	; clock bit high
+	set SPI_SCLK,a
+	out (storage_adata),a
+	nop
+	; then low
+	res SPI_SCLK,a
+	out (storage_adata),a
+	nop
+	djnz .ssb1
+
+	ld (spi_portbyte),a
+	ret
 
 
 

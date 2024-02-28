@@ -141,18 +141,53 @@ storageput:
 ;    ld a,'l'
 ;    ld hl,2
 ;    call se_writebyte
-    ld a,0
-    ld hl,1
-    call se_writebyte
-    ld a,'l'
-    ld hl,3
-    call se_writebyte
+;    ld a,0
+;    ld hl,1
+;    call se_writebyte
+;    ld a,'l'
+;    ld hl,3
+;    call se_writebyte
 ;    ld a,'o'
 ;    ld hl,4
 ;    call se_writebyte
-    ld a,'!'
-    ld hl,5
-    call se_writebyte
+;    ld a,'!'
+;    ld hl,5
+;    call se_writebyte
+
+
+ld a, 1
+ld hl, 1
+call se_writebyte
+#writebyte(2,0,2)
+ld a, 2
+ld hl, 2
+call se_writebyte
+ld a, 3
+ld hl, 3
+call se_writebyte
+ld a,0
+ld hl,4
+call se_writebyte
+ls a, 'H'
+ld hl,5
+call se_writebyte
+ld a,'e'
+ld hl,6
+call se_writebyte
+ld a,'l'
+ld hl, 7
+call se_writebyte
+ld a, 'l'
+ld hl,8
+call se_writebyte
+ld a,'o'
+ld hl,9
+call se_writebyte
+ld a,'!'
+ld hl,10
+call se_writebyte
+
+
     ret
 
 

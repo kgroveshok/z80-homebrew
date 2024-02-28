@@ -9,7 +9,7 @@
 ; TODO get dir 
 
 
-if DEBUG_STORE
+if DEBUG_STORECF
 storageput:	
 		ret
 storageread:

@@ -18,19 +18,30 @@
 ; TODO get dir 
 
 ; 
-storage_adata: edu 080h    ; device c port a - onboard storage
-storage_actl: edu 082h     ; device c port a
-storage_bdata: edu 081h    ; device c port b - ext storage cart
-storage_bctl: edu 083h     ; device c port b
+storage_adata: equ Device_C    ; device c port a - onboard storage
+storage_actl: equ Device_C+2     ; device c port a
+storage_bdata: equ Device_C+1    ; device c port b - ext storage cart
+storage_bctl: equ Device_C+3     ; device c port b
 
 
-storage_so_bit: 5
-storage_si_bit: 7
-storage_sclk_bit: 6
+;storage_so_bit: 5
+;storage_si_bit: 7
+;storage_sclk_bit: 6
  
 
 ; init storage pio
 
+storage_init:
+
+            LD   A, 11001111b
+            OUT  (storage_actl), A  ;Port A = PIO 'control' mode
+;            LD   A, 00000000b
+            LD   A, SPI_DO      ; only one input line  the rest are outputs
+            OUT  (storage_actl),A   ;Port A = all lines are outputs
+
+		; ensure the spi bus is in a default stable state
+		call se_stable_spi
+    ret
 
 store_read_ins: equ 000000011b   ; Read data from memory array beginning at selected address
 store_write_ins: equ 000000010b  ;  Write data to memory array beginning at selected address
@@ -48,64 +59,97 @@ store_wren_ins: equ 000000110b   ;  Set the write enable latch (enable write ope
 ; CE 1100 0111 Chip Erase – erase all sectors in memory array
 ; RDID 1010 1011 Release from Deep power-down and read electronic signature
 
+; TODO send byte steam for page without setting the address for every single byte
+; TODO read byte 
 
+; byte in a
+; address in hl 
+se_writebyte:
+       
+       ld c, a
+        push af
+        push hl
 
+    ; initi write mode
+    ;
+    ;CS low
 
-if DEBUG_STORE
+       ld a,(spi_portbyte)
+       res SPI_CE0,a           ; TODO pass the ce bank bit mask
+       out (storage_adata),a
+       ld (spi_portbyte), a
+
+    ;clock out wren instruction
+
+    ld a, store_wren_ins
+    call spi_send_byte 
+
+    ;cs high to enable write latch
+
+       ld a,(spi_portbyte)
+       set SPI_CE0,a           ; TODO pass the ce bank bit mask
+       out (storage_adata),a
+       ld (spi_portbyte), a
+
+    ;
+    ; intial write data
+    ;
+    ; cs low
+    
+       ld a,(spi_portbyte)
+       res SPI_CE0,a           ; TODO pass the ce bank bit mask
+       out (storage_adata),a
+       ld (spi_portbyte), a
+
+    ; clock out write instruction
+    
+    ld a, store_write_ins 
+    call spi_send_byte 
+
+    ; clock out address (depending on address size)
+    
+    pop hl
+    ld a,h    ; address out msb first
+    call spi_send_byte 
+    ld a,l
+    call spi_send_byte 
+
+    ; clock out byte(s) for page
+
+    pop af
+    call spi_send_byte 
+
+    ; end write with ce high
+       ld a,(spi_portbyte)
+       set SPI_CE0,a           ; TODO pass the ce bank bit mask - perhaps have a call that sets it
+       out (storage_adata),a
+       ld (spi_portbyte), a
+
+    ret
+
+if DEBUG_STORESE
 
 storageput: 
 
-; initi write mode
-;
-;CS low
-
-res 0,a
-out(storage_adata),a
-
-;clock out wren instruction
-
-ld c, store_wren_ins
-call spi_send_byte
-
-;cs high to enable write latch
-
-set 0,a
-out(storage_adata)
-;
-; intial write data
-;
-; cs low
-
-res 0,a
-out(storage_adata)
-
-; clock out write instruction
-
-ld c, store_write_ins
-call spi_send_byte
-
-; clock out address (depending on address size)
-
-ld c, 0
-call spi_send_byte
-
-; clock out byte(s) for page
-
-ld c, 1
-call spi_send_byte
-ld c, 2
-call spi_send_byte
-ld c, 3
-call spi_send_byte
-
-; cs high to write
-
-set 0,a
-out(storage_adata)
-
-; 
-
-
+;    ld a,'H'
+;    ld hl,0
+;    call se_writebyte
+;    ld a,'e'
+;    ld hl,1
+;    call se_writebyte
+;    ld a,'l'
+;    ld hl,2
+;    call se_writebyte
+;    ld a,'l'
+;    ld hl,3
+;    call se_writebyte
+;    ld a,'o'
+;    ld hl,4
+;    call se_writebyte
+    ld a,255
+    ld hl,5
+    call se_writebyte
+    ret
 
 
 ret

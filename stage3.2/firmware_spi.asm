@@ -1,5 +1,25 @@
 ; my spi protocol (used by storage)
 
+; SPI pins
+
+SPI_DI: equ 0       ; chip pin 5 - port a0   pin 15
+SPI_DO: equ 1      ; chip pin 2 - port a1   pin 14
+SPI_SCLK: equ 2      ; chip pin 6 - port a2  - pin 13
+
+; chip pin 3, 7 and 4 gnd
+; chip pin 8 +5
+
+
+SPI_CE0: equ 3      ; chip pin 1 - port a3 - pin 12
+SPI_CE1: equ 4
+SPI_CE2: equ 5
+SPI_CE3: equ 6
+SPI_CE4: equ 7
+
+
+
+
+
 
 ; TODO store port id for spi device ie dev c
 ; TODO store pin for SO
@@ -7,47 +27,59 @@
 ; TODO store pin for SCLK
 
 ;
-; TODO low level send byte in c on spi. contents on A are hold current bit pattern for pio port
-; TODO might need to swap and c and then or c onto a
+
+; ensure that spi bus is in a stable state with default pins 
+
+se_stable_spi:  
+
+	 ; set DO high, CE high , SCLK low
+	ld a, SPI_DO | SPI_CE0
+	 out (storage_adata),a
+	ld (spi_portbyte),a
+
+	ret
+
+; byte to send in a
 
 spi_send_byte:
-	; swap a and c
-        ld b,a
-	ld a,c
-	ld c,b	        
+	; save byte to send for bit mask shift out
+        ld c,a
+	ld a,(spi_portbyte)
 	 
 	; clock out	each bit of the byte msb first
 
 	ld b, 8
 .ssb1:
 	; clear so bit 
-	res storage_so_bit, c
-	rla
+	res SPI_DO, a
+	rl c
 	; if bit 7 is set then carry is set
 	jr nc, .ssb2
-	set storage_so_bit,c
-	res storage_sclk_bit,c
+	set SPI_DO,a
 .ssb2:  ; output bit to ensure it is stable
-	ld d,a
-	ld c,a
 	out (storage_adata),a
 	nop
-	; clock the bit high
-	set storage_sclk_bit,a
+	; clock bit high
+	set SPI_SCLK,a
 	out (storage_adata),a
 	nop
 	; then low
-	res storage_sclk_bit,a
+	res SPI_SCLK,a
 	out (storage_adata),a
 	nop
-	ld a,d
 	djnz .ssb1
 
-	; restore a
-	ld a,c
+	ld (spi_portbyte),a
 	ret
 
 ; TODO low level get byte into A on spi
 
 spi_get_byte: ret
+
+
+
+
+
+
+
 

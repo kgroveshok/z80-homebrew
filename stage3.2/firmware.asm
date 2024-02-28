@@ -1,9 +1,17 @@
 
 ; main constants (used here and in firmware)
 
+; TODO have page 0 of storage as bios
+
+Device_A: equ 0h
+Device_B: equ 040h
+Device_C: equ 080h
+Device_D: equ 0c0h
+
 
 DEBUG_KEY: equ 0
-DEBUG_STORE: equ 1
+DEBUG_STORECF: equ 0
+DEBUG_STORESE: equ 1
 
 tos:	equ 0ffffh
 stacksize: equ 255
@@ -69,15 +77,21 @@ cursor_row: equ cursor_col-1
 cursor_ptr: equ cursor_row - 1     ;  actual offset into lcd memory for row and col combo
 cursor_shape: equ cursor_ptr - 1   ; char used for the current cursor 
 
-; storage vars
+; cf storage vars
 
 iErrorNum:  equ cursor_shape-1         ;Error number
 iErrorReg:  equ iErrorNum -1              ;Error register
 iErrorVer:  equ iErrorReg - 1              ;Verify error flag
 
-
-
 store_page: equ iErrorVer-1024
+;
+; spi vars
+; 
+
+spi_portbyte: equ store_page - 1      ; holds bit mask to send to spi bus
+
+;;;;;
+
 scratch: equ store_page-255
 
 ; change below to point to last memory alloc above
@@ -88,12 +102,12 @@ baseusermem: equ 08000h
 ; **********************************************************************
 
 ; Constants used by this code module
-kDataReg:   EQU 0xc0           ;PIO port A data register
-kContReg:   EQU 0xc2           ;PIO port A control register
+kDataReg:   EQU Device_D           ;PIO port A data register
+kContReg:   EQU Device_D+2           ;PIO port A control register
 
 
-portbdata:  equ 0xc1    ; port b data
-portbctl:   equ 0xc3    ; port b control
+portbdata:  equ Device_D+1    ; port b data
+portbctl:   equ Device_D+3    ; port b control
 
 
 
@@ -186,11 +200,11 @@ include "firmware_key_4x4.asm"
 ; storage hardware interface
 
 ; use microchip serial eeprom for storage
-; include "firmware_spi.asm"
-; include "firmware_seeprom.asm"
+include "firmware_spi.asm"
+include "firmware_seeprom.asm"
 
-; use cf card for storage
-include "firmware_cf.asm"
+; use cf card for storage - throwing timeout errors. Hardware or software?????
+;include "firmware_cf.asm"
 
 ; load up high level storage hardward abstractions
 include "firmware_storage.asm"

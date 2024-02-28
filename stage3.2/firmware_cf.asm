@@ -119,7 +119,7 @@ storage_init:
 ; **********************************************************************
 
 ; CF registers
-CF_BASE:     EQU 080h	 ; device c
+CF_BASE:     EQU Device_C	 ; device c
 CF_DATA:     EQU CF_BASE+0
 CF_FEATURE:  EQU CF_BASE+1
 CF_ERROR:    EQU CF_BASE+1

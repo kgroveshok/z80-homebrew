@@ -408,5 +408,260 @@ get_word_hl:
 	
 	ld hl,scratch+50
 	ld (os_cur_ptr),hl
+
+	ret
+
+
+; from https://wikiti.brandonw.net/index.php?title=Z80_Routines:Other:DispA
+
+; Decimal Unsigned Version
+
+;Number in a to decimal ASCII
+;adapted from 16 bit found in z80 Bits to 8 bit by Galandros
+;Example: display a=56 as "056"
+;input: a = number
+;Output: a=0,value of a in the screen
+;destroys af,bc (don't know about hl and de)
+DispAToASCII:
+	ld	c,-100
+	call	.Na1
+	ld	c,-10
+	call	.Na1
+	ld	c,-1
+.Na1:	ld	b,'0'-1
+.Na2:	inc	b
+	add	a,c
+	jr	c,.Na2
+	sub	c		;works as add 100/10/1
+	push af		;safer than ld c,a
+	ld	a,b		;char is in b
+;TODO	CALL	PUTCHAR	;plot a char. Replace with bcall(_PutC) or similar.
+	pop af		;safer than ld a,c
+	ret
+
+; Decimal Signed Version
+
+; DispA
+; --------------------------------------------------------------
+; Converts a signed integer value to a zero-terminated ASCII
+; string representative of that value (using radix 10).
+; --------------------------------------------------------------
+; INPUTS:
+;     HL     Value to convert (two's complement integer).
+;     DE     Base address of string destination. (pointer).
+; --------------------------------------------------------------
+; OUTPUTS:
+;     None
+; --------------------------------------------------------------
+; REGISTERS/MEMORY DESTROYED
+; AF HL
+; --------------------------------------------------------------
+
+;DispHLToASCII:
+;   push    de
+;   push    bc
+;
+;; Detect sign of HL.
+;    bit    7, h
+;    jr     z, ._DoConvert
+;
+;; HL is negative. Output '-' to string and negate HL.
+;    ld     a, '-'
+;    ld     (de), a
+;    inc    de
+;
+;; Negate HL (using two's complement)
+;    xor    a
+;    sub    l
+;    ld     l, a
+;    ld     a, 0     ; Note that XOR A or SUB A would disturb CF
+;    sbc    a, h
+;    ld     h, a
+;
+;; Convert HL to digit characters
+;._DoConvert:
+;    ld     b, 0     ; B will count character length of number
+;-   ld     a, 10
+;    syscall  .DivHLByA  ; HL = HL / A, A = remainder
+;    push   af
+;    inc    b
+;    ld     a, h
+;    or     l
+;    jr     nz, -
+;
+;; Retrieve digits from stack
+;-   pop    af
+;    or     $30
+;    ld     (de), a
+;    inc    de
+;    djnz   -
+;
+;; Terminate string with NULL
+;    xor    a
+;    ld     (de), a
+;
+;    pop    bc
+;    pop    de
+;    ret
+
+;Comments
+;
+;    This routine uses the common positive-integer radix conversion algorithm of repeatedly dividing a value by the desired radix (base case: the value is zero) and saving the remainders of each division.
+;    As this algorithm gives the digits in reverse order, they are pushed onto the hardware stack so that subsequently popping them yields the correct order.
+;    Note that the output string will not be fixed-width.
+;
+;Example Usage
+;
+;    ld    hl, -1004
+;    ld    de, OP1
+;    call  DispA
+;    ld    hl, OP1
+;    syscall  PutS
+
+
+; from https://github.com/Zeda/Z80-Optimized-Routines/blob/master/conversion/string_to_uint16.z80
+
+
+;Converts an ASCII string to an unsigned 16-bit integer
+;Quits when it reaches a non-decimal digit
+
+string_to_uint16:
+atoui_16:
+;Input:
+;     DE points to the string
+;Outputs:
+;     HL is the result
+;     A is the 8-bit value of the number
+;     DE points to the byte after the number
+;Destroys:
+;     BC
+;       if the string is non-empty, BC is HL/10
+;Size:  24 bytes
+;Speed: 42+d(104+{0,9})
+;       d is the number of digits in the number
+;       max is 640 cycles for a 5 digit number
+;Assuming no leading zeros:
+;1 digit:  146cc
+;2 digit:  250cc
+;3 digit:  354cc or 363cc (avg: 354.126cc)
+;4 digit:  458cc or 467cc (avg: 458.27cc)
+;5 digit:  562cc or 571cc or 580cc (avg: 562.4104cc)
+;avg: 544.81158447265625cc (544+13297/16384)
+;===============================================================
+  ld hl,0
+.u16a:
+  ld a,(de)
+  sub 30h
+  cp 10
+  ret nc
+  inc de
+  ld b,h
+  ld c,l
+  add hl,hl
+  add hl,hl
+  add hl,bc
+  add hl,hl
+  add a,l
+  ld l,a
+  jr nc,.u16a
+  inc h
+  jp .u16a
+
+
+; from https://github.com/Zeda/Z80-Optimized-Routines/blob/master/conversion/string_to_uint16.z80
+
+;written by Zeda
+;Converts a 16-bit unsigned integer to an ASCII string.
+
+uitoa_16:
+;Input:
+;   DE is the number to convert
+;   HL points to where to write the ASCII string (up to 6 bytes needed).
+;Output:
+;   HL points to the null-terminated ASCII string
+;      NOTE: This isn't necessarily the same as the input HL.
+  push de
+  push bc
+  push af
+  ex de,hl
+
+  ld bc,-10000
+  ld a,'0'-1
+  inc a
+  add hl,bc 
+   jr c,$-2
+  ld (de),a
+  inc de
+
+  ld bc,1000
+  ld a,'9'+1
+  dec a 
+  add hl,bc 
+   jr nc,$-2
+  ld (de),a
+  inc de
+
+  ld bc,-100
+  ld a,'0'-1
+  inc a 
+  add hl,bc 
+   jr c,$-2
+  ld (de),a
+  inc de
+
+  ld a,l
+  ld h,'9'+1
+  dec h 
+  add a,10 
+   jr nc,$-3
+  add a,'0'
+  ex de,hl
+  ld (hl),d
+  inc hl
+  ld (hl),a
+  inc hl
+  ld (hl),0
+
+;Now strip the leading zeros
+  ld c,-6
+  add hl,bc
+  ld a,'0'
+  inc hl 
+  cp (hl) 
+  jr z,$-2
+
+;Make sure that the string is non-empty!
+  ld a,(hl)
+  or a
+  jr nz,.atoub
+  dec hl
+.atoub:
+
+  pop af
+  pop bc
+  pop de
+  ret
+
+; from https://github.com/Zeda/Z80-Optimized-Routines/blob/master/conversion/toUpper.z80
+
+toUpper:
+;A is the char.
+;If A is a lowercase letter, this sets it to the matching uppercase
+;18cc or 30cc or 41cc
+;avg: 26.75cc
+  cp 'a'
+  ret c
+  cp 'z'+1
+  ret nc
+  sub 'a'-'A'
+  ret
+
+
+
 ; eof
+
+
+
+
+
 

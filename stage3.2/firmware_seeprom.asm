@@ -158,7 +158,6 @@ storageput:
 ld a, 1
 ld hl, 1
 call se_writebyte
-#writebyte(2,0,2)
 ld a, 2
 ld hl, 2
 call se_writebyte
@@ -168,7 +167,7 @@ call se_writebyte
 ld a,0
 ld hl,4
 call se_writebyte
-ls a, 'H'
+ld a, 'H'
 ld hl,5
 call se_writebyte
 ld a,'e'

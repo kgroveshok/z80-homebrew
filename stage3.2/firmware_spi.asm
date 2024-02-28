@@ -83,14 +83,14 @@ spi_get_byte:
 	; clock out	each bit of the byte msb first
 
 	ld b, 8
-.ssb1:
+.sgb1:
 	; clear so bit 
 	res SPI_DI, a
 	rl c
 	; if bit 7 is set then carry is set
-	jr nc, .ssb2
+	jr nc, .sgb2
 	set SPI_DI,a
-.ssb2:  ; output bit to ensure it is stable
+.sgb2:  ; output bit to ensure it is stable
 	out (storage_adata),a
 	nop
 	; clock bit high
@@ -101,7 +101,7 @@ spi_get_byte:
 	res SPI_SCLK,a
 	out (storage_adata),a
 	nop
-	djnz .ssb1
+	djnz .sgb1
 
 	ld (spi_portbyte),a
 	ret

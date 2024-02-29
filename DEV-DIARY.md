@@ -400,6 +400,11 @@ to what is on there. Happy with that.
 All that is left to do before committing a new version 4 PCB is go over loose ends such as the
 keyboard failing to multi-key press and some odd bits left in my todo list. Will update drawings when off to fab.
 
+And here we are before final bits...
+
+
+![Video](https://youtu.be/laKhGaO3JYU)
+
 
 
 Stage 4.0 TODO

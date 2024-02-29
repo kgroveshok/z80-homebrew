@@ -405,7 +405,7 @@ And here we are before final bits...
 
 ![Video](https://youtu.be/laKhGaO3JYU)
 
-
+Copied off the firmware code to a new dir for further development of the final OS...
 
 Stage 4.0 TODO
 --------------

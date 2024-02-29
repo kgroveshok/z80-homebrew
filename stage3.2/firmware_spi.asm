@@ -74,36 +74,163 @@ spi_send_byte:
 
 ; TODO low level get byte into A on spi
 
-spi_get_byte: 
+spi_read_byte: 
 
 	; save byte to send for bit mask shift out
-        ld c,0
+    ld c,0
 	ld a,(spi_portbyte)
 	 
 	; clock out	each bit of the byte msb first
 
-	ld b, 8
-.sgb1:
-	; clear so bit 
-	res SPI_DI, a
-	rl c
-	; if bit 7 is set then carry is set
-	jr nc, .sgb2
-	set SPI_DI,a
-.sgb2:  ; output bit to ensure it is stable
+
+	; clock bit high
+	set SPI_SCLK,a
+	out (storage_adata),a
+	nop
+
+    ; read DO 
+
+    set 7,c
+	in a,(storage_adata)
+    bit SPI_DO,a
+    jr nz, .b7
+    res 7,c
+.b7:
+	; then low
+	res SPI_SCLK,a
+	out (storage_adata),a
+	nop
+    
+
+	; clock bit high
+	set SPI_SCLK,a
+	out (storage_adata),a
+	nop
+
+    ; read DO 
+
+    set 6,c
+	in a,(storage_adata)
+    bit SPI_DO,a
+    jr nz, .b6
+    res 6,c
+.b6:
+	; then low
+	res SPI_SCLK,a
+	out (storage_adata),a
+	nop
+
+	; clock bit high
+	set SPI_SCLK,a
+	out (storage_adata),a
+	nop
+
+
+    ; read DO 
+
+    set 5,c
+	in a,(storage_adata)
+    bit SPI_DO,a
+    jr nz, .b5
+    res 5,c
+.b5:
+	; then low
+	res SPI_SCLK,a
 	out (storage_adata),a
 	nop
 	; clock bit high
 	set SPI_SCLK,a
 	out (storage_adata),a
 	nop
+
+    ; read DO 
+
+    set 4,c
+	in a,(storage_adata)
+    bit SPI_DO,a
+    jr nz, .b4
+    res 4,c
+.b4:
 	; then low
 	res SPI_SCLK,a
 	out (storage_adata),a
 	nop
-	djnz .sgb1
+	; clock bit high
+	set SPI_SCLK,a
+	out (storage_adata),a
+	nop
+
+    ; read DO 
+
+    set 3,c
+	in a,(storage_adata)
+    bit SPI_DO,a
+    jr nz, .b3
+    res 3,c
+.b3:
+	; then low
+	res SPI_SCLK,a
+	out (storage_adata),a
+	nop
+	; clock bit high
+	set SPI_SCLK,a
+	out (storage_adata),a
+	nop
+
+    ; read DO 
+
+    set 2,c
+	in a,(storage_adata)
+    bit SPI_DO,a
+    jr nz, .b2
+    res 2,c
+.b2:
+	; then low
+	res SPI_SCLK,a
+	out (storage_adata),a
+	nop
+	; clock bit high
+	set SPI_SCLK,a
+	out (storage_adata),a
+	nop
+
+    ; read DO 
+
+    set 1,c
+	in a,(storage_adata)
+    bit SPI_DO,a
+    jr nz, .b1
+    res 1,c
+.b1:
+	; then low
+	res SPI_SCLK,a
+	out (storage_adata),a
+	nop
+	; clock bit high
+	set SPI_SCLK,a
+	out (storage_adata),a
+	nop
+
+    ; read DO 
+
+    set 0,c
+	in a,(storage_adata)
+    bit SPI_DO,a
+    jr nz, .b0
+    res 0,c
+.b0:
+	; then low
+	res SPI_SCLK,a
+	out (storage_adata),a
+	nop
+
 
 	ld (spi_portbyte),a
+
+    ; return byte
+    ld a,c
+
+
 	ret
 
 

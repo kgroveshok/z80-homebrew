@@ -124,9 +124,20 @@ cli:
 	jp z,testenter                ; e xxxx     start entering of single bytes storing at address until empty string
 	cp 'j'
 	jp z,testenter2                ; e xxxx     start entering of single bytes storing at address until empty string
+if DEBUG_KEY_MATRIX
+	cp 'm'
+	jp z,matrix
+endif
 if DEBUG_STORESE
-	cp 'w'		; test store a byte
+	; w aaaa string
+	; aaaa - address to store string  (only first 64 can be used in this test) 
+	; string to store
+	; 
+	; on return first page is loaded and os_current_ptr is set to start of buffer
+	cp 'w'		; test store a byte string
 	call z,storageput
+	cp 'r'		; test read stroe a byte
+	call z,storageread
 endif
 if DEBUG_STORECF 
 	cp 'w'		; test store a byte

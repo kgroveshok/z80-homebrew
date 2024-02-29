@@ -393,21 +393,16 @@ fabricate a new PCB for version 4.
 
 Serial EEPROM code is partly working writing now on the Z80. Dropping some bytes so may be a timing issue. Can work on that.
 
+Still intermittently dropping writes, pretty certain it isn't anything serious. The fact it is
+writing proves the handshake is fine. Added read code and that does read the bytes back correctly as
+to what is on there. Happy with that.
+
+All that is left to do before committing a new version 4 PCB is go over loose ends such as the
+keyboard failing to multi-key press and some odd bits left in my todo list.
 
 
-Stage 3.3 TODO
-----------------
 
-Storage. CF or could I make use of the stack of serial eeproms I bought for a data logger? A CF would be storage overkill but the serial EEPROMS are small and easy to daisy chain for unlimited storage. Could try that. 
-
-Stage 3.4 TODO
---------------
-
-Power. Could I add battery support so it is portable? Recharge circuit I would need to add though could pull that in from a Pi battery charger.
-
-Or would normal battery packs work long enough to make it worth while? 
-
-Stage 3.5 TODO
+Stage 4.0 TODO
 --------------
 
 Code a basic core part of an OS which uses the screen, keyboard and storage. A super monitor program. From there could then add
@@ -416,22 +411,22 @@ Forth which could provide the drivers for add on hardware.
 If the OS has a 'boot' buffer say in the first 'block' of the storage that could bring up the rest of the hardware etc.
 Would make adding more hardware easy rather than coding in asm.
 
-
-
-Stage 4.0 TODO
---------------
-
-Redesign PCB with LCD, keyboard and storage onboard, add edge connectors etc and produce a 3d printed case.
+Redesigned PCB with LCD, keyboard and storage onboard, add edge connectors etc and produce a 3d printed case.
 
 Good to go then.
+
+Stage 4.1 TODO
+--------------
+
+Power. Could I add battery support so it is portable? Recharge circuit I would need to add though could pull that in from a Pi battery charger.
+
+Or would normal battery packs work long enough to make it worth while? 
+
 
 
 
 Extra TODO notes
 ----------------
-
-
-
 
 A - PIO? Spare???? -> Trigger for next batch of decoding???
 B - SIO

@@ -28,6 +28,20 @@ Progress
 Check the DEV-DIARY.md for progress and what I learnt - spoiler, it is alot!
 
 
+Stage 1.x was very very basic
+
+
+![](images/20220321_072123-stage1.jpg)
+
+
+Stage 2.x got us to strip board in varying degrees of success
+
+![](stage2.5/20220614_075833.jpg)
+
+
+Stage 3.x with a propper PCB things are much more stable (and faster clock freq)...
+
+![](stage3.2/v3withnewbits.jpg)
 
 Parts
 -----
@@ -67,5 +81,7 @@ impact (in no particular order):
 * [https://github.com/chapmajs/glitchworks_monitor]
 * [http://ve7it.cowlug.org/cpm-monitor.html]
 * [https://www.instructables.com/Z80-Monitor-Type-Operating-System-and-SBC/]
-* ]http://www.vaxman.de/projects/tiny_z80/]
+* [http://www.vaxman.de/projects/tiny_z80/]
+* [https://smallcomputercentral.com/]
+* [https://rc2014.co.uk/]
 

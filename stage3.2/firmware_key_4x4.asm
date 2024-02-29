@@ -1,6 +1,6 @@
 
 
-; bit mask for each scan column and row for testing the matrix
+; bit mask for each scan column and row for teing the matrix
 
 ; out 
 key_row_bitmask:    db 128, 64, 32, 16
@@ -529,9 +529,11 @@ cin: 	call .mtoc
 ;
 ;
 
+if DEBUG_KEY_MATRIX
+
 ; test function to display hardware view of matrix state
 
-.matrix:
+matrix:
 
 
 
@@ -574,7 +576,7 @@ cin: 	call .mtoc
             CALL fLCD_Str       ;Display string pointed to by DE
 
 	call delay250ms
-	jp .matrix
+	jp matrix
 
 ; pass de as row display flags
 .rowscan: 
@@ -625,3 +627,10 @@ cin: 	call .mtoc
 	ld (hl), b
 
 .rscandone: ret
+
+
+
+endif
+
+
+; eof

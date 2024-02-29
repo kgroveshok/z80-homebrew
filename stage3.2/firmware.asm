@@ -10,6 +10,7 @@ Device_D: equ 0c0h
 
 
 DEBUG_KEY: equ 0
+DEBUG_KEY_MATRIX: equ 1
 DEBUG_STORECF: equ 0
 DEBUG_STORESE: equ 1
 

@@ -104,10 +104,19 @@ cli_nextword: equ cli_execword - 2      ; pointer to start of next word in dict
 cli_ptr: equ cli_nextword - 2           ; pointer to start of word to parse by forth kernel (working)
 cli_origptr: equ cli_ptr - 2           ; pointer to start of word to parse which resets cli_ptr on each word test
 
+cli_ret_stack: equ cli_origptr - 128   
+cli_data_stack: equ cli_ret_stack - 256		 ; 
+
+; with data stack could see memory filled with junk. need some memory management 
+; malloc and free entry points added
+
+free_list:  equ cli_data_stack - 4     ; Block struct for start of free list (MUST be 4 bytes)
+heap_size: equ  1024      ; Number of bytes available in heap
+heap_start: equ free_list - heap_size  ; Starting address of heap
 
 ;;;;
 
-os_last_cmd: equ cli_origptr-30
+os_last_cmd: equ heap_start-30
 os_cur_ptr: equ os_last_cmd-2
 os_word_scratch: equ os_cur_ptr-30
 
@@ -154,6 +163,10 @@ hardware_init:
 
 	call key_init
 	call storage_init
+
+	; setup malloc functions
+
+	call  heap_init
 
 	; lcd test sequence
 		
@@ -234,6 +247,7 @@ include "firmware_general.asm"        ; general support functions
 include "firmware_display.asm"      ; frame buffer screen abstraction layer
 include "firmware_maths.asm"     ; any odd maths stuff
 include "firmware_strings.asm"   ; string handling
+include "firmware_memory.asm"   ; malloc and free
 
 
 

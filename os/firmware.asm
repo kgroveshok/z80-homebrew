@@ -13,8 +13,9 @@ DEBUG_KEY: equ 0
 DEBUG_KEY_MATRIX: equ 1
 DEBUG_STORECF: equ 0
 DEBUG_STORESE: equ 1
-DEBUG_FORTH: equ 1
+DEBUG_FORTH: equ 0
 DEBUG_FORTH_JP: equ 1
+DEBUG_FORTH_PUSH: equ 1
 
 tos:	equ 0ffffh
 stacksize: equ 255

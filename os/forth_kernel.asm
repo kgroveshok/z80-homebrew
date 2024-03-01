@@ -327,21 +327,18 @@ endif
 if DEBUG_FORTH
 .nowordfound: db "No match",0
 .compword:	db "Comparing word ",0
-.enddict:	db "Dict end marker",0
 .nextwordat:	db "Next word at",0
 .charmatch:	db "Char match",0
 endif
 if DEBUG_FORTH_JP
 .foundword:	db "Word match. Exec..",0
 endif
-
+if DEBUG_FORTH_PUSH
+.enddict:	db "Dict end marker",0
+endif
 
 ; move cli_ptr to start of next word in cli_buffer 
 
-
-strtok: 
-	
-	ret
 
 
 ; eof

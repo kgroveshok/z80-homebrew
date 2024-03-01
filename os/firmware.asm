@@ -87,7 +87,7 @@ iErrorNum:  equ cursor_shape-1         ;Error number
 iErrorReg:  equ iErrorNum -1              ;Error register
 iErrorVer:  equ iErrorReg - 1              ;Verify error flag
 
-store_page: equ iErrorVer-1024
+store_page: equ iErrorVer-128            ; page size for eeprom
 ;
 ; spi vars
 ; 

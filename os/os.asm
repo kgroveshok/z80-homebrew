@@ -74,6 +74,34 @@ main:
 	call clear_display
 	call update_display
 
+
+	; show free memory after boot
+
+	ld de, freeram
+	ld a, display_row_1
+	call str_at_display
+
+	ld hl, topusermem
+	ld de, baseusermem
+	sbc hl, de
+	push hl
+	ld a,h	         	
+	ld hl, os_word_scratch		; TODO do direct write to frame buffer instead and drop the str_at_display
+	call hexout
+   	pop hl
+
+	ld a,l
+	ld hl, os_word_scratch+2
+	call hexout
+	ld hl, os_word_scratch+4
+	ld a, 0
+	ld (hl),a
+	ld de, os_word_scratch
+	ld a, display_row_1+12
+	call str_at_display
+	call update_display
+
+
 	;call demo
 
 
@@ -152,7 +180,7 @@ endif
 	call parsenext
 	jp cli
 
-
+freeram: db "Free bytes: ",0
 asc: db "1A2F"
 
 testenter2:  

@@ -112,7 +112,7 @@ cli:
 
 	ld a,(scratch)
 	cp 'd'
-	jp z, dump			; d xxxx    dump 4 bytes. repeated pressing of enter dumps another row and scrolls
+	call z, dump			; d xxxx    dump 4 bytes. repeated pressing of enter dumps another row and scrolls
 	cp 'g'
 	jp z,jump			; j xxxx     jump and run code at xxxx
 	cp 'e'
@@ -222,7 +222,7 @@ dump:	; see if we are cotinuing on from the last command by not uncluding any ad
 
 	ld a,(scratch+1)
 	cp 0
-	jr z, .dumpcont
+	jr z, dumpcont
 
 	; no, not a null term line so has an address to work out....
 
@@ -233,7 +233,7 @@ dump:	; see if we are cotinuing on from the last command by not uncluding any ad
 
 
 
-.dumpcont:
+dumpcont:
 
 
 	; dump bytes at ptr
@@ -249,7 +249,8 @@ dump:	; see if we are cotinuing on from the last command by not uncluding any ad
 	call .dumpbyterow
 
 	call update_display
-		jp cli
+;		jp cli
+	ret
 
 .dumpbyterow:
 

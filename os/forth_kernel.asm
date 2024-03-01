@@ -1,6 +1,13 @@
 ;
 ; kernel to the forth OS
 
+
+; TODO push to stack
+
+; 
+
+
+
 ; parse cli
 
 ; cli_ptr holds start of current word to pass

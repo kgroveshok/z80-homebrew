@@ -309,6 +309,8 @@ endif
 
 if DEBUG_FORTH_PUSH
 	call clear_display
+	call update_display
+	call delay1s
 	ld de, (cli_origptr)
 	ld a, display_row_1
 	call str_at_display
@@ -317,6 +319,8 @@ if DEBUG_FORTH_PUSH
 	ld a, display_row_3
 	call str_at_display
 	call update_display
+	call delay1s
+	call delay1s
 	call delay1s
 
 endif	
@@ -357,7 +361,7 @@ if DEBUG_FORTH_JP
 .foundword:	db "Word match. Exec..",0
 endif
 if DEBUG_FORTH_PUSH
-.enddict:	db "Dict end marker. Push.",0
+.enddict:	db "Dict end. Push.",0
 endif
 
 ; move cli_ptr to start of next word in cli_buffer 

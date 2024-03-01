@@ -307,8 +307,12 @@ endif
 
 .endofdict: 
 
-if DEBUG_FORTH
-
+if DEBUG_FORTH_PUSH
+	call clear_display
+	ld de, (cli_origptr)
+	ld a, display_row_1
+	call str_at_display
+	
 	ld de, .enddict
 	ld a, display_row_3
 	call str_at_display
@@ -319,10 +323,29 @@ endif
 
 	; if the word is not a keyword then must be a literal so push it to stack
 
-; TODO push token to stack
+; TODO push token to stack to end of word
+
+; move past token to next word
+
+ld hl, (cli_origptr)
+ld a, ' '
+ld bc, 255     ; input buffer size
+cpir
 
 
-	ret
+ld (cli_origptr), hl
+
+; look for end of input
+
+;inc hl
+ld a,(hl)
+cp 0
+ret z
+
+
+jp parsenext
+ 
+	;ret
 
 if DEBUG_FORTH
 .nowordfound: db "No match",0
@@ -334,7 +357,7 @@ if DEBUG_FORTH_JP
 .foundword:	db "Word match. Exec..",0
 endif
 if DEBUG_FORTH_PUSH
-.enddict:	db "Dict end marker",0
+.enddict:	db "Dict end marker. Push.",0
 endif
 
 ; move cli_ptr to start of next word in cli_buffer 

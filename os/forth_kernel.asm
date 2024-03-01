@@ -17,7 +17,7 @@ forth_init:
 	call delay1s
 	call delay1s
 
-	; init stack pointers
+	; init stack pointers  - * these stacks go upwards * 
 	ld hl, cli_ret_stack
 	ld (cli_ret_sp), hl	
 

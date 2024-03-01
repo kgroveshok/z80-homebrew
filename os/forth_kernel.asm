@@ -1,6 +1,32 @@
 ;
 ; kernel to the forth OS
 
+forth_init:
+	call update_display
+	call delay1s
+	ld a,'.'
+	call fill_display
+	call update_display
+	call delay1s
+
+            ld a, display_row_2
+	ld de, .bootforth
+	call str_at_display
+	call update_display
+
+	call delay1s
+	call delay1s
+
+	; init stack pointers
+	ld hl, cli_ret_stack
+	ld (cli_ret_sp), hl	
+
+	ld hl, cli_data_stack
+	ld (cli_data_sp), hl	
+
+	ret
+
+.bootforth: db " Forth Kernel Init "
 
 ; TODO push to stack
 

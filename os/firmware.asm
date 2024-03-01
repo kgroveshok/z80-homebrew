@@ -104,8 +104,12 @@ cli_nextword: equ cli_execword - 2      ; pointer to start of next word in dict
 cli_ptr: equ cli_nextword - 2           ; pointer to start of word to parse by forth kernel (working)
 cli_origptr: equ cli_ptr - 2           ; pointer to start of word to parse which resets cli_ptr on each word test
 
-cli_ret_stack: equ cli_origptr - 128   
+cli_var_array: equ cli_origptr - ( 10 * 2 ) ; word or string pointer variables using @0-@9
+cli_ret_sp: equ cli_var_array - 2    ; ret stack pointer
+cli_data_sp: equ cli_ret_sp - 2   ; data stack pointer
+cli_ret_stack: equ cli_data_sp - 128      ; TODO could I just use normal stack for this?
 cli_data_stack: equ cli_ret_stack - 256		 ; 
+
 
 ; with data stack could see memory filled with junk. need some memory management 
 ; malloc and free entry points added

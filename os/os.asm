@@ -74,6 +74,7 @@ main:
 	call clear_display
 	call update_display
 
+	call forth_init
 
 	; show free memory after boot
 
@@ -103,6 +104,7 @@ main:
 
 
 	;call demo
+
 
 
 	; init scratch input area for cli commands

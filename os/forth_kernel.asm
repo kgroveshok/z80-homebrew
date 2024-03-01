@@ -316,6 +316,12 @@ if DEBUG_FORTH
 	call delay1s
 
 endif	
+
+	; if the word is not a keyword then must be a literal so push it to stack
+
+; TODO push token to stack
+
+
 	ret
 
 if DEBUG_FORTH

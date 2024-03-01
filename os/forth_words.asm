@@ -267,7 +267,7 @@ SAVE:   db 39
 	db "SAVE",0
 		NEXT
 LOAD:   db 40
-	dw LCD
+	dw DISPLAY
 	db 5
 	db "LOAD",0
 		NEXT

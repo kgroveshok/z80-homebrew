@@ -82,14 +82,20 @@ if DEBUG_FORTH
 	ld a,display_row_1
 	ld de, .nextwordat
 		call str_at_display
-	ld de, (cli_ptr)
+	ld hl,(cli_ptr)
+	ld a,(hl)
+        ld hl, os_word_scratch
+	ld (hl),a
+	ld a,0
+	inc hl
+	ld (hl),a 	
 	ld a, display_row_4+10
-	
+	ld de, os_word_scratch
 		call str_at_display
 	call update_display
-;	call delay500ms
-	call delay1s
-	call delay1s
+	call delay500ms
+;	call delay1s
+;	call delay1s
 	pop hl
 endif	
 	; save the pointer of the current token - 1 to check against
@@ -111,6 +117,7 @@ endif
 
 if DEBUG_FORTH
 	push hl
+	push hl
 	call clear_display
 	ld de, .compword
 	ld a, display_row_1
@@ -118,28 +125,41 @@ if DEBUG_FORTH
 	pop de
 	ld a, display_row_2
 	call str_at_display
-	ld de,(cli_ptr)
+	ld hl,(cli_ptr)
+	ld a,(hl)
+        ld hl, os_word_scratch
+	ld (hl),a
+	ld a,0
+	inc hl
+	ld (hl),a 	
+	ld de, os_word_scratch
 	ld a, display_row_2+10
 	call str_at_display
 	call update_display
 	call delay500ms
-
+;	call delay1s
+;	call delay1s
+;	call delay1s
+	pop hl
 endif	
 .pnchar:    ; compare char between token and string to parse
 
 if DEBUG_FORTH
-	ld hl,(cli_token)
+;	call clear_display
+ld hl,(cli_token)
 ld a,(hl)
 ld (os_word_scratch),a
 	ld hl,(cli_ptr)
 ld a,(hl)
 	ld (os_word_scratch+1),a
 	ld a,0
-	ld (hl),a
+	ld (os_word_scratch+2),a
 	ld de,os_word_scratch
 	ld a,display_row_4
 	call str_at_display
 	call update_display
+	call delay500ms
+	call delay1s
 	call delay1s
 endif
 	ld hl,(cli_token)
@@ -150,18 +170,45 @@ endif
 
 	ld hl,(cli_ptr) ;	get the char from the string to parse
 	ld a,(hl)
-;	inc hl
-;	ld (cli_ptr), hl		; move to next char
+	inc hl
+	ld (cli_ptr), hl		; move to next char
 	;call toUpper 		; make sure the input string matches case
 
 	cp b
-	jr nz, .pnskipword	 ; no match so move to next word
+	jp nz, .pnskipword	 ; no match so move to next word
 	
+if DEBUG_FORTH
+	push af
+	push bc
+
+	ld hl, os_word_scratch
+	call hexout
+	ld a,b
+	ld hl, os_word_scratch+2
+	call hexout
+	ld a,0
+	ld (hl),a
+	ld de,os_word_scratch
+		ld a, display_row_4+10
+		call str_at_display
+
+	ld de,.charmatch
+	ld a,display_row_1
+	call str_at_display
+	call update_display
+	call delay1s
+	call delay1s
+	call delay1s
+	pop bc
+	pop af
+endif
 ;    if same
 ;       scan for string terms 0 for token and 32 for input
 
+
+
 	add b			
-	cp 32			 ; add both chars together, if 32 then other must be 0 so at end of string we are parsing?
+	cp 0			 ; add both chars together, if 32 then other must be 0 so at end of string we are parsing?
 				; TODO need to make sure last word in zero term string is accounted for
 	jr nz, .pnchar 		 ; not at end of strings yet
 
@@ -251,6 +298,7 @@ if DEBUG_FORTH
 .foundword:	db "Word match. Exec code",0
 .enddict:	db "Dict end marker",0
 .nextwordat:	db "Next word at",0
+.charmatch:	db "Char match",0
 endif
 
 

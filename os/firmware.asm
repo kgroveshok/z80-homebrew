@@ -104,7 +104,7 @@ cli_origptr: equ cli_ptr - 2           ; pointer to start of word to parse which
 
 ;;;;
 
-os_last_cmd: equ cli_origptr-30
+os_last_cmd: equ cli_origptr-3000
 os_cur_ptr: equ os_last_cmd-2
 os_word_scratch: equ os_cur_ptr-30
 

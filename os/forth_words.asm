@@ -266,11 +266,23 @@ SAVE:   db 39
 	db 5
 	db "SAVE",0
 		NEXT
-LOAD:   db 40
-	dw END
+LOAD:   db 41
+	dw LCD
 	db 5
 	db "LOAD",0
 		NEXT
+DISPLAY:   db 42                     
+	dw KEY
+	db 8
+	db "DISPLAY",0
+		NEXT
+KEY:   db 43                   
+	dw END
+	db 4
+	db "KEY",0
+		NEXT
+
+
 
 
 

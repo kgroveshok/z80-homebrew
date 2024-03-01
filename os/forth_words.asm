@@ -108,7 +108,7 @@ SWAP:	db 8
 IF:	db 9
 	dw THEN
 	db 3
-	db "if",0
+	db "IF",0
 		NEXT
 THEN:	db 10
 	dw ELSE

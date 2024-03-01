@@ -177,7 +177,7 @@ endif
 	ld a,(hl)
 	inc hl
 	ld (cli_ptr), hl		; move to next char
-	;call toUpper 		; make sure the input string matches case
+	call toUpper 		; make sure the input string matches case
 
 if DEBUG_FORTH
 	push af
@@ -230,7 +230,7 @@ endif
 
 	; at end of both strings so both are exact match
 
-;       TODO skip ptr for next word
+;       skip ptr for next word
 
 	ld hl,(cli_ptr) 	; at input string term
 	;inc hl			 ; at next char

@@ -251,10 +251,28 @@ CDUMP:   db 36                      ; continue memory dump
 
 
 DEPTH:   db 37                     ; stack count
-	dw END
+	dw DIR
 	db 6
 	db "DEPTH",0
 		NEXT
+
+DIR:   db 38                     ;
+	dw SAVE
+	db 4
+	db "DIR",0
+		NEXT
+SAVE:   db 39
+	dw LOAD
+	db 5
+	db "SAVE",0
+		NEXT
+LOAD:   db 40
+	dw END
+	db 5
+	db "LOAD",0
+		NEXT
+
+
 
 
 ; Hardware specific words I may need

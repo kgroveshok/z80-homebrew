@@ -237,15 +237,24 @@ DUMP:   db 35				; memory dump ( x --  )
 	dw CDUMP
 	db 5
 	db "DUMP",0
+; TODO pop address to use off of the stack
+		call dumpcont	
+		ret
 		NEXT
 CDUMP:   db 36                      ; continue memory dump
-	dw END
+	dw DEPTH
 	db 6
 	db "CDUMP",0
 		call dumpcont	
 		ret
 		NEXT
 
+
+DEPTH:   db 37                     ; stack count
+	dw END
+	db 6
+	db "DEPTH",0
+		NEXT
 
 
 ; Hardware specific words I may need

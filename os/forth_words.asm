@@ -56,6 +56,7 @@
 
 
 NEXT: macro 
+	ld hl,(cli_origptr)
 	jp parsenext
       endm
 

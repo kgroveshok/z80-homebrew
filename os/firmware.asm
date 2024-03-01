@@ -95,7 +95,8 @@ spi_portbyte: equ store_page - 1      ; holds bit mask to send to spi bus
 ;;;;; forth cli params
 
 cli_buffer: equ spi_portbyte - 20     ; temp hold - maybe not needed
-cli_token: equ cli_buffer - 2     ; pointer to the text of token for this word being checked
+cli_origtoken: equ cli_buffer - 2     ; pointer to the text of token for this word being checked
+cli_token: equ cli_origtoken - 2     ; pointer to the text of token for this word being checked
 cli_execword: equ cli_token - 2      ; pointer to start of code for this word
 cli_nextword: equ cli_execword - 2      ; pointer to start of next word in dict
 cli_ptr: equ cli_nextword - 2           ; pointer to start of word to parse by forth kernel (working)

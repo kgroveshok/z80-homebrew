@@ -100,7 +100,12 @@ if DEBUG_FORTH
 endif	
 	; save the pointer of the current token - 1 to check against
 	
-	ld (cli_token), hl   
+	ld (cli_token), hl  
+	; TODO maybe remove below save if no debug
+	; save token string ptr for any debug later
+	inc hl 
+	ld (cli_origtoken), hl
+	dec hl
 	; save pointer to the start of the next dictionay word
 	ld a,(hl)   ; get string length
 	ld b,a
@@ -174,9 +179,6 @@ endif
 	ld (cli_ptr), hl		; move to next char
 	;call toUpper 		; make sure the input string matches case
 
-	cp b
-	jp nz, .pnskipword	 ; no match so move to next word
-	
 if DEBUG_FORTH
 	push af
 	push bc
@@ -202,10 +204,23 @@ if DEBUG_FORTH
 	pop bc
 	pop af
 endif
+
+	; input stream end of token is a space so get rid of it
+
+	cp ' '
+	jr nz, .pnskipspace
+
+	ld a, 0		; make same term as word token term
+
+.pnskipspace:
+
+	cp b
+	jp nz, .pnskipword	 ; no match so move to next word
+	
 ;    if same
 ;       scan for string terms 0 for token and 32 for input
 
-
+	
 
 	add b			
 	cp 0			 ; add both chars together, if 32 then other must be 0 so at end of string we are parsing?
@@ -215,9 +230,19 @@ endif
 
 	; at end of both strings so both are exact match
 
-;       skip ptr for next word
+;       TODO skip ptr for next word
+
+	ld hl,(cli_ptr) 	; at input string term
+	inc hl			 ; at next char
+	ld (cli_origptr), hl     ; save for next round of the parser
+	
+	
+
+
+
 ;       exec code block
 if DEBUG_FORTH
+	call clear_display
 	ld hl, (cli_execword)     ; save for next check if no match on this word
 	ld a,h
 	ld hl, os_word_scratch
@@ -233,6 +258,10 @@ if DEBUG_FORTH
 	call str_at_display
 		ld a, display_row_2
 		call str_at_display
+	ld de, (cli_origtoken)
+	ld a, display_row_3
+		call str_at_display
+
 	ld a,display_row_1
 	ld de, .foundword
 	ld a, display_row_3

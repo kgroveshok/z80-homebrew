@@ -362,12 +362,17 @@ endif
 
 ; TODO push token to stack to end of word
 
-; move past token to next word
+; TODO remove this subject to push type move past token to next word
 
 ld hl, (cli_origptr)
 ld a, ' '
 ld bc, 255     ; input buffer size
 cpir
+
+
+; TODO pass a pointer to the buffer to push
+; TODO call function to push
+
 
 
 ld (cli_origptr), hl
@@ -400,5 +405,68 @@ endif
 ; move cli_ptr to start of next word in cli_buffer 
 
 
+; TODO ascii push input onto stack given hl to start of input
+
+; identify type
+; if starts with a " then a string
+; otherwise it is a number
+; 
+; if a string
+;     scan for ending " to get length of string to malloc for + 1
+;     malloc
+;     put pointer to string on stack first byte flags as string
+;
+; else a number
+;    look for number format identifier
+;    $xx hex
+;    bxxxxx bin
+;    xxxxx decimal
+;    convert number to 16bit word. 
+;    malloc word + 1 with flag to identiy as num
+;    put pointer to number on stack
+;  
+; 
+ 
+forth_apush:
+	; kernel push
+
+	; identify input type
+
+	ld a,(hl)
+	cp '"'
+	jr z, .fapstr
+	cp '$'
+	jr z, .faphex
+	cp 'b'
+	jr z, .fabin
+	; else decimal
+
+	; TODO do decimal conversion
+	; decimal is stored as a 16bit word
+
+.fapstr:   
+	; get string length
+
+	ld a, ' '
+	call strlent
+
+	; TODO malloc + 1
+	; flag set as str
+	; copy string to malloc area
+	; push malloc to data stack     macro????? 
+
+
+.faphex:   ; hex is always stored as a 16bit word
+		 nop
+
+.fabin:   ; TODO bin conversion
+	 nop
+
+
+
+
+
+
+	ret
 
 ; eof

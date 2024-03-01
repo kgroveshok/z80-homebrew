@@ -238,6 +238,7 @@ sysdict:
 	db 5
 	db "DUMP",0
 ; TODO pop address to use off of the stack
+		call clear_display
 		call dumpcont	
 		ret
 		NEXT
@@ -245,6 +246,7 @@ sysdict:
 	dw .DEPTH
 	db 6
 	db "CDUMP",0
+		call clear_display
 		call dumpcont	
 		ret
 		NEXT
@@ -341,9 +343,14 @@ sysdict:
 		NEXT
 
 .V9:   db 52               
-	dw .END
+	dw .I
 	db 3
 	db "@9",0
+		NEXT
+.I:   db 53               
+	dw .END
+	db 2
+	db "I",0
 		NEXT
 
 

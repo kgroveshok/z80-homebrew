@@ -22,7 +22,7 @@ scroll_up:
 	ld bc, display_cols
 	ldir
 	ret
-_	
+	
 
 ; clear active frame buffer
 

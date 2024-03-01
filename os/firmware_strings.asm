@@ -663,6 +663,90 @@ toUpper:
   sub 'a'-'A'
   ret
 
+; https://tutorials.eeems.ca/ASMin28Days/lesson/day16.html#cmp
+
+; String Length
+;With a length-prefixed string, finding the length is trivial. For a null-terminated string, the process is decidedly more involved. This is where CPIR comes in.
+
+; Get the length of the null-terminated string starting at $8000 hl
+;    LD     HL, $8000
+
+strlenz:
+
+    XOR    A               ; Zero is the value we are looking for.
+    LD     B, A             ; Since we haven't the slightest clue as to the 
+    LD     C, A             ; actual size of the string, put 0 in BC to search
+                           ; 65, 536 bytes (the entire addressable memory space).
+    CPIR                   ; Begin search for a byte equalling zero.
+
+; BC has been decremented so that it holds -length. Now need to synthesize a NEG BC.
+    LD     H, A             ; Zero HL (basically set it to 65, 536) to get the
+    LD     L, A             ; number of bytes
+    SBC    HL, BC           ; Find the size. CPIR doesn't affect carry.
+    DEC    HL              ; Compensate for null.
+	ret
+
+; Get the length of the A terminated string starting at $8000 hl
+;    LD     HL, $8000
+
+strlent:
+
+                  ; A is the value we are looking for.
+    LD     B, 0             ; Since we haven't the slightest clue as to the 
+    LD     C, 0             ; actual size of the string, put 0 in BC to search
+                           ; 65, 536 bytes (the entire addressable memory space).
+    CPIR                   ; Begin search for a byte equalling zero.
+
+; BC has been decremented so that it holds -length. Now need to synthesize a NEG BC.
+    LD     H, A             ; Zero HL (basically set it to 65, 536) to get the
+    LD     L, A             ; number of bytes
+    SBC    HL, BC           ; Find the size. CPIR doesn't affect carry.
+    DEC    HL              ; Compensate for null.
+	ret
+
+
+;Comparing Strings
+
+;IN    HL     Address of string1.
+;      DE     Address of string2.
+;OUT   zero   Set if string1 = string2, reset if string1 != string2.
+;      carry  Set if string1 > string2, reset if string1 <= string2.
+
+strcmp:
+    PUSH   HL
+    PUSH   DE
+
+    LD     A, (DE)          ; Compare lengths to determine smaller string
+    CP     (HL)            ; (want to minimize work).
+    JR     C, Str1IsBigger
+    LD     A, (HL)
+
+Str1IsBigger:
+    LD     C, A             ; Put length in BC
+    LD     B, 0
+    INC    DE              ; Increment pointers to meat of string.
+    INC    HL
+
+CmpLoop:
+    LD     A, (DE)          ; Compare bytes.
+    CPI
+    JR     NZ, NoMatch      ; If (HL) != (DE), abort.
+    INC    DE              ; Update pointer.
+    JP     PE, CmpLoop
+
+    POP    DE
+    POP    HL
+    LD     A, (DE)          ; Check string lengths to see if really equal.
+    CP     (HL)
+    RET
+
+NoMatch:
+    DEC    HL
+    CP     (HL)            ; Compare again to affect carry.
+    POP    DE
+    POP    HL
+    RET
+
 
 
 ; eof

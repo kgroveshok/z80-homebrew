@@ -69,9 +69,6 @@ coldstart:
 ;	jp stop
 
 
-os_last_cmd: equ scratch+30
-os_cur_ptr: equ scratch+33
-os_word_scratch: equ scratch+38
 
 main:
 	call clear_display
@@ -144,12 +141,15 @@ if DEBUG_STORECF
 	call z,storageput
 	cp 'r'		; test read stroe a byte
 	call z,storageread
-	cp 'p'		; test read stroe a byte
-	jp nz, cli
-	ld hl, store_page
-	ld (os_cur_ptr),hl
+;	cp 'p'		; test read stroe a byte
+;	jp nz, cli
+;	ld hl, store_page
+;	ld (os_cur_ptr),hl
 endif
 	nop
+	; first time into the parser so pass over the current scratch pad
+	ld hl,scratch
+	call parsenext
 	jp cli
 
 

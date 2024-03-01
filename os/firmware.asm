@@ -13,6 +13,7 @@ DEBUG_KEY: equ 0
 DEBUG_KEY_MATRIX: equ 1
 DEBUG_STORECF: equ 0
 DEBUG_STORESE: equ 1
+DEBUG_FORTH: equ 1
 
 tos:	equ 0ffffh
 stacksize: equ 255
@@ -91,9 +92,23 @@ store_page: equ iErrorVer-1024
 
 spi_portbyte: equ store_page - 1      ; holds bit mask to send to spi bus
 
-;;;;;
+;;;;; forth cli params
 
-scratch: equ store_page-255
+cli_buffer: equ spi_portbyte - 20     ; temp hold - maybe not needed
+cli_token: equ cli_buffer - 2     ; pointer to the text of token for this word being checked
+cli_execword: equ cli_token - 2      ; pointer to start of code for this word
+cli_nextword: equ cli_execword - 2      ; pointer to start of next word in dict
+cli_ptr: equ cli_nextword - 2           ; pointer to start of word to parse by forth kernel (working)
+cli_origptr: equ cli_ptr - 2           ; pointer to start of word to parse which resets cli_ptr on each word test
+
+
+;;;;
+
+os_last_cmd: equ cli_origptr-30
+os_cur_ptr: equ os_last_cmd-2
+os_word_scratch: equ os_cur_ptr-30
+
+scratch: equ os_word_scratch-255
 
 ; change below to point to last memory alloc above
 topusermem:  equ   scratch

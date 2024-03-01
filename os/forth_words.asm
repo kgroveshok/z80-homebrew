@@ -65,159 +65,159 @@ NEXT: macro
 sysdict:
 
 PLUS:	db 1
+	dw NEG
         db 2
 	db "+",0
-	dw NEG
 		NEXT
 NEG:	db 2
+	dw DIV
         db 2
 	db "-",0
-	dw DIV
 		NEXT
 DIV:	db 3
+	dw MUL
 	db 2
 	db "/",0
-	dw MUL
 		NEXT
 MUL: 	db 4
+	dw DUP
 	db 2
 	db "*",0
-	dw DUP
 		NEXT
 DUP:	db 5
+	dw EMIT
 	db 4
 	db "DUP",0
-	dw EMIT
 		NEXT
 EMIT:	db 6
+	dw DOT
 	db 5
 	db "EMIT",0
-	dw DOT
 		NEXT
 DOT:	db 7
+	dw SWAP
 	db 2
 	db ".",0
-	dw SWAP
 		NEXT
 SWAP:	db 8
+	dw IF
 	db 5
 	db "SWAP",0
-	dw IF
 		NEXT
 IF:	db 9
-	db 3
-	db "IF",0
 	dw THEN
+	db 3
+	db "if",0
 		NEXT
 THEN:	db 10
+	dw ELSE
 	db 5
 	db "THEN",0
-	dw ELSE
 		NEXT
 ELSE: 	db 11
+	dw DO
 	db 5
 	db "ELSE",0
-	dw DO
 		NEXT
 DO:	db 12
+	dw LOOP
 	db 3
 	db "DO",0
-	dw LOOP
 		NEXT
 LOOP:	db 13
+	dw COLN
 	db 5
 	db "LOOP",0
-	dw COLN
 		NEXT
 COLN:	db 14
+	dw SCOLN
 	db 2
 	db ":",0
-	dw SCOLN
 		NEXT
 SCOLN:	db 15
+	dw DROP
 	db 2
 	db ";",0
-	dw DROP
 		NEXT
 DROP:   db 16
+	dw DUP2
 	db 5
 	db "DROP",0
-	dw DUP2
 		NEXT
 DUP2:	db 17
+	dw DROP2
 	db 5
 	db "2DUP",0
-	dw DROP2
 		NEXT
 DROP2:	db 18
+	dw SWAP2
 	db 6
 	db "2DROP",0
-	dw SWAP2
 		NEXT
 SWAP2:	db 19
+	dw AT
 	db 5
 	db "2SWAP",0
-	dw AT
 		NEXT
 AT:	db 20
+	dw CAT
 	db 2
 	db "@",0
-	dw CAT
 		NEXT
 CAT:	db 21
+	dw BANG
 	db 3
 	db "C@",0
-	dw BANG
 		NEXT
 BANG:   db 22
+	dw CBANG
 	db 2
 	db "!",0
-	dw CBANG
 		NEXT
 CBANG:	db 23
+	dw LZERO
 	db 3
 	db "C!",0
-	dw LZERO
 		NEXT
 LZERO:	db 24
+	dw TZERO
 	db 3
 	db "0<",0
-	dw TZERO
 		NEXT
 TZERO:  db 25
+	dw LESS
 	db 3
 	db "0=",0
-	dw LESS
 		NEXT
 LESS:   db 26
+	dw GT
 	db 2
 	db "<",0
-	dw GT
 		NEXT
 GT:	db 27
+	dw EQUAL
 	db 2
 	db ">",0
-	dw EQUAL
 		NEXT
 EQUAL:  db 28
+	dw SCALL
 	db 2
 	db "=",0
-	dw SCALL
 		NEXT
 SCALL:	db 29
+	dw SIN
 	db 5
 	db "CALL",0
-	dw SIN
 		NEXT
 SIN:	db 30
+	dw SOUT
 	db 3
 	db "IN",0
-	dw SOUT
 		NEXT
 SOUT:   db 31
+	dw END
 	db 4
 	db "OUT",0
-	dw END
 		NEXT
 
 
@@ -229,15 +229,14 @@ SOUT:   db 31
 ; easy control of frame buffers and lcd i/o
 ; keyboard 
 NOP:    db 1
-	db "NOP",0
 	dw END
+	db "NOP",0
 	nop
 	NEXT
 
 END:    db 0
-	db 0
-	db 0
 	dw 0
+	db 0
 
 
 

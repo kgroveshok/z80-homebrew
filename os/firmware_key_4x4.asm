@@ -139,7 +139,7 @@ key_init:
 .key_map_fb:
 
 		db 'A'
-		db '(' 
+		db '+' 
 		db '<'
 		db  "'"  
 
@@ -160,7 +160,7 @@ key_init:
 
 
 		db 'A'
-		db ')' 
+		db '-' 
 		db '>'
 		db  KEY_TAB   	; TODO tab
 		db 'A'
@@ -180,7 +180,7 @@ key_init:
 .key_map_fd:
 
 		db 'A'
-		db 0  ; TODO spare
+		db '/'  ; TODO spare
 		db 0  ; TODO spare
 		db KEY_BS  ; back space
 		db 'A'

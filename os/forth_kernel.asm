@@ -233,7 +233,7 @@ endif
 ;       TODO skip ptr for next word
 
 	ld hl,(cli_ptr) 	; at input string term
-	inc hl			 ; at next char
+	;inc hl			 ; at next char
 	ld (cli_origptr), hl     ; save for next round of the parser
 	
 	
@@ -241,8 +241,10 @@ endif
 
 
 ;       exec code block
-if DEBUG_FORTH
+if DEBUG_FORTH_JP
 	call clear_display
+	call update_display
+	call delay1s
 	ld hl, (cli_execword)     ; save for next check if no match on this word
 	ld a,h
 	ld hl, os_word_scratch
@@ -259,7 +261,7 @@ if DEBUG_FORTH
 		ld a, display_row_2
 		call str_at_display
 	ld de, (cli_origtoken)
-	ld a, display_row_3
+	ld a, display_row_1+10
 		call str_at_display
 
 	ld a,display_row_1
@@ -267,11 +269,6 @@ if DEBUG_FORTH
 	ld a, display_row_3
 	call str_at_display
 	call update_display
-	call delay1s
-	call delay1s
-	call delay1s
-	call delay1s
-	call delay1s
 	call delay1s
 	call delay1s
 	call delay1s
@@ -324,10 +321,12 @@ endif
 if DEBUG_FORTH
 .nowordfound: db "No match",0
 .compword:	db "Comparing word ",0
-.foundword:	db "Word match. Exec code",0
 .enddict:	db "Dict end marker",0
 .nextwordat:	db "Next word at",0
 .charmatch:	db "Char match",0
+endif
+if DEBUG_FORTH_JP
+.foundword:	db "Word match. Exec..",0
 endif
 
 

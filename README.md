@@ -21,6 +21,19 @@ Z80 community and lots of great material to dust off my rusty electronics skills
 Therefore this project, is Z80 based. Turns out that is a good choice as the arch is very simple
 with a load of great chips that tie closely together. Makes for an easier life.
 
+Current Specification/Feature Set
+---------------------------------
+
+* Z80 4MHz
+* 32K ROM
+* 32K RAM
+* PIO 1: Port A & B - Controlling 20x4 LCD and 4x4 matrix keypad (upgradable to 35 key matrix keyboard)
+* PIO 2: Port A - Persistent storage via Microchip serial EEPROMs. 320K on board (5 x 64k)
+* PIO 2: Port B - Exposed 8 bit bus and SPI bus. Used for more storage (512k/1024k), SPI devices or digital I/o
+* Exposed RC2014 connector
+* Digital video out (TODO)
+
+
 
 Progress
 --------

@@ -299,6 +299,8 @@ display_row_1: equ 0
 display_row_2: equ display_row_1+display_cols
 display_row_3: equ display_row_2 + display_cols
 display_row_4: equ display_row_3 + display_cols
+;display_row_4_eol: 
+
 
 ; Cursor position values for the start of each line
 kLCD_Line1: EQU 0x00 

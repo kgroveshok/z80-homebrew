@@ -6,7 +6,23 @@
 
 
 
+; TODO scroll line up
 
+scroll_up:
+	ld de, display_row_1
+ 	ld hl, display_row_2
+	ld bc, display_cols
+	ldir
+	ld de, display_row_2
+ 	ld hl, display_row_3
+	ld bc, display_cols
+	ldir
+	ld de, display_row_3
+ 	ld hl, display_row_4
+	ld bc, display_cols
+	ldir
+	ret
+_	
 
 ; clear active frame buffer
 

@@ -85,6 +85,13 @@ input_str:	ld (input_at_pos), a
 .instrcr:	dec hl		; remove cursor
 		ld a,0
 		ld (hl),a
+
+
+		; if at end of line scroll up   
+		; TODO detecting only end of line 4 for scroll up 
+
+		;ld  
+
 		ret
 
 

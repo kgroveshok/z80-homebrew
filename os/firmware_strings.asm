@@ -83,6 +83,9 @@ input_str:	ld (input_at_pos), a
 		
 		jr .instr1
 .instrcr:	dec hl		; remove cursor
+		ld a,' '	; TODO add a trailing space for safety
+		ld (hl),a
+		inc hl
 		ld a,0
 		ld (hl),a
 

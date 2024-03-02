@@ -423,11 +423,12 @@ if DEBUG_FORTH_PUSH
 .enddict:	db "Dict end. Push.",0
 .push_str:	db "Pushing string",0
 .push_num:	db "Pushing number",0
-.push_malloc:	db "Malloc address",0
 .data_sp:	db "SP:",0
 .wordinhl:	db "Word in HL:",0
 endif
-
+if DEBUG_FORTH_MALLOC
+.push_malloc:	db "Malloc address",0
+endif
 
 ; push a number held in HL onto the data stack
 
@@ -519,7 +520,7 @@ endif
 	call malloc	; on ret hl now contains allocated memory
 
 	push hl
-if DEBUG_FORTH_PUSH
+if DEBUG_FORTH_MALLOC
 	call display_data_malloc 
 endif	
 
@@ -555,7 +556,7 @@ endif
 	; turn ascii into number
 	call get_word_hl	; ret 16bit word in hl
 
-.faprawhl:
+.faprawhl:		; entry point for pushing a value when already in hl used in function above
 	push hl
 
 if DEBUG_FORTH_PUSH
@@ -596,7 +597,7 @@ endif
 	push hl		; once to save on to data stack
 	push hl		; once to save word into
 
-if DEBUG_FORTH_PUSH
+if DEBUG_FORTH_MALLOC
 	call display_data_malloc 
 endif
 	

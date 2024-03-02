@@ -16,6 +16,7 @@ DEBUG_STORESE: equ 1
 DEBUG_FORTH: equ 0
 DEBUG_FORTH_JP: equ 1
 DEBUG_FORTH_PUSH: equ 1
+DEBUG_FORTH_MALLOC: equ 1
 
 tos:	equ 0ffffh
 stacksize: equ 255

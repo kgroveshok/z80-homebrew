@@ -239,6 +239,13 @@ sysdict:
 	db "DUMP",0
 ; TODO pop address to use off of the stack
 		call clear_display
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		ld (os_cur_ptr),hl
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
 		call dumpcont	
 		ret
 		NEXT

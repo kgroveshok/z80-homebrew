@@ -621,6 +621,97 @@ endif
 	ret
 
 
+; get either a string ptr or a 16bit word from the data stack
+
+FORTH_DSP: macro
+	; data stack pointer points to current word on tos
+
+	ld hl,(cli_data_sp)
+
+	if DEBUG_FORTH_PUSH
+
+		call display_data_sp
+	endif
+
+	endm
+
+; return hl to start of value on stack
+
+FORTH_DSP_VALUE: macro
+
+	FORTH_DSP
+
+	push de
+
+	ld e, (hl)
+	inc hl
+	ld d, (hl)
+	ex de,hl 
+
+	pop de
+
+	endm
+
+	
+
+
+; whatever the current top os stack points to, we are now done with it so return memory to malloc
+
+FORTH_DSP_POP: macro
+	; release malloc data
+
+	ld hl,(cli_data_sp)
+	call free
+
+	; move pointer down
+
+	ld hl,(cli_data_sp)
+	dec hl
+	dec hl
+	ld (cli_data_sp), hl
+
+	endm
+
+; get the tos data type
+
+FORTH_DSP_TYPE:   macro
+
+	FORTH_DSP_VALUE
+	
+	; hl points to value
+	; check type
+
+	ld a,(hl)
+
+	endm
+
+; load the tos value into hl
+
+FORTH_DSP_VALUEHL:  macro
+	FORTH_DSP_VALUE
+
+	inc hl   ; skip type id
+
+	push de
+
+	ld e, (hl)
+	inc hl
+	ld d, (hl)
+	ex de,hl 
+
+	pop de
+
+	if DEBUG_FORTH_PUSH
+
+		call display_data_sp
+	endif
+	endm
+
+
+	
+
+
+
 
 ; display malloc address and current data stack pointer 
 
@@ -678,6 +769,7 @@ pop hl
 	pop hl
 	pop af
 	ret
+
 display_data_malloc:
 
 	push af

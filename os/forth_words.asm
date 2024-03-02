@@ -69,6 +69,44 @@ sysdict:
 	dw .NEG
         db 2
 	db "+",0
+		; add top two values and push back result
+
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		push hl
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		; one value on hl get other one back
+
+		pop de
+
+		; do the add
+
+		add hl,de
+
+		; save it
+
+		push hl	
+
+		;
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		; TODO push value back onto stack for another op etc
+
+		pop hl
+
+		call forth_push_numhl
+
 		NEXT
 .NEG:	db 3
 	dw .DIV

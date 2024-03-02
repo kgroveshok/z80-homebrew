@@ -418,6 +418,14 @@ if DEBUG_FORTH_PUSH
 .wordinhl:	db "Word in HL:",0
 endif
 
+
+; push a number held in HL onto the data stack
+
+forth_push_numhl:
+
+	jp .faprawhl
+	ret
+
 ; move cli_ptr to start of next word in cli_buffer 
 
 
@@ -537,6 +545,7 @@ endif
 	; turn ascii into number
 	call get_word_hl	; ret 16bit word in hl
 
+.faprawhl:
 	push hl
 
 if DEBUG_FORTH_PUSH

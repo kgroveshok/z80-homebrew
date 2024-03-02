@@ -33,6 +33,7 @@ Current Specification/Feature Set
 * Exposed RC2014 connector
 * Digital video out (TODO)
 
+* Built-in Forth OS (inspired by Jupiter Ace). Language defintion and progress etc in ![FORTH.md](FORTH.md)
 
 ![](stage4.0/Gerber_PCB_z80-system-3-sbc.zip)
 ![](stage4.0/Schematic_z80-system-4-sbc-2024-03-02.pdf)

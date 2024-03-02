@@ -464,7 +464,8 @@ forth_apush:
 	; get string length
 
 	ld a, ' '
-	call strlent
+	call strlent      ; TODO maybe a bug here for string copying
+
 if DEBUG_FORTH_PUSH
 	push af
 	call clear_display

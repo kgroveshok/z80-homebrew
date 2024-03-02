@@ -56,7 +56,7 @@
 
 
 NEXT: macro 
-	ld hl,(cli_origptr)
+	ld hl,(cli_origptr)   ; move to next token to parse in the input stream
 	jp parsenext
       endm
 
@@ -240,14 +240,20 @@ sysdict:
 ; TODO pop address to use off of the stack
 		call clear_display
 
+		; get address
+
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+	
+		; save it for cdump
 
 		ld (os_cur_ptr),hl
 
+		; destroy value TOS
+
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
-		call dumpcont	
-		ret
+		call dumpcont	; skip old style of param parsing	
+		ret			; TODO command causes end of remaining parsing so cant do: $0000 DUMP $8000 DUMP
 		NEXT
 .CDUMP:   db 36                      ; continue memory dump
 	dw .DEPTH
@@ -255,7 +261,7 @@ sysdict:
 	db "CDUMP",0
 		call clear_display
 		call dumpcont	
-		ret
+		ret			; TODO command causes end of remaining parsing so cant do: $0000 DUMP CDUMP $8000 DUMP
 		NEXT
 
 

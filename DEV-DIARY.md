@@ -424,14 +424,18 @@ Good to go then.
 ![](stage4.0/Schematic_z80-system-4-sbc-2024-03-02.pdf)
 ![](stage4.0/Schematic_z80-system-4-sbc-2024-03-02.png)
 
-Stage 4.1 TODO
+
+...
+
+Working the OS see language defintion etc in ![FORTH.md](FORTH.md)
+
+
+Stage 4.5 TODO
 --------------
 
 Power. Could I add battery support so it is portable? Recharge circuit I would need to add though could pull that in from a Pi battery charger.
 
 Or would normal battery packs work long enough to make it worth while? 
-
-
 
 
 Extra TODO notes

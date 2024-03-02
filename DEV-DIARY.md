@@ -328,7 +328,7 @@ Next will be to focus on a set of firmware with utility functinos to support key
 ![Video](https://youtu.be/FRKDuX9m0I0)
 
 
-Stage 3.2 (NOW)
+Stage 3.2 (DONE)
 ----------------
 
 
@@ -407,8 +407,8 @@ And here we are before final bits...
 
 Copied off the firmware code to a new dir for further development of the final OS...
 
-Stage 4.0 TODO
---------------
+Stage 4.0 NOW
+-------------
 
 Code a basic core part of an OS which uses the screen, keyboard and storage. A super monitor program. From there could then add
 Forth which could provide the drivers for add on hardware.
@@ -419,6 +419,10 @@ Would make adding more hardware easy rather than coding in asm.
 Redesigned PCB with LCD, keyboard and storage onboard, add edge connectors etc and produce a 3d printed case.
 
 Good to go then.
+
+![](stage4.0/Gerber_PCB_z80-system-3-sbc.zip)
+![](stage4.0/Schematic_z80-system-4-sbc-2024-03-02.pdf)
+![](stage4.0/Schematic_z80-system-4-sbc-2024-03-02.png)
 
 Stage 4.1 TODO
 --------------

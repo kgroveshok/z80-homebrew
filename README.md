@@ -34,6 +34,9 @@ Current Specification/Feature Set
 * Digital video out (TODO)
 
 
+![](stage4.0/Gerber_PCB_z80-system-3-sbc.zip)
+![](stage4.0/Schematic_z80-system-4-sbc-2024-03-02.pdf)
+![](stage4.0/Schematic_z80-system-4-sbc-2024-03-02.png)
 
 Progress
 --------
@@ -55,6 +58,9 @@ Stage 2.x got us to strip board in varying degrees of success
 Stage 3.x with a propper PCB things are much more stable (and faster clock freq)...
 
 ![](stage3.2/v3withnewbits.jpg)
+
+
+Stage 4.x a useable machine now with many expandable features.
 
 Parts
 -----

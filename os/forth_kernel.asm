@@ -1,6 +1,10 @@
 ;
 ; kernel to the forth OS
 
+DS_TYPE_STR: equ 1
+DS_TYPE_NUM: equ 2 
+
+
 forth_init:
 	call update_display
 	call delay1s
@@ -24,9 +28,11 @@ forth_init:
 	ld hl, cli_data_stack
 	ld (cli_data_sp), hl	
 
+	call clear_display
+
 	ret
 
-.bootforth: db " Forth Kernel Init "
+.bootforth: db " Forth Kernel Init ",0
 
 ; TODO push to stack
 
@@ -362,6 +368,11 @@ endif
 
 ; TODO push token to stack to end of word
 
+
+ld hl,(cli_origptr)
+call forth_apush
+
+
 ; TODO remove this subject to push type move past token to next word
 
 ld hl, (cli_origptr)
@@ -400,6 +411,9 @@ if DEBUG_FORTH_JP
 endif
 if DEBUG_FORTH_PUSH
 .enddict:	db "Dict end. Push.",0
+.push_str:	db "Pushing string",0
+.push_num:	db "Pushing number",0
+.push_malloc:	db "Malloc address",0
 endif
 
 ; move cli_ptr to start of next word in cli_buffer 
@@ -436,9 +450,9 @@ forth_apush:
 	cp '"'
 	jr z, .fapstr
 	cp '$'
-	jr z, .faphex
+	jp z, .faphex
 	cp 'b'
-	jr z, .fabin
+	jp z, .fabin
 	; else decimal
 
 	; TODO do decimal conversion
@@ -449,21 +463,208 @@ forth_apush:
 
 	ld a, ' '
 	call strlent
+if DEBUG_FORTH_PUSH
+	push af
+	call clear_display
+	ld de, (cli_origptr)
+	ld a, display_row_2
+	call str_at_display
+	pop af
+	push af
+	ld hl, os_word_scratch
+	call hexout
+	ld hl,os_word_scratch+2
+	ld a,0
+	ld (hl),a  
+	ld de, os_word_scratch
+	ld a, display_row_3
+	call str_at_display
+
+
+	ld de, .push_str
+	ld a, display_row_1
+	call str_at_display
+	call update_display
+	call delay1s
+	call delay1s
+	pop af
+endif	
 
 	; TODO malloc + 1
+
+	add 5    ; to be safe for some reason - max of 255 char for string
+	ld h,0
+	ld l,a
+	call malloc	; on ret hl now contains allocated memory
+
+	push hl
+if DEBUG_FORTH_PUSH
+	push af
+	push hl
+	push hl
+	call clear_display
+	pop hl
+	ld a,h
+	ld hl, os_word_scratch
+	call hexout
+	pop hl
+	ld a,l
+	ld hl, os_word_scratch+2
+	call hexout
+	ld hl, os_word_scratch+4
+	ld a,0
+	ld (hl),a
+	ld de,os_word_scratch
+		ld a, display_row_2
+		call str_at_display
+	ld de, .push_malloc
+	ld a, display_row_1
+
+		call str_at_display
+	call update_display
+	call delay1s
+	call delay1s
+	pop af
+endif	
+
 	; flag set as str
+
+	ld (hl), DS_TYPE_STR
+	inc hl
+
 	; copy string to malloc area
+
+	ex de,hl
+	ld hl, (cli_origptr)
+	ld b,0
+	ld c, a
+	ldir
+
 	; push malloc to data stack     macro????? 
 
+	ld hl,(cli_data_sp)
+	inc hl
+	inc hl
+	ld (cli_data_sp), hl
+
+	pop de ; get malloc root
+	ld (hl), e
+	inc hl
+	ld (hl), d		
+	ret
 
 .faphex:   ; hex is always stored as a 16bit word
-		 nop
+	; skip number prefix
+	inc hl
+	; turn ascii into number
+	call get_word_hl	; ret 16bit word in hl
 
-.fabin:   ; TODO bin conversion
+	push hl
+
+if DEBUG_FORTH_PUSH
+	push af
+	push hl
+push hl
+	call clear_display
+pop hl
+	ld a,h
+	ld hl, os_word_scratch
+	call hexout
+	pop hl
+	ld a,l
+	ld hl, os_word_scratch+2
+	call hexout
+
+	ld hl, os_word_scratch+4
+	ld a,0
+	ld (hl),a
+	ld de,os_word_scratch
+		ld a, display_row_2
+		call str_at_display
+	ld de, .push_num
+	ld a, display_row_1
+
+		call str_at_display
+	call update_display
+	call delay1s
+	call delay1s
+	pop af
+endif	
+
+	; get malloc for the storage (a bit of an overhead but makes it compatible with string push
+
+	ld hl, 5
+	call malloc
+
+	push hl		; once to save on to data stack
+	push hl		; once to save word into
+
+if DEBUG_FORTH_PUSH
+	push af
+	push hl
+	push hl
+push hl
+	call clear_display
+pop hl
+	ld a,h
+	ld hl, os_word_scratch
+	call hexout
+	pop hl
+	ld a,l
+	ld hl, os_word_scratch+2
+	call hexout
+	ld hl, os_word_scratch+4
+	ld a,0
+	ld (hl),a
+	ld de,os_word_scratch
+		ld a, display_row_2
+		call str_at_display
+	ld de, .push_malloc
+	ld a, display_row_1
+
+		call str_at_display
+	call update_display
+	call delay1s
+	call delay1s
+	pop hl
+	pop af
+endif
+	
+	; push malloc to data stack     macro????? 
+
+	ld hl,(cli_data_sp)
+	inc hl
+	inc hl
+	ld (cli_data_sp),hl
+
+	pop de ; get malloc root
+	ld (hl), e
+	inc hl
+	ld (hl), d		
+
+	; save value and type
+
+	pop hl
+
+	ld a,  DS_TYPE_NUM
+	ld (hl), a
+	inc hl
+
+	; get word off stack
+	pop de
+	ld a,e
+	ld (hl), a
+	inc hl
+	ld a,d
+	ld (hl), a
+
+
+
+
+	ret
 	 nop
 
-
-
+.fabin:   ; TODO bin conversion
 
 
 

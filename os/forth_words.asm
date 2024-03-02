@@ -99,6 +99,42 @@ sysdict:
 	dw .SWAP
 	db 2
 	db ".",0
+		; get value off TOS and display it
+
+		
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		
+		; write value to screen     
+		; TODO display it on its own briefly for now. need cursor control etc
+
+
+	push hl
+	call clear_display
+	pop hl
+	push hl
+	ld a,h
+	ld hl, os_word_scratch
+	call hexout
+	pop hl
+	ld a,l
+	ld hl, os_word_scratch+2
+	call hexout
+	ld hl, os_word_scratch+4
+	ld a,0
+	ld (hl),a
+	ld de,os_word_scratch
+		ld a, display_row_1
+		call str_at_display
+
+	call update_display
+	call delay1s
+	call delay1s
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
 		NEXT
 .SWAP:	db 9
 	dw .IF

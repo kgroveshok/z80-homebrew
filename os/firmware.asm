@@ -98,7 +98,10 @@ spi_portbyte: equ store_page - 1      ; holds bit mask to send to spi bus
 
 ;;;;; forth cli params
 
-cli_buffer: equ spi_portbyte - 20     ; temp hold - maybe not needed
+; TODO use a different frame buffer for forth???
+
+f_cursor_ptr:  equ spi_portbyte - 1  ; offset into frame buffer for any . or EMIT output
+cli_buffer: equ f_cursor_ptr - 20     ; temp hold - maybe not needed
 cli_origtoken: equ cli_buffer - 2     ; pointer to the text of token for this word being checked
 cli_token: equ cli_origtoken - 2     ; pointer to the text of token for this word being checked
 cli_execword: equ cli_token - 2      ; pointer to start of code for this word

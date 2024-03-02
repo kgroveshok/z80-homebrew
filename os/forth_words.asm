@@ -11,7 +11,7 @@
 
 ;
 ;
-; TODO define linked list:
+; define linked list:
 ;
 ; 1. compiled byte op code
 ; 2. len of text word
@@ -24,7 +24,7 @@
 ; set the start of dictionary scanning to be in ram and the last word point to the system dict
 ; 
 ; 
-; TODO create basic standard set of words
+; create basic standard set of words
 ;
 ; 
 ; + - / * DUP EMIT . SWAP IF..THEN..ELSE DO..LOOP  : ; DROP 
@@ -150,9 +150,9 @@ sysdict:
 		; TODO display it on its own briefly for now. need cursor control etc
 
 
-	push hl
-	call clear_display
-	pop hl
+;	push hl
+;	call clear_display
+;	pop hl
 	push hl
 	ld a,h
 	ld hl, os_word_scratch
@@ -165,12 +165,12 @@ sysdict:
 	ld a,0
 	ld (hl),a
 	ld de,os_word_scratch
-		ld a, display_row_1
+		ld a, (f_cursor_ptr)
 		call str_at_display
 
-	call update_display
-	call delay1s
-	call delay1s
+;	call update_display
+;	call delay1s
+;	call delay1s
 
 		; destroy value TOS
 
@@ -415,14 +415,45 @@ sysdict:
 	db "SAVE",0              ; |SAVE  ( w u -- )    Save user word memory to file name w on bank u
 		NEXT
 .LOAD:   db 40
-	dw .DISPLAY
+	dw .DAT
 	db 5
 	db "LOAD",0               ;| LOAD ( w u -- )    Load user word memory from file name w on bank u
 		NEXT
-.DISPLAY:   db 41                     
+.DAT:   db 41                     
 	dw .KEY
-	db 8
-	db "DISPLAY",0            ;| DISPLAY ( w u1 u2 -- )  Write to current frame buffer at row u2 col u1 the var of any type w
+	db 3
+	db "AT",0            ;| CURSOR ( u1 u2 -- )  Set next output via . or emit at row u2 col u1 |DONE
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+
+		; TODO save cursor row
+		ld a,l
+		cp 2
+		jr nz, .crow3
+		ld a, display_row_2
+		jr .ccol1
+.crow3:		cp 3
+		jr nz, .crow4
+		ld a, display_row_3
+		jr .ccol1
+.crow4:		cp 4
+		jr nz, .crow1
+		ld a, display_row_4
+		jr .ccol1
+.crow1:		ld a,display_row_1
+.ccol1:		push af			; got row offset
+		ld l,a
+		ld h,0
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+		; TODO save cursor col
+		pop af
+		add l		; add col offset
+		ld (f_cursor_ptr), a
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		; calculate 
+
 		NEXT
 .KEY:   db 42               
 	dw .WAITK

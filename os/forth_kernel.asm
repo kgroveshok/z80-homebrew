@@ -30,6 +30,9 @@ forth_init:
 
 	call clear_display
 
+	ld a,0
+	ld (f_cursor_ptr), a
+
 	ret
 
 .bootforth: db " Forth Kernel Init ",0
@@ -419,16 +422,16 @@ endif
 if DEBUG_FORTH_JP
 .foundword:	db "Word match. Exec..",0
 endif
-if DEBUG_FORTH_PUSH
+;if DEBUG_FORTH_PUSH
 .enddict:	db "Dict end. Push.",0
 .push_str:	db "Pushing string",0
 .push_num:	db "Pushing number",0
 .data_sp:	db "SP:",0
 .wordinhl:	db "Word in HL:",0
-endif
-if DEBUG_FORTH_MALLOC
+;endif
+;if DEBUG_FORTH_MALLOC
 .push_malloc:	db "Malloc address",0
-endif
+;endif
 
 ; push a number held in HL onto the data stack
 
@@ -736,7 +739,7 @@ FORTH_DSP_VALUEHL:  macro
 
 ; display malloc address and current data stack pointer 
 
-if DEBUG_FORTH_PUSH
+;if DEBUG_FORTH_PUSH
 display_data_sp:
 
 	push af
@@ -844,5 +847,5 @@ pop hl
 	pop hl
 	pop af
 	ret
-endif
+;endif
 ; eof

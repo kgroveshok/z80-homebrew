@@ -111,7 +111,7 @@ ld (cli_nextword),hl
 	ld (cli_nextword), hl     ; save for next check if no match on this word
 	ex de, hl
 
-if DEBUG_FORTH
+if DEBUG_FORTH_PARSE
 	push hl
 	call clear_display
 	ld hl, (cli_nextword)     ; save for next check if no match on this word
@@ -169,7 +169,7 @@ endif
 	inc hl     ; skip string length (use zero term instead to end)
 	ld (cli_token), hl
 
-if DEBUG_FORTH
+if DEBUG_FORTH_PARSE
 	push hl
 	push hl
 	call clear_display
@@ -198,7 +198,7 @@ if DEBUG_FORTH
 endif	
 .pnchar:    ; compare char between token and string to parse
 
-if DEBUG_FORTH
+if DEBUG_FORTH_PARSE
 ;	call clear_display
 ld hl,(cli_token)
 ld a,(hl)
@@ -228,7 +228,7 @@ endif
 	ld (cli_ptr), hl		; move to next char
 	call toUpper 		; make sure the input string matches case
 
-if DEBUG_FORTH
+if DEBUG_FORTH_PARSE
 	push af
 	push bc
 
@@ -339,7 +339,7 @@ endif
 	cp 0
 	jr z, .endofdict			 ; at end of words
 
-if DEBUG_FORTH
+if DEBUG_FORTH_PARSE
 
 	ld de, .nowordfound
 	ld a, display_row_3
@@ -410,7 +410,7 @@ jp parsenext
  
 	;ret
 
-if DEBUG_FORTH
+if DEBUG_FORTH_PARSE
 .nowordfound: db "No match",0
 .compword:	db "Comparing word ",0
 .nextwordat:	db "Next word at",0

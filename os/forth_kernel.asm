@@ -414,6 +414,7 @@ if DEBUG_FORTH_PUSH
 .push_str:	db "Pushing string",0
 .push_num:	db "Pushing number",0
 .push_malloc:	db "Malloc address",0
+.data_sp:	db "SP:",0
 endif
 
 ; move cli_ptr to start of next word in cli_buffer 
@@ -499,32 +500,7 @@ endif
 
 	push hl
 if DEBUG_FORTH_PUSH
-	push af
-	push hl
-	push hl
-	call clear_display
-	pop hl
-	ld a,h
-	ld hl, os_word_scratch
-	call hexout
-	pop hl
-	ld a,l
-	ld hl, os_word_scratch+2
-	call hexout
-	ld hl, os_word_scratch+4
-	ld a,0
-	ld (hl),a
-	ld de,os_word_scratch
-		ld a, display_row_2
-		call str_at_display
-	ld de, .push_malloc
-	ld a, display_row_1
-
-		call str_at_display
-	call update_display
-	call delay1s
-	call delay1s
-	pop af
+	call display_data_malloc 
 endif	
 
 	; flag set as str
@@ -600,34 +576,7 @@ endif
 	push hl		; once to save word into
 
 if DEBUG_FORTH_PUSH
-	push af
-	push hl
-	push hl
-push hl
-	call clear_display
-pop hl
-	ld a,h
-	ld hl, os_word_scratch
-	call hexout
-	pop hl
-	ld a,l
-	ld hl, os_word_scratch+2
-	call hexout
-	ld hl, os_word_scratch+4
-	ld a,0
-	ld (hl),a
-	ld de,os_word_scratch
-		ld a, display_row_2
-		call str_at_display
-	ld de, .push_malloc
-	ld a, display_row_1
-
-		call str_at_display
-	call update_display
-	call delay1s
-	call delay1s
-	pop hl
-	pop af
+	call display_data_malloc 
 endif
 	
 	; push malloc to data stack     macro????? 
@@ -670,4 +619,63 @@ endif
 
 	ret
 
+
+
+
+
+if DEBUG_FORTH_PUSH
+display_data_malloc:
+
+	push af
+	push hl
+	push hl
+push hl
+	call clear_display
+pop hl
+	ld a,h
+	ld hl, os_word_scratch
+	call hexout
+	pop hl
+	ld a,l
+	ld hl, os_word_scratch+2
+	call hexout
+	ld hl, os_word_scratch+4
+	ld a,0
+	ld (hl),a
+	ld de,os_word_scratch
+		ld a, display_row_2
+		call str_at_display
+	ld de, .push_malloc
+	ld a, display_row_1
+
+		call str_at_display
+
+	; display current data stack pointer
+	ld de,.data_sp
+		ld a, display_row_2 + 8
+		call str_at_display
+
+	ld hl,(cli_data_sp)
+	push hl
+	ld a,h
+	ld hl, os_word_scratch
+	call hexout
+	pop hl
+	ld a,l
+	ld hl, os_word_scratch+2
+	call hexout
+	ld hl, os_word_scratch+4
+	ld a,0
+	ld (hl),a
+	ld de,os_word_scratch
+		ld a, display_row_2 + 11
+		call str_at_display
+
+	call update_display
+	call delay1s
+	call delay1s
+	pop hl
+	pop af
+	ret
+endif
 ; eof

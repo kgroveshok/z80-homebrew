@@ -67,6 +67,16 @@ parsenext:
 
 ld (cli_origptr), hl		 ;save start of buffer to parse
 
+.ltrimbl:     ; trim off any space at start of string to get to the first non space or end of string
+	ld a,(hl)
+	inc hl
+	cp ' '
+	jr z, .ltrimbl
+	cp 0		; end of string
+	ret z
+	
+
+
 
 ; get start of dict
 

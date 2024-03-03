@@ -387,6 +387,35 @@ fourehexhl:
 	pop hl
 	ret
 
+; pass hl. returns z set if the byte at hl is a digit
+;isdigithl: 
+;	push bc
+;	ld a,(hl)
+;	cp ':'
+;	jr nc, .isdf 		; >
+;	cp '0'
+;	jr c, .isdf		; <
+;
+;	; TODO find a better way to set z
+;
+;	ld b,a
+;	cp b
+;	pop bc
+;	ret
+;
+;.isdf:	; not digit so clear z
+;
+;	; TODO find a better way to unset z
+;
+;	ld b,a
+;	inc b
+;	cp b
+;
+;	pop bc
+;	ret
+	
+	
+
 
 ; pass hl as the four byte address to load
 
@@ -399,11 +428,25 @@ get_word_hl:
 	pop hl
 	inc hl
 	inc hl
+
+	ld a,(hl)
+	cp ':'
+	jr nc, .single_byte_hl 		; >
+	cp '0'
+	jr c, .single_byte_hl		; <
+
+	;call isdigithl
+	;jr z, .single_byte_hl
+
+.getwhln:   ; hex word so get next byte
+
 	call get_byte
 	ld l, a
 	ld h,b
 	ret
-
+.single_byte_hl:   ld l,b
+		ld h,0
+		ret
 
 
 

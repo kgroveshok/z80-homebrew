@@ -36,14 +36,16 @@ Stack Values
 ============
 
 $xxxx  - 16bit Hex value
-"xxx"  - String pointer
+$xx    -  8bit Hex Value
+"xxx"  - String pointer    (TODO)
 
 
 Words
 =====
 
 
-While still a lot of dev going on see os/forth_words.asm
+While still a lot of dev going on see os/forth_words.asm there is also a shell script that lists the words from the source and shows which ones
+are working and what are left to do
 
 
 

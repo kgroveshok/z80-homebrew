@@ -4,7 +4,7 @@
 DS_TYPE_STR: equ 1
 DS_TYPE_NUM: equ 2 
 
-USER_WORD_EOL: macro
+user_word_eol: 
 	; hl contains the pointer to where to create a linked list item from the end
 	; of the user dict to continue on at the system word dict
 	
@@ -21,18 +21,30 @@ USER_WORD_EOL: macro
 	ld (hl), a		; word id
 	inc hl
 
-	ld (hl), sysdict		; next word link ie system dict
+	ld de, sysdict
+	ld (hl), e		; next word link ie system dict
 	inc hl
+	ld (hl), d		; next word link ie system dict
 	inc hl	
 
-	ld a, 1			; word length is 0
+;	ld (hl), sysdict		; next word link ie system dict
+;	inc hl
+;	inc hl
+
+;	inc hl
+;	inc hl
+
+	ld a, 2			; word length is 0
 	ld (hl), a	
 	inc hl
 
+	ld a, '~'			; word length is 0
+	ld (hl), a	
+	inc hl
 	ld a, 0			; save empty word
 	ld (hl), a
 
-	endm
+	ret
 
 
 forth_init:
@@ -66,7 +78,7 @@ forth_init:
 	; set start of word list in start of ram - for use when creating user words
 
 	ld hl, baseusermem		
-	USER_WORD_EOL
+	call user_word_eol
 	
 
 
@@ -120,8 +132,8 @@ ld (cli_origptr), hl		 ;save start of buffer to parse
 
 ; get start of dict (in user area first)
 
-;ld hl, baseusermem
-ld hl, sysdict
+ld hl, baseusermem
+;ld hl, sysdict
 ld (cli_nextword),hl
 
 ;

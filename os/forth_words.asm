@@ -129,7 +129,11 @@ sysdict:
 .DUP:	db 6
 	dw .EMIT
 	db 4
-	db "DUP",0   ; | DUP ( u -- u u )     Duplicate whatever item is on TOS |
+	db "DUP",0   ; | DUP ( u -- u u )     Duplicate whatever item is on TOS | DONE
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		call forth_push_numhl
 		NEXT
 .EMIT:	db 7
 	dw .DOT
@@ -505,11 +509,18 @@ sysdict:
 		NEXT
 
 .HOME:	db 45
-	dw .V0
+	dw .OVER
 	db 5
 	db "HOME",0	; |HOME ( -- )    Reset the current cursor for output to home |DONE
 .home:		ld a, 0		; and home cursor
 		ld (f_cursor_ptr), a
+		NEXT
+
+.OVER:  db 46
+	dw .V0
+	db 5
+	db "OVER",0	; |OVER ( n1 n2 -- n1 n2 n1 )  Copy one below TOS onto TOS
+
 		NEXT
 ;;;; counter gap
 

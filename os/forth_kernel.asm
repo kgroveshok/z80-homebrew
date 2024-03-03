@@ -266,8 +266,8 @@ ld a,(hl)
 	call str_at_display
 	call update_display
 	call delay500ms
-	call delay1s
-	call delay1s
+;	call delay1s
+;	call delay1s
 endif
 	ld hl,(cli_token)
 	ld a, (hl)	 ; char in word token
@@ -300,9 +300,9 @@ if DEBUG_FORTH_PARSE
 	ld a,display_row_1
 	call str_at_display
 	call update_display
-	call delay1s
-	call delay1s
-	call delay1s
+	call delay500ms
+;	call delay1s
+;	call delay1s
 	pop bc
 	pop af
 endif

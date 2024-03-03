@@ -212,19 +212,19 @@ hardware_init:
 	call delay1s
 	call delay1s
 
-	ld a, display_row_4+3
-	ld de, bootmsg2
-	call str_at_display
-	call update_display
-	call delay1s
-	call delay1s
+;	ld a, display_row_4+3
+;	ld de, bootmsg2
+;	call str_at_display
+;	call update_display
+;	call delay1s
+;	call delay1s
 
 		ret
 
 
 bootmsg:	db "z80-homebrew OS v0.1",0
 bootmsg1:	db "by Kevin Groves",0
-bootmsg2:	db "Firmware v0.1",0
+;bootmsg2:	db "Firmware v0.1",0
 
 ; a 4x20 lcd
 ; cout for display, low level positioning and writing functions (TODO) for hardware abstraction

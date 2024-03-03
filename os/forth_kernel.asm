@@ -4,6 +4,36 @@
 DS_TYPE_STR: equ 1
 DS_TYPE_NUM: equ 2 
 
+USER_WORD_EOL: macro
+	; hl contains the pointer to where to create a linked list item from the end
+	; of the user dict to continue on at the system word dict
+	
+	; poke the stub of the word list linked list to repoint to rom words
+
+	; stub format
+	; db   word id
+	; dw    link to next word
+        ; db char length of token
+	; db string + 0 term
+	; db exec code.... 
+
+	ld a, 1
+	ld (hl), a		; word id
+	inc hl
+
+	ld (hl), sysdict		; next word link ie system dict
+	inc hl
+	inc hl	
+
+	ld a, 1			; word length is 0
+	ld (hl), a	
+	inc hl
+
+	ld a, 0			; save empty word
+	ld (hl), a
+
+	endm
+
 
 forth_init:
 	call update_display
@@ -32,6 +62,13 @@ forth_init:
 
 	ld a,0
 	ld (f_cursor_ptr), a
+
+	; set start of word list in start of ram - for use when creating user words
+
+	ld hl, baseusermem		
+	USER_WORD_EOL
+	
+
 
 	ret
 
@@ -81,9 +118,9 @@ ld (cli_origptr), hl		 ;save start of buffer to parse
 
 
 
-; get start of dict
+; get start of dict (in user area first)
 
-ld hl, sysdict
+ld hl, baseusermem
 ld (cli_nextword),hl
 
 ;
@@ -677,7 +714,6 @@ FORTH_DSP_VALUE: macro
 	endm
 
 	
-
 
 ; whatever the current top os stack points to, we are now done with it so return memory to malloc
 

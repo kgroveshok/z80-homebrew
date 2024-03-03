@@ -222,7 +222,7 @@ hardware_init:
 		ret
 
 
-bootmsg:	db "z80-homebrew OS v0.1",0
+bootmsg:	db "z80-homebrew OS v0.5",0
 bootmsg1:	db "by Kevin Groves",0
 ;bootmsg2:	db "Firmware v0.1",0
 

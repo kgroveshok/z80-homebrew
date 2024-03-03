@@ -134,8 +134,38 @@ sysdict:
 .EMIT:	db 7
 	dw .DOT
 	db 5
-	db "EMIT",0  ;|  EMIT ( u -- )        Display TOS   |DONE
-		jp .print
+	db "EMIT",0  ;|  EMIT ( u -- )        Display ascii character  TOS   |DONE
+		; get value off TOS and display it
+
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		
+		; write value to screen     
+		; TODO display it on its own briefly for now. need cursor control etc
+
+
+;	push hl
+;	call clear_display
+;	pop hl
+	ld a,l
+	ld hl, os_word_scratch
+	ld (hl),a
+	ld hl, os_word_scratch+1
+	ld a,0
+	ld (hl),a
+	ld de,os_word_scratch
+		ld a, (f_cursor_ptr)
+		call str_at_display
+
+;	call update_display
+;	call delay1s
+;	call delay1s
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
 		NEXT
 .DOT:	db 8
 	dw .SWAP

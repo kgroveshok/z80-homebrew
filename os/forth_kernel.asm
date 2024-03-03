@@ -120,7 +120,8 @@ ld (cli_origptr), hl		 ;save start of buffer to parse
 
 ; get start of dict (in user area first)
 
-ld hl, baseusermem
+;ld hl, baseusermem
+ld hl, sysdict
 ld (cli_nextword),hl
 
 ;
@@ -449,6 +450,7 @@ ret z
 jp parsenext
  
 	;ret
+
 
 if DEBUG_FORTH_PARSE
 .nowordfound: db "No match",0

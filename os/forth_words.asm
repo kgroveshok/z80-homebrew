@@ -359,6 +359,7 @@ sysdict:
 	db 4
 	db "CLS",0     ; |CLS ( -- ) clear frame buffer    |DONE
 		call clear_display
+		jp .home		; and home cursor
 		NEXT
 
 .DRAW:   db 34
@@ -468,11 +469,18 @@ sysdict:
 	db "WAITK",0     ;| WAITK ( -- w )      wait for keypress TOS is key press
 		NEXT
 .ACCEPT:   db 44               
-	dw .V0
+	dw .HOME
 	db 7
 	db "ACCEPT",0     ; |ACCEPT ( -- w )    Prompt for text input and push pointer to string
 		NEXT
 
+.HOME:	db 45
+	dw .V0
+	db 5
+	db "HOME",0	; |HOME ( -- )    Reset the current cursor for output to home |DONE
+.home:		ld a, 0		; and home cursor
+		ld (f_cursor_ptr), a
+		NEXT
 ;;;; counter gap
 
 

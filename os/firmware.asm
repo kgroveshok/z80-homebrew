@@ -89,7 +89,7 @@ iErrorNum:  equ cursor_shape-1         ;Error number
 iErrorReg:  equ iErrorNum -1              ;Error register
 iErrorVer:  equ iErrorReg - 1              ;Verify error flag
 
-store_bank_active: iErrorVer - (5 + 8 ) ;		; indicator of which storage banks are available to use 5 on board and 8 in cart
+store_bank_active: equ iErrorVer - (5 + 8 ) 		; indicator of which storage banks are available to use 5 on board and 8 in cart
 store_page: equ store_bank_active-128            ; page size for eeprom
 ;
 ; spi vars

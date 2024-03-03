@@ -98,7 +98,7 @@ main:
 	ld a, 0
 	ld (hl),a
 	ld de, os_word_scratch
-	ld a, display_row_1+12
+	ld a, display_row_1 + 12
 	call str_at_display
 	call update_display
 
@@ -123,16 +123,18 @@ main:
 	ld (os_word_scratch+1),a	
 	
 
+	ld a, kLCD_Line2        ; TODO prompt using direct screen line address. Correct this to frame buffer
 cli:
 	; show cli prompt
+	;push af
+	;ld a, 0
+	;ld de, prompt
+	;call str_at_display
 
-	ld a, display_row_4
-	ld de, prompt
-	call str_at_display
-
-	call update_display
-
-	ld a, kLCD_Line4+1	 ; TODO using direct screen line writes. Correct this to frame buffer
+	;call update_display
+	;pop af
+	;inc a
+	;ld a, kLCD_Line4+1	 ; TODO using direct screen line writes. Correct this to frame buffer
 	ld d, 10
 	ld hl, scratch	
 	call input_str
@@ -180,6 +182,33 @@ endif
 	; first time into the parser so pass over the current scratch pad
 	ld hl,scratch
 	call parsenext
+
+	; TODO on return from forth parsing should there be a prompt to return to system? but already in system.
+
+	ld a,display_row_4 + display_cols - 1
+        ld de, endprg
+	call str_at_display
+	call update_display
+	call cin_wait
+        call clear_display
+	call update_display		
+
+
+	; TODO f_cursor_ptr should inc row (scroll if required) and set start of row for next input 
+
+	; now on last line
+
+	; TODO scroll screen up
+
+	; TODO instead just clear screen and place at top of screen
+
+;	ld a, 0
+;	ld (f_cursor_ptr),a
+
+	call clear_display
+	call update_display
+
+	ld a, kLCD_Line1        ; TODO prompt using direct screen line address. Correct this to frame buffer
 	jp cli
 
 freeram: db "Free bytes: ",0
@@ -436,6 +465,7 @@ cloop:
 ; OS Prompt
 
 prompt: db ">",0
+endprg: db "?",0
 
 
 ; forth parser

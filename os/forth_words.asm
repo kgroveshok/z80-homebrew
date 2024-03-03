@@ -519,8 +519,31 @@ sysdict:
 .OVER:  db 46
 	dw .V0
 	db 5
-	db "OVER",0	; |OVER ( n1 n2 -- n1 n2 n1 )  Copy one below TOS onto TOS
+	db "OVER",0	; |OVER ( n1 n2 -- n1 n2 n1 )  Copy one below TOS onto TOS | DONE
 
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+		push hl    ; n2
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+		push hl    ; n1
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		pop de     ; n1
+		pop hl     ; n2
+
+		push de
+		push hl
+		push de
+
+		; push back 
+
+		pop hl
+		call forth_push_numhl
+		pop hl
+		call forth_push_numhl
+		pop hl
+		call forth_push_numhl
 		NEXT
 ;;;; counter gap
 

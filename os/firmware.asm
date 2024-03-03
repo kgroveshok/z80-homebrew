@@ -89,7 +89,8 @@ iErrorNum:  equ cursor_shape-1         ;Error number
 iErrorReg:  equ iErrorNum -1              ;Error register
 iErrorVer:  equ iErrorReg - 1              ;Verify error flag
 
-store_page: equ iErrorVer-128            ; page size for eeprom
+store_bank_active: iErrorVer - (5 + 8 ) ;		; indicator of which storage banks are available to use 5 on board and 8 in cart
+store_page: equ store_bank_active-128            ; page size for eeprom
 ;
 ; spi vars
 ; 
@@ -112,15 +113,15 @@ cli_origptr: equ cli_ptr - 2           ; pointer to start of word to parse which
 cli_var_array: equ cli_origptr - ( 10 * 2 ) ; word or string pointer variables using @0-@9
 cli_ret_sp: equ cli_var_array - 2    ; ret stack pointer
 cli_data_sp: equ cli_ret_sp - 2   ; data stack pointer
-cli_ret_stack: equ cli_data_sp - 128      ; TODO could I just use normal stack for this?
-cli_data_stack: equ cli_ret_stack - 256		 ; 
+cli_ret_stack: equ cli_data_sp - 128      ; TODO could I just use normal stack for this? - use linked list for looping
+cli_data_stack: equ cli_ret_stack - 512		 ; 
 
 
 ; with data stack could see memory filled with junk. need some memory management 
 ; malloc and free entry points added
 
 free_list:  equ cli_data_stack - 4     ; Block struct for start of free list (MUST be 4 bytes)
-heap_size: equ  1024      ; Number of bytes available in heap
+heap_size: equ  2048      ; Number of bytes available in heap
 heap_start: equ free_list - heap_size  ; Starting address of heap
 
 ;;;;

@@ -24,6 +24,32 @@ storage_bdata: equ Device_C+1    ; device c port b - ext storage cart
 storage_bctl: equ Device_C+3     ; device c port b
 
 
+; storage bank file system format
+;
+; first page of bank:
+; 	addr 0 - status check
+;       addr 1 - write protect flag
+;       addr 2 - zero if all data is held on this device. >0 - next device number (not used right now)
+;       addr 3 - last file id (to save on scanning for spare file id). or could have bit mask of file ids in use???? 
+;         TODO see if scanning whole of for available next file id is fast enough
+;	addr 4 > zero term string of bank label
+;
+;       
+; 
+; first page of any file:
+;      byte 0 - file id 
+;      byte 1-17 - fixed file name 
+;      byte 18-end of page - extra meta data tba (date? description? keywords?)
+;
+; other pages of any file:
+;      byte 0 - file id
+;      byte 1> - file data
+;
+; TODO depending on how long it takes to load a file in if scanning the whole bank for the file id, could speed it up by having last file page flag??? high bit? that would max 127 files
+; 
+; TODO need a bank format which places a 0 in each of the first byte of every page and updates the meta in page 0
+
+
 ;storage_so_bit: 5
 ;storage_si_bit: 7
 ;storage_sclk_bit: 6
@@ -42,6 +68,18 @@ storage_init:
 
 		; ensure the spi bus is in a default stable state
 		call se_stable_spi
+
+; TODO scan spi bus and gather which storage banks are present
+
+; populate store_bank_active 
+; for each ce line activate and attempt to write first byte of bank and read back
+; if zero is returned then bank is empty
+;  
+;
+
+
+
+
     ret
 
 store_read_ins: equ 000000011b   ; Read data from memory array beginning at selected address

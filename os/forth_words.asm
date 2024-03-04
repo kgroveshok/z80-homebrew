@@ -715,11 +715,16 @@ endif
 	  db "COUNT",0	; | COUNT (  -- )  
 	       NEXT
 .CHAR:   db 57
-	  dw .V0
+	  dw .RND
           db 5
 	  db "CHAR",0	; | CHAR (  -- )  
 	       NEXT
 
+.RND:   db 58
+	  dw .V0
+          db 4
+	  db "RND",0	; | RND (  -- )  
+	       NEXT
 ;;;; counter gap
 
 

@@ -529,7 +529,7 @@ cin: 	call .mtoc
 ;
 ;
 
-if DEBUG_KEY_MATRIX
+;if DEBUG_KEY_MATRIX
 
 ; test function to display hardware view of matrix state
 
@@ -630,7 +630,7 @@ matrix:
 
 
 
-endif
+;endif
 
 
 ; eof

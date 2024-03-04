@@ -143,16 +143,16 @@ cli:
 	; look for monitor commands
 
 	ld a,(scratch)
-	cp 'd'
-	call z, dump			; d xxxx    dump 4 bytes. repeated pressing of enter dumps another row and scrolls
-	cp 'g'
-	jp z,jump			; j xxxx     jump and run code at xxxx
-	cp 'e'
-	jp z,enter                ; e xxxx     start entering of single bytes storing at address until empty string
-	cp 't'
-	jp z,testenter                ; e xxxx     start entering of single bytes storing at address until empty string
-	cp 'j'
-	jp z,testenter2                ; e xxxx     start entering of single bytes storing at address until empty string
+;	cp 'd'
+;	call z, dump			; d xxxx    dump 4 bytes. repeated pressing of enter dumps another row and scrolls
+;	cp 'g'
+;	jp z,jump			; j xxxx     jump and run code at xxxx
+;	cp 'e'
+;	jp z,enter                ; e xxxx     start entering of single bytes storing at address until empty string
+;	cp 't'
+;	jp z,testenter                ; e xxxx     start entering of single bytes storing at address until empty string
+;	cp 'j'
+;	jp z,testenter2                ; e xxxx     start entering of single bytes storing at address until empty string
 if DEBUG_KEY_MATRIX
 	cp 'm'
 	jp z,matrix

@@ -10,14 +10,15 @@ Device_D: equ 0c0h
 
 
 DEBUG_KEY: equ 0
-DEBUG_KEY_MATRIX: equ 1
+DEBUG_KEY_MATRIX: equ 0
 DEBUG_STORECF: equ 0
-DEBUG_STORESE: equ 1
+DEBUG_STORESE: equ 0
 DEBUG_FORTH: equ 0
 DEBUG_FORTH_PARSE: equ 0
 DEBUG_FORTH_JP: equ 0
-DEBUG_FORTH_PUSH: equ 1
-DEBUG_FORTH_MALLOC: equ 1
+DEBUG_FORTH_PUSH: equ 0
+DEBUG_FORTH_MALLOC: equ 0
+DEBUG_FORTH_DOT: equ 0
 
 tos:	equ 0ffffh
 stacksize: equ 255
@@ -266,7 +267,7 @@ include "firmware_storage.asm"
 
 include "firmware_general.asm"        ; general support functions
 include "firmware_display.asm"      ; frame buffer screen abstraction layer
-include "firmware_maths.asm"     ; any odd maths stuff
+;include "firmware_maths.asm"     ; any odd maths stuff   TODO removed until I fix up the rng code
 include "firmware_strings.asm"   ; string handling
 include "firmware_memory.asm"   ; malloc and free
 

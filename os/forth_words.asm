@@ -177,7 +177,7 @@ sysdict:
 	db ".",0         ;| . ( u -- )    Display TOS   |DONE
 		; get value off TOS and display it
 
-if DEBUG_FORTH_MALLOC
+if DEBUG_FORTH_DOT
 		ld a, 'z'
 		ld (debug_mark),a
 		call display_data_sp
@@ -189,7 +189,7 @@ endif
 
 		FORTH_DSP_VALUE
 
-if DEBUG_FORTH_MALLOC
+if DEBUG_FORTH_DOT
 		ld a, 'B'
 		ld (debug_mark),a
 		call display_data_sp
@@ -204,7 +204,7 @@ endif
 		;FORTH_DSP
 
 
-if DEBUG_FORTH_MALLOC
+if DEBUG_FORTH_DOT
 		call next_page_prompt
 		ld a, 'c'
 		ld (debug_mark),a
@@ -222,7 +222,7 @@ endif
 ;		inc hl
 ;		ld d,(hl)
 		;push hl
-if DEBUG_FORTH_MALLOC
+if DEBUG_FORTH_DOT
 		
 		ld a, 'i'
 		ld (debug_mark),a
@@ -234,22 +234,24 @@ endif
 		ex de,hl
 		ld a, (f_cursor_ptr)
 		call str_at_display
-;		call update_display
+		call update_display
 		;pop hl
-if DEBUG_FORTH_MALLOC
+if DEBUG_FORTH_DOT
 		call next_page_prompt
 endif	
-	jr .dotdone
+; TODO this pop off the stack causes a crash. i dont know why
+;		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+	NEXT
 
 .dotnum:	
 
-if DEBUG_FORTH_MALLOC
+if DEBUG_FORTH_DOT
 		call next_page_prompt
 endif	
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
-if DEBUG_FORTH_MALLOC
+if DEBUG_FORTH_DOT
 		call next_page_prompt
 endif	
 		
@@ -282,10 +284,11 @@ endif
 
 		; destroy value TOS
 
-.dotdone:
+;.dotdone:
 
 		call update_display
-if DEBUG_FORTH_MALLOC
+if DEBUG_FORTH_DOT
+		call next_page_prompt
 		ld a, 'p'
 		ld (debug_mark),a
 		call display_data_sp
@@ -294,6 +297,14 @@ if DEBUG_FORTH_MALLOC
 		call next_page_prompt
 endif	
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+if DEBUG_FORTH_DOT
+		call next_page_prompt
+		ld (debug_mark),a
+		call display_data_sp
+		ld a, 'y'
+		ld (debug_mark),a
+		call next_page_prompt
+endif	
 
 		NEXT
 .SWAP:	db 9

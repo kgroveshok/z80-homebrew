@@ -620,7 +620,7 @@ endif
 		NEXT
 
 .OVER:  db 46
-	dw .V0
+	dw .PAUSE
 	db 5
 	db "OVER",0	; |OVER ( n1 n2 -- n1 n2 n1 )  Copy one below TOS onto TOS | DONE
 
@@ -648,6 +648,32 @@ endif
 		pop hl
 		call forth_push_numhl
 		NEXT
+
+.PAUSE:   db 47
+	  dw .PAUSES
+          db 8
+	  db "PAUSEMS",0	; | PAUSEMS ( n -- )  Pause for n millisconds|TO TEST
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+		push hl    ; n2
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+		pop bc
+		call aDelayInMS
+	       NEXT
+.PAUSES:   db 48
+	  dw .V0
+          db 8
+	  db "PAUSES",0	; | PAUSES ( n -- )  Pause for n seconds|TO TEST
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+		push hl    ; n2
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+		pop hl
+		ld b, l
+.pauses1:	push bc
+		call delay1s
+		pop bc
+		djnz .pauses1
+
+	       NEXT
 ;;;; counter gap
 
 

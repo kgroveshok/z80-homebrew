@@ -185,11 +185,7 @@ endif
 
 	; TODO on return from forth parsing should there be a prompt to return to system? but already in system.
 
-	ld a,display_row_4 + display_cols - 1
-        ld de, endprg
-	call str_at_display
-	call update_display
-	call cin_wait
+	call next_page_prompt
         call clear_display
 	call update_display		
 
@@ -467,6 +463,26 @@ cloop:
 prompt: db ">",0
 endprg: db "?",0
 
+
+; handy next page prompt
+next_page_prompt:
+	push hl
+	push de
+	push af
+	push bc
+
+	ld a,display_row_4 + display_cols - 1
+        ld de, endprg
+	call str_at_display
+	call update_display
+	call cin_wait
+	pop bc
+	pop af
+	pop de
+	pop hl
+
+
+	ret
 
 ; forth parser
 

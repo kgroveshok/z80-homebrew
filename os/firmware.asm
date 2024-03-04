@@ -16,8 +16,8 @@ DEBUG_STORESE: equ 1
 DEBUG_FORTH: equ 0
 DEBUG_FORTH_PARSE: equ 0
 DEBUG_FORTH_JP: equ 0
-DEBUG_FORTH_PUSH: equ 0
-DEBUG_FORTH_MALLOC: equ 0
+DEBUG_FORTH_PUSH: equ 1
+DEBUG_FORTH_MALLOC: equ 1
 
 tos:	equ 0ffffh
 stacksize: equ 255
@@ -46,8 +46,12 @@ key_fc: equ key_fb -1 ;
 key_fd: equ key_fc -1 ;
 key_face_held: equ key_fd - 1 
 
+; debug marker - optional display of debug point on the debug screens
+
+debug_mark: equ key_face_held - 2
+
 ; input_str vars
-input_ptr:  equ key_face_held - 2    ; ptr to the current cursor position of string currently being edited  on entry starting 
+input_ptr:  equ debug_mark - 2    ; ptr to the current cursor position of string currently being edited  on entry starting 
 input_start:  equ input_ptr - 2    ; ptr to the start of string 
 input_size: equ input_start -1  ; number of chars
 input_at_pos: equ input_size - 1 ; frame buffer offset for start of input
@@ -218,6 +222,13 @@ hardware_init:
 ;	call update_display
 ;	call delay1s
 ;	call delay1s
+
+; debug mark setup
+
+ld a, 'a'
+ld (debug_mark),a
+ld a,0
+ld (debug_mark+1),a
 
 		ret
 

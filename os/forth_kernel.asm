@@ -580,6 +580,7 @@ endif
 
 	; flag set as str
 
+
 	ld (hl), DS_TYPE_STR
 	inc hl
 
@@ -813,6 +814,10 @@ pop hl
 		call str_at_display
 	ld de, .wordinhl
 	ld a, display_row_1
+
+		call str_at_display
+	ld de, debug_mark
+	ld a, display_row_1+18
 
 		call str_at_display
 

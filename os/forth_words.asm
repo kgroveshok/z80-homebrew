@@ -177,10 +177,81 @@ sysdict:
 	db ".",0         ;| . ( u -- )    Display TOS   |DONE
 		; get value off TOS and display it
 
-		.print:
+if DEBUG_FORTH_MALLOC
+		ld a, 'z'
+		ld (debug_mark),a
+		call display_data_sp
+		ld a, 'b'
+		ld (debug_mark),a
+		call next_page_prompt
+endif	
+;		.print:
+
+		FORTH_DSP_VALUE
+
+if DEBUG_FORTH_MALLOC
+		ld a, 'B'
+		ld (debug_mark),a
+		call display_data_sp
+		ld a, 'g'
+		ld (debug_mark),a
+		call next_page_prompt
+endif	
+
+		ld a,(hl)
+		cp DS_TYPE_STR 
+		jr nz, .dotnum
+		;FORTH_DSP
+
+
+if DEBUG_FORTH_MALLOC
+		call next_page_prompt
+		ld a, 'c'
+		ld (debug_mark),a
+		call display_data_sp
+		ld a, 'f'
+		ld (debug_mark),a
+		call next_page_prompt
+endif	
+
+
+; print string
+		inc hl     			; TODO skip type check and assume number.... lol
+;		ex de, hl
+;		ld e,(hl)
+;		inc hl
+;		ld d,(hl)
+		;push hl
+if DEBUG_FORTH_MALLOC
+		
+		ld a, 'i'
+		ld (debug_mark),a
+		call display_data_sp
+		ld a, 'j'
+		ld (debug_mark),a
+		call next_page_prompt
+endif	
+		ex de,hl
+		ld a, (f_cursor_ptr)
+		call str_at_display
+;		call update_display
+		;pop hl
+if DEBUG_FORTH_MALLOC
+		call next_page_prompt
+endif	
+	jr .dotdone
+
+.dotnum:	
+
+if DEBUG_FORTH_MALLOC
+		call next_page_prompt
+endif	
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
+if DEBUG_FORTH_MALLOC
+		call next_page_prompt
+endif	
 		
 		; write value to screen     
 		; TODO display it on its own briefly for now. need cursor control etc
@@ -203,6 +274,7 @@ sysdict:
 	ld de,os_word_scratch
 		ld a, (f_cursor_ptr)
 		call str_at_display
+		
 
 ;	call update_display
 ;	call delay1s
@@ -210,6 +282,17 @@ sysdict:
 
 		; destroy value TOS
 
+.dotdone:
+
+		call update_display
+if DEBUG_FORTH_MALLOC
+		ld a, 'p'
+		ld (debug_mark),a
+		call display_data_sp
+		ld a, 'q'
+		ld (debug_mark),a
+		call next_page_prompt
+endif	
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
 		NEXT

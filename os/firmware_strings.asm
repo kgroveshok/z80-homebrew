@@ -429,11 +429,15 @@ get_word_hl:
 	inc hl
 	inc hl
 
+; TODO not able to handle a-f 
 	ld a,(hl)
-	cp ':'
-	jr nc, .single_byte_hl 		; >
-	cp '0'
-	jr c, .single_byte_hl		; <
+;	;cp ':'
+;	cp 'g'
+;	jr nc, .single_byte_hl 		; >
+;	cp 'G'
+;	jr nc, .single_byte_hl 		; >
+;	cp '0'
+;	jr c, .single_byte_hl		; <
 
 	;call isdigithl
 	;jr z, .single_byte_hl

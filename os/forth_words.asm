@@ -660,7 +660,7 @@ endif
 		call aDelayInMS
 	       NEXT
 .PAUSES:   db 48
-	  dw .V0
+	  dw .ROT
           db 8
 	  db "PAUSES",0	; | PAUSES ( n -- )  Pause for n seconds|TO TEST
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -674,6 +674,52 @@ endif
 		djnz .pauses1
 
 	       NEXT
+.ROT:   db 49
+	  dw .SPACE
+          db 4
+	  db "ROT",0	; | ROT (  -- )  
+	       NEXT
+
+.SPACE:   db 50
+	  dw .SPACES
+          db 6
+	  db "SPACE",0	; | SPACE (  -- )  
+	       NEXT
+
+.SPACES:   db 51
+	  dw .MIN
+          db 7
+	  db "SPACES",0	; | SPACES (  -- )  
+	       NEXT
+
+.MIN:   db 52
+	  dw .MAX
+          db 4
+	  db "MIN",0	; | MIN (  -- )  
+	       NEXT
+.MAX:   db 54
+	  dw .FIND
+          db 4
+	  db "MAX",0	; | MAX (  -- )  
+	       NEXT
+
+.FIND:   db 55
+	  dw .COUNT
+          db 5
+	  db "FIND",0	; | FIND (  -- )  
+	       NEXT
+
+.COUNT:   db 56
+	  dw .CHAR
+          db 6
+	  db "COUNT",0	; | COUNT (  -- )  
+	       NEXT
+.CHAR:   db 57
+	  dw .V0
+          db 5
+	  db "CHAR",0	; | CHAR (  -- )  
+	       NEXT
+
 ;;;; counter gap
 
 

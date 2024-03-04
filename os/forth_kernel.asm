@@ -55,7 +55,7 @@ forth_init:
 ;	call update_display
 ;	call delay1s
 ;
-;            ld a, display_row_2
+;            ld a, display_row_1
 ;	ld de, .bootforth
 ;	call str_at_display
 ;	call update_display
@@ -80,6 +80,8 @@ forth_init:
 	ld hl, baseusermem		
 	call user_word_eol
 	
+		call display_data_sp
+		call next_page_prompt
 
 
 	ret
@@ -536,9 +538,9 @@ forth_apush:
 .fapstr:   
 	; get string length
 
-	ld a, ' '
+	ld a, '"'
 	call strlent      ; TODO maybe a bug here for string copying
-
+	;push af
 if DEBUG_FORTH_PUSH
 	push af
 	call clear_display
@@ -603,6 +605,12 @@ endif
 	ld (hl), e
 	inc hl
 	ld (hl), d		
+
+
+	; in case of spaces, skip the ptr past the copied string
+	;pop af
+	;ld (cli_origptr),hl
+
 	ret
 
 .faphex:   ; hex is always stored as a 16bit word
@@ -735,8 +743,36 @@ FORTH_DSP_VALUE: macro
 FORTH_DSP_POP: macro
 	; release malloc data
 
-	ld hl,(cli_data_sp)
+	;ld hl,(cli_data_sp)
+if DEBUG_FORTH_DOT
+		
+		ld a, '1'
+		ld (debug_mark),a
+		call display_data_sp
+		ld a, '2'
+		ld (debug_mark),a
+		call next_page_prompt
+endif	
+	FORTH_DSP_VALUE
+if DEBUG_FORTH_DOT
+		
+		ld a, '3'
+		ld (debug_mark),a
+		call display_data_sp
+		ld a, '4'
+		ld (debug_mark),a
+		call next_page_prompt
+endif	
 	call free
+if DEBUG_FORTH_DOT
+		
+		ld a, '5'
+		ld (debug_mark),a
+		call display_data_sp
+		ld a, '6'
+		ld (debug_mark),a
+		call next_page_prompt
+endif	
 
 	; move pointer down
 

@@ -240,7 +240,16 @@ if DEBUG_FORTH_DOT
 		call next_page_prompt
 endif	
 ; TODO this pop off the stack causes a crash. i dont know why
-;		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+if DEBUG_FORTH_DOT
+		
+		ld a, 'w'
+		ld (debug_mark),a
+		call display_data_sp
+		ld a, 'x'
+		ld (debug_mark),a
+		call next_page_prompt
+endif	
 	NEXT
 
 .dotnum:	

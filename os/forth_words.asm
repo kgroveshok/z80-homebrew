@@ -58,11 +58,6 @@
 
 
 
-NEXT: macro 
-	ld hl,(cli_origptr)   ; move to next token to parse in the input stream
-	jp parsenext
-      endm
-
 ; op code 1 is a flag for user define words which are to be handled differently
 
 

@@ -1,46 +1,11 @@
 
+; version one of the parser - cant handle looping and has buffer string handling
 
-user_word_eol: 
-	; hl contains the pointer to where to create a linked list item from the end
-	; of the user dict to continue on at the system word dict
-	
-	; poke the stub of the word list linked list to repoint to rom words
 
-	; stub format
-	; db   word id
-	; dw    link to next word
-        ; db char length of token
-	; db string + 0 term
-	; db exec code.... 
-
-	ld a, 1
-	ld (hl), a		; word id
-	inc hl
-
-	ld de, sysdict
-	ld (hl), e		; next word link ie system dict
-	inc hl
-	ld (hl), d		; next word link ie system dict
-	inc hl	
-
-;	ld (hl), sysdict		; next word link ie system dict
-;	inc hl
-;	inc hl
-
-;	inc hl
-;	inc hl
-
-	ld a, 2			; word length is 0
-	ld (hl), a	
-	inc hl
-
-	ld a, '~'			; word length is 0
-	ld (hl), a	
-	inc hl
-	ld a, 0			; save empty word
-	ld (hl), a
-
-	ret
+NEXT: macro 
+	ld hl,(cli_origptr)   ; move to next token to parse in the input stream
+	jp parsenext
+      endm
 
 ; cli_ptr holds start of current word to pass
 

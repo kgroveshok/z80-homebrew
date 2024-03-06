@@ -1,8 +1,14 @@
 
 ; new parser. restructing to handle nested loops and better scanning of word tokens
 
+
+NEXT: macro 
+	ld hl,(cli_origptr)   ; move to next token to parse in the input stream
+	jp parsemallocbuffer
+      endm
+
 ; start of parsing a new buffer 
-parsesnewbuffer:
+parsenext:
 	; TODO can use this process to compile by just returning the byte op code whole buffer without doing sub loops
         ; TODO might need to add high bit to op codes to tell difference with values to push to stack
 	;
@@ -96,8 +102,8 @@ parsesnewbuffer:
 	FORTH_RSP_TOS
 	inc hl
 	inc hl
-	ld (cli_ptr), hl
-	call parsenext	
+	;ld (cli_ptr), hl
+	call parsemallocbuffer
 
 	; on return
 	; free top of ret sp
@@ -126,51 +132,10 @@ parsesnewbuffer:
 	ret
 
 
-user_word_eol: 
-	; hl contains the pointer to where to create a linked list item from the end
-	; of the user dict to continue on at the system word dict
-	
-	; poke the stub of the word list linked list to repoint to rom words
-
-	; stub format
-	; db   word id
-	; dw    link to next word
-        ; db char length of token
-	; db string + 0 term
-	; db exec code.... 
-
-	ld a, 1
-	ld (hl), a		; word id
-	inc hl
-
-	ld de, sysdict
-	ld (hl), e		; next word link ie system dict
-	inc hl
-	ld (hl), d		; next word link ie system dict
-	inc hl	
-
-;	ld (hl), sysdict		; next word link ie system dict
-;	inc hl
-;	inc hl
-
-;	inc hl
-;	inc hl
-
-	ld a, 2			; word length is 0
-	ld (hl), a	
-	inc hl
-
-	ld a, '~'			; word length is 0
-	ld (hl), a	
-	inc hl
-	ld a, 0			; save empty word
-	ld (hl), a
-
-	ret
 
 ; cli_ptr holds start of current word to pass
 
-parsenext:
+parsemallocbuffer:
 
 
 ;PLUS:	db 1
@@ -191,18 +156,11 @@ parsenext:
 
 ; hl contains string to parse
 
-ld (cli_origptr), hl		 ;save start of buffer to parse
-
-.ltrimbl:     ; trim off any space at start of string to get to the first non space or end of string
-	ld a,(hl)
-	inc hl
-	cp ' '
-	jr z, .ltrimbl
-	cp 0		; end of string
-	ret z
-	
-
-
+ld (cli_ptr), hl
+ld (cli_origptr), hl     ; save for any restart of current string ie a number or string to push to data stack
+ld a, (hl)
+cp FORTH_END_BUFFER
+ret z
 
 ; get start of dict (in user area first)
 
@@ -218,8 +176,8 @@ ld (cli_nextword),hl
 ;    compare word to cli_token
 
 .pnword:	; HL at start of a word in the dictionary to check
-	ld hl,(cli_origptr)	 ; reset start of word to look up
-	ld (cli_ptr), hl
+;	ld hl,(cli_origptr)	 ; reset start of word to look up
+;	ld (cli_ptr), hl
 
 	ld hl,(cli_nextword)
 	; TODO skip compiled symbol for now
@@ -239,40 +197,6 @@ ld (cli_nextword),hl
 	ex de, hl
 
 if DEBUG_FORTH_PARSE
-	push hl
-	call clear_display
-	ld hl, (cli_nextword)     ; save for next check if no match on this word
-	ld a,h
-	ld hl, os_word_scratch
-	call hexout
-	ld hl, (cli_nextword)     ; save for next check if no match on this word
-	ld a,l
-	ld hl, os_word_scratch+2
-	call hexout
-	ld hl, os_word_scratch+4
-	ld a,0
-	ld (hl),a
-	ld de,os_word_scratch
-		ld a, display_row_2
-		call str_at_display
-	ld a,display_row_1
-	ld de, .nextwordat
-		call str_at_display
-	ld hl,(cli_ptr)
-	ld a,(hl)
-        ld hl, os_word_scratch
-	ld (hl),a
-	ld a,0
-	inc hl
-	ld (hl),a 	
-	ld a, display_row_4+10
-	ld de, os_word_scratch
-		call str_at_display
-	call update_display
-	call delay500ms
-;	call delay1s
-;	call delay1s
-	pop hl
 endif	
 	; save the pointer of the current token - 1 to check against
 	
@@ -356,39 +280,16 @@ endif
 	call toUpper 		; make sure the input string matches case
 
 if DEBUG_FORTH_PARSE
-	push af
-	push bc
-
-	ld hl, os_word_scratch
-	call hexout
-	ld a,b
-	ld hl, os_word_scratch+2
-	call hexout
-	ld a,0
-	ld (hl),a
-	ld de,os_word_scratch
-		ld a, display_row_4+10
-		call str_at_display
-
-	ld de,.charmatch
-	ld a,display_row_1
-	call str_at_display
-	call update_display
-	call delay500ms
-;	call delay1s
-;	call delay1s
-	pop bc
-	pop af
 endif
 
 	; input stream end of token is a space so get rid of it
 
-	cp ' '
-	jr nz, .pnskipspace
-
-	ld a, 0		; make same term as word token term
-
-.pnskipspace:
+;	cp ' '
+;	jr nz, .pnskipspace
+;
+;	ld a, 0		; make same term as word token term
+;
+;.pnskipspace:
 
 	cp b
 	jp nz, .pnskipword	 ; no match so move to next word
@@ -409,8 +310,9 @@ endif
 ;       skip ptr for next word
 
 	ld hl,(cli_ptr) 	; at input string term
-	;inc hl			 ; at next char
-	ld (cli_origptr), hl     ; save for next round of the parser
+	inc hl			 ; at next char
+	ld (cli_ptr), hl     ; save for next round of the parser
+	ld (cli_origptr), hl     ; save for any restart of current string ie a number or string to push to data stack
 	
 	
 
@@ -500,6 +402,9 @@ if DEBUG_FORTH_PUSH
 	call delay1s
 
 endif	
+
+
+HERE
 
 	; if the word is not a keyword then must be a literal so push it to stack
 

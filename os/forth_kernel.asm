@@ -4,47 +4,12 @@
 DS_TYPE_STR: equ 1
 DS_TYPE_NUM: equ 2 
 
-user_word_eol: 
-	; hl contains the pointer to where to create a linked list item from the end
-	; of the user dict to continue on at the system word dict
-	
-	; poke the stub of the word list linked list to repoint to rom words
+FORTH_PARSEV1: equ 0
+FORTH_PARSEV2: equ 1
 
-	; stub format
-	; db   word id
-	; dw    link to next word
-        ; db char length of token
-	; db string + 0 term
-	; db exec code.... 
+FORTH_END_BUFFER: equ 127
 
-	ld a, 1
-	ld (hl), a		; word id
-	inc hl
 
-	ld de, sysdict
-	ld (hl), e		; next word link ie system dict
-	inc hl
-	ld (hl), d		; next word link ie system dict
-	inc hl	
-
-;	ld (hl), sysdict		; next word link ie system dict
-;	inc hl
-;	inc hl
-
-;	inc hl
-;	inc hl
-
-	ld a, 2			; word length is 0
-	ld (hl), a	
-	inc hl
-
-	ld a, '~'			; word length is 0
-	ld (hl), a	
-	inc hl
-	ld a, 0			; save empty word
-	ld (hl), a
-
-	ret
 
 
 forth_init:
@@ -92,9 +57,235 @@ forth_init:
 
 ; 
 
+if FORTH_PARSEV2
+
+; new parser. restructing to handle nested loops and better scanning of word tokens
+
+; start of parsing a new buffer 
+parsesnewbuffer:
+	; TODO can use this process to compile by just returning the byte op code whole buffer without doing sub loops
+        ; TODO might need to add high bit to op codes to tell difference with values to push to stack
+	;
+
+	; process....
+	; get size of zero term buffer
+
+	ld a,0
+	call strlent
+
+	; malloc size + buffer pointer + if is loop flag
+
+	add 3    ; prefix malloc with buffer for current word ptr
+
+	push af
+
+	ld l,a
+	ld h,0
+	call malloc
+
+	FORTH_RSP_NEXT
+	
+	; copy buffer to malloc
+
+	pop af	 ; get strl len back
+
+	inc hl	 ; go past current buffer pointer
+	inc hl
+	inc hl   ; and past if loop flag
+
+	push hl
+
+	ex de,hl
+	ld hl, (cli_origptr)
+	ld b,0
+	ld c, a
+	ldir
+
+	; set end of buffer to high bit on zero term and use that for end of buffer scan
+
+	ld a,FORTH_END_BUFFER
+	ex de, hl
+	ld (hl),a
+	
+	; go through malloc string and set zero term on all keywords
+
+	pop hl     ; at start of buffer string
+.ptoken:    ld a,(hl)
+	inc hl
+	cp FORTH_END_BUFFER
+	jr z, .ptokendone
+	cp '"'
+	jr z, .ptokenstr     ; will want to skip until end of string delim
+	cp ' '
+	jr nz,  .ptoken
+
+	; we have a space so change to zero term for dict match later
+	dec hl
+	ld a,0
+	ld (hl), a
+	inc hl
+	jr .ptoken
+	
+
+.ptokenstr:
+	; skip all white space until either eol (because forgot to term) or end double quote
+        ;   if double quotes spotted ensure to skip any space sep until matched doble quote
+	ld a,(hl)
+	inc hl
+	cp '"'
+	jr z,ptokendone
+	cp FORTH_END_BUFFER
+	jr z,ptokendone
+	jr z, .ptokenstr
 
 
-; parse cli
+.ptokendone:
+
+	; set word ptr to start of string in malloc
+	; inc ret sp
+	; store malloc ptr
+
+
+	; .repeat
+	; get top of ret sp
+	; set cur ptr to malloc
+	; call parsenext
+
+.parsethismalloc:
+
+	FORTH_RSP_TOS
+	inc hl
+	inc hl
+	ld (cli_ptr), hl
+	call parsenext	
+
+	; on return
+	; free top of ret sp
+
+	FORTH_RSP_TOS
+	call free
+
+	; dec ret sp
+	ld hl,(cli_ret_sp)
+	dec hl
+	dec hl
+	ld (cli_ret_sp), hl
+
+	; get new top of ret sp
+
+	ld a, (hl)
+	cp 0
+	jr nz, .parsethismalloc:
+	inc hl
+	ld a, (hl)
+	jr nz, .parsethismalloc:
+
+	; if zero then ret
+	; if not zero then jp .repeat
+
+	ret
+
+
+; parse next word in current buffer
+
+parsenext:
+	; if cur ptr high bit is set 
+	;     if start of buffer has looping flag reset ptr to start of malloc 
+	;     if no looping flag ret as end of processing this buffer
+	; inc cur ptr
+	; do word lookup and exec 
+	;     if word look up starts loop save cur ptr to start of malloc word at top of ret stack and call parse start with this ptr to create a new 
+	;     if word lookup ends loop ret
+	
+	
+	ret
+
+user_word_eol: 
+	ret
+
+forth_push_numhl:
+	ret
+
+forth_apush:
+	ret
+
+; get either a string ptr or a 16bit word from the data stack
+FORTH_DSP: macro
+	endm
+
+; return hl to start of value on stack
+
+FORTH_DSP_VALUE: macro
+	endm
+
+; whatever the current top os stack points to, we are now done with it so return memory to malloc
+
+FORTH_DSP_POP: macro
+	endm
+
+
+; get the tos data type
+
+FORTH_DSP_TYPE:   macro
+	endm
+
+
+; load the tos value into hl
+
+FORTH_DSP_VALUEHL:  macro
+	endm
+
+endif
+
+
+; parse cli version 1
+
+if FORTH_PARSEV1
+
+
+
+
+user_word_eol: 
+	; hl contains the pointer to where to create a linked list item from the end
+	; of the user dict to continue on at the system word dict
+	
+	; poke the stub of the word list linked list to repoint to rom words
+
+	; stub format
+	; db   word id
+	; dw    link to next word
+        ; db char length of token
+	; db string + 0 term
+	; db exec code.... 
+
+	ld a, 1
+	ld (hl), a		; word id
+	inc hl
+
+	ld de, sysdict
+	ld (hl), e		; next word link ie system dict
+	inc hl
+	ld (hl), d		; next word link ie system dict
+	inc hl	
+
+;	ld (hl), sysdict		; next word link ie system dict
+;	inc hl
+;	inc hl
+
+;	inc hl
+;	inc hl
+
+	ld a, 2			; word length is 0
+	ld (hl), a	
+	inc hl
+
+	ld a, '~'			; word length is 0
+	ld (hl), a	
+	inc hl
+	ld a, 0			; save empty word
+	ld (hl), a
+
+	ret
 
 ; cli_ptr holds start of current word to pass
 
@@ -465,26 +656,11 @@ jp parsenext
  
 	;ret
 
+;endif
 
-if DEBUG_FORTH_PARSE
-.nowordfound: db "No match",0
-.compword:	db "Comparing word ",0
-.nextwordat:	db "Next word at",0
-.charmatch:	db "Char match",0
-endif
-if DEBUG_FORTH_JP
-.foundword:	db "Word match. Exec..",0
-endif
-;if DEBUG_FORTH_PUSH
-.enddict:	db "Dict end. Push.",0
-.push_str:	db "Pushing string",0
-.push_num:	db "Pushing number",0
-.data_sp:	db "SP:",0
-.wordinhl:	db "Word in HL:",0
-;endif
-;if DEBUG_FORTH_MALLOC
-.push_malloc:	db "Malloc address",0
-;endif
+
+
+
 
 ; push a number held in HL onto the data stack
 
@@ -705,6 +881,52 @@ endif
 	ret
 
 
+; increase data stack pointer and save hl to it
+	
+FORTH_DSP_NEXT: macro
+	push hl
+	push de
+	ex de,hl
+	ld hl,(cli_data_sp)
+	inc hl
+	inc hl
+	ld (cli_data_sp),hl
+	ld (hl), e
+	inc hl
+	ld (hl), d
+	pop de
+	pop hl
+	endm
+	
+; increase ret stack pointer and save hl to it
+	
+FORTH_RSP_NEXT: macro
+	push hl
+	push de
+	ex de,hl
+	ld hl,(cli_ret_sp)
+	inc hl
+	inc hl
+	ld (cli_ret_sp),hl
+	ld (hl), e
+	inc hl
+	ld (hl), d
+	pop de
+	pop hl
+	endm
+
+; get current ret stack pointer and save to hl 
+	
+FORTH_RSP_TOS: macro
+	push de
+	ld hl,(cli_ret_sp)
+	ld e, (hl)
+	inc hl
+	ld d, (hl)
+	ex de, hl
+	pop de
+	endm
+
 ; get either a string ptr or a 16bit word from the data stack
 
 FORTH_DSP: macro
@@ -818,9 +1040,31 @@ FORTH_DSP_VALUEHL:  macro
 	endif
 	endm
 
-
+endif
 	
 
+;;;;;;;;;;;;;; Debug code
+
+
+if DEBUG_FORTH_PARSE
+.nowordfound: db "No match",0
+.compword:	db "Comparing word ",0
+.nextwordat:	db "Next word at",0
+.charmatch:	db "Char match",0
+endif
+if DEBUG_FORTH_JP
+.foundword:	db "Word match. Exec..",0
+endif
+;if DEBUG_FORTH_PUSH
+.enddict:	db "Dict end. Push.",0
+.push_str:	db "Pushing string",0
+.push_num:	db "Pushing number",0
+.data_sp:	db "SP:",0
+.wordinhl:	db "Word in HL:",0
+;endif
+;if DEBUG_FORTH_MALLOC
+.push_malloc:	db "Malloc address",0
+;endif
 
 
 

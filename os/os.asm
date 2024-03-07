@@ -185,6 +185,11 @@ endif
 
 	; TODO on return from forth parsing should there be a prompt to return to system? but already in system.
 
+	ld a, display_row_4
+	ld de, endprog
+
+	call update_display		
+
 	call next_page_prompt
         call clear_display
 	call update_display		
@@ -201,14 +206,15 @@ endif
 ;	ld a, 0
 ;	ld (f_cursor_ptr),a
 
-	call clear_display
-	call update_display
+	;call clear_display
+	;call update_display
 
 	ld a, kLCD_Line1        ; TODO prompt using direct screen line address. Correct this to frame buffer
 	jp cli
 
 freeram: db "Free bytes: ",0
 asc: db "1A2F"
+endprog: db "End prog...",0
 
 testenter2:  
 	ld hl,scratch+50
@@ -301,6 +307,9 @@ dumpcont:
 
 
 	ld a, display_row_3
+	call .dumpbyterow
+
+	ld a, display_row_4
 	call .dumpbyterow
 
 	call update_display

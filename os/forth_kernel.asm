@@ -118,9 +118,19 @@ forth_init:
 	; init stack pointers  - * these stacks go upwards * 
 	ld hl, cli_ret_stack
 	ld (cli_ret_sp), hl	
+	; set bottom of stack
+	ld a,0
+	ld (hl),a
+	inc hl
+	ld (hl),a
 
 	ld hl, cli_data_stack
 	ld (cli_data_sp), hl	
+	; set bottom of stack
+	ld a,0
+	ld (hl),a
+	inc hl
+	ld (hl),a
 
 	call clear_display
 

@@ -29,6 +29,7 @@ endif
 	ld a,0
 	call strlent
 
+
 if DEBUG_FORTH_PARSE
 	push af
 	ld a, '2'
@@ -40,6 +41,10 @@ endif
 	; malloc size + buffer pointer + if is loop flag
 
 	ld a,l
+
+	cp 0			; we dont want to use a null string
+	ret z
+
 	push af		; save str len
 	add 3    ; prefix malloc with buffer for current word ptr
 
@@ -158,8 +163,8 @@ if DEBUG_FORTH_PARSE
 	ld a, 'Q'
 	ld (debug_mark),a
 	pop af
-	call display_dump_at_hl
-	call display_reg_state
+;	call display_dump_at_hl
+;	call display_reg_state
 endif
 	cp FORTH_END_BUFFER
 	jr z, .ptokendone
@@ -175,8 +180,8 @@ if DEBUG_FORTH_PARSE
 	ld a, 'r'
 	ld (debug_mark),a
 	pop af
-	call display_dump_at_hl
-	call display_reg_state
+;	call display_dump_at_hl
+;	call display_reg_state
 endif
 	; we have a space so change to zero term for dict match later
 	dec hl
@@ -194,8 +199,8 @@ if DEBUG_FORTH_PARSE
 	ld a, 's'
 	ld (debug_mark),a
 	pop af
-	call display_dump_at_hl
-	call display_reg_state
+;	call display_dump_at_hl
+;	call display_reg_state
 endif
 	ld a,(hl)
 	inc hl
@@ -213,8 +218,8 @@ if DEBUG_FORTH_PARSE
 	ld a, 't'
 	ld (debug_mark),a
 	pop af
-	call display_dump_at_hl
-	call display_reg_state
+;	call display_dump_at_hl
+;	call display_reg_state
 endif
 	; set word ptr to start of string in malloc
 	; inc ret sp
@@ -269,7 +274,7 @@ if DEBUG_FORTH_PARSE
 	pop af
 	call display_reg_state
 endif
-	call free
+	; call free			 ; TODO causing a crash
 
 if DEBUG_FORTH_PARSE
 	push af
@@ -430,9 +435,7 @@ ld a,(hl)
 	ld a,display_row_4
 	call str_at_display
 	call update_display
-	call delay250ms
-;	call delay1s
-;	call delay1s
+;	call delay250ms
 endif
 	ld hl,(cli_token)
 	ld a, (hl)	 ; char in word token

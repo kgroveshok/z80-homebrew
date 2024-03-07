@@ -185,6 +185,32 @@ endif
 .push_malloc:	db "Malloc address",0
 ;endif
 
+.regstate:	db "Reg State",0
+.regstatehl:	db "HL:",0
+.regstatede:	db "DE:",0
+.regstatebc:	db "BC:",0
+.regstatea:	db "AF:",0
+.regstatedsp:	db "DSP:",0
+.regstatersp:	db "RSP:",0
+
+display_dump_at_hl:
+	push hl
+	push de
+	push bc
+	push af
+
+	ld (os_cur_ptr),hl	
+	call clear_display
+	call dumpcont
+	call delay1s
+	call next_page_prompt
+
+
+	pop af
+	pop bc
+	pop de
+	pop hl
+	ret
 
 
 ; display malloc address and current data stack pointer 
@@ -302,4 +328,142 @@ pop hl
 	pop af
 	ret
 ;endif
+
+; pass word in hl
+; a has display location
+display_word_at:
+	push af
+	push hl
+	ld a,h
+	ld hl, os_word_scratch
+	call hexout
+	pop hl
+	ld a,l
+	ld hl, os_word_scratch+2
+	call hexout
+	ld hl, os_word_scratch+4
+	ld a,0
+	ld (hl),a
+	ld de,os_word_scratch
+	pop af
+		call str_at_display
+	ret
+
+display_reg_state:
+
+	; to restore afterwards
+
+	push de
+	push bc
+	push hl
+	push af
+
+	; for use in here
+
+	push bc
+	push de
+	push hl
+	push af
+
+	call clear_display
+
+	ld de, .regstate
+	ld a, display_row_1
+	call str_at_display
+
+	; display debug step
+
+
+	ld de, debug_mark
+	ld a, display_row_1+display_cols-1
+	call str_at_display
+
+	; display a
+	ld de, .regstatea
+	ld a, display_row_2
+	call str_at_display
+
+	pop af
+	ld h,0
+	ld l, a
+	ld a, display_row_2+3
+	call display_word_at
+
+
+	; display hl
+
+
+	ld de, .regstatehl
+	ld a, display_row_2+10
+	call str_at_display
+
+	pop hl
+	ld a, display_row_2+13
+	call display_word_at
+
+	
+	; display de
+
+	ld de, .regstatede
+	ld a, display_row_3
+	call str_at_display
+
+	pop de
+	ld h,d
+	ld l, e
+	ld a, display_row_3+3
+	call display_word_at
+
+
+	; display bc
+
+	ld de, .regstatebc
+	ld a, display_row_3+10
+	call str_at_display
+
+	pop bc
+	ld h,b
+	ld l, c
+	ld a, display_row_3+13
+	call display_word_at
+
+
+	; display dsp
+
+	ld de, .regstatedsp
+	ld a, display_row_4
+	call str_at_display
+
+	
+	ld hl,(cli_data_sp)
+	ld a, display_row_4+4
+	call display_word_at
+
+	; display rsp
+
+	ld de, .regstatersp
+	ld a, display_row_4+10
+	call str_at_display
+
+	
+	ld hl,(cli_ret_sp)
+	ld a, display_row_4+14
+	call display_word_at
+
+	call update_display
+
+	call delay1s
+	call delay1s
+	call delay1s
+
+
+	call next_page_prompt
+
+	; restore 
+
+	pop af
+	pop hl
+	pop bc
+	pop de
+	ret
 ; eof

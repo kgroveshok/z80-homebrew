@@ -16,21 +16,64 @@ parsenext:
 	; process....
 	; get size of zero term buffer
 
+	ld (cli_origptr),hl
+
+if DEBUG_FORTH_PARSE
+	push af
+	ld a, '1'
+	ld (debug_mark),a
+	pop af
+	call display_reg_state
+endif
+
 	ld a,0
 	call strlent
 
+if DEBUG_FORTH_PARSE
+	push af
+	ld a, '2'
+	ld (debug_mark),a
+	pop af
+	call display_reg_state
+endif
+
 	; malloc size + buffer pointer + if is loop flag
 
+	ld a,l
+	push af		; save str len
 	add 3    ; prefix malloc with buffer for current word ptr
 
+	add 5     ; TODO when certain not over writing memory remove
+
+if DEBUG_FORTH_PARSE
 	push af
+	ld a, '3'
+	ld (debug_mark),a
+	pop af
+	call display_reg_state
+endif
+
 
 	ld l,a
 	ld h,0
 	call malloc
 
+if DEBUG_FORTH_PARSE
+	push af
+	ld a, '4'
+	ld (debug_mark),a
+	pop af
+	call display_reg_state
+endif
 	FORTH_RSP_NEXT
-	
+
+if DEBUG_FORTH_PARSE
+	push af
+	ld a, 'b'
+	ld (debug_mark),a
+	pop af
+	call display_reg_state
+endif
 	; copy buffer to malloc
 
 	pop af	 ; get strl len back
@@ -38,33 +81,103 @@ parsenext:
 	inc hl	 ; go past current buffer pointer
 	inc hl
 	inc hl   ; and past if loop flag
+		; TODO Need to set flag 
 
 	push hl
 
+if DEBUG_FORTH_PARSE
+	push af
+	ld a, 'C'
+	ld (debug_mark),a
+	pop af
+	call display_reg_state
+endif
+	; prepare to copy current buffer to new malloc
 	ex de,hl
 	ld hl, (cli_origptr)
 	ld b,0
 	ld c, a
-	ldir
+
+if DEBUG_FORTH_PARSE
+	push af
+	ld a, 'D'
+	ld (debug_mark),a
+	pop af
+	call display_reg_state
+endif
+
+	; do str cpy
+
+	ldir      ; copy byte in hl to de
 
 	; set end of buffer to high bit on zero term and use that for end of buffer scan
 
-	ld a,FORTH_END_BUFFER
+if DEBUG_FORTH_PARSE
+	push af
+	ld a, 'd'
+	ld (debug_mark),a
+	pop af
+	call display_reg_state
+endif
+	ld a,0
+	;ld a,FORTH_END_BUFFER
 	ex de, hl
+	dec hl			 ; go back over the space delim at the end of word
+	ld (hl),a
+	inc hl                    ;  TODO double check this. Going past the end of string to make sure end of processing buffer is marked
+	ld a,FORTH_END_BUFFER
+	ld (hl),a
+	inc hl
+	ld a,FORTH_END_BUFFER
 	ld (hl),a
 	
 	; go through malloc string and set zero term on all keywords
 
+; TODO showing possible zero pointer when doing word check.  do we ld hl correctly?
+; TODO do a hex dump of hl at this point to see if im out by a byte or two
+
+
+
 	pop hl     ; at start of buffer string
+
+
+
+
+if DEBUG_FORTH_PARSE
+	push af
+	ld a, 'p'
+	ld (debug_mark),a
+	pop af
+	call display_dump_at_hl
+	call display_reg_state
+endif
 .ptoken:    ld a,(hl)
 	inc hl
+if DEBUG_FORTH_PARSE
+	push af
+	ld a, 'Q'
+	ld (debug_mark),a
+	pop af
+	call display_dump_at_hl
+	call display_reg_state
+endif
 	cp FORTH_END_BUFFER
+	jr z, .ptokendone
+	cp 0
 	jr z, .ptokendone
 	cp '"'
 	jr z, .ptokenstr     ; will want to skip until end of string delim
 	cp ' '
 	jr nz,  .ptoken
 
+if DEBUG_FORTH_PARSE
+	push af
+	ld a, 'r'
+	ld (debug_mark),a
+	pop af
+	call display_dump_at_hl
+	call display_reg_state
+endif
 	; we have a space so change to zero term for dict match later
 	dec hl
 	ld a,0
@@ -76,6 +189,14 @@ parsenext:
 .ptokenstr:
 	; skip all white space until either eol (because forgot to term) or end double quote
         ;   if double quotes spotted ensure to skip any space sep until matched doble quote
+if DEBUG_FORTH_PARSE
+	push af
+	ld a, 's'
+	ld (debug_mark),a
+	pop af
+	call display_dump_at_hl
+	call display_reg_state
+endif
 	ld a,(hl)
 	inc hl
 	cp '"'
@@ -87,6 +208,14 @@ parsenext:
 
 .ptokendone:
 
+if DEBUG_FORTH_PARSE
+	push af
+	ld a, 't'
+	ld (debug_mark),a
+	pop af
+	call display_dump_at_hl
+	call display_reg_state
+endif
 	; set word ptr to start of string in malloc
 	; inc ret sp
 	; store malloc ptr
@@ -99,18 +228,56 @@ parsenext:
 
 .parsethismalloc:
 
+if DEBUG_FORTH_PARSE
+	push af
+	ld a, 'u'
+	ld (debug_mark),a
+	pop af
+	call display_dump_at_hl
+	call display_reg_state
+endif
 	FORTH_RSP_TOS
+	inc hl    ; ptr word
 	inc hl
-	inc hl
+	inc hl    ; loop flag
+if DEBUG_FORTH_PARSE
+	push af
+	ld a, 'v'
+	ld (debug_mark),a
+	pop af
+	call display_dump_at_hl
+	call display_reg_state
+endif
 	;ld (cli_ptr), hl
 	call parsemallocbuffer
 
 	; on return
 	; free top of ret sp
 
+if DEBUG_FORTH_PARSE
+	push af
+	ld a, 'z'
+	ld (debug_mark),a
+	pop af
+	call display_reg_state
+endif
 	FORTH_RSP_TOS
+if DEBUG_FORTH_PARSE
+	push af
+	ld a, 'Z'
+	ld (debug_mark),a
+	pop af
+	call display_reg_state
+endif
 	call free
 
+if DEBUG_FORTH_PARSE
+	push af
+	ld a, 'X'
+	ld (debug_mark),a
+	pop af
+	call display_reg_state
+endif
 	; dec ret sp
 	ld hl,(cli_ret_sp)
 	dec hl
@@ -241,7 +408,7 @@ if DEBUG_FORTH_PARSE
 	ld a, display_row_2+10
 	call str_at_display
 	call update_display
-	call delay500ms
+	call delay250ms
 ;	call delay1s
 ;	call delay1s
 ;	call delay1s
@@ -263,7 +430,7 @@ ld a,(hl)
 	ld a,display_row_4
 	call str_at_display
 	call update_display
-	call delay500ms
+	call delay250ms
 ;	call delay1s
 ;	call delay1s
 endif
@@ -404,7 +571,6 @@ if DEBUG_FORTH_PUSH
 endif	
 
 
-HERE
 
 	; if the word is not a keyword then must be a literal so push it to stack
 
@@ -418,7 +584,7 @@ call forth_apush
 ; TODO remove this subject to push type move past token to next word
 
 ld hl, (cli_origptr)
-ld a, ' '
+ld a, 0
 ld bc, 255     ; input buffer size
 cpir
 
@@ -434,7 +600,7 @@ ld (cli_origptr), hl
 
 ;inc hl
 ld a,(hl)
-cp 0
+cp FORTH_END_BUFFER
 ret z
 
 

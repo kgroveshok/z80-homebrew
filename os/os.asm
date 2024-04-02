@@ -275,7 +275,6 @@ enter:
 ; get byte 
 
 
-
 	jp cli
 
 
@@ -296,20 +295,28 @@ dump:	; see if we are cotinuing on from the last command by not uncluding any ad
 
 dumpcont:
 
-
 	; dump bytes at ptr
 
+
 	ld a, display_row_1
+	ld hl, (display_fb_active)
+	call addatohl
 	call .dumpbyterow
 
 	ld a, display_row_2
+	ld hl, (display_fb_active)
+	call addatohl
 	call .dumpbyterow
 
 
 	ld a, display_row_3
+	ld hl, (display_fb_active)
+	call addatohl
 	call .dumpbyterow
 
 	ld a, display_row_4
+	ld hl, (display_fb_active)
+	call addatohl
 	call .dumpbyterow
 
 	call update_display
@@ -318,59 +325,99 @@ dumpcont:
 
 .dumpbyterow:
 
-	push af
+	;push af
+
+	push hl
+
+	; calc where to poke the ascii
+	ld a, 16
+	call addatohl
+	ld (os_word_scratch),hl  		; save pos for later
+
 
 ; display decoding address
    	ld hl,(os_cur_ptr)
 
 	ld a,h
-	ld hl, os_word_scratch		; TODO do direct write to frame buffer instead and drop the str_at_display
+	pop hl
+	push hl
+;	ld hl, os_word_scratch		; TODO do direct write to frame buffer instead and drop the str_at_display
 	call hexout
    	ld hl,(os_cur_ptr)
 
 	ld a,l
-	ld hl, os_word_scratch+2
+	pop hl
+	inc hl
+	inc hl
+	push hl
+;	ld hl, os_word_scratch+2
 	call hexout
-	ld hl, os_word_scratch+4
+	pop hl
+	inc hl
+	inc hl
+	;ld hl, os_word_scratch+4
 	ld a, ':'
 	ld (hl),a
 	inc hl
-	ld a, 0
-	ld (hl),a
-	ld de, os_word_scratch
-	pop af
-	push af
+	;ld a, 0
+	;ld (hl),a
+	;ld de, os_word_scratch
+	;pop af
+	;push af
 ;		ld a, display_row_2
-		call str_at_display
+;		call str_at_display
 ;		call update_display
 
 
-pop af
-	add 5
+;pop af
+;	add 5
 
-	ld b, 5
+	ld b, 4
+	
 
 .dumpbyte:
 	push bc
-	push af
+	push hl
+
+
    	ld hl,(os_cur_ptr)
 		ld a,(hl)
-		inc hl
-		ld (os_cur_ptr),hl
 
-		ld hl, os_word_scratch
+		; poke the ascii to display
+		ld hl,(os_word_scratch)
+		ld (hl),a
+		inc hl
+		ld (os_word_scratch),hl
+
+		
+
+
+		pop hl
+		push hl
 
 		call hexout
 
-		ld a,0
-		ld (os_word_scratch+2),a
-		pop af
-		push af
+		
+   	ld hl,(os_cur_ptr)
+	inc hl
+   	ld (os_cur_ptr),hl
 
-		ld de, os_word_scratch
-		call str_at_display
+		pop hl
+		inc hl
+		inc hl
+		inc hl
+
+
+
+		;ld a,0
+		;ld (os_word_scratch+2),a
+		;pop af
+		;push af
+
+		;ld de, os_word_scratch
+		;call str_at_display
 ;		call update_display
-		pop af
+;		pop af
 		pop bc
 		add 3
 	djnz .dumpbyte

@@ -1,4 +1,33 @@
 
+; https://plutiedev.com/z80-add-8bit-to-16bit
+
+addatohl:
+    add   a, l    ; A = A+L
+    ld    l, a    ; L = A+L
+    adc   a, h    ; A = A+L+H+carry
+    sub   l       ; A = H+carry
+    ld    h, a    ; H = H+carry
+ret
+
+addatode:
+    add   a, e    ; A = A+L
+    ld    e, a    ; L = A+L
+    adc   a, d    ; A = A+L+H+carry
+    sub   e       ; A = H+carry
+    ld    d, a    ; H = H+carry
+ret
+
+
+addatobc:
+    add   a, c    ; A = A+L
+    ld    c, a    ; L = A+L
+    adc   a, b    ; A = A+L+H+carry
+    sub   c       ; A = H+carry
+    ld    b, a    ; H = H+carry
+ret
+
+
+
 ; Delay loops
 
 

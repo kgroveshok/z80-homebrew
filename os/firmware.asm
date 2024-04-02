@@ -47,9 +47,28 @@ key_fc: equ key_fb -1 ;
 key_fd: equ key_fc -1 ;
 key_face_held: equ key_fd - 1 
 
+; hardware config switches
+; TODO add bitmasks on includes for hardware
+; high byte for expansion ids
+;     0000 0000  no card inserted
+;     0000 0001  storage card inserted
+;     0000 0010  spi sd card active
+
+;     
+; low byte:
+;     0000 0001   4x4 keypad
+;     0000 0010   full keyboard
+;     0000 0011   spi/ext keyboard
+;     0000 0100   20x4 lcd
+;     0000 1000   40x4 lcd
+;     0000 1100   spi/ext display
+;     0001 0000   ide interface available
+
+hardware_word: equ key_face_held - 2
+
 ; debug marker - optional display of debug point on the debug screens
 
-debug_mark: equ key_face_held - 2
+debug_mark: equ hardware_word - 2
 
 ; input_str vars
 input_ptr:  equ debug_mark - 2    ; ptr to the current cursor position of string currently being edited  on entry starting 
@@ -126,7 +145,7 @@ cli_data_stack: equ cli_ret_stack - 512		 ;
 ; malloc and free entry points added
 
 free_list:  equ cli_data_stack - 4     ; Block struct for start of free list (MUST be 4 bytes)
-heap_size: equ  2048      ; Number of bytes available in heap
+heap_size: equ  (1024*10)      ; Number of bytes available in heap   TODO make all of user ram
 heap_start: equ free_list - heap_size  ; Starting address of heap
 
 ;;;;

@@ -5,7 +5,8 @@ DS_TYPE_STR: equ 1
 DS_TYPE_NUM: equ 2 
 
 FORTH_PARSEV1: equ 0
-FORTH_PARSEV2: equ 1
+FORTH_PARSEV2: equ 0
+FORTH_PARSEV3: equ 1
 
 FORTH_END_BUFFER: equ 127
 
@@ -171,6 +172,12 @@ if FORTH_PARSEV1
       include "forth_parserv1.asm"
 endif
 	
+if FORTH_PARSEV3
+
+
+
+      include "forth_parserv3.asm"
+endif
 
 ;;;;;;;;;;;;;; Debug code
 

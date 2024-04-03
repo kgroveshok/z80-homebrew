@@ -140,21 +140,25 @@ cli_data_sp: equ cli_ret_sp - 2   ; data stack pointer
 cli_ret_stack: equ cli_data_sp - 128      ; TODO could I just use normal stack for this? - use linked list for looping
 cli_data_stack: equ cli_ret_stack - 512		 ; 
 
+; os/forth token vars
+
+os_last_cmd: equ cli_data_stack-30
+os_cur_ptr: equ os_last_cmd-2
+os_word_scratch: equ os_cur_ptr-30
+os_tok_len: equ os_word_scratch - 2
+os_tok_ptr: equ os_tok_len - 2
+os_tok_malloc: equ os_tok_ptr - 2
+scratch: equ os_tok_malloc-255
 
 ; with data stack could see memory filled with junk. need some memory management 
 ; malloc and free entry points added
 
-free_list:  equ cli_data_stack - 4     ; Block struct for start of free list (MUST be 4 bytes)
+free_list:  equ scratch - 4     ; Block struct for start of free list (MUST be 4 bytes)
 heap_size: equ  (1024*10)      ; Number of bytes available in heap   TODO make all of user ram
 heap_start: equ free_list - heap_size  ; Starting address of heap
 
 ;;;;
 
-os_last_cmd: equ heap_start-30
-os_cur_ptr: equ os_last_cmd-2
-os_word_scratch: equ os_cur_ptr-30
-
-scratch: equ os_word_scratch-255
 
 ; change below to point to last memory alloc above
 topusermem:  equ   scratch

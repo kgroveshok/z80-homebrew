@@ -7,11 +7,210 @@ NEXT: macro
 	jp parsemallocbuffer
       endm
 
+
+
+
+; Another go at the parser need to simplify the process
+
+forthparse:
+
+;
+; line parse:
+;       parse raw input buffer
+;       tokenise the words
+;       malloc new copy (for looping etc)
+;       copy to malloc + current pc in line to start of string and add line term
+;       save on new rsp
+;
+
+; hl to point to the line to tokenise
+
+	push hl
+	ld (os_tok_ptr), hl  ; save ptr to string
+
+	ld a,0		; string term on input
+	call strlent
+
+	ld (os_tok_len), hl	 ; save string length
+
+if DEBUG_FORTH_PARSE
+	ex de,hl		
+endif
+
+	pop hl 		; get back string pointer
+
+if DEBUG_FORTH_PARSE
+	push af
+	ld a, 'Q'
+	ld (debug_mark),a
+	pop af
+	call display_reg_state
+	call display_dump_at_hl
+endif
+.ptoken2:    ld a,(hl)
+	inc hl
+	cp FORTH_END_BUFFER
+	jr z, .ptokendone2
+	cp 0
+	jr z, .ptokendone2
+	cp '"'
+	jr z, .ptokenstr2     ; will want to skip until end of string delim
+	cp ' '
+	jr nz,  .ptoken2
+
+	; we have a space so change to zero term for dict match later
+	dec hl
+	ld a,0
+	ld (hl), a
+	inc hl
+	jr .ptoken2
+	
+
+.ptokenstr2:
+	; skip all white space until either eol (because forgot to term) or end double quote
+        ;   if double quotes spotted ensure to skip any space sep until matched doble quote
+	ld a,(hl)
+	inc hl
+	cp '"'
+	jr z, .ptokendone2
+	cp FORTH_END_BUFFER
+	jr z, .ptokendone2
+	jr z, .ptokenstr2
+
+
+.ptokendone2:
+
+if DEBUG_FORTH_PARSE
+	ld hl,(os_tok_ptr)
+	push af
+	ld a, 'W'
+	ld (debug_mark),a
+	pop af
+	call display_reg_state
+	call display_dump_at_hl
+endif
+
+	; malloc size + buffer pointer + if is loop flag
+	ld hl,(os_tok_len) 		 ; get string length
+
+	ld a,l
+
+	cp 0			; we dont want to use a null string
+	ret z
+
+	add 3    ; prefix malloc with buffer for current word ptr
+
+	add 5     ; TODO when certain not over writing memory remove
+
+		
+
+if DEBUG_FORTH_PARSE
+	push af
+	ld a, 'E'
+	ld (debug_mark),a
+	pop af
+	call display_reg_state
+	call display_dump_at_hl
+endif
+
+	ld l,a
+	ld h,0
+	call malloc
+	ld (os_tok_malloc), hl	 ; save malloc ptr
+
+
+if DEBUG_FORTH_PARSE
+	push af
+	ld a, 'R'
+	ld (debug_mark),a
+	pop af
+	call display_reg_state
+	call display_dump_at_hl
+endif
+; d09d malloc
+	FORTH_RSP_NEXT
+
+	inc hl	 ; go past current buffer pointer
+	inc hl
+	inc hl   ; and past if loop flag
+		; TODO Need to set flag 
+
+	
+	ex de,hl	; malloc is dest
+	ld hl, (os_tok_len)
+	ld c, l
+	ld b,0
+	ld hl, (os_tok_ptr)
+
+if DEBUG_FORTH_PARSE
+	push af
+	ld a, 'T'
+	ld (debug_mark),a
+	pop af
+	call display_reg_state
+endif
+
+	; do str cpy
+
+	ldir      ; copy byte in hl to de
+
+	; set end of buffer to high bit on zero term and use that for end of buffer scan
+
+if DEBUG_FORTH_PARSE
+	push af
+	ld a, 'Y'
+	ld (debug_mark),a
+	pop af
+	call display_reg_state
+endif
+	;ld a,0
+	;ld a,FORTH_END_BUFFER
+	ex de, hl
+	;dec hl			 ; go back over the space delim at the end of word
+	;ld (hl),a
+	;inc hl                    ;  TODO double check this. Going past the end of string to make sure end of processing buffer is marked
+	ld a,FORTH_END_BUFFER
+	ld (hl),a
+	inc hl
+	ld a,FORTH_END_BUFFER
+	ld (hl),a
+
+if DEBUG_FORTH_PARSE
+	ld hl,(os_tok_malloc)
+	push af
+	ld a, 'U'
+	ld (debug_mark),a
+	pop af
+	call display_reg_state
+	call display_dump_at_hl
+endif
+
+	ret
+
+forthexec:
+
+; line exec:
+;
+;       get current exec line on rsp
+;       restore current pc
+;       while at start of word:
+;           match word at pc
+;           exec word
+;           or push to dsp
+;           forward to next token
+;           if line term pop rsp and exit
+;       
+
+
+
 ; start of parsing a new buffer 
 parsenext:
 	; TODO can use this process to compile by just returning the byte op code whole buffer without doing sub loops
         ; TODO might need to add high bit to op codes to tell difference with values to push to stack
 	;
+
+
+
 
 	; process....
 	; get size of zero term buffer

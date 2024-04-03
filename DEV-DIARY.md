@@ -429,6 +429,63 @@ Good to go then.
 
 Working the OS see language defintion etc in ![FORTH.md](FORTH.md)
 
+New board now soldered and powered up. Need to debug OS/Language...
+
+...
+
+April 2024
+
+Unit testing/debugging
+
+NOTE: All items are pushed as string at the moment.
+
+
+(a) Objective: Pushing a number to stack as sole item to parse and display 
+
+123 ENTER
+Item pushed as string (FAIL) and allows for next entry
+
+. ENTER
+
+Displays 123 but then crashes (FAIL)
+
+123
+
+
+(b ) Obejctive: Pushing string to stack as sole item to parse and display
+
+abc ENTER
+Item pushed as string (OK) and allows for next entry
+
+. ENTER
+
+Displays result of previous test (123) and crashes (FAIL)
+
+(c) Objective: Push two numbers to stack as sole individual items and display TOD
+
+123 ENTER
+456 ENTER
+
+Items pushed as string (FAIL)
+
+. ENTER
+
+Displays 123 and crashes (FAIL)
+
+
+(d) Objective: Process muliple items in a single parse
+
+123 456 . ENTER
+
+6 2 . DOT 
+
+Pushes 6 as string (FAIL) and then exits (FAIL)
+
+(e) TODO Objective: Add two numbers on TOS and display the result
+
+
+
+
 
 Stage 4.5 TODO
 --------------

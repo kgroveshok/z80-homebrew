@@ -182,6 +182,8 @@ endif
 	; first time into the parser so pass over the current scratch pad
 	ld hl,scratch
 	call forthparse
+	call forthexec
+
 ;	call parsenext
 
 	; TODO on return from forth parsing should there be a prompt to return to system? but already in system.

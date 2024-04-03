@@ -4,7 +4,7 @@
 
 NEXT: macro 
 	ld hl,(cli_origptr)   ; move to next token to parse in the input stream
-	jp parsemallocbuffer
+	jp exec1
       endm
 
 
@@ -33,13 +33,13 @@ forthparse:
 
 	ld (os_tok_len), hl	 ; save string length
 
-if DEBUG_FORTH_PARSE
+if DEBUG_FORTH_TOK
 	ex de,hl		
 endif
 
 	pop hl 		; get back string pointer
 
-if DEBUG_FORTH_PARSE
+if DEBUG_FORTH_TOK
 	push af
 	ld a, 'Q'
 	ld (debug_mark),a
@@ -80,7 +80,7 @@ endif
 
 .ptokendone2:
 
-if DEBUG_FORTH_PARSE
+if DEBUG_FORTH_TOK
 	ld hl,(os_tok_ptr)
 	push af
 	ld a, 'W'
@@ -104,7 +104,7 @@ endif
 
 		
 
-if DEBUG_FORTH_PARSE
+if DEBUG_FORTH_TOK
 	push af
 	ld a, 'E'
 	ld (debug_mark),a
@@ -119,7 +119,7 @@ endif
 	ld (os_tok_malloc), hl	 ; save malloc ptr
 
 
-if DEBUG_FORTH_PARSE
+if DEBUG_FORTH_TOK
 	push af
 	ld a, 'R'
 	ld (debug_mark),a
@@ -143,7 +143,7 @@ endif
 	ld b,0
 	ld hl, (os_tok_ptr)
 
-if DEBUG_FORTH_PARSE
+if DEBUG_FORTH_TOK
 	push af
 	ld a, 'T'
 	ld (debug_mark),a
@@ -157,7 +157,7 @@ endif
 
 	; set end of buffer to high bit on zero term and use that for end of buffer scan
 
-if DEBUG_FORTH_PARSE
+if DEBUG_FORTH_TOK
 	push af
 	ld a, 'Y'
 	ld (debug_mark),a
@@ -206,8 +206,42 @@ forthexec:
 ; line exec:
 ;
 ;       get current exec line on rsp
-;       restore current pc
+
+	FORTH_RSP_TOS
+
+;       restore current pc - hl points to malloc of data
+
+	ld e, (hl)
+	inc hl
+	ld d, (hl)
+	ex de,hl
+
+
+exec1:
+	ld (os_tok_ptr), hl
+
+	; copy our PC to working vars 
+	ld (cli_ptr), hl
+	ld (cli_origptr), hl
+
+	ld a,(hl)
+	cp FORTH_END_BUFFER
+	ret z
+
+if DEBUG_FORTH_PARSE
+	push af
+	ld a, 'q'
+	ld (debug_mark),a
+	pop af
+	call display_reg_state
+	call display_dump_at_hl
+endif
 ;       while at start of word:
+; get start of dict (in user area first)
+
+ld hl, baseusermem
+;ld hl, sysdict
+ld (cli_nextword),hl
 ;           match word at pc
 ;           exec word
 ;           or push to dsp
@@ -216,343 +250,6 @@ forthexec:
 ;       
 
 
-
-; start of parsing a new buffer 
-parsenext:
-	; TODO can use this process to compile by just returning the byte op code whole buffer without doing sub loops
-        ; TODO might need to add high bit to op codes to tell difference with values to push to stack
-	;
-
-
-
-
-	; process....
-	; get size of zero term buffer
-
-	ld (cli_origptr),hl
-
-if DEBUG_FORTH_PARSE
-	push af
-	ld a, '1'
-	ld (debug_mark),a
-	pop af
-	call display_reg_state
-endif
-
-	ld a,0
-	call strlent
-
-
-if DEBUG_FORTH_PARSE
-	push af
-	ld a, '2'
-	ld (debug_mark),a
-	pop af
-	call display_reg_state
-endif
-
-	; malloc size + buffer pointer + if is loop flag
-
-	ld a,l
-
-	cp 0			; we dont want to use a null string
-	ret z
-
-	push af		; save str len
-	add 3    ; prefix malloc with buffer for current word ptr
-
-	add 5     ; TODO when certain not over writing memory remove
-
-if DEBUG_FORTH_PARSE
-	push af
-	ld a, '3'
-	ld (debug_mark),a
-	pop af
-	call display_reg_state
-endif
-
-
-	ld l,a
-	ld h,0
-	call malloc
-
-if DEBUG_FORTH_PARSE
-	push af
-	ld a, '4'
-	ld (debug_mark),a
-	pop af
-	call display_reg_state
-endif
-	FORTH_RSP_NEXT
-
-if DEBUG_FORTH_PARSE
-	push af
-	ld a, 'b'
-	ld (debug_mark),a
-	pop af
-	call display_reg_state
-endif
-	; copy buffer to malloc
-
-	pop af	 ; get strl len back
-
-	inc hl	 ; go past current buffer pointer
-	inc hl
-	inc hl   ; and past if loop flag
-		; TODO Need to set flag 
-
-	push hl
-
-if DEBUG_FORTH_PARSE
-	push af
-	ld a, 'C'
-	ld (debug_mark),a
-	pop af
-	call display_reg_state
-endif
-	; prepare to copy current buffer to new malloc
-	ex de,hl
-	ld hl, (cli_origptr)
-	ld b,0
-	ld c, a
-
-if DEBUG_FORTH_PARSE
-	push af
-	ld a, 'D'
-	ld (debug_mark),a
-	pop af
-	call display_reg_state
-endif
-
-	; do str cpy
-
-	ldir      ; copy byte in hl to de
-
-	; set end of buffer to high bit on zero term and use that for end of buffer scan
-
-if DEBUG_FORTH_PARSE
-	push af
-	ld a, 'd'
-	ld (debug_mark),a
-	pop af
-	call display_reg_state
-endif
-	ld a,0
-	;ld a,FORTH_END_BUFFER
-	ex de, hl
-	dec hl			 ; go back over the space delim at the end of word
-	ld (hl),a
-	inc hl                    ;  TODO double check this. Going past the end of string to make sure end of processing buffer is marked
-	ld a,FORTH_END_BUFFER
-	ld (hl),a
-	inc hl
-	ld a,FORTH_END_BUFFER
-	ld (hl),a
-	
-	; go through malloc string and set zero term on all keywords
-
-; TODO showing possible zero pointer when doing word check.  do we ld hl correctly?
-; TODO do a hex dump of hl at this point to see if im out by a byte or two
-
-
-
-	pop hl     ; at start of buffer string
-
-
-
-
-if DEBUG_FORTH_PARSE
-	push af
-	ld a, 'p'
-	ld (debug_mark),a
-	pop af
-	call display_dump_at_hl
-	call display_reg_state
-endif
-.ptoken:    ld a,(hl)
-	inc hl
-if DEBUG_FORTH_PARSE
-	push af
-	ld a, 'Q'
-	ld (debug_mark),a
-	pop af
-;	call display_dump_at_hl
-;	call display_reg_state
-endif
-	cp FORTH_END_BUFFER
-	jr z, .ptokendone
-	cp 0
-	jr z, .ptokendone
-	cp '"'
-	jr z, .ptokenstr     ; will want to skip until end of string delim
-	cp ' '
-	jr nz,  .ptoken
-
-if DEBUG_FORTH_PARSE
-	push af
-	ld a, 'r'
-	ld (debug_mark),a
-	pop af
-;	call display_dump_at_hl
-;	call display_reg_state
-endif
-	; we have a space so change to zero term for dict match later
-	dec hl
-	ld a,0
-	ld (hl), a
-	inc hl
-	jr .ptoken
-	
-
-.ptokenstr:
-	; skip all white space until either eol (because forgot to term) or end double quote
-        ;   if double quotes spotted ensure to skip any space sep until matched doble quote
-if DEBUG_FORTH_PARSE
-	push af
-	ld a, 's'
-	ld (debug_mark),a
-	pop af
-;	call display_dump_at_hl
-;	call display_reg_state
-endif
-	ld a,(hl)
-	inc hl
-	cp '"'
-	jr z, .ptokendone
-	cp FORTH_END_BUFFER
-	jr z, .ptokendone
-	jr z, .ptokenstr
-
-
-.ptokendone:
-
-if DEBUG_FORTH_PARSE
-	push af
-	ld a, 't'
-	ld (debug_mark),a
-	pop af
-;	call display_dump_at_hl
-;	call display_reg_state
-endif
-	; set word ptr to start of string in malloc
-	; inc ret sp
-	; store malloc ptr
-
-
-	; .repeat
-	; get top of ret sp
-	; set cur ptr to malloc
-	; call parsenext
-
-.parsethismalloc:
-
-if DEBUG_FORTH_PARSE
-	push af
-	ld a, 'u'
-	ld (debug_mark),a
-	pop af
-	call display_dump_at_hl
-	call display_reg_state
-endif
-	FORTH_RSP_TOS
-	inc hl    ; ptr word
-	inc hl
-	inc hl    ; loop flag
-if DEBUG_FORTH_PARSE
-	push af
-	ld a, 'v'
-	ld (debug_mark),a
-	pop af
-	call display_dump_at_hl
-	call display_reg_state
-endif
-	;ld (cli_ptr), hl
-	call parsemallocbuffer
-
-	; on return
-	; free top of ret sp
-
-if DEBUG_FORTH_PARSE
-	push af
-	ld a, 'z'
-	ld (debug_mark),a
-	pop af
-	call display_reg_state
-endif
-	FORTH_RSP_TOS
-if DEBUG_FORTH_PARSE
-	push af
-	ld a, 'Z'
-	ld (debug_mark),a
-	pop af
-	call display_reg_state
-endif
-	; call free			 ; TODO causing a crash
-
-if DEBUG_FORTH_PARSE
-	push af
-	ld a, 'X'
-	ld (debug_mark),a
-	pop af
-	call display_reg_state
-endif
-	; dec ret sp
-	ld hl,(cli_ret_sp)
-	dec hl
-	dec hl
-	ld (cli_ret_sp), hl
-
-	; get new top of ret sp
-
-	ld a, (hl)
-	cp 0
-	jr nz, .parsethismalloc
-	inc hl
-	ld a, (hl)
-	jr nz, .parsethismalloc
-
-	; if zero then ret
-	; if not zero then jp .repeat
-
-	ret
-
-
-
-; cli_ptr holds start of current word to pass
-
-parsemallocbuffer:
-
-
-;PLUS:	db 1
-;	db 1
-;	ds "+",0
-;	dw NEG
-;		NEXT
-
-
-; 1. hold ptr of the line being parsed
-; 2. scan word until space is found
-; 3. scan dict
-;       get start of dict
-;       compare token to string
-;       if char does not match drop out and get pointer to next word
-;       if chars match to zero term then flag as found word
-;           do a jump to the code block for word 
-
-; hl contains string to parse
-
-ld (cli_ptr), hl
-ld (cli_origptr), hl     ; save for any restart of current string ie a number or string to push to data stack
-ld a, (hl)
-cp FORTH_END_BUFFER
-ret z
-
-; get start of dict (in user area first)
-
-ld hl, baseusermem
-;ld hl, sysdict
-ld (cli_nextword),hl
-
 ;
 ; word comp
 ;    get compiled byte and save it (need to decide if code is compiled or not for comparison)
@@ -560,7 +257,7 @@ ld (cli_nextword),hl
 ;    move to start of word 
 ;    compare word to cli_token
 
-.pnword:	; HL at start of a word in the dictionary to check
+.execpnword:	; HL at start of a word in the dictionary to check
 ;	ld hl,(cli_origptr)	 ; reset start of word to look up
 ;	ld (cli_ptr), hl
 
@@ -581,8 +278,6 @@ ld (cli_nextword),hl
 	ld (cli_nextword), hl     ; save for next check if no match on this word
 	ex de, hl
 
-if DEBUG_FORTH_PARSE
-endif	
 	; save the pointer of the current token - 1 to check against
 	
 	ld (cli_token), hl  
@@ -594,9 +289,9 @@ endif
 	; save pointer to the start of the next dictionay word
 	ld a,(hl)   ; get string length
 	ld b,a
-.pnwordinc: 
+.execpnwordinc: 
 	inc hl
-	djnz .pnwordinc
+	djnz .execpnwordinc
 	ld (cli_execword), hl      ; save start of this words code
 
 	; now check the word token against the string being parsed
@@ -632,7 +327,7 @@ if DEBUG_FORTH_PARSE
 ;	call delay1s
 	pop hl
 endif	
-.pnchar:    ; compare char between token and string to parse
+.execpnchar:    ; compare char between token and string to parse
 
 if DEBUG_FORTH_PARSE
 ;	call clear_display
@@ -675,7 +370,7 @@ endif
 ;.pnskipspace:
 
 	cp b
-	jp nz, .pnskipword	 ; no match so move to next word
+	jp nz, .execpnskipword	 ; no match so move to next word
 	
 ;    if same
 ;       scan for string terms 0 for token and 32 for input
@@ -685,7 +380,7 @@ endif
 	add b			
 	cp 0			 ; add both chars together, if 32 then other must be 0 so at end of string we are parsing?
 				; TODO need to make sure last word in zero term string is accounted for
-	jr nz, .pnchar 		 ; not at end of strings yet
+	jr nz, .execpnchar 		 ; not at end of strings yet
 
 
 	; at end of both strings so both are exact match
@@ -744,12 +439,12 @@ endif
 ;	get ptr for next word
 ;	goto word comp
 
-.pnskipword:	; get pointer to next word
+.execpnskipword:	; get pointer to next word
 	ld hl,(cli_nextword)
 
 	ld a,(hl)
 	cp 0
-	jr z, .endofdict			 ; at end of words
+	jr z, .execendofdict			 ; at end of words
 
 if DEBUG_FORTH_PARSE
 
@@ -764,9 +459,9 @@ endif
 	ld hl,(cli_origptr)
 	ld (cli_ptr),hl
 
-	jp .pnword			; else go to next word
+	jp .execpnword			; else go to next word
 
-.endofdict: 
+.execendofdict: 
 
 if DEBUG_FORTH_PUSH
 	call clear_display
@@ -793,41 +488,36 @@ endif
 ; TODO push token to stack to end of word
 
 
-ld hl,(cli_origptr)
+ld hl,(os_tok_ptr)
 call forth_apush
 
 
 ; TODO remove this subject to push type move past token to next word
 
-ld hl, (cli_origptr)
+ld hl, (os_tok_ptr)
 ld a, 0
 ld bc, 255     ; input buffer size
 cpir
 
 ; TODO this might place hl on the null, so will need to forward on???
-inc hl   ; see if this gets onto the next item
+;inc hl   ; see if this gets onto the next item
 
 
 ; TODO pass a pointer to the buffer to push
 ; TODO call function to push
 
-
-
-ld (cli_origptr), hl
-
 ; look for end of input
 
 ;inc hl
-ld a,(hl)
-cp FORTH_END_BUFFER
-ret z
+;ld a,(hl)
+;cp FORTH_END_BUFFER
+;ret z
 
 
-jp parsenext
- 
-	;ret
+jp exec1
 
-;endif
+
+
 
 
 

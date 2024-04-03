@@ -127,7 +127,7 @@ if DEBUG_FORTH_PARSE
 	call display_reg_state
 	call display_dump_at_hl
 endif
-; d09d malloc
+
 	FORTH_RSP_NEXT
 
 	inc hl	 ; go past current buffer pointer
@@ -135,6 +135,7 @@ endif
 	inc hl   ; and past if loop flag
 		; TODO Need to set flag 
 
+	
 	
 	ex de,hl	; malloc is dest
 	ld hl, (os_tok_len)
@@ -174,6 +175,19 @@ endif
 	inc hl
 	ld a,FORTH_END_BUFFER
 	ld (hl),a
+
+	; init the malloc area data
+	; set pc for in current area
+	ld hl, (os_tok_malloc)
+	inc hl
+	inc hl
+	inc hl
+	ex de,hl
+	ld hl, (os_tok_malloc)
+	ld (hl),e
+	inc hl
+	ld (hl),d
+
 
 if DEBUG_FORTH_PARSE
 	ld hl,(os_tok_malloc)

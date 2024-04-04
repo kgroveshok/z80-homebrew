@@ -670,26 +670,29 @@ endif
 
 	; push malloc to data stack     macro????? 
 
-	ld hl,(cli_data_sp)
-	inc hl
-	inc hl
-	ld (cli_data_sp), hl
+	pop hl ; get malloc root
+;	ld (hl), e
+;	inc hl
+;	ld (hl), d		
 
-	pop de ; get malloc root
-	ld (hl), e
-	inc hl
-	ld (hl), d		
+
+	FORTH_DSP_NEXT
+
+;	ld hl,(cli_data_sp)
+;	inc hl
+;	inc hl
+;	ld (cli_data_sp), hl
 
 
 if DEBUG_FORTH_PUSH
 	push af
-	ex de,hl
+;	ex de,hl
 	ld a, 'F'
 	ld (debug_mark),a
 	pop af
 	call display_reg_state
 	call display_dump_at_hl
-	ex de,hl
+;	ex de,hl
 endif	
 	; in case of spaces, skip the ptr past the copied string
 	;pop af

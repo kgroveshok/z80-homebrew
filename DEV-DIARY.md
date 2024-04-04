@@ -441,6 +441,7 @@ NOTE: All items are pushed as string at the moment.
 
 
 Version 3 of the parser now tokenises the string
+TODO possible stack push not pushing into the malloc correctly
 TODO DOT is not poping off stack properly
 TODO pop rsp at end of exec
 

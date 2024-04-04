@@ -70,14 +70,25 @@ endif
 .ptokenstr2:
 	; skip all white space until either eol (because forgot to term) or end double quote
         ;   if double quotes spotted ensure to skip any space sep until matched doble quote
+	;inc hl ; skip current double quote
 	ld a,(hl)
 	inc hl
 	cp '"'
-	jr z, .ptokendone2
+	jr z, .ptoken2
 	cp FORTH_END_BUFFER
 	jr z, .ptokendone2
-	jr z, .ptokenstr2
+	cp 0
+	jr z, .ptokendone2
+	cp ' '
+	jr z, .ptmp2
+	jr .ptokenstr2
 
+.ptmp2:	; we have a space so change to zero term for dict match later
+	dec hl
+	ld a,"-"	; TODO remove this when working
+	ld (hl), a
+	inc hl
+	jr .ptokenstr2
 
 .ptokendone2:
 
@@ -614,8 +625,13 @@ endif
 	call malloc	; on ret hl now contains allocated memory
 
 	push hl
-if DEBUG_FORTH_MALLOC
-	call display_data_malloc 
+if DEBUG_FORTH_PUSH
+	push af
+	ld a, 'a'
+	ld (debug_mark),a
+	pop af
+	call display_reg_state
+	call display_dump_at_hl
 endif	
 
 	; flag set as str
@@ -645,6 +661,14 @@ endif
 	ld (hl), d		
 
 
+if DEBUG_FORTH_PUSH
+	push af
+	ld a, 'b'
+	ld (debug_mark),a
+	pop af
+	call display_reg_state
+	call display_dump_at_hl
+endif	
 	; in case of spaces, skip the ptr past the copied string
 	;pop af
 	;ld (cli_origptr),hl
@@ -730,6 +754,14 @@ endif
 	ld a,d
 	ld (hl), a
 
+if DEBUG_FORTH_PUSH
+	push af
+	ld a, 'c'
+	ld (debug_mark),a
+	pop af
+	call display_reg_state
+	call display_dump_at_hl
+endif	
 
 
 

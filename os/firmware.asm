@@ -19,7 +19,7 @@ DEBUG_FORTH_TOK: equ 0
 DEBUG_FORTH_JP: equ 1
 DEBUG_FORTH_PUSH: equ 1
 DEBUG_FORTH_MALLOC: equ 1
-DEBUG_FORTH_DOT: equ 0
+DEBUG_FORTH_DOT: equ 1
 
 tos:	equ 0ffffh
 stacksize: equ 255

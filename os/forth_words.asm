@@ -137,12 +137,40 @@ sysdict:
 		; get value off TOS and display it
 
 
-		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+		FORTH_DSP_VALUE 
 
-		
-		; write value to screen     
-		; TODO display it on its own briefly for now. need cursor control etc
 
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		NEXT
+.DOT:	db 8
+	dw .SWAP
+	db 2
+	db ".",0         ;| . ( u -- )    Display TOS   |DONE
+		; get value off TOS and display it
+
+		FORTH_DSP_VALUE 
+if DEBUG_FORTH_DOT
+	push af
+	ld a, 'z'
+	ld (debug_mark),a
+	pop af
+	call display_reg_state
+	call display_dump_at_hl
+endif	
+;		.print:
+
+	ld a,(hl)  ; work out what type of value is on the TOS
+	inc hl   ; position to the actual value
+	cp DS_TYPE_STR
+	jr nz, .dotnum1 
+
+; display string
+	ex de,hl
+	jr .dotwrite
+
+.dotnum1:
+; display number
 
 ;	push hl
 ;	call clear_display
@@ -154,161 +182,16 @@ sysdict:
 	ld a,0
 	ld (hl),a
 	ld de,os_word_scratch
-		ld a, (f_cursor_ptr)
-		call str_at_display
 
-;	call update_display
-;	call delay1s
-;	call delay1s
-
-		; destroy value TOS
-
-		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
-
-		NEXT
-.DOT:	db 8
-	dw .SWAP
-	db 2
-	db ".",0         ;| . ( u -- )    Display TOS   |DONE
-		; get value off TOS and display it
-
-if DEBUG_FORTH_DOT
-		ld a, 'z'
-		ld (debug_mark),a
-		call display_data_sp
-		ld a, 'b'
-		ld (debug_mark),a
-		call next_page_prompt
-endif	
-;		.print:
-
-		FORTH_DSP_VALUE
-
-if DEBUG_FORTH_DOT
-		ld a, 'B'
-		ld (debug_mark),a
-		call display_data_sp
-		ld a, 'g'
-		ld (debug_mark),a
-		call next_page_prompt
-endif	
-
-		ld a,(hl)
-		cp DS_TYPE_STR 
-		jr nz, .dotnum
-		;FORTH_DSP
-
-
-if DEBUG_FORTH_DOT
-		call next_page_prompt
-		ld a, 'c'
-		ld (debug_mark),a
-		call display_data_sp
-		ld a, 'f'
-		ld (debug_mark),a
-		call next_page_prompt
-endif	
-
-
-; print string
-		inc hl     			; TODO skip type check and assume number.... lol
-;		ex de, hl
-;		ld e,(hl)
-;		inc hl
-;		ld d,(hl)
-		;push hl
-if DEBUG_FORTH_DOT
-		
-		ld a, 'i'
-		ld (debug_mark),a
-		call display_data_sp
-		ld a, 'j'
-		ld (debug_mark),a
-		call next_page_prompt
-endif	
-		ex de,hl
-		ld a, (f_cursor_ptr)
+.dotwrite:		ld a, (f_cursor_ptr)
 		call str_at_display
 		call update_display
-		;pop hl
 if DEBUG_FORTH_DOT
 		call next_page_prompt
 endif	
 ; TODO this pop off the stack causes a crash. i dont know why
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
-if DEBUG_FORTH_DOT
-		
-		ld a, 'w'
-		ld (debug_mark),a
-		call display_data_sp
-		ld a, 'x'
-		ld (debug_mark),a
-		call next_page_prompt
-endif	
-	NEXT
 
-.dotnum:	
-
-if DEBUG_FORTH_DOT
-		call next_page_prompt
-endif	
-
-		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
-
-if DEBUG_FORTH_DOT
-		call next_page_prompt
-endif	
-		
-		; write value to screen     
-		; TODO display it on its own briefly for now. need cursor control etc
-
-
-;	push hl
-;	call clear_display
-;	pop hl
-	push hl
-	ld a,h
-	ld hl, os_word_scratch
-	call hexout
-	pop hl
-	ld a,l
-	ld hl, os_word_scratch+2
-	call hexout
-	ld hl, os_word_scratch+4
-	ld a,0
-	ld (hl),a
-	ld de,os_word_scratch
-		ld a, (f_cursor_ptr)
-		call str_at_display
-		
-
-;	call update_display
-;	call delay1s
-;	call delay1s
-
-		; destroy value TOS
-
-;.dotdone:
-
-		call update_display
-if DEBUG_FORTH_DOT
-		call next_page_prompt
-		ld a, 'p'
-		ld (debug_mark),a
-		call display_data_sp
-		ld a, 'q'
-		ld (debug_mark),a
-		call next_page_prompt
-endif	
-		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
-if DEBUG_FORTH_DOT
-		call next_page_prompt
-		ld (debug_mark),a
-		call display_data_sp
-		ld a, 'y'
-		ld (debug_mark),a
-		call next_page_prompt
-endif	
 
 		NEXT
 .SWAP:	db 9

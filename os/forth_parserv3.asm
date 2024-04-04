@@ -570,6 +570,14 @@ forth_push_numhl:
 forth_apush:
 	; kernel push
 
+if DEBUG_FORTH_PUSH
+	push af
+	ld a, 'A'
+	ld (debug_mark),a
+	pop af
+	call display_reg_state
+	call display_dump_at_hl
+endif	
 	; identify input type
 
 	ld a,(hl)
@@ -586,9 +594,20 @@ forth_apush:
 
 .fapstr:   
 	; get string length
-
+	inc hl ; skip past current double quote and look for the last one
 	ld a, '"'
-	call strlent      ; TODO maybe a bug here for string copying
+	call strlent      
+
+	inc a ; add one due to the initial double quote skip	
+
+if DEBUG_FORTH_PUSH
+	push af
+	ld a, 'S'
+	ld (debug_mark),a
+	pop af
+	call display_reg_state
+	call display_dump_at_hl
+endif	
 	;push af
 if DEBUG_FORTH_PUSH
 	push af
@@ -627,7 +646,7 @@ endif
 	push hl
 if DEBUG_FORTH_PUSH
 	push af
-	ld a, 'a'
+	ld a, 'D'
 	ld (debug_mark),a
 	pop af
 	call display_reg_state
@@ -648,6 +667,7 @@ endif
 	ld c, a
 	ldir
 
+
 	; push malloc to data stack     macro????? 
 
 	ld hl,(cli_data_sp)
@@ -663,11 +683,13 @@ endif
 
 if DEBUG_FORTH_PUSH
 	push af
-	ld a, 'b'
+	ex de,hl
+	ld a, 'F'
 	ld (debug_mark),a
 	pop af
 	call display_reg_state
 	call display_dump_at_hl
+	ex de,hl
 endif	
 	; in case of spaces, skip the ptr past the copied string
 	;pop af

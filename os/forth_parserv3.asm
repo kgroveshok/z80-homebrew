@@ -4,7 +4,7 @@
 
 NEXT: macro 
 	ld hl,(cli_ptr)   ; move to next token to parse in the input stream
-	inc hl
+	inc hl  ; skip token null term 
 	jp exec1
       endm
 

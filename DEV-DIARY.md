@@ -441,7 +441,6 @@ NOTE: All items are pushed as string at the moment.
 
 
 Version 3 of the parser now tokenises the string
-TODO exec of a word leaves next word ptr in a strange place
 TODO DOT is not poping off stack properly
 TODO pop rsp at end of exec
 

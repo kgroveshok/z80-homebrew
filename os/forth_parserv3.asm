@@ -3,7 +3,8 @@
 
 
 NEXT: macro 
-	ld hl,(cli_origptr)   ; move to next token to parse in the input stream
+	ld hl,(cli_ptr)   ; move to next token to parse in the input stream
+	inc hl
 	jp exec1
       endm
 

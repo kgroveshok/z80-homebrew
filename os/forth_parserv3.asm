@@ -3,9 +3,30 @@
 
 
 NEXT: macro 
-	ld hl,(cli_ptr)   ; move to next token to parse in the input stream
-	inc hl  ; skip token null term 
-	jp exec1
+if DEBUG_FORTH_PARSE 
+	push af
+	ld a, '>'
+	ld (debug_mark),a
+	pop af
+	call break_point_state
+	;call display_reg_state
+	;call display_dump_at_hl
+endif	
+;	inc hl  ; skip token null term 
+if DEBUG_FORTH_PARSE 
+	ld bc,(cli_ptr)   ; move to next token to parse in the input stream
+	ld de,(cli_origptr)   ; move to next token to parse in the input stream
+	ld hl,(os_tok_ptr)   ; move to next token to parse in the input stream
+	push af
+	ld a, '}'
+	ld (debug_mark),a
+	pop af
+	call break_point_state
+	;call display_reg_state
+	;call display_dump_at_hl
+endif	
+	jp execnext
+	;jp exec1
       endm
 
 
@@ -45,8 +66,9 @@ if DEBUG_FORTH_TOK
 	ld a, 'Q'
 	ld (debug_mark),a
 	pop af
-	call display_reg_state
-	call display_dump_at_hl
+	call break_point_state
+	;call display_reg_state
+	;call display_dump_at_hl
 endif
 .ptoken2:    ld a,(hl)
 	inc hl
@@ -98,8 +120,9 @@ if DEBUG_FORTH_TOK
 	ld a, 'W'
 	ld (debug_mark),a
 	pop af
-	call display_reg_state
-	call display_dump_at_hl
+	call break_point_state
+	;call display_reg_state
+	;call display_dump_at_hl
 endif
 
 	; malloc size + buffer pointer + if is loop flag
@@ -121,8 +144,9 @@ if DEBUG_FORTH_TOK
 	ld a, 'E'
 	ld (debug_mark),a
 	pop af
-	call display_reg_state
-	call display_dump_at_hl
+	call break_point_state
+	;call display_reg_state
+	;call display_dump_at_hl
 endif
 
 	ld l,a
@@ -136,8 +160,9 @@ if DEBUG_FORTH_TOK
 	ld a, 'R'
 	ld (debug_mark),a
 	pop af
-	call display_reg_state
-	call display_dump_at_hl
+	call break_point_state
+	;call display_reg_state
+	;call display_dump_at_hl
 endif
 
 	FORTH_RSP_NEXT
@@ -160,7 +185,8 @@ if DEBUG_FORTH_TOK
 	ld a, 'T'
 	ld (debug_mark),a
 	pop af
-	call display_reg_state
+	call break_point_state
+	;call display_reg_state
 endif
 
 	; do str cpy
@@ -174,7 +200,8 @@ if DEBUG_FORTH_TOK
 	ld a, 'Y'
 	ld (debug_mark),a
 	pop af
-	call display_reg_state
+	call break_point_state
+	;call display_reg_state
 endif
 	;ld a,0
 	;ld a,FORTH_END_BUFFER
@@ -207,8 +234,9 @@ if DEBUG_FORTH_PARSE
 	ld a, 'U'
 	ld (debug_mark),a
 	pop af
-	call display_reg_state
-	call display_dump_at_hl
+	call break_point_state
+	;call display_reg_state
+	;call display_dump_at_hl
 endif
 
 	ret
@@ -245,8 +273,9 @@ if DEBUG_FORTH_PARSE
 	ld a, 'q'
 	ld (debug_mark),a
 	pop af
-	call display_reg_state
-	call display_dump_at_hl
+	call break_point_state
+	;call display_reg_state
+	;call display_dump_at_hl
 endif
 ;       while at start of word:
 ; get start of dict (in user area first)
@@ -442,6 +471,8 @@ if DEBUG_FORTH_JP
 	call delay1s
 endif
 
+	; TODO save the word pointer in this exec
+
 	ld hl,(cli_execword)
 	jp (hl)
 
@@ -497,20 +528,30 @@ endif
 
 	; if the word is not a keyword then must be a literal so push it to stack
 
-; TODO push token to stack to end of word
+; push token to stack to end of word
 
 
 ld hl,(os_tok_ptr)
 call forth_apush
 
+execnext:
 
-; TODO remove this subject to push type move past token to next word
+; move past token to next word
 
 ld hl, (os_tok_ptr)
 ld a, 0
 ld bc, 255     ; input buffer size
 cpir
 
+if DEBUG_FORTH_PARSE 
+	push af
+	ld a, '!'
+	ld (debug_mark),a
+	pop af
+	call break_point_state
+	;call display_reg_state
+	;call display_dump_at_hl
+endif	
 ; TODO this might place hl on the null, so will need to forward on???
 ;inc hl   ; see if this gets onto the next item
 
@@ -575,8 +616,9 @@ if DEBUG_FORTH_PUSH
 	ld a, 'A'
 	ld (debug_mark),a
 	pop af
-	call display_reg_state
-	call display_dump_at_hl
+	call break_point_state
+	;call display_reg_state
+	;call display_dump_at_hl
 endif	
 	; identify input type
 
@@ -605,8 +647,9 @@ if DEBUG_FORTH_PUSH
 	ld a, 'S'
 	ld (debug_mark),a
 	pop af
-	call display_reg_state
-	call display_dump_at_hl
+	call break_point_state
+	;call display_reg_state
+	;call display_dump_at_hl
 endif	
 	;push af
 if DEBUG_FORTH_PUSH
@@ -649,8 +692,9 @@ if DEBUG_FORTH_PUSH
 	ld a, 'D'
 	ld (debug_mark),a
 	pop af
-	call display_reg_state
-	call display_dump_at_hl
+	call break_point_state
+	;call display_reg_state
+	;call display_dump_at_hl
 endif	
 
 	; flag set as str
@@ -690,8 +734,9 @@ if DEBUG_FORTH_PUSH
 	ld a, 'F'
 	ld (debug_mark),a
 	pop af
-	call display_reg_state
-	call display_dump_at_hl
+	call break_point_state
+	;call display_reg_state
+	;call display_dump_at_hl
 ;	ex de,hl
 endif	
 	; in case of spaces, skip the ptr past the copied string
@@ -784,8 +829,9 @@ if DEBUG_FORTH_PUSH
 	ld a, 'c'
 	ld (debug_mark),a
 	pop af
-	call display_reg_state
-	call display_dump_at_hl
+	call break_point_state
+	;call display_reg_state
+	;call display_dump_at_hl
 endif	
 
 
@@ -810,6 +856,7 @@ FORTH_DSP: macro
 	if DEBUG_FORTH_PUSH
 
 		call display_data_sp
+	call break_point_state
 	endif
 
 	endm
@@ -841,32 +888,35 @@ FORTH_DSP_POP: macro
 	;ld hl,(cli_data_sp)
 if DEBUG_FORTH_DOT
 		
-		ld a, '1'
+		ld a, '7'
 		ld (debug_mark),a
-		call display_data_sp
-		ld a, '2'
-		ld (debug_mark),a
-		call next_page_prompt
+	;	call display_data_sp
+	call break_point_state
+	;	ld a, '2'
+;		ld (debug_mark),a
+;		call next_page_prompt
 endif	
 	FORTH_DSP_VALUE
 if DEBUG_FORTH_DOT
 		
-		ld a, '3'
+		ld a, '8'
 		ld (debug_mark),a
-		call display_data_sp
-		ld a, '4'
-		ld (debug_mark),a
-		call next_page_prompt
+;		call display_data_sp
+	call break_point_state
+	;	ld a, '4'
+;		ld (debug_mark),a
+;		call next_page_prompt
 endif	
 	call free
 if DEBUG_FORTH_DOT
 		
 		ld a, '5'
 		ld (debug_mark),a
-		call display_data_sp
-		ld a, '6'
-		ld (debug_mark),a
-		call next_page_prompt
+;		call display_data_sp
+	call break_point_state
+	;	ld a, '6'
+;		ld (debug_mark),a
+;		call next_page_prompt
 endif	
 
 	; move pointer down
@@ -909,6 +959,7 @@ FORTH_DSP_VALUEHL:  macro
 
 	if DEBUG_FORTH_PUSH
 
-		call display_data_sp
+	call break_point_state
+	;	call display_data_sp
 	endif
 	endm

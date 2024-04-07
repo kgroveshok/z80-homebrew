@@ -116,6 +116,11 @@ forth_init:
 ;	call delay1s
 ;	call delay1s
 
+	; reenable breakpoint
+
+	ld a,0
+	ld (os_view_disable),a
+
 	; init stack pointers  - * these stacks go upwards * 
 	ld hl, cli_ret_stack
 	ld (cli_ret_sp), hl	
@@ -196,13 +201,20 @@ endif
 .push_str:	db "Pushing string",0
 .push_num:	db "Pushing number",0
 .data_sp:	db "SP:",0
-.wordinhl:	db "Word in HL:",0
+.wordinhl:	db "Word in HL (2/0):",0
+.wordinde:	db "Word in DE (3/0):",0
+.wordinbc:	db "Word in BC (4/0):",0
 ;endif
 ;if DEBUG_FORTH_MALLOC
 .push_malloc:	db "Malloc address",0
 ;endif
 
-.regstate:	db "Reg State",0
+.wordincurptr:  db "Word in cur_ptr (5)",0
+.wordincuroptr:  db "Word in cur_optr (6)",0
+.ptrstate:	db "Ptr State",0
+.ptrcliptr:     db "cli_ptr",0
+.ptrclioptr:     db "cli_o_ptr",0
+.regstate:	db "Reg State (1/0)",0
 .regstatehl:	db "HL:",0
 .regstatede:	db "DE:",0
 .regstatebc:	db "BC:",0
@@ -219,8 +231,8 @@ display_dump_at_hl:
 	ld (os_cur_ptr),hl	
 	call clear_display
 	call dumpcont
-	call delay1s
-	call next_page_prompt
+;	call delay1s
+;	call next_page_prompt
 
 
 	pop af
@@ -366,6 +378,236 @@ display_word_at:
 		call str_at_display
 	ret
 
+display_ptr_state:
+
+	; to restore afterwards
+
+	push de
+	push bc
+	push hl
+	push af
+
+	; for use in here
+
+;	push bc
+;	push de
+;	push hl
+;	push af
+
+	call clear_display
+
+	ld de, .ptrstate
+	ld a, display_row_1
+	call str_at_display
+
+	; display debug step
+
+
+	ld de, debug_mark
+	ld a, display_row_1+display_cols-1
+	call str_at_display
+
+	; display a
+	ld de, .ptrcliptr
+	ld a, display_row_2
+	call str_at_display
+
+	pop af
+	ld hl,(cli_ptr)
+	ld a, display_row_2+8
+	call display_word_at
+
+
+	; display hl
+
+
+	ld de, .ptrclioptr
+	ld a, display_row_2+10
+	call str_at_display
+;
+;	pop hl
+	ld a, display_row_2+13
+	ld hl,(cli_origptr)
+	call display_word_at
+;
+;	
+;	; display de
+
+;	ld de, .regstatede
+;	ld a, display_row_3
+;	call str_at_display
+
+;	pop de
+;	ld h,d
+;	ld l, e
+;	ld a, display_row_3+3
+;	call display_word_at
+
+
+	; display bc
+
+;	ld de, .regstatebc
+;	ld a, display_row_3+10
+;	call str_at_display
+
+;	pop bc
+;	ld h,b
+;	ld l, c
+;	ld a, display_row_3+13
+;	call display_word_at
+
+
+	; display dsp
+
+;	ld de, .regstatedsp
+;	ld a, display_row_4
+;	call str_at_display
+
+	
+;	ld hl,(cli_data_sp)
+;	ld a, display_row_4+4
+;	call display_word_at
+
+	; display rsp
+
+	ld de, .regstatersp
+	ld a, display_row_4+10
+	call str_at_display
+
+	
+	ld hl,(cli_ret_sp)
+	ld a, display_row_4+14
+	call display_word_at
+
+	call update_display
+
+	call delay1s
+	call delay1s
+	call delay1s
+
+
+	call next_page_prompt
+
+	; restore 
+
+	pop af
+	pop hl
+	pop bc
+	pop de
+	ret
+
+break_point_state:
+	push af
+
+	; see if disabled
+
+	ld a, (os_view_disable)
+	cp '*'
+	jr nz, .bpsgo
+	pop af
+	ret
+
+.bpsgo:
+
+	ld (os_view_af),a
+	ld (os_view_hl), hl
+	ld (os_view_de), de
+	ld (os_view_bc), bc
+
+	ld a, '1'
+.bps1:  cp '*'
+	jr nz, .bps1b
+	ld (os_view_disable),a
+.bps1b:  cp '1'
+	jr nz, .bps2
+
+	; display reg
+
+	
+
+	ld a, (os_view_af)
+	ld hl, (os_view_hl)
+	ld de, (os_view_de)
+	ld bc, (os_view_bc)
+	call display_reg_state
+	jr .bps9
+
+.bps2:  cp '2'
+	jr nz, .bps3
+	
+	; display hl
+	ld hl, (os_view_hl)
+	call display_dump_at_hl
+
+	jr .bps9
+
+.bps3:  cp '3'
+	jr nz, .bps4
+
+        ; display de
+	ld hl, (os_view_de)
+	call display_dump_at_hl
+
+	jr .bps9
+.bps4:  cp '4'
+	jr nz, .bps5
+
+        ; display bc
+	ld hl, (os_view_bc)
+	call display_dump_at_hl
+
+	jr .bps9
+.bps5:  cp '5'
+        jr nz, .bps7
+
+	; display cur ptr
+	ld hl, (cli_ptr)
+	call display_dump_at_hl
+
+	jr .bps9
+.bps7:  cp '6'
+	jr nz, .bps8b
+	
+	; display cur orig ptr
+	ld hl, (cli_origptr)
+	call display_dump_at_hl
+	jr .bps9
+.bps8b:  cp '7'
+	jr nz, .bps8c
+	
+	; display dsp
+	ld hl, (cli_data_sp)
+	call display_dump_at_hl
+
+	jr .bps9
+.bps8c:  cp '8'
+	jr nz, .bps8
+	
+	; display rsp
+	ld hl, (cli_ret_sp)
+	call display_dump_at_hl
+
+	jr .bps9
+.bps8:  cp '0'
+	jr nz, .bps9
+	ld a, (os_view_af)
+	ld hl, (os_view_hl)
+	ld de, (os_view_de)
+	ld bc, (os_view_bc)
+	pop af
+	ret
+
+.bps9:  
+	call delay1s
+ld a,display_row_4 + display_cols - 1
+        ld de, endprg
+	call str_at_display
+	call update_display
+	call cin_wait
+
+	jp .bps1
+
+
 display_reg_state:
 
 	; to restore afterwards
@@ -469,12 +711,12 @@ display_reg_state:
 
 	call update_display
 
-	call delay1s
-	call delay1s
-	call delay1s
+;	call delay1s
+;	call delay1s
+;	call delay1s
 
 
-	call next_page_prompt
+;	call next_page_prompt
 
 	; restore 
 

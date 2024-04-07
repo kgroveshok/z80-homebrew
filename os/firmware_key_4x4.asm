@@ -205,11 +205,13 @@ cin_wait: 	call cin
 	cp 0
 	jr z, cin_wait   ; block until key press
 
+	push af   ; save key pressed
 
 .cin_wait1:	call cin
 	cp 0
 	jr nz, .cin_wait1  	; wait for key release
 
+	pop af   ; get key
 	ret
 
 

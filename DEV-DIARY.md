@@ -441,11 +441,15 @@ NOTE: All items are pushed as string at the moment.
 
 
 Version 3 of the parser now tokenises the string
-TODO possible stack push not pushing into the malloc correctly
-TODO DOT is not poping off stack properly
+todo need to save the current pointer of next word in the malloc area
+looks like the end of dot does niot leave the pointers in the correct place
+random crashes on exit even with a push after a few goes
+OK? TODO seems to be NEXT not at the correct address for next token. might still be a problem
+TODO trim space from end of parse string
+TODO add the breakpoint to words
 TODO pop rsp at end of exec
-
-
+TODO for string, skip the copy of the double quotes
+TODO add numeric push
 
 
 
@@ -456,7 +460,7 @@ Item pushed as string (FAIL) and allows for next entry
 
 . ENTER
 
-Displays 123 but then crashes (FAIL)
+Displays 123 and returns to prompt (OK)
 
 123
 
@@ -479,18 +483,25 @@ Items pushed as string (FAIL)
 
 . ENTER
 
-Displays 123 and crashes (FAIL)
 
+. ENTER
+
+Displays 456 and returns to prompt (OK)
+Displays 123 then goes off (FAIL)
 
 (d) Objective: Process muliple items in a single parse
 
-123 456 . ENTER
+6 2 . ENTER
 
-6 2 . DOT 
+Pushes 6 as string (FAIL) and then displays 2 and then crashes (OK)
 
-Pushes 6 as string (FAIL) and then exits (FAIL)
+. ENTER
 
-(e) TODO Objective: Add two numbers on TOS and display the result
+Crashes (FAIL)
+
+Crashes with 1 2 3 . .
+
+(3) TODO Objective: Add two numbers on TOS and display the result
 
 
 

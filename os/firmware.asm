@@ -151,10 +151,17 @@ os_tok_ptr: equ os_tok_len - 2
 os_tok_malloc: equ os_tok_ptr - 2
 scratch: equ os_tok_malloc-255
 
+os_view_disable: equ scratch - 1
+os_view_af: equ os_view_disable - 2
+os_view_hl: equ os_view_af -2
+os_view_de: equ os_view_hl - 2
+os_view_bc: equ os_view_de - 2
+
+
 ; with data stack could see memory filled with junk. need some memory management 
 ; malloc and free entry points added
 
-free_list:  equ scratch - 4     ; Block struct for start of free list (MUST be 4 bytes)
+free_list:  equ os_view_bc - 4     ; Block struct for start of free list (MUST be 4 bytes)
 heap_size: equ  (1024*10)      ; Number of bytes available in heap   TODO make all of user ram
 heap_start: equ free_list - heap_size  ; Starting address of heap
 

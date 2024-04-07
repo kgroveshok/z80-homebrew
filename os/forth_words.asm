@@ -155,8 +155,9 @@ if DEBUG_FORTH_DOT
 	ld a, 'z'
 	ld (debug_mark),a
 	pop af
-	call display_reg_state
-	call display_dump_at_hl
+	call break_point_state
+;	call display_reg_state
+;	call display_dump_at_hl
 endif	
 ;		.print:
 
@@ -190,7 +191,29 @@ if DEBUG_FORTH_DOT
 		call next_page_prompt
 endif	
 ; TODO this pop off the stack causes a crash. i dont know why
+
+
+if DEBUG_FORTH_DOT
+	push af
+	ld a, 'h'
+	ld (debug_mark),a
+	pop af
+	call break_point_state
+	;call display_reg_state
+	;call display_dump_at_hl
+endif	
+
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+if DEBUG_FORTH_DOT
+	push af
+	ld a, 'i'
+	ld (debug_mark),a
+	pop af
+	call break_point_state
+	;call display_reg_state
+	;call display_dump_at_hl
+endif	
 
 
 		NEXT

@@ -109,7 +109,45 @@ sysdict:
 .NEG:	db 3
 	dw .DIV
         db 2
-	db "-",0    ; | - ( u1 u2 -- u )    Subtract u2 from u1 and push result  |
+	db "-",0    ; | - ( u1 u2 -- u )    Subtract u2 from u1 and push result  | DONE
+
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		push hl
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		; one value on hl get other one back
+
+		pop de
+
+		; do the sub
+;		ex de, hl
+
+		sbc hl,de
+
+		; save it
+
+		push hl	
+
+		;
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		; TODO push value back onto stack for another op etc
+
+		pop hl
+
+		call forth_push_numhl
+
 		NEXT
 .DIV:	db 4
 	dw .MUL
@@ -133,12 +171,14 @@ sysdict:
 .EMIT:	db 7
 	dw .DOT
 	db 5
-	db "EMIT",0  ;|  EMIT ( u -- )        Display ascii character  TOS   |DONE
+	db "EMIT",0  ;|  EMIT ( u -- )        Display ascii character  TOS   |
 		; get value off TOS and display it
 
 
 		FORTH_DSP_VALUE 
 
+		ld a,l
+		; TODO write to display
 
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
@@ -313,7 +353,9 @@ endif
 .DROP2:	db 19
 	dw .SWAP2
 	db 6
-	db "2DROP",0      ; |2DROP ( w w -- )    Double drop
+	db "2DROP",0      ; |2DROP ( w w -- )    Double drop | DONE
+		FORTH_DSP_POP
+		FORTH_DSP_POP
 		NEXT
 .SWAP2:	db 20
 	dw .AT
@@ -534,12 +576,22 @@ endif
 .WAITK:   db 43               
 	dw .ACCEPT
 	db 6
-	db "WAITK",0     ;| WAITK ( -- w )      wait for keypress TOS is key press
+	db "WAITK",0     ;| WAITK ( -- w )      wait for keypress TOS is key press | TEST
+		call cin_wait
+		ld l, a
+		ld h, 0
+		call forth_push_numhl
 		NEXT
 .ACCEPT:   db 44               
 	dw .HOME
 	db 7
-	db "ACCEPT",0     ; |ACCEPT ( -- w )    Prompt for text input and push pointer to string
+	db "ACCEPT",0     ; |ACCEPT ( -- w )    Prompt for text input and push pointer to string | TEST
+		ld a,(f_cursor_ptr)
+		ld d, 20
+		ld hl, scratch
+		call input_str
+		ld hl, scratch
+		call forth_apush
 		NEXT
 
 .HOME:	db 45

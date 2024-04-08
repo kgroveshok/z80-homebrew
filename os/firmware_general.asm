@@ -26,6 +26,25 @@ addatobc:
     ld    b, a    ; H = H+carry
 ret
 
+subafromhl:
+   ; If A=0 do nothing
+    ; Otherwise flip A's sign. Since
+    ; the upper byte becomes -1, also
+    ; substract 1 from H.
+    neg
+    jp    z, Skip
+    dec   h
+    
+    ; Now add the low byte as usual
+    ; Two's complement takes care of
+    ; ensuring the result is correct
+    add   a, l
+    ld    l, a
+    adc   a, h
+    sub   l
+    ld    h, a
+Skip:
+	ret
 
 
 ; Delay loops

@@ -171,18 +171,48 @@ endif
 	jr .dotwrite
 
 .dotnum1:
+	cp DS_TYPE_INUM
+	jr nz, .dotflot
+
+
 ; display number
 
 ;	push hl
 ;	call clear_display
 ;	pop hl
-	ld a,l
-	ld hl, os_word_scratch
-	ld (hl),a
-	ld hl, os_word_scratch+1
-	ld a,0
-	ld (hl),a
-	ld de,os_word_scratch
+
+	ld e, (hl)
+	inc hl
+	ld d, (hl)
+	ld hl, scratch
+if DEBUG_FORTH_DOT
+	push af
+	ld a, 'I'
+	ld (debug_mark),a
+	pop af
+	call break_point_state
+	;call display_reg_state
+	;call display_dump_at_hl
+endif	
+
+	call uitoa_16
+	ex de,hl
+
+if DEBUG_FORTH_DOT
+	push af
+	ld a, 'i'
+	ld (debug_mark),a
+	pop af
+	call break_point_state
+	;call display_reg_state
+	;call display_dump_at_hl
+endif	
+
+;	ld de, os_word_scratch
+	jr .dotwrite
+
+.dotflot:   nop
+; TODO print floating point number
 
 .dotwrite:		ld a, (f_cursor_ptr)
 		call str_at_display

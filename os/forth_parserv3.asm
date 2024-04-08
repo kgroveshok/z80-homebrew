@@ -344,7 +344,7 @@ ld (cli_nextword),hl
 	inc hl     ; skip string length (use zero term instead to end)
 	ld (cli_token), hl
 
-if DEBUG_FORTH_PARSE
+if DEBUG_FORTH_PARSE_EXEC
 	push hl
 	push hl
 	call clear_display
@@ -373,7 +373,7 @@ if DEBUG_FORTH_PARSE
 endif	
 .execpnchar:    ; compare char between token and string to parse
 
-if DEBUG_FORTH_PARSE
+if DEBUG_FORTH_PARSE_EXEC
 ;	call clear_display
 ld hl,(cli_token)
 ld a,(hl)
@@ -492,7 +492,7 @@ endif
 	cp 0
 	jr z, .execendofdict			 ; at end of words
 
-if DEBUG_FORTH_PARSE
+if DEBUG_FORTH_PARSE_EXEC
 
 	ld de, .nowordfound
 	ld a, display_row_3
@@ -509,7 +509,7 @@ endif
 
 .execendofdict: 
 
-if DEBUG_FORTH_PUSH
+if DEBUG_FORTH_PARSE_EXEC
 	call clear_display
 	call update_display
 	call delay1s
@@ -647,6 +647,7 @@ endif
 	inc hl ; skip past current double quote and look for the last one
 	ld a, '"'
 .defstr:	call strlent      
+	ld a,l
 
 	inc a ; add one due to the initial double quote skip	
 

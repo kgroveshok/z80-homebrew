@@ -748,8 +748,8 @@ strlent:
     CPIR                   ; Begin search for a byte equalling zero.
 
 ; BC has been decremented so that it holds -length. Now need to synthesize a NEG BC.
-    LD     H, A             ; Zero HL (basically set it to 65, 536) to get the
-    LD     L, A             ; number of bytes
+    LD     H, 0             ; Zero HL (basically set it to 65, 536) to get the
+    LD     L, 0             ; number of bytes
     SBC    HL, BC           ; Find the size. CPIR doesn't affect carry.
     DEC    HL              ; Compensate for null.
 	ret

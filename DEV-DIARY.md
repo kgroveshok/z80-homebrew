@@ -437,9 +437,6 @@ April 2024
 
 Unit testing/debugging
 
-NOTE: All items are pushed as string at the moment.
-
-
 Version 3 of the parser now tokenises the string
 TODO need to save the current pointer of next word in the malloc area
 TODO dont parse an empty input string
@@ -449,7 +446,7 @@ TODO pop rsp at end of exec
 TODO for string, skip the copy of the double quotes
 TODO add numeric push - does as BCD???? found a floating point maths library. try that
 TODO add data stack underflow guards
-
+TODO change default push type as float as that has no prefix
 
 
 * Objective: Pushing a number to stack as sole item to parse and display 

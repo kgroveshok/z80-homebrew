@@ -72,6 +72,8 @@ sysdict:
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
+	; TODO add floating point number detection
+
 		push hl
 
 		; destroy value TOS
@@ -112,6 +114,7 @@ sysdict:
 	db "-",0    ; | - ( u1 u2 -- u )    Subtract u2 from u1 and push result  | DONE
 
 
+	; TODO add floating point number detection
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
 		push hl
@@ -153,11 +156,13 @@ sysdict:
 	dw .MUL
 	db 2
 	db "/",0     ; | / ( u1 u2 -- u )     Divide u1 by u2 and push result |
+	; TODO add floating point number detection
 		NEXT
 .MUL: 	db 5
 	dw .DUP
 	db 2
 	db "*",0     ; | * ( u1 u2 -- u )     Multiply TOS and push result |
+	; TODO add floating point number detection
 		NEXT
 .DUP:	db 6
 	dw .EMIT
@@ -166,6 +171,7 @@ sysdict:
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
+	; TODO add floating point number detection
 		call forth_push_numhl
 		NEXT
 .EMIT:	db 7

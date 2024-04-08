@@ -1,3 +1,160 @@
+
+if MALLOC_2
+; Z80 Malloc and Free Functions
+
+; Malloc Function:
+; Input:
+;   HL: Size of block to allocate
+; Output:
+;   HL: Pointer to allocated memory block (NULL if allocation fails)
+
+malloc:
+    push af            ; Save AF register
+    ld a, l            ; Load low byte of size into A
+    or h               ; Check if size is zero
+    jr z, malloc_exit  ; If size is zero, exit with NULL pointer
+
+    ; Allocate memory
+    ld hl, (heap_start) ; Load start of heap into HL
+    call malloc_internal ; Call internal malloc function
+    pop af             ; Restore AF register
+    ret                ; Return
+
+; Free Function:
+; Input:
+;   HL: Pointer to memory block to free
+; Output:
+;   None
+
+free:
+    push af            ; Save AF register
+    ld a, l            ; Load low byte of pointer into A
+    or h               ; Check if pointer is NULL
+    jr z, free_exit    ; If pointer is NULL, exit
+
+    ; Free memory
+    ld hl, (heap_start) ; Load start of heap into HL
+    call free_internal  ; Call internal free function
+    pop af             ; Restore AF register
+    ret                ; Return
+
+; Internal Malloc Function:
+; Input:
+;   HL: Size of block to allocate
+; Output:
+;   HL: Pointer to allocated memory block (NULL if allocation fails)
+
+malloc_internal:
+    ld bc, 2           ; Number of bytes to allocate for management overhead
+    add hl, bc         ; Add management overhead to requested size
+    ex de, hl          ; Save total size in DE, and keep it in HL
+
+    ; Search for free memory block
+    ld de, (heap_end)  ; Load end of heap into DE
+    ld bc, 0           ; Initialize counter
+
+malloc_search_loop:
+    ; Check if current block is free
+    ld a, (hl)         ; Load current block's status (free or used)
+    cp 0               ; Compare with zero (free)
+    jr nz, malloc_skip_block_check  ; If not free, skip to the next block
+
+    ; Check if current block is large enough
+    ld a, (hl+1)       ; Load high byte of block size
+    cp l               ; Compare with low byte of requested size
+    jr nz, malloc_skip_block_check  ; If not large enough, skip to the next block
+
+    ld a, (hl+2)       ; Load low byte of block size
+    cp h               ; Compare with high byte of requested size
+    jr c, malloc_skip_block_check   ; If not large enough, skip to the next block
+
+    ; Mark block as used
+    ld (hl), 0xFF      ; Set status byte to indicate used block
+
+    ; Calculate remaining space in block
+    ld bc, 0           ; Clear BC
+    add hl, bc         ; Increment HL to point to start of data block
+    add hl, de         ; HL = HL + DE (total size)
+    ld bc, 1           ; Number of bytes to allocate for management overhead
+    add hl, bc         ; Add management overhead to start of data block
+
+    ; Save pointer to allocated block in HL
+    ret
+
+malloc_skip_block_check:
+    ; Move to the next block
+    ld bc, 3           ; Size of management overhead
+    add hl, bc         ; Move to the next block
+    inc de             ; Increment counter
+
+    ; Check if we have reached the end of heap
+    ld a, e            ; Load low byte of heap end address
+    cp (hl)            ; Compare with low byte of current address
+    jr nz, malloc_search_loop  ; If not equal, continue searching
+    ld a, d            ; Load high byte of heap end address
+    cp 0               ; Check if it's zero (end of memory)
+    jr nz, malloc_search_loop  ; If not zero, continue searching
+
+    ; If we reached here, allocation failed
+    xor a              ; Set result to NULL
+    ret
+malloc_exit:
+    ret
+
+; Internal Free Function:
+; Input:
+;   HL: Pointer to memory block to free
+; Output:
+;   None
+
+free_internal:
+    ld de, (heap_start) ; Load start of heap into DE
+    ld bc, 0            ; Initialize counter
+
+free_search_loop:
+    ; Check if current block contains the pointer
+    ld a, l             ; Load low byte of pointer
+    cp (hl+1)           ; Compare with high byte of current block's address
+    jr nz, free_skip_block_check  ; If not equal, skip to the next block
+    ld a, h             ; Load high byte of pointer
+    cp (hl+2)           ; Compare with low byte of current block's address
+    jr nz, free_skip_block_check  ; If not equal, skip to the next block
+
+    ; Mark block as free
+    ld (hl), 0          ; Set status byte to indicate free block
+    ret                 ; Return
+
+free_skip_block_check:
+    ; Move to the next block
+    ld bc, 3            ; Size of management overhead
+    add hl, bc          ; Move to the next block
+    inc de              ; Increment counter
+
+    ; Check if we have reached the end of heap
+    ld a, e             ; Load low byte of heap end address
+    cp (hl)             ; Compare with low byte of current address
+    jr nz, free_search_loop  ; If not equal, continue searching
+    ld a, d             ; Load high byte of heap end address
+    cp 0                ; Check if it's zero (end of memory)
+    jr nz, free_search_loop  ; If not zero, continue searching
+
+    ; If we reached here, pointer is not found in heap
+    ret
+
+free_exit:
+    ret                 ; Return
+
+; Define heap start and end addresses
+;heap_start:    .dw 0xC000   ; Start of heap
+;heap_end:      .dw 0xE000   ; End of heap
+
+endif
+
+
+if MALLOC_1
+
+
+
 ; from https://gist.github.com/tomstorey/947a8b084bad69391a4b2a1c5b6d69ca
 
 ;moved to firmware.asm
@@ -588,3 +745,5 @@ free_early_exit:
 ;free_list         .dw   0     ; Block struct for start of free list (MUST be 4 bytes)
 ;                  .dw   0
 
+
+endif

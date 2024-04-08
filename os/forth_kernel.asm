@@ -1,8 +1,9 @@
 ;
 ; kernel to the forth OS
 
-DS_TYPE_STR: equ 1
-DS_TYPE_NUM: equ 2 
+DS_TYPE_STR: equ 1     ; string type
+DS_TYPE_INUM: equ 2     ; $ 16 bit int usually a hex address
+DS_TYPE_FNUM: equ 3      ; 24/32 bit floating point
 
 FORTH_PARSEV1: equ 0
 FORTH_PARSEV2: equ 0
@@ -221,6 +222,7 @@ endif
 .regstatea:	db "AF:",0
 .regstatedsp:	db "DSP:",0
 .regstatersp:	db "RSP:",0
+.mallocerr: 	db "Malloc Error",0
 
 display_dump_at_hl:
 	push hl
@@ -243,6 +245,25 @@ display_dump_at_hl:
 
 
 ; display malloc address and current data stack pointer 
+
+malloc_error:
+	push de
+	push af
+	push hl
+	call clear_display
+	ld de, .mallocerr
+	ld a,0
+	ld de,os_word_scratch
+	call str_at_display
+	call update_display
+	call break_point_state
+
+	pop hl
+	pop af
+	pop de	
+	
+
+	ret
 
 ;if DEBUG_FORTH_PUSH
 display_data_sp:

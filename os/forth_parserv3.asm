@@ -3,7 +3,7 @@
 
 
 NEXT: macro 
-if DEBUG_FORTH_PARSE 
+if DEBUG_FORTH_PARSE_KEY
 	push af
 	ld a, '>'
 	ld (debug_mark),a
@@ -13,7 +13,7 @@ if DEBUG_FORTH_PARSE
 	;call display_dump_at_hl
 endif	
 ;	inc hl  ; skip token null term 
-if DEBUG_FORTH_PARSE 
+if DEBUG_FORTH_PARSE_KEY
 	ld bc,(cli_ptr)   ; move to next token to parse in the input stream
 	ld de,(cli_origptr)   ; move to next token to parse in the input stream
 	ld hl,(os_tok_ptr)   ; move to next token to parse in the input stream
@@ -152,6 +152,9 @@ endif
 	ld l,a
 	ld h,0
 	call malloc
+	if DEBUG_FORTH_MALLOC_GUARD
+		call z,malloc_error
+	endif
 	ld (os_tok_malloc), hl	 ; save malloc ptr
 
 
@@ -228,7 +231,7 @@ endif
 	ld (hl),d
 
 
-if DEBUG_FORTH_PARSE
+if DEBUG_FORTH_PARSE_KEY
 	ld hl,(os_tok_malloc)
 	push af
 	ld a, 'U'
@@ -268,7 +271,7 @@ exec1:
 	cp FORTH_END_BUFFER
 	ret z
 
-if DEBUG_FORTH_PARSE
+if DEBUG_FORTH_PARSE_KEY
 	push af
 	ld a, 'q'
 	ld (debug_mark),a
@@ -543,7 +546,7 @@ ld a, 0
 ld bc, 255     ; input buffer size
 cpir
 
-if DEBUG_FORTH_PARSE 
+if DEBUG_FORTH_PARSE_KEY
 	push af
 	ld a, '!'
 	ld (debug_mark),a
@@ -627,18 +630,23 @@ endif
 	jr z, .fapstr
 	cp '$'
 	jp z, .faphex
-	cp 'b'
-	jp z, .fabin
+;	cp 'b'
+;	jp z, .fabin
 	; else decimal
 
 	; TODO do decimal conversion
 	; decimal is stored as a 16bit word
 
+	; by default everything is a string if type is not detected
+	ld a, 0    ; set null string term
+	jr .defstr
+
+
 .fapstr:   
 	; get string length
 	inc hl ; skip past current double quote and look for the last one
 	ld a, '"'
-	call strlent      
+.defstr:	call strlent      
 
 	inc a ; add one due to the initial double quote skip	
 
@@ -684,7 +692,28 @@ endif
 	add 5    ; to be safe for some reason - max of 255 char for string
 	ld h,0
 	ld l,a
+if DEBUG_FORTH_PUSH
+	push af
+	ld a, 's'
+	ld (debug_mark),a
+	pop af
+	call break_point_state
+	;call display_reg_state
+	;call display_dump_at_hl
+endif	
 	call malloc	; on ret hl now contains allocated memory
+if DEBUG_FORTH_PUSH
+	push af
+	ld a, 'd'
+	ld (debug_mark),a
+	pop af
+	call break_point_state
+	;call display_reg_state
+	;call display_dump_at_hl
+endif	
+	if DEBUG_FORTH_MALLOC_GUARD
+		call z,malloc_error
+	endif
 
 	push hl
 if DEBUG_FORTH_PUSH
@@ -788,6 +817,9 @@ endif
 
 	ld hl, 5
 	call malloc
+	if DEBUG_FORTH_MALLOC_GUARD
+		call z,malloc_error
+	endif
 
 	push hl		; once to save on to data stack
 	push hl		; once to save word into
@@ -812,7 +844,7 @@ endif
 
 	pop hl
 
-	ld a,  DS_TYPE_NUM
+	ld a,  DS_TYPE_INUM
 	ld (hl), a
 	inc hl
 
@@ -897,7 +929,7 @@ if DEBUG_FORTH_DOT
 ;		call next_page_prompt
 endif	
 	FORTH_DSP_VALUE
-if DEBUG_FORTH_DOT
+if DEBUG_FORTH_DOT_KEY
 		
 		ld a, '8'
 		ld (debug_mark),a
@@ -907,8 +939,11 @@ if DEBUG_FORTH_DOT
 ;		ld (debug_mark),a
 ;		call next_page_prompt
 endif	
+if DEBUG_FORTH_ENABLEFREE
 	call free
-if DEBUG_FORTH_DOT
+endif
+
+if DEBUG_FORTH_DOT_KEY
 		
 		ld a, '5'
 		ld (debug_mark),a

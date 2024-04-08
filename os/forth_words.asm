@@ -187,7 +187,7 @@ endif
 .dotwrite:		ld a, (f_cursor_ptr)
 		call str_at_display
 		call update_display
-if DEBUG_FORTH_DOT
+if DEBUG_FORTH_DOT_KEY
 		call next_page_prompt
 endif	
 ; TODO this pop off the stack causes a crash. i dont know why

@@ -15,11 +15,18 @@ DEBUG_STORECF: equ 0
 DEBUG_STORESE: equ 0
 DEBUG_FORTH: equ 1
 DEBUG_FORTH_PARSE: equ 1
+DEBUG_FORTH_PARSE_KEY: equ 1
 DEBUG_FORTH_TOK: equ 0
 DEBUG_FORTH_JP: equ 1
 DEBUG_FORTH_PUSH: equ 1
 DEBUG_FORTH_MALLOC: equ 1
 DEBUG_FORTH_DOT: equ 1
+DEBUG_FORTH_DOT_KEY: equ 1
+DEBUG_FORTH_ENABLEFREE: equ 0
+DEBUG_FORTH_MALLOC_GUARD: equ 1
+
+MALLOC_1: equ 1
+MALLOC_2: equ 0
 
 tos:	equ 0ffffh
 stacksize: equ 255
@@ -162,7 +169,9 @@ os_view_bc: equ os_view_de - 2
 ; malloc and free entry points added
 
 free_list:  equ os_view_bc - 4     ; Block struct for start of free list (MUST be 4 bytes)
-heap_size: equ  (1024*10)      ; Number of bytes available in heap   TODO make all of user ram
+heap_size: equ  (free_list-08100h)      ; Number of bytes available in heap   TODO make all of user ram
+;heap_start: equ free_list - heap_size  ; Starting address of heap
+heap_end: equ free_list-1  ; Starting address of heap
 heap_start: equ free_list - heap_size  ; Starting address of heap
 
 ;;;;
@@ -212,7 +221,9 @@ hardware_init:
 
 	; setup malloc functions
 
-	call  heap_init
+	if MALLOC_1
+		call  heap_init
+	endif
 
 	; lcd test sequence
 		

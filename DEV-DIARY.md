@@ -441,19 +441,18 @@ NOTE: All items are pushed as string at the moment.
 
 
 Version 3 of the parser now tokenises the string
-todo need to save the current pointer of next word in the malloc area
-looks like the end of dot does niot leave the pointers in the correct place
-random crashes on exit even with a push after a few goes
-OK? TODO seems to be NEXT not at the correct address for next token. might still be a problem
+TODO need to save the current pointer of next word in the malloc area
+TODO dont parse an empty input string
 TODO trim space from end of parse string
 TODO add the breakpoint to words
 TODO pop rsp at end of exec
 TODO for string, skip the copy of the double quotes
-TODO add numeric push
+TODO add numeric push - does as BCD???? found a floating point maths library. try that
+TODO add data stack underflow guards
 
 
 
-(a) Objective: Pushing a number to stack as sole item to parse and display 
+* Objective: Pushing a number to stack as sole item to parse and display 
 
 123 ENTER
 Item pushed as string (FAIL) and allows for next entry
@@ -465,16 +464,16 @@ Displays 123 and returns to prompt (OK)
 123
 
 
-(b ) Obejctive: Pushing string to stack as sole item to parse and display
+* Obejctive: Pushing string to stack as sole item to parse and display
 
-abc ENTER
+"abc" ENTER
 Item pushed as string (OK) and allows for next entry
 
 . ENTER
 
-Displays result of previous test (123) and crashes (FAIL)
+Displays result of previous test (123) and returns to prompt (OK)
 
-(c) Objective: Push two numbers to stack as sole individual items and display TOD
+* Objective: Push two numbers to stack as sole individual items and display TOD
 
 123 ENTER
 456 ENTER
@@ -483,25 +482,30 @@ Items pushed as string (FAIL)
 
 . ENTER
 
-
 . ENTER
 
 Displays 456 and returns to prompt (OK)
-Displays 123 then goes off (FAIL)
+Displays 123 and returns to prompt (OK)
 
-(d) Objective: Process muliple items in a single parse
+* Objective: Process muliple items in a single parse
 
 6 2 . ENTER
 
-Pushes 6 as string (FAIL) and then displays 2 and then crashes (OK)
+Pushes 6 as string (FAIL) and then displays 2 and returns to prompt (OK)
 
 . ENTER
 
 Crashes (FAIL)
 
-Crashes with 1 2 3 . .
+* Objective: Process muliple items in a single parse
 
-(3) TODO Objective: Add two numbers on TOS and display the result
+6 2 . . ENTER
+
+Displays 2 then 6 and returns to prompt (OK)
+
+* TODO Objective: Add two numbers on TOS and display the result
+
+1 1 + .
 
 
 

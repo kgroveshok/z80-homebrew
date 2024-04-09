@@ -42,17 +42,26 @@ RandLFSR:
         inc hl
         ld a,(hl)
         ld b,a
-        rl e \ rl d
-        rl c \ rla
-        rl e \ rl d
-        rl c \ rla
-        rl e \ rl d
-        rl c \ rla
+        rl e 
+	rl d
+        rl c 
+	rla
+        rl e 
+	rl d
+        rl c 
+	rla
+        rl e 
+	rl d
+        rl c 
+	rla
         ld h,a
-        rl e \ rl d
-        rl c \ rla
+        rl e 
+	rl d
+        rl c 
+	rla
         xor b
-        rl e \ rl d
+        rl e 
+	rl d
         xor h
         xor c
         xor d
@@ -68,7 +77,7 @@ RandLFSR:
 ;You can initialize with TI-OS's seeds, stored at seed1 and seed2, both are ti-floats but will serve the purpose. 
 
 
-This is a very fast, quality pseudo-random number generator. It combines a 16-bit Linear Feedback Shift Register and a 16-bit LCG.
+;This is a very fast, quality pseudo-random number generator. It combines a 16-bit Linear Feedback Shift Register and a 16-bit LCG.
 
 prng16:
 ;Inputs:
@@ -121,36 +130,36 @@ rand32:
 ;roughly 18.4 quintillion.
 ;LFSR taps: 0,2,6,7  = 11000101
 ;291cc
-seed1_0=$+1
-    ld hl,12345
-seed1_1=$+1
-    ld de,6789
-    ld b,h
-    ld c,l
-    add hl,hl \ rl e \ rl d
-    add hl,hl \ rl e \ rl d
-    inc l
-    add hl,bc
-    ld (seed1_0),hl
-    ld hl,(seed1_1)
-    adc hl,de
-    ld (seed1_1),hl
-    ex de,hl
-seed2_0=$+1
-    ld hl,9876
-seed2_1=$+1
-    ld bc,54321
-    add hl,hl \ rl c \ rl b
-    ld (seed2_1),bc
-    sbc a,a
-    and %11000101
-    xor l
-    ld l,a
-    ld (seed2_0),hl
-    ex de,hl
-    add hl,bc
-    ret
-
+;seed1_0=$+1
+;    ld hl,12345
+;seed1_1=$+1
+;    ld de,6789
+;    ld b,h
+;    ld c,l
+;    add hl,hl \ rl e \ rl d
+;    add hl,hl \ rl e \ rl d
+;    inc l
+;    add hl,bc
+;    ld (seed1_0),hl
+;    ld hl,(seed1_1)
+;    adc hl,de
+;    ld (seed1_1),hl
+;    ex de,hl
+;seed2_0=$+1
+;    ld hl,9876
+;seed2_1=$+1
+;    ld bc,54321
+;    add hl,hl \ rl c \ rl b
+;    ld (seed2_1),bc
+;    sbc a,a
+;    and %11000101
+;    xor l
+;    ld l,a
+;    ld (seed2_0),hl
+;    ex de,hl
+;    add hl,bc
+;    ret
+;
 
 ; 16-bit xorshift pseudorandom number generator by John Metcalf
 ; 20 bytes, 86 cycles (excluding ret)
@@ -171,7 +180,12 @@ seed2_1=$+1
 ;  org 32768
 
 xrnd:
-  ld hl,1       ; seed must not be 0
+  ld hl,(xrandc)       ; seed must not be 0
+  ld a,0
+  cp l
+  jr nz, .xrnd1
+  ld l, 1
+.xrnd1:
 
   ld a,h
   rra
@@ -188,11 +202,12 @@ xrnd:
   xor h
   ld h,a
 
-  ld (xrnd+1),hl
+  ld (xrandc),hl
 
   ret
+; 
 
-
+;include "float/bbcmath.z80"
 
 
 ; eof

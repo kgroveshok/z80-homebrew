@@ -14,9 +14,9 @@ DEBUG_KEY_MATRIX: equ 0
 DEBUG_STORECF: equ 0
 DEBUG_STORESE: equ 0
 DEBUG_FORTH: equ 0
-DEBUG_FORTH_PARSE: equ 0
-DEBUG_FORTH_PARSE_KEY: equ 0
-DEBUG_FORTH_PARSE_EXEC: equ 0
+DEBUG_FORTH_PARSE: equ 1
+DEBUG_FORTH_PARSE_KEY: equ 1
+DEBUG_FORTH_PARSE_EXEC: equ 1
 DEBUG_FORTH_TOK: equ 0
 DEBUG_FORTH_JP: equ 0
 DEBUG_FORTH_PUSH: equ 0
@@ -25,6 +25,7 @@ DEBUG_FORTH_DOT: equ 0
 DEBUG_FORTH_DOT_KEY: equ 0
 DEBUG_FORTH_ENABLEFREE: equ 0
 DEBUG_FORTH_MALLOC_GUARD: equ 1
+DEBUG_FORTH_UWORD: equ 1
 
 MALLOC_1: equ 1
 MALLOC_2: equ 0
@@ -116,9 +117,18 @@ cursor_row: equ cursor_col-1
 cursor_ptr: equ cursor_row - 1     ;  actual offset into lcd memory for row and col combo
 cursor_shape: equ cursor_ptr - 1   ; char used for the current cursor 
 
+; maths vars
+
+LFSRSeed: equ cursor_shape -20 
+randData: equ LFSRSeed - 2
+xrandc: equ randData - 2
+stackstore: equ xrandc - 2
+seed1: equ  stackstore -2 
+seed2: equ seed1 - 2
+
 ; cf storage vars
 
-iErrorNum:  equ cursor_shape-1         ;Error number
+iErrorNum:  equ seed2-1         ;Error number
 iErrorReg:  equ iErrorNum -1              ;Error register
 iErrorVer:  equ iErrorReg - 1              ;Verify error flag
 
@@ -310,7 +320,7 @@ include "firmware_storage.asm"
 
 include "firmware_general.asm"        ; general support functions
 include "firmware_display.asm"      ; frame buffer screen abstraction layer
-;include "firmware_maths.asm"     ; any odd maths stuff   TODO removed until I fix up the rng code
+include "firmware_maths.asm"     ; any odd maths stuff   TODO removed until I fix up the rng code
 include "firmware_strings.asm"   ; string handling
 include "firmware_memory.asm"   ; malloc and free
 

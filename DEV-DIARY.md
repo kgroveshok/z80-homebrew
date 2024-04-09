@@ -435,6 +435,24 @@ New board now soldered and powered up. Need to debug OS/Language...
 
 April 2024
 
+Keyboard layout:
+
+
+    1       2       3       A
+    abc"    def&    ghi$    
+
+    4       5       6       B
+    jkl,    mno.    pqr:
+
+    7       8       9      C
+    stu;    vwx@    yz?!
+
+    *       0       #      D
+    shift   space   Enter
+    ' tab   < >     + - /
+     bs   
+
+
 Unit testing/debugging
 
 Version 3 of the parser now tokenises the string
@@ -447,7 +465,7 @@ TODO for string, skip the copy of the double quotes
 TODO add numeric push - does as BCD???? found a floating point maths library. try that
 TODO add data stack underflow guards
 TODO change default push type as float as that has no prefix
-
+TODO add a type id word for TOS
 
 * Objective: Pushing a number to stack as sole item to parse and display 
 

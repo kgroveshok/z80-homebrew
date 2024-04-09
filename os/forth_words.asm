@@ -333,14 +333,123 @@ endif
 	db "LOOP",0      ; |LOOP ( -- )     Current loop end marker
 		NEXT
 .COLN:	db 15
-	dw .SCOLN
-	db 2
-	db ":",0     ; |: ( -- )         Create new word
-		NEXT
-.SCOLN:	db 16
 	dw .DROP
 	db 2
-	db ";",0          ; |; ( -- )     Terminate new word
+	db ":",0     ; |: ( -- )         Create new word
+
+
+	; get parser buffer length  of new word
+		; move tok past this to start of name defintition
+		; TODO get word to define
+		; TODO Move past word token
+		; TODO get length of string up to the ';'
+
+	ld hl, (os_tok_ptr)
+	inc hl
+	inc hl
+
+	ld a, ';'
+	call strlent
+
+;
+;  new word memory layout:
+; 
+;    : adg 6666 ; 
+;
+;    db   1     ; user defined word 
+	inc hl   
+;    dw   sysdict
+	inc hl
+	inc hl
+;    db <word len>+1 (for null)
+	inc hl
+;    db .... <word>
+;
+;       exec word buffer
+;	<ptr word>  
+	inc hl
+	inc hl
+;       <word list><null term> 7F final term
+
+
+
+if DEBUG_FORTH_UWORD
+	push af
+	ld a, 'v'
+	ld (debug_mark),a
+	pop af
+	call break_point_state
+endif
+
+	
+		; TODO malloc the size
+
+		call malloc
+		push hl     ; save malloc start
+
+;    db   1     ; user defined word 
+		ld a, 1
+		ld (hl), a
+	
+	inc hl   
+;    dw   sysdict
+	ld de, sysdict
+	ld (hl), e
+	inc hl
+	ld (hl), d
+	inc hl
+
+
+;    TODO write length of user word + null
+
+	ex de, hl
+
+		ld hl,(tok_ptr)
+	inc hl
+	inc hl
+
+	push hl
+
+	ld a, 0
+	call strlent
+
+	ld a, l    ; save length to poke into dict
+	
+
+	ld b, 0
+	ld c, l
+
+	pop hl
+	ldir       ; copy word
+ 
+
+
+
+
+		; position to start of 
+
+if DEBUG_FORTH_UWORD
+	push af
+	ld a, 'b'
+	ld (debug_mark),a
+	pop af
+	call break_point_state
+endif
+		; TODO Copy from ptr to end of string to malloc
+		; TODO find last user dict word next link
+		; TODO create dictorary entry for word
+		; TODO in payload add 'ld hl, x' 
+		; TODO add pointer to malloc
+		; TODO add 'call to forthexec'
+		; TODO copy last user dict word next link to this word
+		; TODO update last user dict word to point to this word
+
+
+		NEXT
+;.SCOLN:	db 16
+;	dw .DROP
+;	db 2
+;	db ";",0          ; |; ( -- )     Terminate new word
 
 
 
@@ -710,10 +819,22 @@ endif
 	       NEXT
 
 .RND:   db 58
-	  dw .V0
+	  dw .WORDS
           db 4
 	  db "RND",0	; | RND (  -- )  
 	       NEXT
+.WORDS:   db 59
+	  dw .UWORDS
+          db 6
+	  db "WORDS",0	; | WORDS (  -- )   List the system and user word dict
+	       NEXT
+
+.UWORDS:   db 60
+	  dw .V0
+          db 7
+	  db "UWORDS",0	; | UWORDS (  -- )   List user word dict
+	       NEXT
+
 ;;;; counter gap
 
 
@@ -803,7 +924,10 @@ endif
 	dw 0
 	db 0
 
+; use to jp here for user dict words to save on macro expansion 
 
+user_dict_next:
+	NEXT
 
 
 ; eof

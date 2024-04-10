@@ -836,21 +836,221 @@ endif
 	dw .LESS
 	db 3
 	db "0=",0         ; |0= ( u -- f ) Push true if u equals 0
+	; TODO add floating point number detection
+		FORTH_DSP_VALUE
+		ld a,(hl)	; get type of value on TOS
+		cp DS_TYPE_INUM 
+		jr z, .tz_inum
+
+	if ENABLE_FLOATMATH
+		jr .tz_done
+
+	endif
+		
+
+.tz_inum:
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		push hl
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		; one value on hl get other one back
+
+		pop de
+
+		; do the sub
+;		ex de, hl
+
+		sbc hl,de
+
+		; save it
+
+		push hl	
+
+		;
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		; TODO push value back onto stack for another op etc
+
+		pop hl
+
+		call forth_push_numhl
+.tz_done:
+
 		NEXT
 .LESS:   db 27
 	dw .GT
 	db 2
-	db "<",0         ; |< ( u1 u2 -- f ) True if u1 is less than u2 
+	db "<",0         ; |< ( u1 u2 -- f ) True if u1 is less than u2 | WIP
+	; TODO add floating point number detection
+		FORTH_DSP_VALUE
+		ld a,(hl)	; get type of value on TOS
+		cp DS_TYPE_INUM 
+		jr z, .less_inum
+
+	if ENABLE_FLOATMATH
+		jr .less_done
+
+	endif
+		
+
+.less_inum:
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		push hl
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		; one value on hl get other one back
+
+		pop de
+
+		; do the sub
+;		ex de, hl
+
+		sbc hl,de
+
+		; save it
+
+		push hl	
+
+		;
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		; TODO push value back onto stack for another op etc
+
+		pop hl
+
+		call forth_push_numhl
+.less_done:
+
 		NEXT
 .GT:	db 28
 	dw .EQUAL
 	db 2
 	db ">",0       ; |> ( u1 u2 -- f ) True if u1 is greater than u2
+	; TODO add floating point number detection
+		FORTH_DSP_VALUE
+		ld a,(hl)	; get type of value on TOS
+		cp DS_TYPE_INUM 
+		jr z, .gt_inum
+
+	if ENABLE_FLOATMATH
+		jr .gt_done
+
+	endif
+		
+
+.gt_inum:
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		push hl
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		; one value on hl get other one back
+
+		pop de
+
+		; do the sub
+;		ex de, hl
+
+		sbc hl,de
+
+		; save it
+
+		push hl	
+
+		;
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		; TODO push value back onto stack for another op etc
+
+		pop hl
+
+		call forth_push_numhl
+.gt_done:
+
 		NEXT
 .EQUAL:  db 29
 	dw .SCALL
 	db 2
-	db "=",0          ; |= ( u1 u2 -- f ) True if u1 equals u2
+	db "=",0          ; |= ( u1 u2 -- f ) True if u1 equals u2 | WIP
+	; TODO add floating point number detection
+		FORTH_DSP_VALUE
+		ld a,(hl)	; get type of value on TOS
+		cp DS_TYPE_INUM 
+		jr z, .eq_inum
+
+	if ENABLE_FLOATMATH
+		jr .eq_done
+
+	endif
+		
+
+.eq_inum:
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		push hl
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		; one value on hl get other one back
+
+		pop de
+
+		; do the sub
+;		ex de, hl
+
+		sbc hl,de
+
+		; save it
+
+		push hl	
+
+		;
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		; TODO push value back onto stack for another op etc
+
+		pop hl
+
+		call forth_push_numhl
+.eq_done:
+
 		NEXT
 .SCALL:	db 30
 	dw .SIN

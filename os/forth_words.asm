@@ -380,7 +380,7 @@ Div16_NoAdd2:
 .MUL: 	db 5
 	dw .DUP
 	db 2
-	db "*",0     ; | * ( u1 u2 -- u )     Multiply TOS and push result |
+	db "*",0     ; | * ( u1 u2 -- u )     Multiply TOS and push result | INT DONE
 	; TODO add floating point number detection
 		FORTH_DSP_VALUE
 		ld a,(hl)	; get type of value on TOS

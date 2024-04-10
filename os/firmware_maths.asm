@@ -207,7 +207,9 @@ xrnd:
   ret
 ; 
 
-;include "float/bbcmath.z80"
+if ENABLE_FLOATMATH
+include "float/bbcmath.z80"
+endif
 
 
 ; eof

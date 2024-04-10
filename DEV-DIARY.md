@@ -462,10 +462,12 @@ TODO trim space from end of parse string
 TODO add the breakpoint to words
 TODO pop rsp at end of exec
 TODO for string, skip the copy of the double quotes
-TODO add numeric push - does as BCD???? found a floating point maths library. try that
 TODO add data stack underflow guards
 TODO change default push type as float as that has no prefix
 TODO add a type id word for TOS
+TODO add monitor word for full memory and reg dump
+TODO add round div word
+TODO add .$ to print number as hex word format and not numeric
 
 * Objective: Pushing a number to stack as sole item to parse and display 
 

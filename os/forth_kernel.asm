@@ -3,7 +3,7 @@
 
 DS_TYPE_STR: equ 1     ; string type
 DS_TYPE_INUM: equ 2     ; $ 16 bit int usually a hex address
-DS_TYPE_FNUM: equ 3      ; 24/32 bit floating point
+;DS_TYPE_FNUM: equ 3      ; 24/32 bit floating point  do string conversion instead of a new type
 
 FORTH_PARSEV1: equ 0
 FORTH_PARSEV2: equ 0

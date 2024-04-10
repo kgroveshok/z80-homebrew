@@ -66,8 +66,66 @@ sysdict:
 .PLUS:	db 2     
 	dw .NEG
         db 2
-	db "+",0          ; | + ( u u -- u )    Add two numbers and push result   |DONE
+	db "+",0          ; | + ( u u -- u )    Add two numbers and push result   | INT DONE
 		; add top two values and push back result
+
+		FORTH_DSP_VALUE
+		ld a,(hl)	; get type of value on TOS
+		cp DS_TYPE_INUM 
+		jr z, .dot_inum
+
+	if ENABLE_FLOATMATH
+			inc hl      ; now at start of numeric as string
+
+		if DEBUG_FORTH_DOT
+			push af
+			ld a, 'C'
+			ld (debug_mark),a
+			pop af
+			call break_point_state
+			;call display_reg_state
+			;call display_dump_at_hl
+		endif
+
+		;ld ix, hl
+		call CON
+
+
+		push hl
+		
+		
+
+			FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		; get next number
+
+			FORTH_DSP_VALUE
+
+			inc hl      ; now at start of numeric as string
+
+		;ld ix, hl
+		call CON
+
+		push hl
+
+
+			FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+			; TODO do add
+
+			call IADD
+
+			; TODO get result back as ascii
+
+			; TODO push result 
+
+
+
+			jr .dot_done
+	endif
+
+.dot_inum:
+
 
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -105,16 +163,29 @@ sysdict:
 
 		pop hl
 
+.dot_done:
 		call forth_push_numhl
 
 		NEXT
 .NEG:	db 3
 	dw .DIV
         db 2
-	db "-",0    ; | - ( u1 u2 -- u )    Subtract u2 from u1 and push result  | DONE
+	db "-",0    ; | - ( u1 u2 -- u )    Subtract u2 from u1 and push result  | INT DONE
 
 
 	; TODO add floating point number detection
+		FORTH_DSP_VALUE
+		ld a,(hl)	; get type of value on TOS
+		cp DS_TYPE_INUM 
+		jr z, .neg_inum
+
+	if ENABLE_FLOATMATH
+		jr .neg_done
+
+	endif
+		
+
+.neg_inum:
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
 		push hl
@@ -150,19 +221,237 @@ sysdict:
 		pop hl
 
 		call forth_push_numhl
+.neg_done:
 
 		NEXT
 .DIV:	db 4
 	dw .MUL
 	db 2
-	db "/",0     ; | / ( u1 u2 -- u )     Divide u1 by u2 and push result |
+	db "/",0     ; | / ( u1 u2 -- result remainder )     Divide u1 by u2 and push result | INT DONE
 	; TODO add floating point number detection
+		FORTH_DSP_VALUE
+		ld a,(hl)	; get type of value on TOS
+		cp DS_TYPE_INUM 
+		jr z, .div_inum
+
+	if ENABLE_FLOATMATH
+		jr .div_done
+
+	endif
+.div_inum:
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		push hl    ; to go to bc
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		; hl to go to de
+
+		push hl
+
+		pop bc
+		pop de		
+
+
+		if DEBUG_FORTH_MATHS
+			push af
+			ld a, '/'
+			ld (debug_mark),a
+			pop af
+			call break_point_state
+		endif
+		; one value on hl but move to a get other one back
+
+; https://map.grauw.nl/articles/mult_div_shifts.php
+; Divide 16-bit values (with 16-bit result)
+; In: Divide BC by divider DE
+; Out: BC = result, HL = rest
+;
+Div16:
+    ld hl,0
+    ld a,b
+    ld b,8
+Div16_Loop1:
+    rla
+    adc hl,hl
+    sbc hl,de
+    jr nc,Div16_NoAdd1
+    add hl,de
+Div16_NoAdd1:
+    djnz Div16_Loop1
+    rla
+    cpl
+    ld b,a
+    ld a,c
+    ld c,b
+    ld b,8
+Div16_Loop2:
+    rla
+    adc hl,hl
+    sbc hl,de
+    jr nc,Div16_NoAdd2
+    add hl,de
+Div16_NoAdd2:
+    djnz Div16_Loop2
+    rla
+    cpl
+    ld b,c
+    ld c,a
+
+
+
+
+;;http://z80-heaven.wikidot.com/math
+;;This divides DE by BC, storing the result in DE, remainder in HL
+;
+;DE_Div_BC:          ;1281-2x, x is at most 16
+;     ld a,16        ;7
+;     ld hl,0        ;10
+;     jp $+5         ;10
+;.DivLoop:
+;       add hl,bc    ;--
+;       dec a        ;64
+;       jr z,.DivLoopEnd        ;86
+;
+;       sla e        ;128
+;       rl d         ;128
+;       adc hl,hl    ;240
+;       sbc hl,bc    ;240
+;       jr nc,.DivLoop ;23|21
+;       inc e        ;--
+;       jp .DivLoop+1
+;
+;.DivLoopEnd:
+
+;HL_Div_C:
+;Inputs:
+;     HL is the numerator
+;     C is the denominator
+;Outputs:
+;     A is the remainder
+;     B is 0
+;     C is not changed
+;     DE is not changed
+;     HL is the quotient
+;
+;       ld b,16
+;       xor a
+;         add hl,hl
+;         rla
+;         cp c
+;         jr c,$+4
+;           inc l
+;           sub c
+;         djnz $-7
+       
+;	push af	
+	push hl
+	push bc
+
+		if DEBUG_FORTH_MATHS
+			push af
+			ld a, '1'
+			ld (debug_mark),a
+			pop af
+			call break_point_state
+		endif
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+
+
+		pop hl    ; result
+
+		call forth_push_numhl
+
+		pop hl    ; reminder
+;		ld h,0
+;		ld l,d
+
+		call forth_push_numhl
+.div_done:
 		NEXT
 .MUL: 	db 5
 	dw .DUP
 	db 2
 	db "*",0     ; | * ( u1 u2 -- u )     Multiply TOS and push result |
 	; TODO add floating point number detection
+		FORTH_DSP_VALUE
+		ld a,(hl)	; get type of value on TOS
+		cp DS_TYPE_INUM 
+		jr z, .mul_inum
+
+	if ENABLE_FLOATMATH
+		jr .mul_done
+
+	endif
+
+.mul_inum:	
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		push hl
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		; one value on hl but move to a get other one back
+
+		ld a, l
+
+		pop de
+
+		; do the mull
+;		ex de, hl
+
+;http://z80-heaven.wikidot.com/math
+;
+;Inputs:
+;     DE and A are factors
+;Outputs:
+;     A is not changed
+;     B is 0
+;     C is not changed
+;     DE is not changed
+;     HL is the product
+;Time:
+;     342+6x
+;
+     ld b,8          ;7           7
+     ld hl,0         ;10         10
+       add hl,hl     ;11*8       88
+       rlca          ;4*8        32
+       jr nc,$+3     ;(12|18)*8  96+6x
+         add hl,de   ;--         --
+       djnz $-5      ;13*7+8     99
+
+		; save it
+
+		push hl	
+
+		;
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		; TODO push value back onto stack for another op etc
+
+		pop hl
+
+		call forth_push_numhl
+
+.mul_done:
 		NEXT
 .DUP:	db 6
 	dw .EMIT
@@ -404,7 +693,7 @@ endif
 
 	ex de, hl
 
-		ld hl,(tok_ptr)
+		ld hl,(os_tok_ptr)
 	inc hl
 	inc hl
 

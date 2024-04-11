@@ -207,6 +207,280 @@ xrnd:
   ret
 ; 
 
+
+;;;; int maths
+
+; https://map.grauw.nl/articles/mult_div_shifts.php
+; Divide 16-bit values (with 16-bit result)
+; In: Divide BC by divider DE
+; Out: BC = result, HL = rest
+;
+Div16:
+    ld hl,0
+    ld a,b
+    ld b,8
+Div16_Loop1:
+    rla
+    adc hl,hl
+    sbc hl,de
+    jr nc,Div16_NoAdd1
+    add hl,de
+Div16_NoAdd1:
+    djnz Div16_Loop1
+    rla
+    cpl
+    ld b,a
+    ld a,c
+    ld c,b
+    ld b,8
+Div16_Loop2:
+    rla
+    adc hl,hl
+    sbc hl,de
+    jr nc,Div16_NoAdd2
+    add hl,de
+Div16_NoAdd2:
+    djnz Div16_Loop2
+    rla
+    cpl
+    ld b,c
+    ld c,a
+ret
+
+
+;http://z80-heaven.wikidot.com/math
+;
+;Inputs:
+;     DE and A are factors
+;Outputs:
+;     A is not changed
+;     B is 0
+;     C is not changed
+;     DE is not changed
+;     HL is the product
+;Time:
+;     342+6x
+;
+Mult16:
+
+     ld b,8          ;7           7
+     ld hl,0         ;10         10
+       add hl,hl     ;11*8       88
+       rlca          ;4*8        32
+       jr nc,$+3     ;(12|18)*8  96+6x
+         add hl,de   ;--         --
+       djnz $-5      ;13*7+8     99
+ret
+
+;
+; Square root of 16-bit value
+; In:  HL = value
+; Out:  D = result (rounded down)
+;
+;Sqr16:
+;    ld de,#0040
+;    ld a,l
+;    ld l,h
+;    ld h,d
+;    or a
+;    ld b,8
+;Sqr16_Loop:
+;    sbc hl,de
+;    jr nc,Sqr16_Skip
+;    add hl,de
+;Sqr16_Skip:
+;    ccf
+;    rl d
+;    add a,a
+;    adc hl,hl
+;    add a,a
+;    adc hl,hl
+;    djnz Sqr16_Loop
+;    ret
+;
+;
+; Divide 8-bit values
+; In: Divide E by divider C
+; Out: A = result, B = rest
+;
+Div8:
+    xor a
+    ld b,8
+Div8_Loop:
+    rl e
+    rla
+    sub c
+    jr nc,Div8_NoAdd
+    add a,c
+Div8_NoAdd:
+    djnz Div8_Loop
+    ld b,a
+    ld a,e
+    rla
+    cpl
+    ret
+
+;
+; Multiply 8-bit value with a 16-bit value (unrolled)
+; In: Multiply A with DE
+; Out: HL = result
+;
+Mult12U:
+    ld l,0
+    add a,a
+    jr nc,Mult12U_NoAdd0
+    add hl,de
+Mult12U_NoAdd0:
+    add hl,hl
+    add a,a
+    jr nc,Mult12U_NoAdd1
+    add hl,de
+Mult12U_NoAdd1:
+    add hl,hl
+    add a,a
+    jr nc,Mult12U_NoAdd2
+    add hl,de
+Mult12U_NoAdd2:
+    add hl,hl
+    add a,a
+    jr nc,Mult12U_NoAdd3
+    add hl,de
+Mult12U_NoAdd3:
+    add hl,hl
+    add a,a
+    jr nc,Mult12U_NoAdd4
+    add hl,de
+Mult12U_NoAdd4:
+    add hl,hl
+    add a,a
+    jr nc,Mult12U_NoAdd5
+    add hl,de
+Mult12U_NoAdd5:
+    add hl,hl
+    add a,a
+    jr nc,Mult12U_NoAdd6
+    add hl,de
+Mult12U_NoAdd6:
+    add hl,hl
+    add a,a
+    ret nc
+    add hl,de
+    ret
+
+;
+; Multiply 8-bit value with a 16-bit value (right rotating)
+; In: Multiply A with DE
+;      Put lowest value in A for most efficient calculation
+; Out: HL = result
+;
+Mult12R:
+    ld hl,0
+Mult12R_Loop:
+    srl a
+    jr nc,Mult12R_NoAdd
+    add hl,de
+Mult12R_NoAdd:
+    sla e
+    rl d
+    or a
+    jp nz,Mult12R_Loop
+    ret
+
+;
+; Multiply 16-bit values (with 32-bit result)
+; In: Multiply BC with DE
+; Out: BCHL = result
+;
+Mult32:
+    ld a,c
+    ld c,b
+    ld hl,0
+    ld b,16
+Mult32_Loop:
+    add hl,hl
+    rla
+    rl c
+    jr nc,Mult32_NoAdd
+    add hl,de
+    adc a,0
+    jp nc,Mult32_NoAdd
+    inc c
+Mult32_NoAdd:
+    djnz Mult32_Loop
+    ld b,c
+    ld c,a
+    ret
+
+
+
+;
+; Multiply 8-bit values
+; In:  Multiply H with E
+; Out: HL = result
+;
+Mult8:
+    ld d,0
+    ld l,d
+    ld b,8
+Mult8_Loop:
+    add hl,hl
+    jr nc,Mult8_NoAdd
+    add hl,de
+Mult8_NoAdd:
+    djnz Mult8_Loop
+    ret
+
+
+
+
+
+
+
+
+;;http://z80-heaven.wikidot.com/math
+;;This divides DE by BC, storing the result in DE, remainder in HL
+;
+;DE_Div_BC:          ;1281-2x, x is at most 16
+;     ld a,16        ;7
+;     ld hl,0        ;10
+;     jp $+5         ;10
+;.DivLoop:
+;       add hl,bc    ;--
+;       dec a        ;64
+;       jr z,.DivLoopEnd        ;86
+;
+;       sla e        ;128
+;       rl d         ;128
+;       adc hl,hl    ;240
+;       sbc hl,bc    ;240
+;       jr nc,.DivLoop ;23|21
+;       inc e        ;--
+;       jp .DivLoop+1
+;
+;.DivLoopEnd:
+
+;HL_Div_C:
+;Inputs:
+;     HL is the numerator
+;     C is the denominator
+;Outputs:
+;     A is the remainder
+;     B is 0
+;     C is not changed
+;     DE is not changed
+;     HL is the quotient
+;
+;       ld b,16
+;       xor a
+;         add hl,hl
+;         rla
+;         cp c
+;         jr c,$+4
+;           inc l
+;           sub c
+;         djnz $-7
+
+
 if ENABLE_FLOATMATH
 include "float/bbcmath.z80"
 endif

@@ -3,12 +3,18 @@
 
 
 NEXT: macro 
+	jp macro_next
+	endm
+
+macro_next:
 if DEBUG_FORTH_PARSE_KEY
 	push af
 	ld a, '>'
 	ld (debug_mark),a
 	pop af
-	call break_point_state
+	;rst 030h
+	CALLMONITOR
+	;call break_point_state
 	;call display_reg_state
 	;call display_dump_at_hl
 endif	
@@ -21,13 +27,15 @@ if DEBUG_FORTH_PARSE_KEY
 	ld a, '}'
 	ld (debug_mark),a
 	pop af
-	call break_point_state
+	;call break_point_state
+	;rst 030h
+	CALLMONITOR
 	;call display_reg_state
 	;call display_dump_at_hl
 endif	
 	jp execnext
 	;jp exec1
-      endm
+      
 
 
 
@@ -66,7 +74,9 @@ if DEBUG_FORTH_TOK
 	ld a, 'Q'
 	ld (debug_mark),a
 	pop af
-	call break_point_state
+	;call break_point_state
+	;rst 030h
+	CALLMONITOR
 	;call display_reg_state
 	;call display_dump_at_hl
 endif
@@ -120,7 +130,9 @@ if DEBUG_FORTH_TOK
 	ld a, 'W'
 	ld (debug_mark),a
 	pop af
-	call break_point_state
+	;call break_point_state
+	;rst 030h
+	CALLMONITOR
 	;call display_reg_state
 	;call display_dump_at_hl
 endif
@@ -144,7 +156,9 @@ if DEBUG_FORTH_TOK
 	ld a, 'E'
 	ld (debug_mark),a
 	pop af
-	call break_point_state
+	;call break_point_state
+	;rst 030h
+	CALLMONITOR
 	;call display_reg_state
 	;call display_dump_at_hl
 endif
@@ -163,7 +177,9 @@ if DEBUG_FORTH_TOK
 	ld a, 'R'
 	ld (debug_mark),a
 	pop af
-	call break_point_state
+	;call break_point_state
+	;rst 030h
+	CALLMONITOR
 	;call display_reg_state
 	;call display_dump_at_hl
 endif
@@ -188,7 +204,9 @@ if DEBUG_FORTH_TOK
 	ld a, 'T'
 	ld (debug_mark),a
 	pop af
-	call break_point_state
+	;call break_point_state
+	;rst 030h
+	CALLMONITOR
 	;call display_reg_state
 endif
 
@@ -203,7 +221,9 @@ if DEBUG_FORTH_TOK
 	ld a, 'Y'
 	ld (debug_mark),a
 	pop af
-	call break_point_state
+	;call break_point_state
+	;rst 030h
+	CALLMONITOR
 	;call display_reg_state
 endif
 	;ld a,0
@@ -237,7 +257,9 @@ if DEBUG_FORTH_PARSE_KEY
 	ld a, 'U'
 	ld (debug_mark),a
 	pop af
-	call break_point_state
+	;call break_point_state
+	;rst 030h
+	CALLMONITOR
 	;call display_reg_state
 	;call display_dump_at_hl
 endif
@@ -276,7 +298,9 @@ if DEBUG_FORTH_PARSE_KEY
 	ld a, 'q'
 	ld (debug_mark),a
 	pop af
-	call break_point_state
+	;call break_point_state
+	;rst 030h
+	CALLMONITOR
 	;call display_reg_state
 	;call display_dump_at_hl
 endif
@@ -551,7 +575,9 @@ if DEBUG_FORTH_PARSE_KEY
 	ld a, '!'
 	ld (debug_mark),a
 	pop af
-	call break_point_state
+	;call break_point_state
+	;rst 030h
+	CALLMONITOR
 	;call display_reg_state
 	;call display_dump_at_hl
 endif	
@@ -619,7 +645,9 @@ if DEBUG_FORTH_PUSH
 	ld a, 'A'
 	ld (debug_mark),a
 	pop af
-	call break_point_state
+	;call break_point_state
+	;rst 030h
+	CALLMONITOR
 	;call display_reg_state
 	;call display_dump_at_hl
 endif	
@@ -656,7 +684,9 @@ if DEBUG_FORTH_PUSH
 	ld a, 'S'
 	ld (debug_mark),a
 	pop af
-	call break_point_state
+	;call break_point_state
+	;rst 030h
+	CALLMONITOR
 	;call display_reg_state
 	;call display_dump_at_hl
 endif	
@@ -698,7 +728,9 @@ if DEBUG_FORTH_PUSH
 	ld a, 's'
 	ld (debug_mark),a
 	pop af
-	call break_point_state
+	;call break_point_state
+	;rst 030h
+	CALLMONITOR
 	;call display_reg_state
 	;call display_dump_at_hl
 endif	
@@ -708,7 +740,9 @@ if DEBUG_FORTH_PUSH
 	ld a, 'd'
 	ld (debug_mark),a
 	pop af
-	call break_point_state
+	;call break_point_state
+	;rst 030h
+	CALLMONITOR
 	;call display_reg_state
 	;call display_dump_at_hl
 endif	
@@ -722,7 +756,9 @@ if DEBUG_FORTH_PUSH
 	ld a, 'D'
 	ld (debug_mark),a
 	pop af
-	call break_point_state
+	;call break_point_state
+	;rst 030h
+	CALLMONITOR
 	;call display_reg_state
 	;call display_dump_at_hl
 endif	
@@ -764,7 +800,9 @@ if DEBUG_FORTH_PUSH
 	ld a, 'F'
 	ld (debug_mark),a
 	pop af
-	call break_point_state
+	;call break_point_state
+	;rst 030h
+	CALLMONITOR
 	;call display_reg_state
 	;call display_dump_at_hl
 ;	ex de,hl
@@ -862,7 +900,9 @@ if DEBUG_FORTH_PUSH
 	ld a, 'c'
 	ld (debug_mark),a
 	pop af
-	call break_point_state
+	;call break_point_state
+	;rst 030h
+	CALLMONITOR
 	;call display_reg_state
 	;call display_dump_at_hl
 endif	
@@ -882,6 +922,10 @@ endif
 ; get either a string ptr or a 16bit word from the data stack
 
 FORTH_DSP: macro
+	call macro_forth_dsp
+	endm
+
+macro_forth_dsp:
 	; data stack pointer points to current word on tos
 
 	ld hl,(cli_data_sp)
@@ -889,14 +933,20 @@ FORTH_DSP: macro
 	if DEBUG_FORTH_PUSH
 
 		call display_data_sp
-	call break_point_state
+	;call break_point_state
+	;rst 030h
+	CALLMONITOR
 	endif
 
-	endm
+	ret
 
 ; return hl to start of value on stack
 
 FORTH_DSP_VALUE: macro
+	call macro_forth_dsp_value
+	endm
+
+macro_forth_dsp_value:
 
 	FORTH_DSP
 
@@ -909,13 +959,17 @@ FORTH_DSP_VALUE: macro
 
 	pop de
 
-	endm
+	ret
 
 	
 
 ; whatever the current top os stack points to, we are now done with it so return memory to malloc
 
 FORTH_DSP_POP: macro
+	call macro_forth_dsp_pop
+	endm
+
+macro_forth_dsp_pop:
 	; release malloc data
 
 	;ld hl,(cli_data_sp)
@@ -924,7 +978,9 @@ if DEBUG_FORTH_DOT
 		ld a, '7'
 		ld (debug_mark),a
 	;	call display_data_sp
-	call break_point_state
+	;call break_point_state
+	;rst 030h
+	CALLMONITOR
 	;	ld a, '2'
 ;		ld (debug_mark),a
 ;		call next_page_prompt
@@ -935,7 +991,9 @@ if DEBUG_FORTH_DOT_KEY
 		ld a, '8'
 		ld (debug_mark),a
 ;		call display_data_sp
-	call break_point_state
+	;call break_point_state
+	;rst 030h
+	CALLMONITOR
 	;	ld a, '4'
 ;		ld (debug_mark),a
 ;		call next_page_prompt
@@ -949,7 +1007,9 @@ if DEBUG_FORTH_DOT_KEY
 		ld a, '5'
 		ld (debug_mark),a
 ;		call display_data_sp
-	call break_point_state
+	;call break_point_state
+	;rst 030h
+	CALLMONITOR
 	;	ld a, '6'
 ;		ld (debug_mark),a
 ;		call next_page_prompt
@@ -962,7 +1022,7 @@ endif
 	dec hl
 	ld (cli_data_sp), hl
 
-	endm
+	ret
 
 ; get the tos data type
 
@@ -979,7 +1039,12 @@ FORTH_DSP_TYPE:   macro
 
 ; load the tos value into hl
 
+
 FORTH_DSP_VALUEHL:  macro
+	call macro_dsp_valuehl
+	endm
+
+macro_dsp_valuehl:
 	FORTH_DSP_VALUE
 
 	inc hl   ; skip type id
@@ -995,7 +1060,11 @@ FORTH_DSP_VALUEHL:  macro
 
 	if DEBUG_FORTH_PUSH
 
-	call break_point_state
+	;call break_point_state
+	;rst 030h
+	CALLMONITOR
 	;	call display_data_sp
 	endif
-	endm
+	ret
+
+; eof

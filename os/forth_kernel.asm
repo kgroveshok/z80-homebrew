@@ -57,6 +57,11 @@ user_word_eol:
 ; increase data stack pointer and save hl to it
 	
 FORTH_DSP_NEXT: macro
+	call macro_forth_dsp_next
+	endm
+
+
+macro_forth_dsp_next:
 	push hl
 	push de
 	ex de,hl
@@ -69,11 +74,15 @@ FORTH_DSP_NEXT: macro
 	ld (hl), d
 	pop de
 	pop hl
-	endm
+	ret
 	
 ; increase ret stack pointer and save hl to it
 	
 FORTH_RSP_NEXT: macro
+	call macro_forth_rsp_next
+	endm
+
+macro_forth_rsp_next:
 	push hl
 	push de
 	ex de,hl
@@ -86,11 +95,15 @@ FORTH_RSP_NEXT: macro
 	ld (hl), d
 	pop de
 	pop hl
-	endm
+	ret
 
 ; get current ret stack pointer and save to hl 
 	
 FORTH_RSP_TOS: macro
+	call macro_forth_rsp_tos
+	endm
+
+macro_forth_rsp_tos:
 	push de
 	ld hl,(cli_ret_sp)
 	ld e, (hl)
@@ -98,7 +111,7 @@ FORTH_RSP_TOS: macro
 	ld d, (hl)
 	ex de, hl
 	pop de
-	endm
+	ret
 
 
 forth_init:
@@ -149,8 +162,8 @@ forth_init:
 	ld hl, baseusermem		
 	call user_word_eol
 	
-		call display_data_sp
-		call next_page_prompt
+;		call display_data_sp
+;		call next_page_prompt
 
 
 	ret
@@ -256,7 +269,9 @@ malloc_error:
 	ld de,os_word_scratch
 	call str_at_display
 	call update_display
-	call break_point_state
+	;call break_point_state
+
+	CALLMONITOR
 
 	pop hl
 	pop af

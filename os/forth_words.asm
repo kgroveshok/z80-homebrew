@@ -82,7 +82,8 @@ sysdict:
 			ld a, 'C'
 			ld (debug_mark),a
 			pop af
-			call break_point_state
+	;		call break_point_state
+	CALLMONITOR
 			;call display_reg_state
 			;call display_dump_at_hl
 		endif
@@ -264,92 +265,14 @@ sysdict:
 			ld a, '/'
 			ld (debug_mark),a
 			pop af
-			call break_point_state
+	;		call break_point_state
+	CALLMONITOR
 		endif
 		; one value on hl but move to a get other one back
 
-; https://map.grauw.nl/articles/mult_div_shifts.php
-; Divide 16-bit values (with 16-bit result)
-; In: Divide BC by divider DE
-; Out: BC = result, HL = rest
-;
-Div16:
-    ld hl,0
-    ld a,b
-    ld b,8
-Div16_Loop1:
-    rla
-    adc hl,hl
-    sbc hl,de
-    jr nc,Div16_NoAdd1
-    add hl,de
-Div16_NoAdd1:
-    djnz Div16_Loop1
-    rla
-    cpl
-    ld b,a
-    ld a,c
-    ld c,b
-    ld b,8
-Div16_Loop2:
-    rla
-    adc hl,hl
-    sbc hl,de
-    jr nc,Div16_NoAdd2
-    add hl,de
-Div16_NoAdd2:
-    djnz Div16_Loop2
-    rla
-    cpl
-    ld b,c
-    ld c,a
-
-
-
-
-;;http://z80-heaven.wikidot.com/math
-;;This divides DE by BC, storing the result in DE, remainder in HL
-;
-;DE_Div_BC:          ;1281-2x, x is at most 16
-;     ld a,16        ;7
-;     ld hl,0        ;10
-;     jp $+5         ;10
-;.DivLoop:
-;       add hl,bc    ;--
-;       dec a        ;64
-;       jr z,.DivLoopEnd        ;86
-;
-;       sla e        ;128
-;       rl d         ;128
-;       adc hl,hl    ;240
-;       sbc hl,bc    ;240
-;       jr nc,.DivLoop ;23|21
-;       inc e        ;--
-;       jp .DivLoop+1
-;
-;.DivLoopEnd:
-
-;HL_Div_C:
-;Inputs:
-;     HL is the numerator
-;     C is the denominator
-;Outputs:
-;     A is the remainder
-;     B is 0
-;     C is not changed
-;     DE is not changed
-;     HL is the quotient
-;
-;       ld b,16
-;       xor a
-;         add hl,hl
-;         rla
-;         cp c
-;         jr c,$+4
-;           inc l
-;           sub c
-;         djnz $-7
        
+	call Div16
+
 ;	push af	
 	push hl
 	push bc
@@ -359,7 +282,9 @@ Div16_NoAdd2:
 			ld a, '1'
 			ld (debug_mark),a
 			pop af
-			call break_point_state
+	;		call break_point_state
+	;rst 030h
+	CALLMONITOR
 		endif
 
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
@@ -414,27 +339,7 @@ Div16_NoAdd2:
 		; do the mull
 ;		ex de, hl
 
-;http://z80-heaven.wikidot.com/math
-;
-;Inputs:
-;     DE and A are factors
-;Outputs:
-;     A is not changed
-;     B is 0
-;     C is not changed
-;     DE is not changed
-;     HL is the product
-;Time:
-;     342+6x
-;
-     ld b,8          ;7           7
-     ld hl,0         ;10         10
-       add hl,hl     ;11*8       88
-       rlca          ;4*8        32
-       jr nc,$+3     ;(12|18)*8  96+6x
-         add hl,de   ;--         --
-       djnz $-5      ;13*7+8     99
-
+		call Mult16
 		; save it
 
 		push hl	
@@ -490,7 +395,9 @@ if DEBUG_FORTH_DOT
 	ld a, 'z'
 	ld (debug_mark),a
 	pop af
-	call break_point_state
+	;call break_point_state
+	;rst 030h
+	CALLMONITOR
 ;	call display_reg_state
 ;	call display_dump_at_hl
 endif	
@@ -525,7 +432,9 @@ if DEBUG_FORTH_DOT
 	ld a, 'I'
 	ld (debug_mark),a
 	pop af
-	call break_point_state
+	;call break_point_state
+	;rst 030h
+	CALLMONITOR
 	;call display_reg_state
 	;call display_dump_at_hl
 endif	
@@ -538,7 +447,9 @@ if DEBUG_FORTH_DOT
 	ld a, 'i'
 	ld (debug_mark),a
 	pop af
-	call break_point_state
+	;call break_point_state
+	;rst 030h
+	CALLMONITOR
 	;call display_reg_state
 	;call display_dump_at_hl
 endif	
@@ -563,7 +474,9 @@ if DEBUG_FORTH_DOT
 	ld a, 'h'
 	ld (debug_mark),a
 	pop af
-	call break_point_state
+	;call break_point_state
+	;rst 030h
+	CALLMONITOR
 	;call display_reg_state
 	;call display_dump_at_hl
 endif	
@@ -575,7 +488,9 @@ if DEBUG_FORTH_DOT
 	ld a, 'i'
 	ld (debug_mark),a
 	pop af
-	call break_point_state
+	;call break_point_state
+	;rst 030h
+	CALLMONITOR
 	;call display_reg_state
 	;call display_dump_at_hl
 endif	
@@ -600,6 +515,11 @@ endif
 	dw .THEN
 	db 3
 	db "IF",0     ;  |IF ( w -- f )     If TOS is true exec code following before??
+; TODO Eval stack
+; TODO on result extract portion to exec, malloc it and start exec on that block
+; TODO once exec, position next exec point past both blocks
+
+
 		NEXT
 .THEN:	db 11
 	dw .ELSE
@@ -614,7 +534,12 @@ endif
 .DO:	db 13
 	dw .LOOP
 	db 3
-	db "DO",0       ; |DO ( u -- )        TOS has loop count until LOOP
+	db "DO",0       ; |DO ( u1 u2 -- )   Loop starting at u2 with a limit of u1
+; TODO setup loop vars
+; TODO extract portion to exec, malloc it and start exec on that block
+; TODO once exec, test exit condition
+; TODO if exit then put exec point past block
+; TODO if not exit rerun block
 		NEXT
 .LOOP:	db 14
 	dw .COLN
@@ -624,7 +549,7 @@ endif
 .COLN:	db 15
 	dw .DROP
 	db 2
-	db ":",0     ; |: ( -- )         Create new word
+	db ":",0     ; |: ( -- )         Create new word | WIP
 
 
 	; get parser buffer length  of new word
@@ -667,7 +592,9 @@ if DEBUG_FORTH_UWORD
 	ld a, 'v'
 	ld (debug_mark),a
 	pop af
-	call break_point_state
+	;call break_point_state
+	;rst 030h
+	CALLMONITOR
 endif
 
 	
@@ -722,7 +649,9 @@ if DEBUG_FORTH_UWORD
 	ld a, 'b'
 	ld (debug_mark),a
 	pop af
-	call break_point_state
+	;call break_point_state
+	;rst 030h
+	CALLMONITOR
 endif
 		; TODO Copy from ptr to end of string to malloc
 		; TODO find last user dict word next link
@@ -835,7 +764,7 @@ endif
 .TZERO:  db 26
 	dw .LESS
 	db 3
-	db "0=",0         ; |0= ( u -- f ) Push true if u equals 0
+	db "0=",0         ; |0= ( u -- f ) Push true if u equals 0 | WIP
 	; TODO add floating point number detection
 		FORTH_DSP_VALUE
 		ld a,(hl)	; get type of value on TOS
@@ -1055,17 +984,89 @@ endif
 .SCALL:	db 30
 	dw .SIN
 	db 5
-	db "CALL",0	; |CALL ( w -- ) machine code call to address w  
+	db "CALL",0	; |CALL ( w -- w  ) machine code call to address w  push the result of hl to stack
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		push hl
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		; one value on hl get other one back
+
+		pop hl
+
+
+		; TODO how to do a call with hl???? save SP?
+		
+
+		; TODO push value back onto stack for another op etc
+
+		call forth_push_numhl
 		NEXT
 .SIN:	db 31
 	dw .SOUT
 	db 3
-	db "IN",0       ; |IN ( u1-- u )    Perform z80 IN with u1 being the port number. Push result to TOS
+	db "IN",0       ; |IN ( u1-- u )    Perform z80 IN with u1 being the port number. Push result to TOS | TO TEST
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		push hl
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		; one value on hl get other one back
+
+		pop bc
+
+		; do the sub
+;		ex de, hl
+
+		in l,(c)
+
+		; save it
+
+		ld h,0
+
+		; TODO push value back onto stack for another op etc
+
+		call forth_push_numhl
 		NEXT
 .SOUT:   db 32
 	dw .CLS
 	db 4
-	db "OUT",0      ;| OUT ( u1 u2 -- ) Perform Z80 OUT to port u2 sending byte u1
+	db "OUT",0      ;| OUT ( u1 u2 -- ) Perform Z80 OUT to port u2 sending byte u1 | TO TEST
+
+		; get port
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		push hl
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		; get byte to send
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		push hl
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		; one value on hl get other one back
+
+		pop hl
+
+		pop bc
+
+		out (c), l
+
 		NEXT
 
 .CLS:   db 33
@@ -1118,7 +1119,20 @@ endif
 .DEPTH:   db 37                     ; stack count
 	dw .DIR
 	db 6
-	db "DEPTH",0             ; |DEPTH ( -- u ) Push count of stack
+	db "DEPTH",0             ; |DEPTH ( -- u ) Push count of stack | TEST
+		; take current TOS and remove from base value div by two to get count
+
+
+	ld hl, (cli_data_sp)
+	ld de, cli_data_stack
+	sbc hl,de
+	
+	; TODO div by two?
+
+	;srl h
+	;rr l
+
+		call forth_push_numhl
 		NEXT
 
 .DIR:   db 38                     ;
@@ -1180,7 +1194,7 @@ endif
 .WAITK:   db 43               
 	dw .ACCEPT
 	db 6
-	db "WAITK",0     ;| WAITK ( -- w )      wait for keypress TOS is key press | TEST
+	db "WAITK",0     ;| WAITK ( -- w )      wait for keypress TOS is key press | DONE
 		call cin_wait
 		ld l, a
 		ld h, 0
@@ -1190,6 +1204,7 @@ endif
 	dw .HOME
 	db 7
 	db "ACCEPT",0     ; |ACCEPT ( -- w )    Prompt for text input and push pointer to string | TEST
+		; TODO courrpts string
 		ld a,(f_cursor_ptr)
 		ld d, 20
 		ld hl, scratch
@@ -1254,10 +1269,25 @@ endif
 		push hl    ; n2
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 		pop hl
-		ld b, l
+		ld c, l
+		ld b, 0
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, 'P'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
 .pauses1:	push bc
 		call delay1s
 		pop bc
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, 'p'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
 		djnz .pauses1
 
 	       NEXT
@@ -1270,24 +1300,76 @@ endif
 .SPACE:   db 50
 	  dw .SPACES
           db 6
-	  db "SPACE",0	; | SPACE (  -- )  
+	  db "SPACE",0	; | SPACE (  -- c ) Push the value of space onto the stack as a string  | DONE
+		ld hl, ' '
+		call forth_push_numhl
+		
 	       NEXT
 
 .SPACES:   db 51
+	  dw .CONCAT
+          db 7
+	  db "SPACES",0	; | SPACES ( u -- str )  A string of u spaces is pushed onto the stack
+
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		push hl    ; u
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, 'S'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+		pop hl
+		ld c, l
+		ld b, 0
+		ld hl, scratch 
+
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, 's'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+		ld a, ' '
+.spaces1:	push bc
+		ld (hl),a
+		inc hl
+		pop bc
+		djnz .spaces1
+		ld a,0
+		ld (hl),a
+		ld hl, scratch
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, 'D'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+		call forth_apush
+
+	       NEXT
+.CONCAT:   db 52
 	  dw .MIN
           db 7
-	  db "SPACES",0	; | SPACES (  -- )  
+	  db "CONCAT",0	; | CONCAT ( s1 s2 -- s3 ) A string of u spaces is pushed onto the stack
 	       NEXT
 
-.MIN:   db 52
+.MIN:   db 53
 	  dw .MAX
           db 4
-	  db "MIN",0	; | MIN (  -- )  
+	  db "MIN",0	; | MIN (  u1 u2 -- u3 ) Whichever is the smallest value is pushed back onto the stack
 	       NEXT
 .MAX:   db 54
 	  dw .FIND
           db 4
-	  db "MAX",0	; | MAX (  -- )  
+	  db "MAX",0	; | MAX (  u1 u2 -- u3 )  Whichever is the largest value is pushed back onto the stack
 	       NEXT
 
 .FIND:   db 55
@@ -1319,10 +1401,129 @@ endif
 	       NEXT
 
 .UWORDS:   db 60
-	  dw .V0
+	  dw .SPIO
           db 7
 	  db "UWORDS",0	; | UWORDS (  -- )   List user word dict
 	       NEXT
+
+.SPIO:   db 61
+	dw .SPII
+	db 5
+	db "SPIO",0      ;| SPIO ( u1 u2 -- ) Send byte u1 to SPI device u2 |  WIP
+
+		; get port
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		push hl
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		; get byte to send
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		push hl
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		; one value on hl get other one back
+
+		pop hl
+
+		pop bc
+
+		; TODO Send SPI byte
+
+		NEXT
+
+.SPII:   db 62
+	dw .SCROLL
+	db 5
+	db "SPII",0      ;| SPII ( u1 -- ) Get a byte from SPI device u2 |  WIP
+
+		; get port
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		push hl
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		; get byte to send
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		push hl
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		; one value on hl get other one back
+
+		pop hl
+
+		pop bc
+
+		; TODO Get SPI byte
+
+		NEXT
+.SCROLL:   db 63
+	dw .BP
+	db 7
+	db "SCROLL",0      ;| SCROLL ( u1 c1 -- ) Scroll u1 lines/chars in direction c1 | WIP
+
+		; get port
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		push hl
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		; get byte to send
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		push hl
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		; one value on hl get other one back
+
+		pop hl
+
+		pop bc
+
+		; TODO Get SPI byte
+
+		NEXT
+.BP:   db 64
+	dw .MONITOR
+	db 3
+	db "BP",0      ;| BP ( u1 -- ) Enable or disable break point monitoring
+		NEXT
+
+
+.MONITOR:   db 65
+	dw .V0
+	db 8
+	db "MONITOR",0      ;| MONITOR ( -- ) Display system breakpoint/monitor | DONE
+	;	rst 030h
+	CALLMONITOR
+
+		NEXT
 
 ;;;; counter gap
 

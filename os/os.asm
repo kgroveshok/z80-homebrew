@@ -12,19 +12,19 @@
 	jp coldstart     ; rst 0 - cold boot
 
 ;	org 05h		; null out bdos call
-;	ret
-
+;
 ;	org 08h
-;
+;;
 ;	jp cin		; rst 8 - char in
-;
+;;
 ;	org 010h
-;
+;;
 ;	jp cout		; rest 010h  - char out
-;
+;;
 ;	org 01bh  
 ;
 ;	;jp  		; rst 01bh   - write string to display
+;	jp str_at_display
 ;
 ;
 ;	org 020h
@@ -35,7 +35,9 @@
 
 	; jp		 ; rst 028h  - storage i/o
 
-; org 030h
+; 	org 030h
+;	jp break_point_state
+ 
 ; $30 
 ; org 038h
 ; $38

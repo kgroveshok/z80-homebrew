@@ -11,6 +11,9 @@ FORTH_PARSEV3: equ 1
 
 FORTH_END_BUFFER: equ 127
 
+FORTH_TRUE: equ 1
+FORTH_FALSE: equ 0
+
 
 user_word_eol: 
 	; hl contains the pointer to where to create a linked list item from the end

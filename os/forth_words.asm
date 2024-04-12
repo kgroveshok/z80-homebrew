@@ -389,6 +389,8 @@ sysdict:
 	db ".",0         ;| . ( u -- )    Display TOS   |DONE
 		; get value off TOS and display it
 
+
+
 		FORTH_DSP_VALUE 
 if DEBUG_FORTH_DOT
 	push af
@@ -759,12 +761,12 @@ endif
 .LZERO:	db 25
 	dw .TZERO
 	db 3
-	db "0<",0       ; |0< ( u -- f ) Push true if u is less than o
+	db "0<",0       ; |0< ( u -- f ) Push true if u is less than o | CANT DO UNTIL FLOAT
 		NEXT
 .TZERO:  db 26
 	dw .LESS
 	db 3
-	db "0=",0         ; |0= ( u -- f ) Push true if u equals 0 | WIP
+	db "0=",0         ; |0= ( u -- f ) Push true if u equals 0 | TEST NO DEBUG
 	; TODO add floating point number detection
 		FORTH_DSP_VALUE
 		ld a,(hl)	; get type of value on TOS
@@ -786,34 +788,27 @@ endif
 
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
-
-		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
-
-		; one value on hl get other one back
-
-		pop de
-
-		; do the sub
-;		ex de, hl
-
-		sbc hl,de
-
-		; save it
-
-		push hl	
-
-		;
-
-		; destroy value TOS
-
-		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
-
-		; TODO push value back onto stack for another op etc
-
 		pop hl
 
-		call forth_push_numhl
+		ld a,0
+
+		cp l
+		jr nz, .tz_notzero
+
+		cp h
+
+		jr nz, .tz_notzero
+
+
+		ld hl, FORTH_TRUE
+		jr .tz_done
+
+.tz_notzero:	ld hl, FORTH_FALSE
+
+		; push value back onto stack for another op etc
+
 .tz_done:
+		call forth_push_numhl
 
 		NEXT
 .LESS:   db 27
@@ -1213,11 +1208,11 @@ endif
 	db "ACCEPT",0     ; |ACCEPT ( -- w )    Prompt for text input and push pointer to string | TEST
 		; TODO crashes on push
 		ld a,(f_cursor_ptr)
-		ld d, 20
-		ld hl, scratch
+		ld d, 100
+		ld hl, os_input
 		call input_str
 		; TODO perhaps do a type check and wrap in quotes if not a number
-		ld hl, scratch
+		ld hl, input_str
 		if DEBUG_FORTH_WORDS
 			push af
 			ld a, 'A'
@@ -1380,12 +1375,113 @@ endif
 .MIN:   db 53
 	  dw .MAX
           db 4
-	  db "MIN",0	; | MIN (  u1 u2 -- u3 ) Whichever is the smallest value is pushed back onto the stack
+	  db "MIN",0	; | MIN (  u1 u2 -- u3 ) Whichever is the smallest value is pushed back onto the stack | TEST NO DEBUG
+		; get u2
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		push hl   ; u2
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		; get u1
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		push hl  ; u1
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+ or a      ;clear carry flag
+  pop hl    ; u1
+  pop de    ; u2
+	push hl   ; saved in case hl is lowest
+  sbc hl,de
+  jr nc,.mincont   	;	if hl >= de, carry flag will be cleared
+
+	pop hl
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, 'm'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+		call forth_push_numhl
+
+	       NEXT
+
+.mincont: 
+	pop bc   ; tidy up
+	ex de , hl 
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, 'M'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+		call forth_push_numhl
+
 	       NEXT
 .MAX:   db 54
 	  dw .FIND
           db 4
-	  db "MAX",0	; | MAX (  u1 u2 -- u3 )  Whichever is the largest value is pushed back onto the stack
+	  db "MAX",0	; | MAX (  u1 u2 -- u3 )  Whichever is the largest value is pushed back onto the stack | TEST NO DEBUG
+		; get u2
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		push hl   ; u2
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		; get u1
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		push hl  ; u1
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+ or a      ;clear carry flag
+  pop hl    ; u1
+  pop de    ; u2
+	push hl   ; saved in case hl is lowest
+  sbc hl,de
+  jr c,.maxcont   	;	if hl <= de, carry flag will be cleared
+
+	pop hl
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, 'm'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+		call forth_push_numhl
+
+	       NEXT
+
+.maxcont: 
+	pop bc   ; tidy up
+	ex de , hl 
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, 'M'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+		call forth_push_numhl
 	       NEXT
 
 .FIND:   db 55

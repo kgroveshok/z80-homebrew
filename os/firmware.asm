@@ -176,7 +176,8 @@ os_word_scratch: equ os_cur_ptr-30
 os_tok_len: equ os_word_scratch - 2
 os_tok_ptr: equ os_tok_len - 2
 os_tok_malloc: equ os_tok_ptr - 2
-scratch: equ os_tok_malloc-255
+os_input: equ os_tok_malloc-100
+scratch: equ os_input-255
 
 os_view_disable: equ scratch - 1
 os_view_af: equ os_view_disable - 2
@@ -198,7 +199,7 @@ heap_start: equ free_list - heap_size  ; Starting address of heap
 
 
 ; change below to point to last memory alloc above
-topusermem:  equ   scratch
+topusermem:  equ   heap_start
 baseusermem: equ 08000h
 ; **********************************************************************
 ; **  Constants

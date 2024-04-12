@@ -74,7 +74,7 @@ sysdict:
 		cp DS_TYPE_INUM 
 		jr z, .dot_inum
 
-	if ENABLE_FLOATMATH
+	if FORTH_ENABLE_FLOATMATH
 			inc hl      ; now at start of numeric as string
 
 		if DEBUG_FORTH_DOT
@@ -180,7 +180,7 @@ sysdict:
 		cp DS_TYPE_INUM 
 		jr z, .neg_inum
 
-	if ENABLE_FLOATMATH
+	if FORTH_ENABLE_FLOATMATH
 		jr .neg_done
 
 	endif
@@ -235,7 +235,7 @@ sysdict:
 		cp DS_TYPE_INUM 
 		jr z, .div_inum
 
-	if ENABLE_FLOATMATH
+	if FORTH_ENABLE_FLOATMATH
 		jr .div_done
 
 	endif
@@ -312,7 +312,7 @@ sysdict:
 		cp DS_TYPE_INUM 
 		jr z, .mul_inum
 
-	if ENABLE_FLOATMATH
+	if FORTH_ENABLE_FLOATMATH
 		jr .mul_done
 
 	endif
@@ -771,7 +771,7 @@ endif
 		cp DS_TYPE_INUM 
 		jr z, .tz_inum
 
-	if ENABLE_FLOATMATH
+	if FORTH_ENABLE_FLOATMATH
 		jr .tz_done
 
 	endif
@@ -826,7 +826,7 @@ endif
 		cp DS_TYPE_INUM 
 		jr z, .less_inum
 
-	if ENABLE_FLOATMATH
+	if FORTH_ENABLE_FLOATMATH
 		jr .less_done
 
 	endif
@@ -881,7 +881,7 @@ endif
 		cp DS_TYPE_INUM 
 		jr z, .gt_inum
 
-	if ENABLE_FLOATMATH
+	if FORTH_ENABLE_FLOATMATH
 		jr .gt_done
 
 	endif
@@ -936,7 +936,7 @@ endif
 		cp DS_TYPE_INUM 
 		jr z, .eq_inum
 
-	if ENABLE_FLOATMATH
+	if FORTH_ENABLE_FLOATMATH
 		jr .eq_done
 
 	endif
@@ -1119,7 +1119,7 @@ endif
 .DEPTH:   db 37                     ; stack count
 	dw .DIR
 	db 6
-	db "DEPTH",0             ; |DEPTH ( -- u ) Push count of stack | TEST
+	db "DEPTH",0             ; |DEPTH ( -- u ) Push count of stack | DONE
 		; take current TOS and remove from base value div by two to get count
 
 
@@ -1211,12 +1211,20 @@ endif
 	dw .HOME
 	db 7
 	db "ACCEPT",0     ; |ACCEPT ( -- w )    Prompt for text input and push pointer to string | TEST
-		; TODO courrpts string
+		; TODO crashes on push
 		ld a,(f_cursor_ptr)
 		ld d, 20
 		ld hl, scratch
 		call input_str
+		; TODO perhaps do a type check and wrap in quotes if not a number
 		ld hl, scratch
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, 'A'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
 		call forth_apush
 		NEXT
 
@@ -1261,23 +1269,24 @@ endif
 .PAUSE:   db 47
 	  dw .PAUSES
           db 8
-	  db "PAUSEMS",0	; | PAUSEMS ( n -- )  Pause for n millisconds|TO TEST
+	  db "PAUSEMS",0	; | PAUSEMS ( n -- )  Pause for n millisconds | DONE
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 		push hl    ; n2
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
-		pop bc
+		pop hl
+
+		ld a, l
 		call aDelayInMS
 	       NEXT
 .PAUSES:   db 48
 	  dw .ROT
           db 8
-	  db "PAUSES",0	; | PAUSES ( n -- )  Pause for n seconds|TO TEST
+	  db "PAUSES",0	; | PAUSES ( n -- )  Pause for n seconds | DONE
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 		push hl    ; n2
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 		pop hl
-		ld c, l
-		ld b, 0
+		ld b, l
 		if DEBUG_FORTH_WORDS
 			push af
 			ld a, 'P'

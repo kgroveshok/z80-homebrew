@@ -998,7 +998,7 @@ if DEBUG_FORTH_DOT_KEY
 ;		ld (debug_mark),a
 ;		call next_page_prompt
 endif	
-if DEBUG_FORTH_ENABLEFREE
+if FORTH_ENABLE_FREE
 	call free
 endif
 

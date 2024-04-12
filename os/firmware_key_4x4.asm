@@ -181,7 +181,7 @@ key_init:
 
 		db 'A'
 		db '/' 
-		db 0  ; TODO spare
+		db '%' 
 		db KEY_BS  ; back space
 		db 'A'
 		db '!'

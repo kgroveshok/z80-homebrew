@@ -481,7 +481,7 @@ Mult8_NoAdd:
 ;         djnz $-7
 
 
-if ENABLE_FLOATMATH
+if FORTH_ENABLE_FLOATMATH
 include "float/bbcmath.z80"
 endif
 

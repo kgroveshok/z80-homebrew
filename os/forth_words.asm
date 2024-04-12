@@ -1127,7 +1127,14 @@ endif
 	ld de, cli_data_stack
 	sbc hl,de
 	
-	; TODO div by two?
+	; div by two?
+
+	ld e,l
+	ld c, 2
+	call Div8
+
+	ld l,a
+	ld h,0
 
 	;srl h
 	;rr l

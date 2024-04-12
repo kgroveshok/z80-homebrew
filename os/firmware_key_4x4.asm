@@ -162,7 +162,7 @@ key_init:
 		db 'A'
 		db '-' 
 		db '>'
-		db  KEY_TAB   	; TODO tab
+		db  '='   	
 		db 'A'
 		db '?'
 		db 'x'
@@ -180,7 +180,7 @@ key_init:
 .key_map_fd:
 
 		db 'A'
-		db '/'  ; TODO spare
+		db '/' 
 		db 0  ; TODO spare
 		db KEY_BS  ; back space
 		db 'A'

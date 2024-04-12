@@ -63,6 +63,9 @@ Stage 3.x with a propper PCB things are much more stable (and faster clock freq)
 
 Stage 4.x a useable machine now with many expandable features.
 
+Current Forth word list in WORD-LIST.md
+
+
 Parts
 -----
 

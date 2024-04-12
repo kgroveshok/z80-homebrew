@@ -449,7 +449,7 @@ Keyboard layout:
 
     *       0       #      D
     shift   space   Enter
-    ' tab   < >     + - /
+    ' =   < >     + - /
      bs   
 
 
@@ -468,62 +468,8 @@ TODO add a type id word for TOS
 TODO add monitor word for full memory and reg dump
 TODO add round div word
 TODO add .$ to print number as hex word format and not numeric
-
-* Objective: Pushing a number to stack as sole item to parse and display 
-
-123 ENTER
-Item pushed as string (FAIL) and allows for next entry
-
-. ENTER
-
-Displays 123 and returns to prompt (OK)
-
-123
-
-
-* Obejctive: Pushing string to stack as sole item to parse and display
-
-"abc" ENTER
-Item pushed as string (OK) and allows for next entry
-
-. ENTER
-
-Displays result of previous test (123) and returns to prompt (OK)
-
-* Objective: Push two numbers to stack as sole individual items and display TOD
-
-123 ENTER
-456 ENTER
-
-Items pushed as string (FAIL)
-
-. ENTER
-
-. ENTER
-
-Displays 456 and returns to prompt (OK)
-Displays 123 and returns to prompt (OK)
-
-* Objective: Process muliple items in a single parse
-
-6 2 . ENTER
-
-Pushes 6 as string (FAIL) and then displays 2 and returns to prompt (OK)
-
-. ENTER
-
-Crashes (FAIL)
-
-* Objective: Process muliple items in a single parse
-
-6 2 . . ENTER
-
-Displays 2 then 6 and returns to prompt (OK)
-
-* TODO Objective: Add two numbers on TOS and display the result
-
-1 1 + .
-
+TODO add case change words
+TODO add type conversion words
 
 
 

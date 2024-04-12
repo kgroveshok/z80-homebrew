@@ -814,7 +814,7 @@ endif
 .LESS:   db 27
 	dw .GT
 	db 2
-	db "<",0         ; |< ( u1 u2 -- f ) True if u1 is less than u2 | WIP
+	db "<",0         ; |< ( u1 u2 -- f ) True if u1 is less than u2 | DONE
 	; TODO add floating point number detection
 		FORTH_DSP_VALUE
 		ld a,(hl)	; get type of value on TOS
@@ -830,7 +830,7 @@ endif
 .less_inum:
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
-		push hl
+		push hl  ; u2
 
 		; destroy value TOS
 
@@ -839,37 +839,37 @@ endif
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
-		; one value on hl get other one back
-
-		pop de
-
-		; do the sub
-;		ex de, hl
-
-		sbc hl,de
-
-		; save it
-
-		push hl	
-
-		;
-
-		; destroy value TOS
+		push hl    ; u1
 
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
-		; TODO push value back onto stack for another op etc
 
+ or a      ;clear carry flag
+ ld bc, FORTH_FALSE
+  pop hl    ; u1
+  pop de    ; u2
+  sbc hl,de
+  jr nc,.lscont   	;	if hl >= de, carry flag will be cleared
+
+ ld bc, FORTH_TRUE
+.lscont: 
+		push bc
 		pop hl
 
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, '<'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
 		call forth_push_numhl
-.less_done:
 
 		NEXT
 .GT:	db 28
 	dw .EQUAL
 	db 2
-	db ">",0       ; |> ( u1 u2 -- f ) True if u1 is greater than u2
+	db ">",0       ; |> ( u1 u2 -- f ) True if u1 is greater than u2 | DONE
 	; TODO add floating point number detection
 		FORTH_DSP_VALUE
 		ld a,(hl)	; get type of value on TOS
@@ -885,7 +885,7 @@ endif
 .gt_inum:
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
-		push hl
+		push hl  ; u2
 
 		; destroy value TOS
 
@@ -894,37 +894,37 @@ endif
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
-		; one value on hl get other one back
-
-		pop de
-
-		; do the sub
-;		ex de, hl
-
-		sbc hl,de
-
-		; save it
-
-		push hl	
-
-		;
-
-		; destroy value TOS
+		push hl    ; u1
 
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
-		; TODO push value back onto stack for another op etc
 
+ or a      ;clear carry flag
+ ld bc, FORTH_FALSE
+  pop hl    ; u1
+  pop de    ; u2
+  sbc hl,de
+  jr c,.gtcont   	;	if hl >= de, carry flag will be cleared
+
+ ld bc, FORTH_TRUE
+.gtcont: 
+		push bc
 		pop hl
 
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, '>'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
 		call forth_push_numhl
-.gt_done:
 
 		NEXT
 .EQUAL:  db 29
 	dw .SCALL
 	db 2
-	db "=",0          ; |= ( u1 u2 -- f ) True if u1 equals u2 | WIP
+	db "=",0          ; |= ( u1 u2 -- f ) True if u1 equals u2 | DONE
 	; TODO add floating point number detection
 		FORTH_DSP_VALUE
 		ld a,(hl)	; get type of value on TOS
@@ -951,29 +951,43 @@ endif
 
 		; one value on hl get other one back
 
-		pop de
-
-		; do the sub
-;		ex de, hl
-
-		sbc hl,de
-
-		; save it
-
-		push hl	
-
-		;
-
-		; destroy value TOS
+		push hl
 
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
-		; TODO push value back onto stack for another op etc
+		ld c, FORTH_FALSE
 
 		pop hl
+		pop de
 
-		call forth_push_numhl
+		ld a, e
+		cp l
+
+		jr nz, .eq_done
+
+		ld a, d
+		cp h
+
+		jr nz, .eq_done
+
+		ld c, FORTH_TRUE
+		
+
+
 .eq_done:
+
+		; TODO push value back onto stack for another op etc
+
+		ld h, 0
+		ld l, c
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, '='
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+		call forth_push_numhl
 
 		NEXT
 .SCALL:	db 30
@@ -1140,7 +1154,7 @@ endif
 .DIR:   db 38                     ;
 	dw .SAVE
 	db 4
-	db "DIR",0               ; |DIR ( u -- w... u )   Using bank number u push directory entries w with count u 
+	db "DIR",0               ; |DIR ( u -- w... u )   Using bank number u push directory entries from persistent storage as w with count u 
 		NEXT
 .SAVE:   db 39
 	dw .LOAD
@@ -1485,15 +1499,15 @@ endif
 	       NEXT
 
 .FIND:   db 55
-	  dw .COUNT
+	  dw .LEN
           db 5
 	  db "FIND",0	; | FIND (  -- )  
 	       NEXT
 
-.COUNT:   db 56
+.LEN:   db 56
 	  dw .CHAR
-          db 6
-	  db "COUNT",0	; | COUNT (  -- )  
+          db 4
+	  db "LEN",0	; | LEN (  u1 -- u2 ) Push the length of the string on TOS
 	       NEXT
 .CHAR:   db 57
 	  dw .RND
@@ -1624,12 +1638,32 @@ endif
 .BP:   db 64
 	dw .MONITOR
 	db 3
-	db "BP",0      ;| BP ( u1 -- ) Enable or disable break point monitoring
+	db "BP",0      ;| BP ( u1 -- ) Enable or disable break point monitoring | TEST
+		; get byte count
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		push hl
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		pop hl
+
+		ld a,0
+		cp l
+		jr z, .bpset
+		ld a, '*'
+
+.bpset:		ld (os_view_disable), a
+
+
 		NEXT
 
 
 .MONITOR:   db 65
-	dw .V0
+	dw .MALLOC
 	db 8
 	db "MONITOR",0      ;| MONITOR ( -- ) Display system breakpoint/monitor | DONE
 	;	rst 030h
@@ -1637,6 +1671,69 @@ endif
 
 		NEXT
 
+
+.MALLOC:   db 66
+	dw .FREE
+	db 7
+	db "MALLOC",0      ;| MALLOC ( u -- u ) Allocate u bytes of memory space and push the pointer TOS  | TEST
+		; get byte count
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		push hl
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		pop hl
+		call malloc
+
+		call forth_push_numhl
+		NEXT
+
+.FREE:   db 67
+	dw .STRLEN
+	db 5
+	db "FREE",0      ;| FREE ( u --  ) Free memory block from malloc given u address  | TEST
+		; get address
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		push hl
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		pop hl
+		call free
+
+		NEXT
+
+.STRLEN:   db 68
+	dw .STRCPY
+	db 7
+	db "STRLEN",0      ;| STRLEN ( u1 -- Using given address u1 push then zero term length string to TOS )   |
+
+		NEXT
+
+.STRCPY:   db 69
+	dw .BSAVE
+	db 7
+	db "STRCPY",0      ;| STRCPY ( u1 u2 -- Copy string u2 to u1 )   |
+
+		NEXT
+.BSAVE:   db 70
+	dw .BLOAD
+	db 6
+	db "BSAVE",0              ; |BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at address a for s bytes
+		NEXT
+.BLOAD:   db 71
+	dw .V0
+	db 6
+	db "BLOAD",0               ;| BLOAD ( w u a -- )    Load binary file from file name w on bank u into address u
+		NEXT
 ;;;; counter gap
 
 

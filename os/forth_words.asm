@@ -660,6 +660,7 @@ endif
 	; write length of dict word
 
 	ld de, (os_new_work_ptr)   ; get dest for copy of word
+	dec de
 	ex de, hl
 	ld (hl), e
 	ex de, hl
@@ -705,20 +706,20 @@ endif
         ;    <word code bytes>
 
 
-	inc de     ; TODO ??? or are we already past the word's null
+;	inc de     ; TODO ??? or are we already past the word's null
 	ex de, hl
 
 	ld (hl), 0ffh     ; TODO get bytes poke "ld hl, "
-	inc hl
 
+	inc hl
 	ld (os_new_word_exec),hl     ; save this location to poke with the address of the word buffer
 	inc hl
+
 	inc hl
-
-
 	ld (hl), 0feh     ; TODO get bytes poke "call  "
-	inc hl
 
+
+	inc hl
 	ld bc, forthexec
 	ld (hl), c     ; poke address of forthexec
 	inc hl
@@ -750,7 +751,7 @@ endif
 
 	pop hl
 
-	ld de, os_new_word_exec
+	ld de, (os_new_word_exec)     ; TODO dont think this is the correct address it is poking
 	
 	ex de, hl
 	ld (hl), e
@@ -763,6 +764,27 @@ endif
 if DEBUG_FORTH_UWORD
 	push bc
 	ld bc, (os_new_malloc)
+	push af
+	ld a, ';'
+	ld (debug_mark),a
+	pop af
+	;call break_point_state
+	;rst 030h
+	CALLMONITOR
+	pop bc
+endif
+if DEBUG_FORTH_UWORD
+	push bc
+	ld bc, (os_new_malloc)
+	inc bc
+	inc bc
+	inc bc
+	inc bc
+	inc bc
+	inc bc
+	inc bc
+	inc bc
+
 	push af
 	ld a, ';'
 	ld (debug_mark),a

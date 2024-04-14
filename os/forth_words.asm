@@ -551,7 +551,7 @@ endif
 .COLN:	db 15
 	dw .DROP
 	db 2
-	db ":",0     ; |: ( -- )         Create new word | WIP
+	db ":",0     ; |: ( -- )         Create new word | TEST - Breaking dict linked list
 
 	; get parser buffer length  of new word
 

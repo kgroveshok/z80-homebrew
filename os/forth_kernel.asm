@@ -28,7 +28,7 @@ user_word_eol:
 	; db string + 0 term
 	; db exec code.... 
 
-	ld a, 1
+	ld a, 0     ; root word
 	ld (hl), a		; word id
 	inc hl
 
@@ -163,9 +163,8 @@ forth_init:
 	; set start of word list in start of ram - for use when creating user words
 
 	ld hl, baseusermem		
-	call user_word_eol
-        ld hl, baseusermem
 	ld (os_last_new_uword), hl
+	call user_word_eol
 	
 ;		call display_data_sp
 ;		call next_page_prompt

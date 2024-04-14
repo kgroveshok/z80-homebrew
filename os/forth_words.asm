@@ -706,14 +706,14 @@ endif
 ;	inc de     ; TODO ??? or are we already past the word's null
 	ex de, hl
 
-	ld (hl), 0ffh     ; TODO get bytes poke "ld hl, "
+	ld (hl), 021h     ; TODO get bytes poke "ld hl, "
 
 	inc hl
 	ld (os_new_exec_ptr),hl     ; save this location to poke with the address of the word buffer
 	inc hl
 
 	inc hl
-	ld (hl), 0feh     ; TODO get bytes poke "call  "
+	ld (hl), 0cdh     ; TODO get bytes poke "call  "
 
 
 	inc hl
@@ -723,7 +723,7 @@ endif
 	ld (hl), b     
 	inc hl
 
-	ld (hl), 0f0h     ; TODO get bytes poke "jp  "
+	ld (hl), 0c3h     ; TODO get bytes poke "jp  "
 	inc hl
 
 	ld bc, user_dict_next

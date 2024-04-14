@@ -476,8 +476,10 @@ TODO add dialog word
 TODO add menu word
 TODO add info page word
 TODO add other UI type words that could be useful
+TODO add a means to add binary based words and/or an assemlber
 
-TODO uwords are not exec
+
+TODO uwords are not exec. need to add the pc ptr for the exec to the start of the exec body area. update preample to reload the pc
 
 Stage 4.5 TODO
 --------------

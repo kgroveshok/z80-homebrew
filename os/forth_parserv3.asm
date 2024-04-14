@@ -340,7 +340,7 @@ ld (cli_nextword),hl
 	ld e, (hl)
 	inc hl
 	ld d, (hl)
-	inc hl
+	inc l
 
 	ex de,hl
 if DEBUG_FORTH_PARSE_NEXTWORD

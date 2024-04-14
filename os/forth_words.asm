@@ -569,7 +569,8 @@ endif
 	ld a, ';'
 	call strlent
 
-	ld (os_new_parse_len), hl
+	ld a,l
+	ld (os_new_parse_len), a
 
 
 if DEBUG_FORTH_UWORD
@@ -617,13 +618,11 @@ if DEBUG_FORTH_UWORD
 	ld a, 'z'
 	ld (debug_mark),a
 	pop af
-	;call break_point_state
-	;rst 030h
 	CALLMONITOR
 endif
 
 	
-		; TODO malloc the size
+		; malloc the size
 
 		call malloc
 		ld (os_new_malloc), hl     ; save malloc start
@@ -691,8 +690,6 @@ if DEBUG_FORTH_UWORD
 	ld a, 'x'
 	ld (debug_mark),a
 	pop af
-	;call break_point_state
-	;rst 030h
 	CALLMONITOR
 	pop bc
 endif
@@ -712,7 +709,7 @@ endif
 	ld (hl), 0ffh     ; TODO get bytes poke "ld hl, "
 
 	inc hl
-	ld (os_new_word_exec),hl     ; save this location to poke with the address of the word buffer
+	ld (os_new_exec_ptr),hl     ; save this location to poke with the address of the word buffer
 	inc hl
 
 	inc hl
@@ -737,29 +734,31 @@ endif
 
 	; hl is now where we need to copy the word byte data to save this
 
-	push hl
+	ld (os_new_exec), hl
 	
 	; copy definition
 
 	ex de, hl
-	ld c, (os_new_parse_len)
+	ld a, (os_new_parse_len)
+	ld c, a
 	ld b, 0
 	ldir		 ; copy defintion
 
 
 	; poke the address of where the new word bytes live for forthexec
 
-	pop hl
+	ld hl, (os_new_exec_ptr)     ; TODO this isnt correct
 
-	ld de, (os_new_word_exec)     ; TODO dont think this is the correct address it is poking
+	ld de, (os_new_exec)     
 	
-	ex de, hl
 	ld (hl), e
 	inc hl
 	ld (hl), d
 
 		; TODO copy last user dict word next link to this word
 		; TODO update last user dict word to point to this word
+;
+; hl f923 de 812a ; bc 811a
 
 if DEBUG_FORTH_UWORD
 	push bc
@@ -768,8 +767,6 @@ if DEBUG_FORTH_UWORD
 	ld a, ';'
 	ld (debug_mark),a
 	pop af
-	;call break_point_state
-	;rst 030h
 	CALLMONITOR
 	pop bc
 endif
@@ -789,8 +786,6 @@ if DEBUG_FORTH_UWORD
 	ld a, ';'
 	ld (debug_mark),a
 	pop af
-	;call break_point_state
-	;rst 030h
 	CALLMONITOR
 	pop bc
 endif
@@ -798,8 +793,29 @@ endif
 ; TODO update word dict linked list for new word
 
 
+ld hl, (os_last_new_uword)		; get the start of the last added uword
+inc hl     ; move to next work linked list ptr
 
-		NEXT
+ld de, (os_new_malloc)		 ; new next word
+ld (hl), e
+inc hl
+ld (hl), h
+
+ld (os_last_new_uword), hl      ; update last new uword ptr
+
+
+if DEBUG_FORTH_UWORD
+	push af
+	ld a, ';'
+	ld (debug_mark),a
+	pop af
+	CALLMONITOR
+endif
+
+
+ret
+
+;		NEXT
 ;.SCOLN:	db 16
 ;	dw .DROP
 ;	db 2
@@ -807,7 +823,7 @@ endif
 
 
 
-		NEXT
+;		NEXT
 .DROP:   db 17
 	dw .DUP2
 	db 5

@@ -15,11 +15,11 @@ DEBUG_STORECF: equ 0
 DEBUG_STORESE: equ 0        ; TODO  w locks up, r returns. 
 DEBUG_FORTH: equ 0
 DEBUG_FORTH_WORDS: equ 1
-DEBUG_FORTH_PARSE: equ 0
-DEBUG_FORTH_PARSE_KEY: equ 0
-DEBUG_FORTH_PARSE_EXEC: equ 0
-DEBUG_FORTH_TOK: equ 0
-DEBUG_FORTH_JP: equ 0
+DEBUG_FORTH_PARSE: equ 1
+DEBUG_FORTH_PARSE_KEY: equ 1
+DEBUG_FORTH_PARSE_EXEC: equ 1
+DEBUG_FORTH_TOK: equ 1
+DEBUG_FORTH_JP: equ 1
 DEBUG_FORTH_PUSH: equ 1
 DEBUG_FORTH_MALLOC: equ 0
 DEBUG_FORTH_DOT: equ 0
@@ -176,8 +176,8 @@ os_word_scratch: equ os_cur_ptr-30
 os_tok_len: equ os_word_scratch - 2
 os_tok_ptr: equ os_tok_len - 2
 os_tok_malloc: equ os_tok_ptr - 2
-os_last_new: equ os_tok_malloc - 2    ; hold start of last user word added
-os_input: equ os_last_new-100
+os_last_new_uword: equ os_tok_malloc - 2    ; hold start of last user word added
+os_input: equ os_last_new_uword-100
 scratch: equ os_input-255
 
 
@@ -188,7 +188,8 @@ os_new_parse_len: equ os_new_malloc + 2
 os_new_word_len: equ os_new_parse_len + 2
 os_new_work_ptr: equ os_new_word_len + 2
 os_new_src_ptr: equ os_new_work_ptr + 2
-os_new_word_exec: equ os_new_src_ptr + 2
+os_new_exec: equ os_new_src_ptr + 2
+os_new_exec_ptr: equ os_new_exec + 2
 
 
 os_view_disable: equ scratch - 1

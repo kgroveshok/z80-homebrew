@@ -84,8 +84,9 @@ main:
 	ld a, display_row_1
 	call str_at_display
 
-	ld hl, topusermem
-	ld de, baseusermem
+; Or use heap_size word????
+	ld hl, heap_end
+	ld de, heap_start
 	sbc hl, de
 	push hl
 	ld a,h	         	
@@ -137,7 +138,7 @@ cli:
 	;pop af
 	;inc a
 	;ld a, kLCD_Line4+1	 ; TODO using direct screen line writes. Correct this to frame buffer
-	ld d, 10
+	ld d, 255    ; TODO fix input_str to actually take note of max string input length
 	ld hl, scratch	
 	call input_str
 

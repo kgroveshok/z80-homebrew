@@ -470,7 +470,7 @@ TODO add round div word
 TODO add .$ to print number as hex word format and not numeric
 TODO add case change words
 TODO add type conversion words
-
+TODO add a start up feature to bulk run one set of words after another. can use for testing and then use it for auto start up of some builtins + storage boot lists
 
 
 

@@ -553,8 +553,10 @@ endif
 	db 2
 	db ":",0     ; |: ( -- )         Create new word | WIP
 
-
 	; get parser buffer length  of new word
+
+	
+
 		; move tok past this to start of name defintition
 		; TODO get word to define
 		; TODO Move past word token
@@ -566,6 +568,18 @@ endif
 
 	ld a, ';'
 	call strlent
+
+	ld (os_new_parse_len), hl
+
+
+if DEBUG_FORTH_UWORD
+	ld de, (os_tok_ptr)
+	push af
+	ld a, ':'
+	ld (debug_mark),a
+	pop af
+	CALLMONITOR
+endif
 
 ;
 ;  new word memory layout:
@@ -581,6 +595,16 @@ endif
 	inc hl
 ;    db .... <word>
 ;
+
+	inc hl    ; some extras for the word preamble before the above
+	inc hl
+	inc hl
+	inc hl
+	inc hl
+	inc hl
+	inc hl
+	inc hl
+	inc hl     ; TODO how many do we really need?
 ;       exec word buffer
 ;	<ptr word>  
 	inc hl
@@ -588,10 +612,9 @@ endif
 ;       <word list><null term> 7F final term
 
 
-
 if DEBUG_FORTH_UWORD
 	push af
-	ld a, 'v'
+	ld a, 'z'
 	ld (debug_mark),a
 	pop af
 	;call break_point_state
@@ -603,7 +626,7 @@ endif
 		; TODO malloc the size
 
 		call malloc
-		push hl     ; save malloc start
+		ld (os_new_malloc), hl     ; save malloc start
 
 ;    db   1     ; user defined word 
 		ld a, 1
@@ -611,58 +634,147 @@ endif
 	
 	inc hl   
 ;    dw   sysdict
-	ld de, sysdict
+	ld de, sysdict       ; continue on with the scan to the system dict
 	ld (hl), e
 	inc hl
 	ld (hl), d
 	inc hl
 
 
-;    TODO write length of user word + null
+;    Setup dict word
 
-	ex de, hl
-
-		ld hl,(os_tok_ptr)
 	inc hl
+	ld (os_new_work_ptr), hl     ; save start of dict word 
+
+	; 1. get length of dict word
+
+
+	ld hl, (os_tok_ptr)
 	inc hl
-
-	push hl
-
+	inc hl    ; position to start of dict word
 	ld a, 0
 	call strlent
 
-	ld a, l    ; save length to poke into dict
+	inc hl    ; to include null???
+
+	; write length of dict word
+
+	ld de, (os_new_work_ptr)   ; get dest for copy of word
+	ex de, hl
+	ld (hl), e
+	ex de, hl
+
 	
 
-	ld b, 0
+	; copy 
 	ld c, l
+	ld b, 0
+	ld de, (os_new_work_ptr)   ; get dest for copy of word
+	ld hl, (os_tok_ptr)
+	inc hl
+	inc hl    ; position to start of dict word
+	
+	ldir       ; copy word - HL now is where we need to be for copy of the line
 
-	pop hl
-	ldir       ; copy word
- 
+	; de now points to start of where the word body code should be placed
+	ld (os_new_work_ptr), de
+	; hl now points to the words to throw at forthexec which needs to be copied
+	ld (os_new_src_ptr), hl
 
-
-
-
-		; position to start of 
+	; TODO add 'call to forthexec'
 
 if DEBUG_FORTH_UWORD
+	push bc
+	ld bc, (os_new_malloc)
 	push af
-	ld a, 'b'
+	ld a, 'x'
 	ld (debug_mark),a
 	pop af
 	;call break_point_state
 	;rst 030h
 	CALLMONITOR
+	pop bc
 endif
-		; TODO Copy from ptr to end of string to malloc
-		; TODO find last user dict word next link
-		; TODO create dictorary entry for word
-		; TODO in payload add 'ld hl, x' 
-		; TODO add pointer to malloc
-		; TODO add 'call to forthexec'
+
+
+	; create word preamble which should be:
+
+	;    ld hl, <word code>
+	;    call forthexec
+	;    jp user_dict_next   (NEXT)
+        ;    <word code bytes>
+
+
+	inc de     ; TODO ??? or are we already past the word's null
+	ex de, hl
+
+	ld (hl), 0ffh     ; TODO get bytes poke "ld hl, "
+	inc hl
+
+	ld (os_new_word_exec),hl     ; save this location to poke with the address of the word buffer
+	inc hl
+	inc hl
+
+
+	ld (hl), 0feh     ; TODO get bytes poke "call  "
+	inc hl
+
+	ld bc, forthexec
+	ld (hl), c     ; poke address of forthexec
+	inc hl
+	ld (hl), b     
+	inc hl
+
+	ld (hl), 0f0h     ; TODO get bytes poke "jp  "
+	inc hl
+
+	ld bc, user_dict_next
+	ld (hl), c     ; poke address of forthexec
+	inc hl
+	ld (hl), b     
+	inc hl
+
+	; hl is now where we need to copy the word byte data to save this
+
+	push hl
+	
+	; copy definition
+
+	ex de, hl
+	ld c, (os_new_parse_len)
+	ld b, 0
+	ldir		 ; copy defintion
+
+
+	; poke the address of where the new word bytes live for forthexec
+
+	pop hl
+
+	ld de, os_new_word_exec
+	
+	ex de, hl
+	ld (hl), e
+	inc hl
+	ld (hl), d
+
 		; TODO copy last user dict word next link to this word
 		; TODO update last user dict word to point to this word
+
+if DEBUG_FORTH_UWORD
+	push bc
+	ld bc, (os_new_malloc)
+	push af
+	ld a, ';'
+	ld (debug_mark),a
+	pop af
+	;call break_point_state
+	;rst 030h
+	CALLMONITOR
+	pop bc
+endif
+
+; TODO update word dict linked list for new word
+
 
 
 		NEXT

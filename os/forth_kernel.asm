@@ -164,6 +164,8 @@ forth_init:
 
 	ld hl, baseusermem		
 	call user_word_eol
+        ld hl, baseusermem
+	ld (os_last_new), hl
 	
 ;		call display_data_sp
 ;		call next_page_prompt

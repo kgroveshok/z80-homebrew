@@ -12,7 +12,7 @@ Device_D: equ 0c0h
 DEBUG_KEY: equ 0
 DEBUG_KEY_MATRIX: equ 0
 DEBUG_STORECF: equ 0
-DEBUG_STORESE: equ 0
+DEBUG_STORESE: equ 0        ; TODO  w locks up, r returns. 
 DEBUG_FORTH: equ 0
 DEBUG_FORTH_WORDS: equ 1
 DEBUG_FORTH_PARSE: equ 0
@@ -26,7 +26,7 @@ DEBUG_FORTH_DOT: equ 0
 DEBUG_FORTH_DOT_KEY: equ 0
 DEBUG_FORTH_MALLOC_GUARD: equ 1
 DEBUG_FORTH_MATHS: equ 0
-DEBUG_FORTH_UWORD: equ 0
+DEBUG_FORTH_UWORD: equ 1
 
 FORTH_ENABLE_FREE: equ 1
 FORTH_ENABLE_FLOATMATH: equ 0
@@ -176,8 +176,20 @@ os_word_scratch: equ os_cur_ptr-30
 os_tok_len: equ os_word_scratch - 2
 os_tok_ptr: equ os_tok_len - 2
 os_tok_malloc: equ os_tok_ptr - 2
-os_input: equ os_tok_malloc-100
+os_last_new: equ os_tok_malloc - 2    ; hold start of last user word added
+os_input: equ os_last_new-100
 scratch: equ os_input-255
+
+
+; temp locations for new word processing to save on adding more 
+
+os_new_malloc: equ os_input
+os_new_parse_len: equ os_new_malloc + 2
+os_new_word_len: equ os_new_parse_len + 2
+os_new_work_ptr: equ os_new_word_len + 2
+os_new_src_ptr: equ os_new_work_ptr + 2
+os_new_word_exec: equ os_new_src_ptr + 2
+
 
 os_view_disable: equ scratch - 1
 os_view_af: equ os_view_disable - 2

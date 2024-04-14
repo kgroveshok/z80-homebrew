@@ -813,7 +813,10 @@ if DEBUG_FORTH_UWORD
 endif
 
 
-ret
+ret    ; dont process any remaining parser tokens as they form new word
+
+
+
 
 ;		NEXT
 ;.SCOLN:	db 16

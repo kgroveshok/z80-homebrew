@@ -799,7 +799,7 @@ inc hl     ; move to next work linked list ptr
 ld de, (os_new_malloc)		 ; new next word
 ld (hl), e
 inc hl
-ld (hl), h
+ld (hl), d
 
 ld (os_last_new_uword), hl      ; update last new uword ptr
 

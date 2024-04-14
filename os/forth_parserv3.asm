@@ -343,16 +343,19 @@ ld (cli_nextword),hl
 	inc hl
 
 	ex de,hl
-	ld (cli_nextword), hl     ; save for next check if no match on this word
-	ex de, hl
-
 if DEBUG_FORTH_PARSE_NEXTWORD
+	push bc
+	ld bc, (cli_nextword)
 	push af
 	ld a, '?'
 	ld (debug_mark),a
 	pop af
 	CALLMONITOR
+	pop bc
 endif
+	ld (cli_nextword), hl     ; save for next check if no match on this word
+	ex de, hl
+
 
 	; save the pointer of the current token - 1 to check against
 	

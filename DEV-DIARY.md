@@ -472,7 +472,12 @@ TODO add case change words
 TODO add type conversion words
 TODO add a start up feature to bulk run one set of words after another. can use for testing and then use it for auto start up of some builtins + storage boot lists
 
-TODO uword is breaking dict linked list
+TODO add dialog word
+TODO add menu word
+TODO add info page word
+TODO add other UI type words that could be useful
+
+TODO uwords are not exec
 
 Stage 4.5 TODO
 --------------

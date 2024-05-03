@@ -654,6 +654,7 @@ endif
 	ld a, 0
 	call strlent
 
+
 	inc hl    ; to include null???
 
 	; write length of dict word
@@ -674,7 +675,18 @@ endif
 	inc hl
 	inc hl    ; position to start of dict word
 	
-	ldir       ; copy word - HL now is where we need to be for copy of the line
+;	ldir       ; copy word - HL now is where we need to be for copy of the line
+	
+	; TODO need to convert word to upper case
+
+ucasetok:	
+	ld a,(hl)
+	call toUpper
+	ld (hl),a
+	ldi
+ 	jp p, ucasetok
+
+
 
 	; de now points to start of where the word body code should be placed
 	ld (os_new_work_ptr), de
@@ -1694,7 +1706,7 @@ ret    ; dont process any remaining parser tokens as they form new word
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
-		push hl
+		push hl    ; u2 - byte
 
 		; destroy value TOS
 
@@ -1704,7 +1716,7 @@ ret    ; dont process any remaining parser tokens as they form new word
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
-		push hl
+		push hl    ; u1 - addr
 
 		; destroy value TOS
 
@@ -1712,11 +1724,15 @@ ret    ; dont process any remaining parser tokens as they form new word
 
 		; one value on hl get other one back
 
-		pop hl
+		pop de   ; u1 - byte
 
-		pop bc
+		pop hl   ; u2 - addr
 
 		; TODO Send SPI byte
+
+		ld a, e
+		call se_writebyte
+		
 
 		NEXT
 
@@ -1735,23 +1751,18 @@ ret    ; dont process any remaining parser tokens as they form new word
 
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
-		; get byte to send
-
-		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
-
-		push hl
-
-		; destroy value TOS
-
-		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
-
 		; one value on hl get other one back
 
 		pop hl
 
-		pop bc
 
 		; TODO Get SPI byte
+
+		call spi_read_byte
+
+		ld h, 0
+		ld l, a
+		call forth_push_numhl
 
 		NEXT
 .SCROLL:   db 63

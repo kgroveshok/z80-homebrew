@@ -62,6 +62,17 @@
 ; op code 1 is a flag for user define words which are to be handled differently
 
 
+;
+;
+;    TODO on entry to a word this should be the expected environment
+;    hl - tos value if number then held, if string this is the ptr
+;    de - 
+
+
+; opcode ranges
+; 0 - end of word dict
+; 255 - user define words
+
 sysdict:
 
 .PLUS:	db 2     

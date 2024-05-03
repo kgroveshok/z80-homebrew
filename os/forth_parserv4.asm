@@ -3,6 +3,19 @@
 ; new parser. restructing to handle nested loops and better scanning of word tokens
 
 
+
+
+
+WHEAD:   macro nxtword opcode lit litlen opcodeflags
+	db opcode            ; internal op code number
+	dw nxtword           ; link to next dict word block
+	db litlen            ; literal length of dict word inc zero term
+	db lit,0             ; literal dict word
+        db opcodeflags       ; 0 - following is a zero term block of word jump points
+                             ; 1 - 
+	endm
+
+
 NEXT: macro 
 	jp macro_next
 	endm

@@ -492,6 +492,18 @@ the loops and jumps better.
 
 I have also fixed the version of the assembler for macro support by upgrading. That will help a lot
 
+New approach will be as follows:
+
+1.0 On entry to a word, tos will hold value or ptr (still be macros to maniuplate the tos ) to make things quick
+2.0 exec will function differently:
+2.1     Op code will flag if the data following is code or jump table to primitives
+2.2     Extra op codes to add to deal with very low level things in particular branch and loops  
+2.3     Compile to op codes to speed up process (how to deal with saves??? Perhaps dont compile?)
+2.4     Keep a running loop/branch word to allow for quick branch/loop jumps
+2.5     Single central PC covering all malloc 
+3.0 Parser remains much the same. Break each word to a zero term string.
+4.0 Data and return stacks remain the same.
+
 Stage 4.5 TODO
 --------------
 

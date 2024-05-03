@@ -481,6 +481,17 @@ TODO add a means to add binary based words and/or an assemlber
 
 TODO uwords are not exec. need to add the pc ptr for the exec to the start of the exec body area. update preample to reload the pc
 
+
+May 2024
+
+Now have uword creation however the decision to have a PC stored for each exec line so i can handle loops is 
+proving to be a problem as the exec of the uword is needing it and it isnt setup right.
+I think I need to do another version of the parser and remove this. keep things a bit simple after looking
+at other versions of the forth parser. If I use a single pc then see if i can do a compile version and handle
+the loops and jumps better.
+
+I have also fixed the version of the assembler for macro support by upgrading. That will help a lot
+
 Stage 4.5 TODO
 --------------
 

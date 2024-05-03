@@ -7,7 +7,8 @@ DS_TYPE_INUM: equ 2     ; $ 16 bit int usually a hex address
 
 FORTH_PARSEV1: equ 0
 FORTH_PARSEV2: equ 0
-FORTH_PARSEV3: equ 1
+FORTH_PARSEV3: equ 0
+FORTH_PARSEV4: equ 1
 
 FORTH_END_BUFFER: equ 127
 
@@ -200,8 +201,16 @@ if FORTH_PARSEV3
 
 
       include "forth_parserv3.asm"
+	include "forth_wordsv3.asm"
 endif
 
+if FORTH_PARSEV4
+
+
+
+      include "forth_parserv4.asm"
+	include "forth_wordsv4.asm"
+endif
 ;;;;;;;;;;;;;; Debug code
 
 

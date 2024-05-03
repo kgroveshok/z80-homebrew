@@ -549,7 +549,6 @@ next_page_prompt:
 ; forth parser
 
 include "forth_kernel.asm"
-include "forth_words.asm"
 
 
 

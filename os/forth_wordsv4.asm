@@ -1,4 +1,5 @@
-; the core word dictionary
+
+; the core word dictionary v4
 
 ; https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Notation.html#Notation
 
@@ -605,6 +606,11 @@ endif
 	inc hl
 	inc hl
 	inc hl
+	inc hl
+	inc hl
+	inc hl
+	inc hl
+	inc hl
 	inc hl     ; TODO how many do we really need?
 ;       exec word buffer
 ;	<ptr word>  
@@ -710,6 +716,7 @@ endif
 	; create word preamble which should be:
 
 	;    ld hl, <word code>
+	;    FORTH_RSP_NEXT - call macro_forth_rsp_next
 	;    call forthexec
 	;    jp user_dict_next   (NEXT)
         ;    <word code bytes>
@@ -728,29 +735,41 @@ endif
 	ld (hl), 0cdh     ; TODO get bytes poke "call  "
 
 
+	ld bc, macro_forth_rsp_next
+	inc hl
+	ld (hl), c     ; poke address of FORTH_RSP_NEXT
+	inc hl
+	ld (hl), b    
+ 
+	inc hl
+	ld (hl), 0cdh     ; TODO get bytes poke "call  "
+
+
 	inc hl
 	ld bc, forthexec
 	ld (hl), c     ; poke address of forthexec
 	inc hl
 	ld (hl), b     
-	inc hl
 
-	ld (hl), 0c3h     ; TODO get bytes poke "jp  "
 	inc hl
+	ld (hl), 0c3h     ; TODO get bytes poke "jp  "
 
 	ld bc, user_dict_next
+	inc hl
 	ld (hl), c     ; poke address of forthexec
 	inc hl
 	ld (hl), b     
-	inc hl
 
 	; hl is now where we need to copy the word byte data to save this
 
+	inc hl
 	ld (os_new_exec), hl
 	
 	; copy definition
 
 	ex de, hl
+;	inc de    ; TODO BUG It appears the exec of a uword requires pc to be set
+;	inc de    ; skip the PC for this parse
 	ld a, (os_new_parse_len)
 	ld c, a
 	ld b, 0

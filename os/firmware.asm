@@ -175,7 +175,7 @@ os_last_cmd: equ cli_data_stack-30
 os_cur_ptr: equ os_last_cmd-2
 os_word_scratch: equ os_cur_ptr-30
 os_tok_len: equ os_word_scratch - 2
-os_tok_ptr: equ os_tok_len - 2
+os_tok_ptr: equ os_tok_len - 2               ; our current PC ptr
 os_tok_malloc: equ os_tok_ptr - 2
 os_last_new_uword: equ os_tok_malloc - 2    ; hold start of last user word added
 os_input: equ os_last_new_uword-100

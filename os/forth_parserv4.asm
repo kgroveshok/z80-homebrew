@@ -4,15 +4,25 @@
 
 
 
+WORD_SYS_CORE: equ 0    ; Offset for dict core words opcode
+WORD_SYS_LOWPRIM: equ 0    ; Offset for low level prim words opcode
+WORD_SYS_BRANCH: equ 0    ; Offset for branching and loop words opcode
 
+WORD_FLAG_CODE: equ 0	   ; opcodeflag to exec pure code for this word
+WORD_FLAG_JP: equ 1	   ; opcodeflag to list zero term jump table words
 
-WHEAD:   macro nxtword opcode lit litlen opcodeflags
-	db opcode            ; internal op code number
-	dw nxtword           ; link to next dict word block
-	db litlen            ; literal length of dict word inc zero term
-	db lit,0             ; literal dict word
-        db opcodeflags       ; 0 - following is a zero term block of word jump points
-                             ; 1 - 
+; Core word preamble macro
+
+CWHEAD:   macro nxtword opcode lit len opflags
+	db WORD_SYS_CORE+opcode            
+	; internal op code number
+	dw nxtword           
+	; link to next dict word block
+	db len + 1
+	; literal length of dict word inc zero term
+	db lit,0             
+	; literal dict word
+        ; TODO db opflags       
 	endm
 
 
@@ -159,7 +169,7 @@ endif
 	cp 0			; we dont want to use a null string
 	ret z
 
-	add 3    ; prefix malloc with buffer for current word ptr
+;	add 3    ; prefix malloc with buffer for current word ptr
 
 	add 5     ; TODO when certain not over writing memory remove
 
@@ -200,9 +210,9 @@ endif
 
 	FORTH_RSP_NEXT
 
-	inc hl	 ; go past current buffer pointer
-	inc hl
-	inc hl   ; and past if loop flag
+	;inc hl	 ; go past current buffer pointer
+	;inc hl
+	;inc hl   ; and past if loop flag
 		; TODO Need to set flag 
 
 	
@@ -254,15 +264,15 @@ endif
 
 	; init the malloc area data
 	; set pc for in current area
-	ld hl, (os_tok_malloc)
-	inc hl
-	inc hl
-	inc hl
-	ex de,hl
-	ld hl, (os_tok_malloc)
-	ld (hl),e
-	inc hl
-	ld (hl),d
+	;ld hl, (os_tok_malloc)
+	;inc hl
+	;inc hl
+	;inc hl
+	;ex de,hl
+	;ld hl, (os_tok_malloc)
+	;ld (hl),e
+	;inc hl
+	;ld (hl),d
 
 
 if DEBUG_FORTH_PARSE_KEY
@@ -283,6 +293,8 @@ endif
 forthexec:
 
 ; line exec:
+; forth parser
+
 ;
 ;       get current exec line on rsp
 

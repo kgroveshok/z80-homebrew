@@ -75,10 +75,13 @@
 
 sysdict:
 
-.PLUS:	db 2     
-	dw .NEG
-        db 2
-	db "+",0          ; | + ( u u -- u )    Add two numbers and push result   | INT DONE
+.PLUS:	
+	CWHEAD .NEG 1 "+" 1 WORD_FLAG_CODE
+;db 2     
+;	dw .NEG
+;        db 2
+;	db "+",0          
+; | + ( u u -- u )    Add two numbers and push result   | INT DONE
 		; add top two values and push back result
 
 		FORTH_DSP_VALUE
@@ -180,10 +183,14 @@ sysdict:
 		call forth_push_numhl
 
 		NEXT
-.NEG:	db 3
-	dw .DIV
-        db 2
-	db "-",0    ; | - ( u1 u2 -- u )    Subtract u2 from u1 and push result  | INT DONE
+.NEG:
+
+	CWHEAD .DIV 3 "-" 1 WORD_FLAG_CODE
+;	db 3
+;	dw .DIV
+;        db 2
+;	db "-",0    
+; | - ( u1 u2 -- u )    Subtract u2 from u1 and push result  | INT DONE
 
 
 	; TODO add floating point number detection
@@ -237,10 +244,13 @@ sysdict:
 .neg_done:
 
 		NEXT
-.DIV:	db 4
-	dw .MUL
-	db 2
-	db "/",0     ; | / ( u1 u2 -- result remainder )     Divide u1 by u2 and push result | INT DONE
+.DIV:
+	CWHEAD .MUL 4 "/" 1 WORD_FLAG_CODE
+;	db 4
+;	dw .MUL
+;	db 2
+;	db "/",0     
+; | / ( u1 u2 -- result remainder )     Divide u1 by u2 and push result | INT DONE
 	; TODO add floating point number detection
 		FORTH_DSP_VALUE
 		ld a,(hl)	; get type of value on TOS
@@ -314,10 +324,13 @@ sysdict:
 		call forth_push_numhl
 .div_done:
 		NEXT
-.MUL: 	db 5
-	dw .DUP
-	db 2
-	db "*",0     ; | * ( u1 u2 -- u )     Multiply TOS and push result | INT DONE
+.MUL:
+	CWHEAD .DUP 5 "*" 1 WORD_FLAG_CODE
+; 	db 5
+;	dw .DUP
+;	db 2
+;	db "*",0     
+; | * ( u1 u2 -- u )     Multiply TOS and push result | INT DONE
 	; TODO add floating point number detection
 		FORTH_DSP_VALUE
 		ld a,(hl)	; get type of value on TOS
@@ -370,20 +383,26 @@ sysdict:
 
 .mul_done:
 		NEXT
-.DUP:	db 6
-	dw .EMIT
-	db 4
-	db "DUP",0   ; | DUP ( u -- u u )     Duplicate whatever item is on TOS | DONE
+.DUP:
+	CWHEAD .EMIT 6 "DUP" 3 WORD_FLAG_CODE
+;	db 6
+;	dw .EMIT
+;	db 4
+;	db "DUP",0   
+; | DUP ( u -- u u )     Duplicate whatever item is on TOS | DONE
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
 	; TODO add floating point number detection
 		call forth_push_numhl
 		NEXT
-.EMIT:	db 7
-	dw .DOT
-	db 5
-	db "EMIT",0  ;|  EMIT ( u -- )        Display ascii character  TOS   |
+.EMIT:
+	CWHEAD .DOT 7 "EMIT" 4 WORD_FLAG_CODE
+;	db 7
+;	dw .DOT
+;	db 5
+;	db "EMIT",0  
+;|  EMIT ( u -- )        Display ascii character  TOS   |
 		; get value off TOS and display it
 
 
@@ -395,10 +414,13 @@ sysdict:
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
 		NEXT
-.DOT:	db 8
-	dw .SWAP
-	db 2
-	db ".",0         ;| . ( u -- )    Display TOS   |DONE
+.DOT:
+	CWHEAD .SWAP 8 "." 1 WORD_FLAG_CODE
+;	db 8
+;	dw .SWAP
+;	db 2
+;	db ".",0 
+        ;| . ( u -- )    Display TOS   |DONE
 		; get value off TOS and display it
 
 
@@ -511,10 +533,13 @@ endif
 
 
 		NEXT
-.SWAP:	db 9
-	dw .IF
-	db 5
-	db "SWAP",0    ; |SWAP ( w1 w2 -- w2 w1 )    Swap top two items (of whatever type) on TOS
+.SWAP:
+	CWHEAD .IF 9 "SWAP" 4 WORD_FLAG_CODE
+;	db 9
+;	dw .IF
+;	db 5
+;	db "SWAP",0    
+; |SWAP ( w1 w2 -- w2 w1 )    Swap top two items (of whatever type) on TOS
 ;		FORTH_DSP
 ;		ex de, hl
 ;		ld hl,(de)
@@ -525,45 +550,63 @@ endif
 ;		dec hl
 
 		NEXT
-.IF:	db 10
-	dw .THEN
-	db 3
-	db "IF",0     ;  |IF ( w -- f )     If TOS is true exec code following before??
+.IF:
+	CWHEAD .THEN 10 "IF" 2 WORD_FLAG_CODE
+;	db 10
+;	dw .THEN
+;	db 3
+;	db "IF",0     
+;  |IF ( w -- f )     If TOS is true exec code following before??
 ; TODO Eval stack
 ; TODO on result extract portion to exec, malloc it and start exec on that block
 ; TODO once exec, position next exec point past both blocks
 
 
 		NEXT
-.THEN:	db 11
-	dw .ELSE
-	db 5
-	db "THEN",0    ; |THEN ( -- )     control????
+.THEN:
+	CWHEAD .ELSE 11 "THEN" 4 WORD_FLAG_CODE
+;	db 11
+;	dw .ELSE
+;	db 5
+;	db "THEN",0    
+; |THEN ( -- )     control????
 		NEXT
-.ELSE: 	db 12
-	dw .DO
-	db 5
-	db "ELSE",0      ; |ELSE ( -- )     control???
+.ELSE:
+	CWHEAD .DO 12 "DO" 2 WORD_FLAG_CODE
+; 	db 12
+;	dw .DO
+;	db 5
+;	db "ELSE",0      
+; |ELSE ( -- )     control???
 		NEXT
-.DO:	db 13
-	dw .LOOP
-	db 3
-	db "DO",0       ; |DO ( u1 u2 -- )   Loop starting at u2 with a limit of u1
+.DO:
+	CWHEAD .LOOP 13 "DO" 2 WORD_FLAG_CODE
+;	db 13
+;	dw .LOOP
+;	db 3
+;	db "DO",0       
+; |DO ( u1 u2 -- )   Loop starting at u2 with a limit of u1
 ; TODO setup loop vars
 ; TODO extract portion to exec, malloc it and start exec on that block
 ; TODO once exec, test exit condition
 ; TODO if exit then put exec point past block
 ; TODO if not exit rerun block
 		NEXT
-.LOOP:	db 14
-	dw .COLN
-	db 5
-	db "LOOP",0      ; |LOOP ( -- )     Current loop end marker
+.LOOP:
+	CWHEAD .COLN 14 "LOOP" 4 WORD_FLAG_CODE
+;	db 14
+;	dw .COLN
+;	db 5
+;	db "LOOP",0      
+; |LOOP ( -- )     Current loop end marker
 		NEXT
-.COLN:	db 15
-	dw .DROP
-	db 2
-	db ":",0     ; |: ( -- )         Create new word | TEST - Breaking dict linked list
+.COLN:
+	CWHEAD .DROP 15 ":" 1 WORD_FLAG_CODE
+;	db 15
+;	dw .DROP
+;	db 2
+;	db ":",0     
+; |: ( -- )         Create new word | TEST - Breaking dict linked list
 
 	; get parser buffer length  of new word
 
@@ -869,33 +912,48 @@ ret    ; dont process any remaining parser tokens as they form new word
 
 
 ;		NEXT
-.DROP:   db 17
-	dw .DUP2
-	db 5
-	db "DROP",0        ; |DROP ( w -- )   drop the TOS item   |DONE
+.DROP:
+	CWHEAD .DUP2 17 "DROP" 4 WORD_FLAG_CODE
+;   db 17
+;	dw .DUP2
+;	db 5
+;	db "DROP",0        
+; |DROP ( w -- )   drop the TOS item   |DONE
 		FORTH_DSP_POP
 		NEXT
-.DUP2:	db 18
-	dw .DROP2
-	db 5
-	db "2DUP",0      ; |2DUP ( w1 w2 -- w1 w2 w1 w2 ) Duplicate the top two items on TOS  
+.DUP2:
+	CWHEAD .DROP2 18 "2DUP" 4 WORD_FLAG_CODE
+;	db 18
+;	dw .DROP2
+;	db 5
+;	db "2DUP",0      i
+; |2DUP ( w1 w2 -- w1 w2 w1 w2 ) Duplicate the top two items on TOS  
 		NEXT
-.DROP2:	db 19
-	dw .SWAP2
-	db 6
-	db "2DROP",0      ; |2DROP ( w w -- )    Double drop | DONE
+.DROP2:
+	CWHEAD .SWAP2 19 "2DROP" 5 WORD_FLAG_CODE
+;	db 19
+;	dw .SWAP2
+;	db 6
+;	db "2DROP",0      
+; |2DROP ( w w -- )    Double drop | DONE
 		FORTH_DSP_POP
 		FORTH_DSP_POP
 		NEXT
-.SWAP2:	db 20
-	dw .AT
-	db 5
-	db "2SWAP",0      ; |2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items
+.SWAP2:
+	CWHEAD .AT 20 "2SWAP" 5 WORD_FLAG_CODE
+;	db 20
+;	dw .AT
+;	db 5
+;	db "2SWAP",0      
+; |2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items
 		NEXT
-.AT:	db 21
-	dw .CAT
-	db 2
-	db "@",0         ;| @ ( w -- ) Push onto TOS byte stored at address   | DONE
+.AT:
+	CWHEAD .CAT 21 "@" 1 WORD_FLAG_CODE
+;	db 21
+;	dw .CAT
+;	db 2
+;	db "@",0         
+;| @ ( w -- ) Push onto TOS byte stored at address   | DONE
 
 .getbyteat:	
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -913,16 +971,22 @@ ret    ; dont process any remaining parser tokens as they form new word
 		call forth_push_numhl
 
 		NEXT           
-.CAT:	db 22
-	dw .BANG
-	db 3
-	db "C@",0        ; |C@  ( w -- ) Push onto TOS byte stored at address   |DONE
+.CAT:
+	CWHEAD .BANG 22 "C@" 2 WORD_FLAG_CODE
+;	db 22
+;	dw .BANG
+;	db 3
+;	db "C@",0        
+; |C@  ( w -- ) Push onto TOS byte stored at address   |DONE
 		jp .getbyteat
 		NEXT
-.BANG:   db 23
-	dw .CBANG
-	db 2
-	db "!",0        ; |! ( x w -- ) Store x at address w      | DONE
+.BANG:
+	CWHEAD .CBANG 23 "!" 1 WORD_FLAG_CODE
+;   db 23
+;	dw .CBANG
+;	db 2
+;	db "!",0        
+; |! ( x w -- ) Store x at address w      | DONE
 
 .storebyteat:		
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -947,21 +1011,30 @@ ret    ; dont process any remaining parser tokens as they form new word
 
 
 		NEXT
-.CBANG:	db 24
-	dw .LZERO
-	db 3
-	db "C!",0       ; |C!  ( x w -- ) Store x at address w  | DONE
+.CBANG:
+	CWHEAD .LZERO 24 "C!" 2 WORD_FLAG_CODE
+;	db 24
+;	dw .LZERO
+;	db 3
+;	db "C!",0       
+; |C!  ( x w -- ) Store x at address w  | DONE
 		jp .storebyteat
 		NEXT
-.LZERO:	db 25
-	dw .TZERO
-	db 3
-	db "0<",0       ; |0< ( u -- f ) Push true if u is less than o | CANT DO UNTIL FLOAT
+.LZERO:
+	CWHEAD .TZERO 25 "0<" 2 WORD_FLAG_CODE
+;	db 25
+;	dw .TZERO
+;	db 3
+;	db "0<",0       
+; |0< ( u -- f ) Push true if u is less than o | CANT DO UNTIL FLOAT
 		NEXT
-.TZERO:  db 26
-	dw .LESS
-	db 3
-	db "0=",0         ; |0= ( u -- f ) Push true if u equals 0 | TEST NO DEBUG
+.TZERO:
+	CWHEAD .LESS 26 "0=" 2 WORD_FLAG_CODE
+;  db 26
+;	dw .LESS
+;	db 3
+;	db "0=",0         
+; |0= ( u -- f ) Push true if u equals 0 | TEST NO DEBUG
 	; TODO add floating point number detection
 		FORTH_DSP_VALUE
 		ld a,(hl)	; get type of value on TOS
@@ -1006,10 +1079,13 @@ ret    ; dont process any remaining parser tokens as they form new word
 		call forth_push_numhl
 
 		NEXT
-.LESS:   db 27
-	dw .GT
-	db 2
-	db "<",0         ; |< ( u1 u2 -- f ) True if u1 is less than u2 | DONE
+.LESS:
+	CWHEAD .GT 27 "<" 1 WORD_FLAG_CODE
+;   db 27
+;	dw .GT
+;	db 2
+;	db "<",0         
+; |< ( u1 u2 -- f ) True if u1 is less than u2 | DONE
 	; TODO add floating point number detection
 		FORTH_DSP_VALUE
 		ld a,(hl)	; get type of value on TOS
@@ -1061,10 +1137,13 @@ ret    ; dont process any remaining parser tokens as they form new word
 		call forth_push_numhl
 
 		NEXT
-.GT:	db 28
-	dw .EQUAL
-	db 2
-	db ">",0       ; |> ( u1 u2 -- f ) True if u1 is greater than u2 | DONE
+.GT:
+	CWHEAD .EQUAL 28 ">" 1 WORD_FLAG_CODE
+;	db 28
+;	dw .EQUAL
+;	db 2
+;	db ">",0       
+; |> ( u1 u2 -- f ) True if u1 is greater than u2 | DONE
 	; TODO add floating point number detection
 		FORTH_DSP_VALUE
 		ld a,(hl)	; get type of value on TOS
@@ -1116,10 +1195,13 @@ ret    ; dont process any remaining parser tokens as they form new word
 		call forth_push_numhl
 
 		NEXT
-.EQUAL:  db 29
-	dw .SCALL
-	db 2
-	db "=",0          ; |= ( u1 u2 -- f ) True if u1 equals u2 | DONE
+.EQUAL:
+	CWHEAD .SCALL 29 "=" 1 WORD_FLAG_CODE
+;  db 29
+;	dw .SCALL
+;	db 2
+;	db "=",0          
+; |= ( u1 u2 -- f ) True if u1 equals u2 | DONE
 	; TODO add floating point number detection
 		FORTH_DSP_VALUE
 		ld a,(hl)	; get type of value on TOS
@@ -1185,10 +1267,13 @@ ret    ; dont process any remaining parser tokens as they form new word
 		call forth_push_numhl
 
 		NEXT
-.SCALL:	db 30
-	dw .SIN
-	db 5
-	db "CALL",0	; |CALL ( w -- w  ) machine code call to address w  push the result of hl to stack
+.SCALL:
+	CWHEAD .SIN 30 "CALL" 4 WORD_FLAG_CODE
+;	db 30
+;	dw .SIN
+;	db 5
+;	db "CALL",0	
+; |CALL ( w -- w  ) machine code call to address w  push the result of hl to stack
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
 		push hl
@@ -1209,10 +1294,13 @@ ret    ; dont process any remaining parser tokens as they form new word
 
 		call forth_push_numhl
 		NEXT
-.SIN:	db 31
-	dw .SOUT
-	db 3
-	db "IN",0       ; |IN ( u1-- u )    Perform z80 IN with u1 being the port number. Push result to TOS | TO TEST
+.SIN:
+	CWHEAD .SOUT 31 "IN" 2 WORD_FLAG_CODE
+;	db 31
+;	dw .SOUT
+;	db 3
+;	db "IN",0       
+; |IN ( u1-- u )    Perform z80 IN with u1 being the port number. Push result to TOS | TO TEST
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
 		push hl
@@ -1238,10 +1326,13 @@ ret    ; dont process any remaining parser tokens as they form new word
 
 		call forth_push_numhl
 		NEXT
-.SOUT:   db 32
-	dw .CLS
-	db 4
-	db "OUT",0      ;| OUT ( u1 u2 -- ) Perform Z80 OUT to port u2 sending byte u1 | TO TEST
+.SOUT:
+	CWHEAD .CLS 32 "OUT" 3 WORD_FLAG_CODE
+;   db 32
+;	dw .CLS
+;	db 4
+;	db "OUT",0      
+;| OUT ( u1 u2 -- ) Perform Z80 OUT to port u2 sending byte u1 | TO TEST
 
 		; get port
 
@@ -1273,25 +1364,34 @@ ret    ; dont process any remaining parser tokens as they form new word
 
 		NEXT
 
-.CLS:   db 33
-	dw .DRAW
-	db 4
-	db "CLS",0     ; |CLS ( -- ) clear frame buffer    |DONE
+.CLS:
+	CWHEAD .DRAW 33 "CLS" 3 WORD_FLAG_CODE
+;   db 33
+;	dw .DRAW
+;	db 4
+;	db "CLS",0     
+; |CLS ( -- ) clear frame buffer    |DONE
 		call clear_display
 		jp .home		; and home cursor
 		NEXT
 
-.DRAW:   db 34
-	dw .DUMP
-	db 5
-	db "DRAW",0     ; |DRAW ( -- ) Draw contents of current frame buffer  | DONE
+.DRAW:
+	CWHEAD .DUMP 34 "DRAW" 4 WORD_FLAG_CODE
+;   db 34
+;	dw .DUMP
+;	db 5
+;	db "DRAW",0     
+; |DRAW ( -- ) Draw contents of current frame buffer  | DONE
 		call update_display
 		NEXT
 
-.DUMP:   db 35				; |DUMP ( x --  ) With address x display dump   |DONE
-	dw .CDUMP
-	db 5
-	db "DUMP",0
+.DUMP:
+	CWHEAD .CDUMP 35 "DUMP" 4 WORD_FLAG_CODE
+;   db 35				
+; |DUMP ( x --  ) With address x display dump   |DONE
+;	dw .CDUMP
+;	db 5
+;	db "DUMP",0
 ; TODO pop address to use off of the stack
 		call clear_display
 
@@ -1310,20 +1410,26 @@ ret    ; dont process any remaining parser tokens as they form new word
 		call dumpcont	; skip old style of param parsing	
 		ret			; TODO command causes end of remaining parsing so cant do: $0000 DUMP $8000 DUMP
 		NEXT
-.CDUMP:   db 36                      ; continue memory dump
-	dw .DEPTH
-	db 6
-	db "CDUMP",0              ; |CDUMP ( -- ) continue dump of memory from DUMP |  DONE
+.CDUMP:
+	CWHEAD .DEPTH 36 "CDUMP" 5 WORD_FLAG_CODE
+;   db 36                      ; continue memory dump
+;	dw .DEPTH
+;	db 6
+;	db "CDUMP",0              
+; |CDUMP ( -- ) continue dump of memory from DUMP |  DONE
 		call clear_display
 		call dumpcont	
 		ret			; TODO command causes end of remaining parsing so cant do: $0000 DUMP CDUMP $8000 DUMP
 		NEXT
 
 
-.DEPTH:   db 37                     ; stack count
-	dw .DIR
-	db 6
-	db "DEPTH",0             ; |DEPTH ( -- u ) Push count of stack | DONE
+.DEPTH:
+	CWHEAD .DIR 37 "DEPTH" 5 WORD_FLAG_CODE
+;   db 37                     ; stack count
+;	dw .DIR
+;	db 6
+;	db "DEPTH",0             
+; |DEPTH ( -- u ) Push count of stack | DONE
 		; take current TOS and remove from base value div by two to get count
 
 
@@ -1346,25 +1452,38 @@ ret    ; dont process any remaining parser tokens as they form new word
 		call forth_push_numhl
 		NEXT
 
-.DIR:   db 38                     ;
-	dw .SAVE
-	db 4
-	db "DIR",0               ; |DIR ( u -- w... u )   Using bank number u push directory entries from persistent storage as w with count u 
+.DIR:
+	CWHEAD .SAVE 38 "DIR" 3 WORD_FLAG_CODE
+;
+;   db 38                     ;
+;	dw .SAVE
+;	db 4
+;	db "DIR",0               
+; |DIR ( u -- w... u )   Using bank number u push directory entries from persistent storage as w with count u 
 		NEXT
-.SAVE:   db 39
-	dw .LOAD
-	db 5
-	db "SAVE",0              ; |SAVE  ( w u -- )    Save user word memory to file name w on bank u
+.SAVE:
+	CWHEAD .LOAD 39 "SAVE" 4 WORD_FLAG_CODE
+;   db 39
+;	dw .LOAD
+;	db 5
+;	db "SAVE",0              
+; |SAVE  ( w u -- )    Save user word memory to file name w on bank u
 		NEXT
-.LOAD:   db 40
-	dw .DAT
-	db 5
-	db "LOAD",0               ;| LOAD ( w u -- )    Load user word memory from file name w on bank u
+.LOAD:
+	CWHEAD .DAT 40 "LOAD" 4 WORD_FLAG_CODE
+;   db 40
+;	dw .DAT
+;	db 5
+;	db "LOAD",0               
+;| LOAD ( w u -- )    Load user word memory from file name w on bank u
 		NEXT
-.DAT:   db 41                     
-	dw .KEY
-	db 3
-	db "AT",0            ;| CURSOR ( u1 u2 -- )  Set next output via . or emit at row u2 col u1 |DONE
+.DAT:
+	CWHEAD .KEY 41 "KEY" 3 WORD_FLAG_CODE
+;   db 41                     
+;	dw .KEY
+;	db 3
+;	db "AT",0            
+;| CURSOR ( u1 u2 -- )  Set next output via . or emit at row u2 col u1 |DONE
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
 
@@ -1397,24 +1516,33 @@ ret    ; dont process any remaining parser tokens as they form new word
 		; calculate 
 
 		NEXT
-.KEY:   db 42               
-	dw .WAITK
-	db 4
-	db "KEY",0     ; |KEY ( -- w f )      scan for keypress but do not wait true if next item on stack is key press
+.KEY:
+	CWHEAD .WAITK 42 "KEY" 3 WORD_FLAG_CODE
+;   db 42               
+;	dw .WAITK
+;	db 4
+;	db "KEY",0     
+; |KEY ( -- w f )      scan for keypress but do not wait true if next item on stack is key press
 		NEXT
-.WAITK:   db 43               
-	dw .ACCEPT
-	db 6
-	db "WAITK",0     ;| WAITK ( -- w )      wait for keypress TOS is key press | DONE
+.WAITK:
+	CWHEAD .ACCEPT 43 "WAITK" 5 WORD_FLAG_CODE
+;   db 43               
+;	dw .ACCEPT
+;	db 6
+;	db "WAITK",0     
+;| WAITK ( -- w )      wait for keypress TOS is key press | DONE
 		call cin_wait
 		ld l, a
 		ld h, 0
 		call forth_push_numhl
 		NEXT
-.ACCEPT:   db 44               
-	dw .HOME
-	db 7
-	db "ACCEPT",0     ; |ACCEPT ( -- w )    Prompt for text input and push pointer to string | TEST
+.ACCEPT:
+	CWHEAD .HOME 44 "ACCEPT" 6 WORD_FLAG_CODE
+;   db 44               
+;	dw .HOME
+;	db 7
+;	db "ACCEPT",0     
+; |ACCEPT ( -- w )    Prompt for text input and push pointer to string | TEST
 		; TODO crashes on push
 		ld a,(f_cursor_ptr)
 		ld d, 100
@@ -1432,18 +1560,24 @@ ret    ; dont process any remaining parser tokens as they form new word
 		call forth_apush
 		NEXT
 
-.HOME:	db 45
-	dw .OVER
-	db 5
-	db "HOME",0	; |HOME ( -- )    Reset the current cursor for output to home |DONE
+.HOME:
+	CWHEAD .OVER 45 "HOME" 4 WORD_FLAG_CODE
+;	db 45
+;	dw .OVER
+;	db 5
+;	db "HOME",0	
+; |HOME ( -- )    Reset the current cursor for output to home |DONE
 .home:		ld a, 0		; and home cursor
 		ld (f_cursor_ptr), a
 		NEXT
 
-.OVER:  db 46
-	dw .PAUSE
-	db 5
-	db "OVER",0	; |OVER ( n1 n2 -- n1 n2 n1 )  Copy one below TOS onto TOS | DONE
+.OVER:
+	CWHEAD .PAUSE 46 "OVER" 4 WORD_FLAG_CODE
+;  db 46
+;	dw .PAUSE
+;	db 5
+;	db "OVER",0	
+; |OVER ( n1 n2 -- n1 n2 n1 )  Copy one below TOS onto TOS | DONE
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 		push hl    ; n2
@@ -1470,10 +1604,13 @@ ret    ; dont process any remaining parser tokens as they form new word
 		call forth_push_numhl
 		NEXT
 
-.PAUSE:   db 47
-	  dw .PAUSES
-          db 8
-	  db "PAUSEMS",0	; | PAUSEMS ( n -- )  Pause for n millisconds | DONE
+.PAUSE:
+	CWHEAD .PAUSES 47 "PAUSEMS" 7 WORD_FLAG_CODE
+;   db 47
+;	  dw .PAUSES
+ ;         db 8
+;	  db "PAUSEMS",0	
+; | PAUSEMS ( n -- )  Pause for n millisconds | DONE
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 		push hl    ; n2
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
@@ -1482,10 +1619,13 @@ ret    ; dont process any remaining parser tokens as they form new word
 		ld a, l
 		call aDelayInMS
 	       NEXT
-.PAUSES:   db 48
-	  dw .ROT
-          db 8
-	  db "PAUSES",0	; | PAUSES ( n -- )  Pause for n seconds | DONE
+.PAUSES: 
+	CWHEAD .ROT 48 "PAUSE" 5 WORD_FLAG_CODE
+;  db 48
+;	  dw .ROT
+ ;         db 8
+;	  db "PAUSES",0	
+; | PAUSE ( n -- )  Pause for n seconds | DONE
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 		push hl    ; n2
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
@@ -1511,25 +1651,34 @@ ret    ; dont process any remaining parser tokens as they form new word
 		djnz .pauses1
 
 	       NEXT
-.ROT:   db 49
-	  dw .SPACE
-          db 4
-	  db "ROT",0	; | ROT (  -- )  
+.ROT:
+	CWHEAD .SPACE 49 "ROT" 3 WORD_FLAG_CODE
+;   db 49
+;	  dw .SPACE
+ ;         db 4
+;	  db "ROT",0	
+; | ROT (  -- )  
 	       NEXT
 
-.SPACE:   db 50
-	  dw .SPACES
-          db 6
-	  db "SPACE",0	; | SPACE (  -- c ) Push the value of space onto the stack as a string  | DONE
+.SPACE:
+	CWHEAD .SPACES 50 "SPACE" 5 WORD_FLAG_CODE
+;   db 50
+;	  dw .SPACES
+ ;         db 6
+;	  db "SPACE",0	
+; | SPACE (  -- c ) Push the value of space onto the stack as a string  | DONE
 		ld hl, ' '
 		call forth_push_numhl
 		
 	       NEXT
 
-.SPACES:   db 51
-	  dw .CONCAT
-          db 7
-	  db "SPACES",0	; | SPACES ( u -- str )  A string of u spaces is pushed onto the stack
+.SPACES:
+	CWHEAD .CONCAT 51 "SPACES" 6 WORD_FLAG_CODE
+;   db 51
+;	  dw .CONCAT
+ ;         db 7
+;	  db "SPACES",0	
+; | SPACES ( u -- str )  A string of u spaces is pushed onto the stack
 
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -1575,16 +1724,22 @@ ret    ; dont process any remaining parser tokens as they form new word
 		call forth_apush
 
 	       NEXT
-.CONCAT:   db 52
-	  dw .MIN
-          db 7
-	  db "CONCAT",0	; | CONCAT ( s1 s2 -- s3 ) A string of u spaces is pushed onto the stack
+.CONCAT:
+	CWHEAD .MIN 52 "CONCAT" 6 WORD_FLAG_CODE
+;   db 52
+;	  dw .MIN
+ ;         db 7
+;	  db "CONCAT",0	
+; | CONCAT ( s1 s2 -- s3 ) A string of u spaces is pushed onto the stack
 	       NEXT
 
-.MIN:   db 53
-	  dw .MAX
-          db 4
-	  db "MIN",0	; | MIN (  u1 u2 -- u3 ) Whichever is the smallest value is pushed back onto the stack | TEST NO DEBUG
+.MIN:
+	CWHEAD .MAX 53 "MIN" 3 WORD_FLAG_CODE
+;   db 53
+;	  dw .MAX
+ ;         db 4
+;	  db "MIN",0	
+; | MIN (  u1 u2 -- u3 ) Whichever is the smallest value is pushed back onto the stack | TEST NO DEBUG
 		; get u2
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -1637,10 +1792,13 @@ ret    ; dont process any remaining parser tokens as they form new word
 		call forth_push_numhl
 
 	       NEXT
-.MAX:   db 54
-	  dw .FIND
-          db 4
-	  db "MAX",0	; | MAX (  u1 u2 -- u3 )  Whichever is the largest value is pushed back onto the stack | TEST NO DEBUG
+.MAX:
+	CWHEAD .FIND 54 "MAX" 3 WORD_FLAG_CODE
+;   db 54
+;	  dw .FIND
+ ;         db 4
+;	  db "MAX",0	
+; | MAX (  u1 u2 -- u3 )  Whichever is the largest value is pushed back onto the stack | TEST NO DEBUG
 		; get u2
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -1693,44 +1851,65 @@ ret    ; dont process any remaining parser tokens as they form new word
 		call forth_push_numhl
 	       NEXT
 
-.FIND:   db 55
-	  dw .LEN
-          db 5
-	  db "FIND",0	; | FIND (  -- )  
+.FIND:
+	CWHEAD .LEN 55 "FIND" 4 WORD_FLAG_CODE
+;   db 55
+;	  dw .LEN
+ ;         db 5
+;	  db "FIND",0	
+; | FIND (  -- )  
 	       NEXT
 
-.LEN:   db 56
-	  dw .CHAR
-          db 4
-	  db "LEN",0	; | LEN (  u1 -- u2 ) Push the length of the string on TOS
+.LEN:
+	CWHEAD .CHAR 56 "LEN" 3 WORD_FLAG_CODE
+;   db 56
+;	  dw .CHAR
+ ;         db 4
+;	  db "LEN",0	
+; | LEN (  u1 -- u2 ) Push the length of the string on TOS
 	       NEXT
-.CHAR:   db 57
-	  dw .RND
-          db 5
-	  db "CHAR",0	; | CHAR (  -- )  
-	       NEXT
-
-.RND:   db 58
-	  dw .WORDS
-          db 4
-	  db "RND",0	; | RND (  -- )  
-	       NEXT
-.WORDS:   db 59
-	  dw .UWORDS
-          db 6
-	  db "WORDS",0	; | WORDS (  -- )   List the system and user word dict
+.CHAR:
+	CWHEAD .RND 57 "CHAR" 4 WORD_FLAG_CODE
+;   db 57
+;	  dw .RND
+ ;         db 5
+;	  db "CHAR",0	
+; | CHAR (  -- )  
 	       NEXT
 
-.UWORDS:   db 60
-	  dw .SPIO
-          db 7
-	  db "UWORDS",0	; | UWORDS (  -- )   List user word dict
+.RND:
+	CWHEAD .WORDS 58 "RND" 3 WORD_FLAG_CODE
+;   db 58
+;	  dw .WORDS
+ ;         db 4
+;	  db "RND",0	
+; | RND (  -- )  
+	       NEXT
+.WORDS:
+	CWHEAD .UWORDS 59 "WORDS" 5 WORD_FLAG_CODE
+;   db 59
+;	  dw .UWORDS
+ ;         db 6
+;	  db "WORDS",0	
+; | WORDS (  -- )   List the system and user word dict
 	       NEXT
 
-.SPIO:   db 61
-	dw .SPII
-	db 5
-	db "SPIO",0      ;| SPIO ( u1 u2 -- ) Send byte u1 to SPI device u2 |  WIP
+.UWORDS:
+	CWHEAD .SPIO 60 "UWORDS" 6 WORD_FLAG_CODE
+;   db 60
+;	  dw .SPIO
+ ;         db 7
+;	  db "UWORDS",0	
+; | UWORDS (  -- )   List user word dict
+	       NEXT
+
+.SPIO:
+	CWHEAD .SPII 61 "SPIO" 4 WORD_FLAG_CODE
+;   db 61
+;	dw .SPII
+;	db 5
+;	db "SPIO",0      
+;| SPIO ( u1 u2 -- ) Send byte u1 to SPI device u2 |  WIP
 
 		; get port
 
@@ -1766,10 +1945,13 @@ ret    ; dont process any remaining parser tokens as they form new word
 
 		NEXT
 
-.SPII:   db 62
-	dw .SCROLL
-	db 5
-	db "SPII",0      ;| SPII ( u1 -- ) Get a byte from SPI device u2 |  WIP
+.SPII:
+	CWHEAD .SCROLL 62 "SPII" 5 WORD_FLAG_CODE
+;   db 62
+;	dw .SCROLL
+;	db 5
+;	db "SPII",0      
+;| SPII ( u1 -- ) Get a byte from SPI device u2 |  WIP
 
 		; get port
 
@@ -1795,10 +1977,13 @@ ret    ; dont process any remaining parser tokens as they form new word
 		call forth_push_numhl
 
 		NEXT
-.SCROLL:   db 63
-	dw .BP
-	db 7
-	db "SCROLL",0      ;| SCROLL ( u1 c1 -- ) Scroll u1 lines/chars in direction c1 | WIP
+.SCROLL:
+	CWHEAD .BP 63 "SCROLL" 6 WORD_FLAG_CODE
+;   db 63
+;	dw .BP
+;	db 7
+;	db "SCROLL",0      
+;| SCROLL ( u1 c1 -- ) Scroll u1 lines/chars in direction c1 | WIP
 
 		; get port
 
@@ -1829,10 +2014,13 @@ ret    ; dont process any remaining parser tokens as they form new word
 		; TODO Get SPI byte
 
 		NEXT
-.BP:   db 64
-	dw .MONITOR
-	db 3
-	db "BP",0      ;| BP ( u1 -- ) Enable or disable break point monitoring | TEST
+.BP:
+	CWHEAD .MONITOR 64 "BP" 2 WORD_FLAG_CODE
+;   db 64
+;	dw .MONITOR
+;	db 3
+;	db "BP",0      
+;| BP ( u1 -- ) Enable or disable break point monitoring | TEST
 		; get byte count
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -1856,20 +2044,26 @@ ret    ; dont process any remaining parser tokens as they form new word
 		NEXT
 
 
-.MONITOR:   db 65
-	dw .MALLOC
-	db 8
-	db "MONITOR",0      ;| MONITOR ( -- ) Display system breakpoint/monitor | DONE
+.MONITOR:
+	CWHEAD .MALLOC 65 "MONITOR" 7 WORD_FLAG_CODE
+;   db 65
+;	dw .MALLOC
+;	db 8
+;	db "MONITOR",0      
+;| MONITOR ( -- ) Display system breakpoint/monitor | DONE
 	;	rst 030h
 	CALLMONITOR
 
 		NEXT
 
 
-.MALLOC:   db 66
-	dw .FREE
-	db 7
-	db "MALLOC",0      ;| MALLOC ( u -- u ) Allocate u bytes of memory space and push the pointer TOS  | TEST
+.MALLOC:
+	CWHEAD .FREE 66 "MALLOC" 6 WORD_FLAG_CODE
+;   db 66
+;	dw .FREE
+;	db 7
+;	db "MALLOC",0      
+;| MALLOC ( u -- u ) Allocate u bytes of memory space and push the pointer TOS  | TEST
 		; get byte count
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -1886,10 +2080,13 @@ ret    ; dont process any remaining parser tokens as they form new word
 		call forth_push_numhl
 		NEXT
 
-.FREE:   db 67
-	dw .STRLEN
-	db 5
-	db "FREE",0      ;| FREE ( u --  ) Free memory block from malloc given u address  | TEST
+.FREE:
+	CWHEAD .STRLEN 67 "FREE" 4 WORD_FLAG_CODE
+;   db 67
+;	dw .STRLEN
+;	db 5
+;	db "FREE",0      
+;| FREE ( u --  ) Free memory block from malloc given u address  | TEST
 		; get address
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -1905,99 +2102,111 @@ ret    ; dont process any remaining parser tokens as they form new word
 
 		NEXT
 
-.STRLEN:   db 68
-	dw .STRCPY
-	db 7
-	db "STRLEN",0      ;| STRLEN ( u1 -- Using given address u1 push then zero term length string to TOS )   |
+.STRLEN:
+	CWHEAD .STRCPY 68 "STRLEN" 6 WORD_FLAG_CODE
+;   db 68
+;	dw .STRCPY
+;	db 7
+;	db "STRLEN",0      
+;| STRLEN ( u1 -- Using given address u1 push then zero term length string to TOS )   |
 
 		NEXT
 
-.STRCPY:   db 69
-	dw .BSAVE
-	db 7
-	db "STRCPY",0      ;| STRCPY ( u1 u2 -- Copy string u2 to u1 )   |
+.STRCPY:
+	CWHEAD .BSAVE 69 "STRCPY" 6 WORD_FLAG_CODE
+;   db 69
+;	dw .BSAVE
+;	db 7
+;	db "STRCPY",0      
+;| STRCPY ( u1 u2 -- Copy string u2 to u1 )   |
 
 		NEXT
-.BSAVE:   db 70
-	dw .BLOAD
-	db 6
-	db "BSAVE",0              ; |BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at address a for s bytes
+.BSAVE:  
+
+	CWHEAD .BLOAD 70 "BSAVE" 5 WORD_FLAG_CODE
+; db 70
+;	dw .BLOAD
+;	db 6
+;	db "BSAVE",0              ; |BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at address a for s bytes
 		NEXT
-.BLOAD:   db 71
-	dw .V0
-	db 6
-	db "BLOAD",0               ;| BLOAD ( w u a -- )    Load binary file from file name w on bank u into address u
+.BLOAD:
+	CWHEAD .END 71 "BLOAD" 5 WORD_FLAG_CODE
+;   db 71
+;	dw .V0
+;	db 6
+;	db "BLOAD",0               
+;| BLOAD ( w u a -- )    Load binary file from file name w on bank u into address u
 		NEXT
 ;;;; counter gap
 
 
-.V0:   db 143               
-	dw .V1
-	db 3
-	db "@0",0
-		NEXT
-
-.V1:   db 144               
-	dw .V2
-	db 3
-	db "@1",0
-		NEXT
-
-
-.V2:   db 145               
-	dw .V3
-	db 3
-	db "@2",0
-		NEXT
-
-
-.V3:   db 146               
-	dw .V4
-	db 3
-	db "@3",0
-		NEXT
-
-
-.V4:   db 147              
-	dw .V5
-	db 3
-	db "@4",0
-		NEXT
-
-.V5:   db 148               
-	dw .V6
-	db 3
-	db "@5",0
-		NEXT
-
-.V6:   db 149               
-	dw .V7
-	db 3
-	db "@6",0
-		NEXT
-
-.V7:   db 150               
-	dw .V8
-	db 3
-	db "@7",0
-		NEXT
-
-.V8:   db 151               
-	dw .V9
-	db 3
-	db "@8",0
-		NEXT
-
-.V9:   db 152               
-	dw .I
-	db 3
-	db "@9",0
-		NEXT
-.I:   db 153               
-	dw .END
-	db 2
-	db "I",0               ;| I ( -- ) Loop counter
-		NEXT
+;.V0:   db 143               
+;	dw .V1
+;	db 3
+;	db "@0",0
+;		NEXT
+;
+;.V1:   db 144               
+;	dw .V2
+;	db 3
+;	db "@1",0
+;		NEXT
+;
+;
+;.V2:   db 145               
+;	dw .V3
+;	db 3
+;	db "@2",0
+;		NEXT
+;
+;
+;.V3:   db 146               
+;	dw .V4
+;	db 3
+;	db "@3",0
+;		NEXT
+;
+;
+;.V4:   db 147              
+;	dw .V5
+;	db 3
+;	db "@4",0
+;		NEXT
+;
+;.V5:   db 148               
+;	dw .V6
+;	db 3
+;	db "@5",0
+;		NEXT
+;
+;.V6:   db 149               
+;	dw .V7
+;	db 3
+;	db "@6",0
+;		NEXT
+;
+;.V7:   db 150               
+;	dw .V8
+;	db 3
+;	db "@7",0
+;		NEXT
+;
+;.V8:   db 151               
+;	dw .V9
+;	db 3
+;	db "@8",0
+;		NEXT
+;
+;.V9:   db 152               
+;	dw .I
+;	db 3
+;	db "@9",0
+;		NEXT
+;.I:   db 153               
+;	dw .END
+;	db 2
+;	db "I",0               ;| I ( -- ) Loop counter
+;		NEXT
 
 
 ; Hardware specific words I may need
@@ -2007,12 +2216,12 @@ ret    ; dont process any remaining parser tokens as they form new word
 ; calls to hardward abstraction stuff
 ; easy control of frame buffers and lcd i/o
 ; keyboard 
-.NOP:    db 1
-	dw .END
-	db "NOP",0
-	nop
-	NEXT
-
+;.NOP:    db 1
+;	dw .END
+;	db "NOP",0
+;	nop
+;	NEXT
+;
 .END:    db 0
 	dw 0
 	db 0

@@ -546,10 +546,10 @@ next_page_prompt:
 
 	ret
 
+
 ; forth parser
 
 include "forth_kernel.asm"
-
 
 
 ; eof

@@ -118,6 +118,11 @@ macro_forth_rsp_tos:
 	ret
 
 
+forth_call_hl:
+	; taking hl
+	push hl
+	ret
+
 forth_init:
 ;	call update_display
 ;	call delay1s

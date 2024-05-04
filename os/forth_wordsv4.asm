@@ -1273,7 +1273,7 @@ ret    ; dont process any remaining parser tokens as they form new word
 ;	dw .SIN
 ;	db 5
 ;	db "CALL",0	
-; |CALL ( w -- w  ) machine code call to address w  push the result of hl to stack
+; |CALL ( w -- w  ) machine code call to address w  push the result of hl to stack | TO TEST
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
 		push hl
@@ -1282,13 +1282,12 @@ ret    ; dont process any remaining parser tokens as they form new word
 
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
-		; one value on hl get other one back
-
+			
 		pop hl
 
+		; how to do a call with hl???? save SP?
+		call forth_call_hl
 
-		; TODO how to do a call with hl???? save SP?
-		
 
 		; TODO push value back onto stack for another op etc
 
@@ -1678,7 +1677,7 @@ ret    ; dont process any remaining parser tokens as they form new word
 ;	  dw .CONCAT
  ;         db 7
 ;	  db "SPACES",0	
-; | SPACES ( u -- str )  A string of u spaces is pushed onto the stack
+; | SPACES ( u -- str )  A string of u spaces is pushed onto the stack | TO TEST
 
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -1874,7 +1873,20 @@ ret    ; dont process any remaining parser tokens as they form new word
 ;	  dw .RND
  ;         db 5
 ;	  db "CHAR",0	
-; | CHAR (  -- )  
+; | CHAR ( u -- n ) Get the ascii value of the first character of the string on the stack | TO TEST
+		FORTH_DSP_VALUE
+		inc hl      ; now at start of numeric as string
+
+		ld a,(hl)   ; get char
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		; push the content of a onto the stack as a value
+
+		ld h,0
+		ld l,a
+		call forth_push_numhl
+
 	       NEXT
 
 .RND:

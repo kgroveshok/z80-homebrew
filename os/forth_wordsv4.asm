@@ -688,7 +688,7 @@ endif
 		ld (os_new_malloc), hl     ; save malloc start
 
 ;    db   1     ; user defined word 
-		ld a, 1
+		ld a, WORD_SYS_UWORD 
 		ld (hl), a
 	
 	inc hl   

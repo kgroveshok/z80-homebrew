@@ -4,9 +4,10 @@
 
 
 
-WORD_SYS_CORE: equ 0    ; Offset for dict core words opcode
-WORD_SYS_LOWPRIM: equ 0    ; Offset for low level prim words opcode
-WORD_SYS_BRANCH: equ 0    ; Offset for branching and loop words opcode
+WORD_SYS_LOWPRIM: equ 2    ; Offset for low level prim words opcode
+WORD_SYS_BRANCH: equ 10    ; Offset for branching and loop words opcode
+WORD_SYS_UWORD: equ 1   ; Opcode for all user words
+WORD_SYS_CORE: equ 20    ; Offset for dict core words opcode
 
 WORD_FLAG_CODE: equ 0	   ; opcodeflag to exec pure code for this word
 WORD_FLAG_JP: equ 1	   ; opcodeflag to list zero term jump table words

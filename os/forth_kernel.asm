@@ -117,6 +117,21 @@ macro_forth_rsp_tos:
 	pop de
 	ret
 
+; pop ret stack pointer
+	
+FORTH_RSP_POP: macro
+	call macro_forth_rsp_pop
+	endm
+
+macro_forth_rsp_pop:
+	push hl
+	ld hl,(cli_ret_sp)
+	dec hl
+	dec hl
+	ld (cli_ret_sp), hl
+	; TODO do stack underflow checks
+	pop hl
+	ret
 
 forth_call_hl:
 	; taking hl

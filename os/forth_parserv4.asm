@@ -303,10 +303,10 @@ forthexec:
 
 ;       restore current pc - hl points to malloc of data
 
-	ld e, (hl)
-	inc hl
-	ld d, (hl)
-	ex de,hl
+	;ld e, (hl)
+	;inc hl
+	;ld d, (hl)
+	;ex de,hl
 
 
 exec1:

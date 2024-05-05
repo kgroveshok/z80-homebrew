@@ -601,7 +601,7 @@ endif
 ; |LOOP ( -- )     Current loop end marker
 		NEXT
 .COLN:
-	CWHEAD .DROP 15 ":" 1 WORD_FLAG_CODE
+	CWHEAD .SCOLN 15 ":" 1 WORD_FLAG_CODE
 ;	db 15
 ;	dw .DROP
 ;	db 2
@@ -904,14 +904,17 @@ ret    ; dont process any remaining parser tokens as they form new word
 
 
 ;		NEXT
-;.SCOLN:	db 16
-;	dw .DROP
-;	db 2
-;	db ";",0          ; |; ( -- )     Terminate new word
+.SCOLN:
+;	CWHEAD .DROP 17 '\;' 1 WORD_FLAG_CODE
+	db 17
+	dw .DROP
+	db 2
+	db ";",0          
+; |; ( -- )     Terminate new word and return exec to previous exec level
+		FORTH_RSP_POP
 
 
-
-;		NEXT
+		NEXT
 .DROP:
 	CWHEAD .DUP2 17 "DROP" 4 WORD_FLAG_CODE
 ;   db 17
@@ -1895,7 +1898,9 @@ ret    ; dont process any remaining parser tokens as they form new word
 ;	  dw .WORDS
  ;         db 4
 ;	  db "RND",0	
-; | RND (  -- )  
+; | RND (  -- )  | TO TEST
+		call prng16 
+		call forth_push_numhl
 	       NEXT
 .WORDS:
 	CWHEAD .UWORDS 59 "WORDS" 5 WORD_FLAG_CODE

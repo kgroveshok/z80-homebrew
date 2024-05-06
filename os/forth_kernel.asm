@@ -804,8 +804,8 @@ startcmds:
 	dw s2
 	db 0, 0	
 
-s1:	db ": aa 1 2 3 ; ", 0     
-s2:     db "111 aa 888 999 ",0        
+s1:	db ": aa 1 2 3 ;  ", 0, 0, 0, FORTH_END_BUFFER
+s2:     db "111 aa 888 999  ",0, 0, 0, FORTH_END_BUFFER
 
 sprompt: db "Run this? *=End #=All",0
 
@@ -848,7 +848,7 @@ startup:
 	ex de,hl
 
 	push hl
-	ld a,0
+	ld a, FORTH_END_BUFFER
 	call strlent
 
 	ld b,0

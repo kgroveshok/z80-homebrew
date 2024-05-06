@@ -612,7 +612,7 @@ endif
 ;	dw .DROP
 ;	db 2
 ;	db ":",0     
-; |: ( -- )         Create new word | TEST - Breaking dict linked list
+; |: ( -- )         Create new word |  DONE
 
 	; get parser buffer length  of new word
 
@@ -925,7 +925,7 @@ ret    ; dont process any remaining parser tokens as they form new word
 	dw .DROP
 	db 2
 	db ";",0          
-; |; ( -- )     Terminate new word and return exec to previous exec level
+; |; ( -- )     Terminate new word and return exec to previous exec level | DONE
 		FORTH_RSP_TOS
 		push hl
 		FORTH_RSP_POP

@@ -190,6 +190,9 @@ forth_init:
 ;		call display_data_sp
 ;		call next_page_prompt
 
+	call startup
+
+
 
 	ret
 
@@ -794,4 +797,97 @@ display_reg_state:
 	pop bc
 	pop de
 	ret
+
+
+startcmds:
+	dw s1
+	dw s2
+	db 0, 0	
+
+s1:	db ": aa 1 2 3 ;", 0
+s2:     db "111 aa 999",0
+
+sprompt: db "Run this? *=End",0
+
+startup:
+	ld hl, startcmds
+
+.start1:	push hl
+	call clear_display
+	ld de, sprompt
+        ld a, display_row_1
+	call str_at_display
+	pop hl
+	push hl
+	ld e,(hl)
+	inc hl
+	ld d,(hl)
+        ld a, display_row_2
+	call str_at_display
+	call update_display
+
+	call delay1s
+	ld a,display_row_4 + display_cols - 1
+        ld de, endprg
+	call str_at_display
+	call update_display
+	call cin_wait
+			
+			
+	cp '*'
+	jr z, .startupend
+
+
+	; exec startup line
+	pop hl
+	push hl
+	
+	ld e,(hl)
+	inc hl
+	ld d,(hl)
+	ex de,hl
+
+	push hl
+	ld a,0
+	call strlent
+
+	ld b,0
+	ld c,l
+	ld de, scratch
+	pop hl
+	ldir
+
+
+	ld hl, scratch
+	call forthparse
+	call forthexec
+	ld a, display_row_4
+	ld de, endprog
+
+	call update_display		
+
+	call next_page_prompt
+        call clear_display
+	call update_display		
+
+	; move onto next startup line?
+	pop hl
+
+	inc hl
+	inc hl
+
+	push hl
+
+	ld a,l
+	add h
+	cp 0    ; any left to do?
+	jr nz, .start1
+
+.startupend:
+	pop hl	
+
+	ret
+
+
+
 ; eof

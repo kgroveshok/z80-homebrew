@@ -572,12 +572,15 @@ endif
 ; |THEN ( -- )     control????
 		NEXT
 .ELSE:
-	CWHEAD .DO 12 "DO" 2 WORD_FLAG_CODE
+	CWHEAD .DO 12 "ELSE" 2 WORD_FLAG_CODE
 ; 	db 12
 ;	dw .DO
 ;	db 5
 ;	db "ELSE",0      
 ; |ELSE ( -- )     control???
+
+
+
 		NEXT
 .DO:
 	CWHEAD .LOOP 13 "DO" 2 WORD_FLAG_CODE
@@ -586,11 +589,9 @@ endif
 ;	db 3
 ;	db "DO",0       
 ; |DO ( u1 u2 -- )   Loop starting at u2 with a limit of u1
-; TODO setup loop vars
-; TODO extract portion to exec, malloc it and start exec on that block
-; TODO once exec, test exit condition
-; TODO if exit then put exec point past block
-; TODO if not exit rerun block
+
+; TODO push pc to rsp stack
+; TODO save tos to i value
 		NEXT
 .LOOP:
 	CWHEAD .COLN 14 "LOOP" 4 WORD_FLAG_CODE
@@ -599,6 +600,11 @@ endif
 ;	db 5
 ;	db "LOOP",0      
 ; |LOOP ( -- )     Current loop end marker
+
+	; TODO pop tos as current loop count to hl
+	; TODO if new tos (loop limit) is not same as hl, inc hl, push hl to tos, pop rsp and set pc to it
+	; TODO else end of loop. pop rsp and bin
+
 		NEXT
 .COLN:
 	CWHEAD .SCOLN 15 ":" 1 WORD_FLAG_CODE
@@ -769,10 +775,10 @@ endif
 
 	; create word preamble which should be:
 
+; TODO possibly push the current os_tok_ptr to rsp and the current rsp will be the start of the string and not current pc????
+
 	;    ld hl, <word code>
-	;    FORTH_RSP_NEXT - call macro_forth_rsp_next
-	;    call forthexec
-	;    jp user_dict_next   (NEXT)
+	;    jp user_exec
         ;    <word code bytes>
 
 
@@ -786,33 +792,42 @@ endif
 	inc hl
 
 	inc hl
-	ld (hl), 0cdh     ; TODO get bytes poke "call  "
+	ld (hl), 0c3h     ; TODO get bytes poke "jp xx  "
 
-
-	ld bc, macro_forth_rsp_next
+	ld bc, user_exec
 	inc hl
-	ld (hl), c     ; poke address of FORTH_RSP_NEXT
+	ld (hl), c     ; poke address of user_exec
 	inc hl
 	ld (hl), b    
- 
-	inc hl
-	ld (hl), 0cdh     ; TODO get bytes poke "call  "
-
-
-	inc hl
-	ld bc, forthexec
-	ld (hl), c     ; poke address of forthexec
-	inc hl
-	ld (hl), b     
-
-	inc hl
-	ld (hl), 0c3h     ; TODO get bytes poke "jp  "
-
-	ld bc, user_dict_next
-	inc hl
-	ld (hl), c     ; poke address of forthexec
-	inc hl
-	ld (hl), b     
+ ;
+;	inc hl
+;	ld (hl), 0cdh     ; TODO get bytes poke "call  "
+;
+;
+;	ld bc, macro_forth_rsp_next
+;	inc hl
+;	ld (hl), c     ; poke address of FORTH_RSP_NEXT
+;	inc hl
+;	ld (hl), b    
+ ;
+;	inc hl
+;	ld (hl), 0cdh     ; TODO get bytes poke "call  "
+;
+;
+;	inc hl
+;	ld bc, forthexec
+;	ld (hl), c     ; poke address of forthexec
+;	inc hl
+;	ld (hl), b     
+;
+;	inc hl
+;	ld (hl), 0c3h     ; TODO get bytes poke "jp  "
+;
+;	ld bc, user_dict_next
+;	inc hl
+;	ld (hl), c     ; poke address of forthexec
+;	inc hl
+;	ld (hl), b     
 
 	; hl is now where we need to copy the word byte data to save this
 
@@ -912,8 +927,17 @@ ret    ; dont process any remaining parser tokens as they form new word
 	db ";",0          
 ; |; ( -- )     Terminate new word and return exec to previous exec level
 		FORTH_RSP_POP
+		FORTH_RSP_TOS
+;		ex de,hl
+		ld (os_tok_ptr),hl
 
-
+if DEBUG_FORTH_UWORD
+	push af
+	ld a, ';'
+	ld (debug_mark),a
+	pop af
+	CALLMONITOR
+endif
 		NEXT
 .DROP:
 	CWHEAD .DUP2 17 "DROP" 4 WORD_FLAG_CODE
@@ -2246,6 +2270,36 @@ ret    ; dont process any remaining parser tokens as they form new word
 ; use to jp here for user dict words to save on macro expansion 
 
 user_dict_next:
+	NEXT
+
+
+user_exec:
+	;    ld hl, <word code>
+	;    FORTH_RSP_NEXT - call macro_forth_rsp_next
+	;    call forthexec
+	;    jp user_dict_next   (NEXT)
+        ;    <word code bytes>
+	ex de, hl
+	ld hl,(os_tok_ptr)
+	
+	FORTH_RSP_NEXT
+
+if DEBUG_FORTH_UWORD
+	push af
+	ld a, '-'
+	ld (debug_mark),a
+	pop af
+	CALLMONITOR
+endif
+
+
+
+	ex de, hl
+	ld (os_tok_ptr), hl
+	
+	; TODO  BUG skipping the first word in uword??? dont use next
+
+
 	NEXT
 
 

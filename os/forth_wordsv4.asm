@@ -2297,10 +2297,10 @@ endif
 	ex de, hl
 	ld (os_tok_ptr), hl
 	
-	; TODO  BUG skipping the first word in uword??? dont use next
+	; Don't use next - Skips the first word in uword.
 
-
-	NEXT
+	jp exec1
+;	NEXT
 
 
 ; eof

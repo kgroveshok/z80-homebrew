@@ -926,8 +926,10 @@ ret    ; dont process any remaining parser tokens as they form new word
 	db 2
 	db ";",0          
 ; |; ( -- )     Terminate new word and return exec to previous exec level
-		FORTH_RSP_POP
 		FORTH_RSP_TOS
+		push hl
+		FORTH_RSP_POP
+		pop hl
 ;		ex de,hl
 		ld (os_tok_ptr),hl
 

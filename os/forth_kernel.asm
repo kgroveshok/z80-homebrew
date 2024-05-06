@@ -804,8 +804,8 @@ startcmds:
 	dw s2
 	db 0, 0	
 
-s1:	db ": aa 1 2 3 ;", 0     
-s2:     db "111 aa 999",0         ; TODO BUG does not run word following uword
+s1:	db ": aa 1 2 3 ; ", 0     
+s2:     db "111 aa 888 999 ",0        
 
 sprompt: db "Run this? *=End #=All",0
 

@@ -877,9 +877,13 @@ startup:
 	inc hl
 
 	push hl
+	ld e, (hl)
+	inc hl
+	ld d, (hl)
 
-	ld a,l
-	add h
+
+	ld a,e
+	add d
 	cp 0    ; any left to do?
 	jr nz, .start1
 

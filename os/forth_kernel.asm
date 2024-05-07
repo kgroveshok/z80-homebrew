@@ -317,6 +317,18 @@ malloc_error:
 
 ;if DEBUG_FORTH_PUSH
 display_data_sp:
+	push af
+
+	; see if disabled
+
+	ld a, (os_view_disable)
+	cp '*'
+	jr nz, .ddata
+	pop af
+	ret
+
+.ddata:
+	pop af
 
 	push af
 	push hl
@@ -367,17 +379,10 @@ pop hl
 		ld a, display_row_2 + 11
 		call str_at_display
 
-	push af
-	; see if disabled
-
-	ld a, (os_view_disable)
-	cp '*'
-	jr z, .whlskip1
 
 	call update_display
 	call delay1s
 	call delay1s
-.whlskip1: pop af
 	pop hl
 	pop af
 	ret

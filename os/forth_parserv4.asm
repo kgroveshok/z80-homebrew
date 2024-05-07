@@ -901,6 +901,13 @@ endif
 	push hl
 
 if DEBUG_FORTH_PUSH
+	; see if disabled
+
+	push af
+	ld a, (os_view_disable)
+	cp '*'
+	jr z, .pskip2
+
 	push af
 	push hl
 push hl
@@ -925,17 +932,12 @@ pop hl
 
 		call str_at_display
 
-	; see if disabled
 
-	push af
-	ld a, (os_view_disable)
-	cp '*'
-	jr z, .pskip2
 	call update_display
 	call delay1s
 	call delay1s
-
-.pskip2: pop af
+	pop af
+.pskip2: 
 
 	pop af
 endif	

@@ -236,12 +236,12 @@ endif
 ;;;;;;;;;;;;;; Debug code
 
 
-if DEBUG_FORTH_PARSE
+;if DEBUG_FORTH_PARSE
 .nowordfound: db "No match",0
 .compword:	db "Comparing word ",0
 .nextwordat:	db "Next word at",0
 .charmatch:	db "Char match",0
-endif
+;endif
 if DEBUG_FORTH_JP
 .foundword:	db "Word match. Exec..",0
 endif
@@ -840,7 +840,7 @@ sprompt2: db "Run? 1=No *=End #=All",0
 forth_startup:
 	ld hl, startcmds
 	ld a, 0
-	ld (cli_buffer), a    ; tmp var to skip prompts if doing all
+	ld (os_last_cmd), a    ; tmp var to skip prompts if doing all
 
 .start1:	push hl
 	call clear_display
@@ -860,7 +860,7 @@ forth_startup:
 	call update_display
 
 
-	ld a, (cli_buffer)
+	ld a, (os_last_cmd)
 	cp 0
 	jr z, .startprompt
 	call delay250ms
@@ -882,7 +882,7 @@ forth_startup:
 	cp '#'
 	jr nz, .startno
 	ld a, 1
-	ld (cli_buffer),a
+	ld (os_last_cmd),a
 	jr .startdo
 .startno:	cp '1'
 	jr z,.startnxt 
@@ -917,7 +917,7 @@ forth_startup:
 
 	call update_display		
 
-	ld a, (cli_buffer)
+	ld a, (os_last_cmd)
 	cp 0
 	jr nz, .startnxt
 	call next_page_prompt

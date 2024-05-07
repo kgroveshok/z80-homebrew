@@ -565,18 +565,31 @@ endif
 ;	dw .LOOP
 ;	db 3
 ;	db "DO",0       
-; |DO ( u1 u2 -- )   Loop starting at u2 with a limit of u1 | TEST
+; |DO ( u1 u2 -- )   Loop starting at u2 with a limit of u1 | DONE
 
-; TODO push pc to rsp stack
+;  push pc to rsp stack
 
 		ld hl, (os_tok_ptr)
 		FORTH_RSP_NEXT
 
-; TODO save tos to i value
+		if DEBUG_FORTH_WORDS
+			push hl
+		endif 
+
+; save tos to i value
 
 		FORTH_DSP_VALUEHL
 
 		ld (os_current_i), hl
+
+		if DEBUG_FORTH_WORDS
+			pop bc
+			push af
+			ld a, 'D'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
 
 		NEXT
 .LOOP:
@@ -585,23 +598,103 @@ endif
 ;	dw .COLN
 ;	db 5
 ;	db "LOOP",0      
-; |LOOP ( -- )     Current loop end marker | TEST
+; |LOOP ( -- )     Increment and test loop counter  | DONE
 
-	; TODO pop tos as current loop count to hl
+	; pop tos as current loop count to hl
 
-	; TODO if new tos (loop limit) is not same as hl, inc hl, push hl to tos, pop rsp and set pc to it
+	; if new tos (loop limit) is not same as hl, inc hl, push hl to tos, pop rsp and set pc to it
 
 	FORTH_DSP_VALUEHL
 	push hl
 
-	; TODO next item on the stack is the limit. get it
+	; next item on the stack is the limit. get it
 
-	; TODO get direct stack point
-	; TODO go back to previous word
-	; TODO get limit
-	; TODO is I at limit?
-	; TODO if at limit pop both limit and current off stack do NEXT
-	; TODO if not at limit. Inc I and update TOS get RTS off stack and reset parser
+
+	FORTH_DSP_POP
+
+	FORTH_DSP_VALUEHL
+
+	pop de		 ; de = i, hl = limit
+
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, 'l'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+
+	; go back to previous word
+
+	push de    ; save I for inc later
+
+	; get limit
+	;  is I at limit?
+
+
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, 'L'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+
+	sbc hl, de
+
+
+	;  if at limit pop both limit and current off stack do NEXT and get rid of saved DO
+
+		jr nz, .loopnotdone
+
+	pop hl   ; get rid of saved I
+	FORTH_DSP_POP     ; get rid of limit
+
+	FORTH_RSP_POP     ; get rid of DO ptr
+
+if DEBUG_FORTH_WORDS
+	push af
+	ld a, '>'
+	ld (debug_mark),a
+	pop af
+	CALLMONITOR
+endif
+
+		NEXT
+	; if not at limit. Inc I and update TOS get RTS off stack and reset parser
+
+.loopnotdone:
+
+	pop hl    ; get I
+	inc hl
+
+   	; save new I
+
+
+
+	call forth_push_numhl
+
+
+		if DEBUG_FORTH_WORDS
+			ex de,hl
+		endif
+
+;	; get DO ptr
+;
+	FORTH_RSP_TOS
+
+	ld (os_tok_ptr), hl
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, '<'
+			ld (debug_mark),a
+			pop af
+		CALLMONITOR
+	endif
+	jp exec1
+
+		
+
 
 		NEXT
 .COLN:
@@ -1508,12 +1601,12 @@ endif
 ;| LOAD ( w u -- )    Load user word memory from file name w on bank u
 		NEXT
 .DAT:
-	CWHEAD .KEY 41 "KEY" 3 WORD_FLAG_CODE
+	CWHEAD .KEY 41 "AT" 2 WORD_FLAG_CODE
 ;   db 41                     
 ;	dw .KEY
 ;	db 3
 ;	db "AT",0            
-;| CURSOR ( u1 u2 -- )  Set next output via . or emit at row u2 col u1 |DONE
+;| AT ( u1 u2 -- )  Set next output via . or emit at row u2 col u1 |DONE
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
 
@@ -2196,13 +2289,23 @@ endif
 		NEXT
 .I: 
 
-	CWHEAD .END 73 "I" 1 WORD_FLAG_CODE
-;	db "I",0               ;| I ( -- ) Loop counter|TEST
+	CWHEAD .DLOOP 74 "I" 1 WORD_FLAG_CODE
+;	db "I",0               ;| I ( -- ) Current loop counter | DONE
 
 		ld hl,(os_current_i)
 		call forth_push_numhl
 
 		NEXT
+.DLOOP:
+	CWHEAD .END 75 "-LOOP" 5 WORD_FLAG_CODE
+;	db 14
+;	dw .COLN
+;	db 5
+;	db "LOOP",0      
+; | -LOOP ( -- )    Decrement and test loop counter 
+
+	NEXT
+
 ;  db 153               
 ;	dw .END
 ;	db 2

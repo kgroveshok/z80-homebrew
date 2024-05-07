@@ -799,6 +799,8 @@ display_reg_state:
 
 
 startcmds:
+	dw looptest1
+	dw looptest2
 	dw test1
 	dw test2
 	dw test3
@@ -810,6 +812,9 @@ startcmds:
 test1:		db ": aa 1 2 3 ;  ", 0, 0, 0, FORTH_END_BUFFER
 test2:     	db "111 aa 888 999  ",0, 0, 0, FORTH_END_BUFFER
 test3:     	db ": bb 77 ;  ",0, 0, 0, FORTH_END_BUFFER
+looptest1:     	db "$0003 $0001 do i . loop 8  ",0, 0, 0, FORTH_END_BUFFER
+looptest2:     	db "$0003 $0001 do i . $0001 pause loop 8  ",0, 0, 0, FORTH_END_BUFFER
+
 
 start1:     	db ": bpon $0000 bp ;  ",0, 0, 0, FORTH_END_BUFFER
 start2:     	db ": bpoff $0001 bp ;  ",0, 0, 0, FORTH_END_BUFFER

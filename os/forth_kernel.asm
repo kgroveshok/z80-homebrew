@@ -190,7 +190,6 @@ forth_init:
 ;		call display_data_sp
 ;		call next_page_prompt
 
-	call startup
 
 
 
@@ -800,45 +799,78 @@ display_reg_state:
 
 
 startcmds:
-	dw s1
-	dw s2
+	dw test1
+	dw test2
+	dw test3
+	
+	dw start1
+	dw start2
 	db 0, 0	
 
-s1:	db ": aa 1 2 3 ;  ", 0, 0, 0, FORTH_END_BUFFER
-s2:     db "111 aa 888 999  ",0, 0, 0, FORTH_END_BUFFER
+test1:		db ": aa 1 2 3 ;  ", 0, 0, 0, FORTH_END_BUFFER
+test2:     	db "111 aa 888 999  ",0, 0, 0, FORTH_END_BUFFER
+test3:     	db ": bb 77 ;  ",0, 0, 0, FORTH_END_BUFFER
 
-sprompt: db "Run this? *=End #=All",0
+start1:     	db ": bpon $0000 bp ;  ",0, 0, 0, FORTH_END_BUFFER
+start2:     	db ": bpoff $0001 bp ;  ",0, 0, 0, FORTH_END_BUFFER
 
-startup:
+
+
+sprompt1: db "Startup load...",0
+sprompt2: db "Run? 1=No *=End #=All",0
+
+forth_startup:
 	ld hl, startcmds
+	ld a, 0
+	ld (cli_buffer), a    ; tmp var to skip prompts if doing all
 
 .start1:	push hl
 	call clear_display
-	ld de, sprompt
+	ld de, sprompt1
         ld a, display_row_1
+	call str_at_display
+	ld de, sprompt2
+        ld a, display_row_2
 	call str_at_display
 	pop hl
 	push hl
 	ld e,(hl)
 	inc hl
 	ld d,(hl)
-        ld a, display_row_2
+        ld a, display_row_3
 	call str_at_display
 	call update_display
 
-	call delay1s
+
+	ld a, (cli_buffer)
+	cp 0
+	jr z, .startprompt
+	call delay250ms
+	jr .startdo
+	
+	
+
+.startprompt:
+
 	ld a,display_row_4 + display_cols - 1
         ld de, endprg
 	call str_at_display
 	call update_display
+	call delay1s
 	call cin_wait
 			
-			
 	cp '*'
-	jr z, .startupend
-
+	jr z, .startupend1
+	cp '#'
+	jr nz, .startno
+	ld a, 1
+	ld (cli_buffer),a
+	jr .startdo
+.startno:	cp '1'
+	jr z,.startnxt 
 
 	; exec startup line
+.startdo:	
 	pop hl
 	push hl
 	
@@ -848,13 +880,14 @@ startup:
 	ex de,hl
 
 	push hl
+
 	ld a, FORTH_END_BUFFER
 	call strlent
 
 	ld b,0
 	ld c,l
-	ld de, scratch
 	pop hl
+	ld de, scratch
 	ldir
 
 
@@ -866,11 +899,17 @@ startup:
 
 	call update_display		
 
+	ld a, (cli_buffer)
+	cp 0
+	jr nz, .startnxt
 	call next_page_prompt
         call clear_display
 	call update_display		
 
 	; move onto next startup line?
+.startnxt:
+
+	call delay250ms
 	pop hl
 
 	inc hl
@@ -880,16 +919,19 @@ startup:
 	ld e, (hl)
 	inc hl
 	ld d, (hl)
-
+	pop hl
 
 	ld a,e
 	add d
 	cp 0    ; any left to do?
-	jr nz, .start1
+	jp nz, .start1
+	jr .startupend
 
+.startupend1: pop hl
 .startupend:
-	pop hl	
 
+	call clear_display
+	call update_display
 	ret
 
 

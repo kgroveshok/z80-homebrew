@@ -16,12 +16,12 @@ DEBUG_STORESE: equ 1        ; TODO  w locks up, r returns.
 DEBUG_FORTH: equ 0
 DEBUG_FORTH_WORDS: equ 0
 DEBUG_FORTH_PARSE: equ 1
-DEBUG_FORTH_PARSE_KEY: equ 1
-DEBUG_FORTH_PARSE_EXEC: equ 1
+DEBUG_FORTH_PARSE_KEY: equ 0
+DEBUG_FORTH_PARSE_EXEC: equ 0
 DEBUG_FORTH_PARSE_NEXTWORD: equ 0
 DEBUG_FORTH_TOK: equ 1
 DEBUG_FORTH_JP: equ 0
-DEBUG_FORTH_PUSH: equ 1
+DEBUG_FORTH_PUSH: equ 0
 DEBUG_FORTH_MALLOC: equ 0
 DEBUG_FORTH_DOT: equ 0
 DEBUG_FORTH_DOT_KEY: equ 0
@@ -172,7 +172,8 @@ cli_data_stack: equ cli_ret_stack - 512		 ;
 ; os/forth token vars
 
 os_last_cmd: equ cli_data_stack-30
-os_cur_ptr: equ os_last_cmd-2
+os_current_i: equ os_last_cmd-2
+os_cur_ptr: equ os_current_i-2
 os_word_scratch: equ os_cur_ptr-30
 os_tok_len: equ os_word_scratch - 2
 os_tok_ptr: equ os_tok_len - 2               ; our current PC ptr

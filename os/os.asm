@@ -78,8 +78,12 @@ main:
 
 	call forth_init
 
-	; show free memory after boot
 
+	; run startup word load
+
+	call forth_startup
+
+	; show free memory after boot
 	ld de, freeram
 	ld a, display_row_1
 	call str_at_display

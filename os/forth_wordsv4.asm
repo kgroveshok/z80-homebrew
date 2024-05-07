@@ -7,9 +7,6 @@
 ; user defined words will follow the same format but will be in ram
 
 
-; TODO how to handle the ram linked list creation
-; TODO compiler can create structure in ram
-
 ;
 ;
 ; define linked list:
@@ -431,11 +428,7 @@ if DEBUG_FORTH_DOT
 	ld a, 'z'
 	ld (debug_mark),a
 	pop af
-	;call break_point_state
-	;rst 030h
 	CALLMONITOR
-;	call display_reg_state
-;	call display_dump_at_hl
 endif	
 ;		.print:
 
@@ -468,11 +461,7 @@ if DEBUG_FORTH_DOT
 	ld a, 'I'
 	ld (debug_mark),a
 	pop af
-	;call break_point_state
-	;rst 030h
 	CALLMONITOR
-	;call display_reg_state
-	;call display_dump_at_hl
 endif	
 
 	call uitoa_16
@@ -483,11 +472,7 @@ if DEBUG_FORTH_DOT
 	ld a, 'i'
 	ld (debug_mark),a
 	pop af
-	;call break_point_state
-	;rst 030h
 	CALLMONITOR
-	;call display_reg_state
-	;call display_dump_at_hl
 endif	
 
 ;	ld de, os_word_scratch
@@ -510,11 +495,7 @@ if DEBUG_FORTH_DOT
 	ld a, 'h'
 	ld (debug_mark),a
 	pop af
-	;call break_point_state
-	;rst 030h
 	CALLMONITOR
-	;call display_reg_state
-	;call display_dump_at_hl
 endif	
 
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
@@ -524,11 +505,7 @@ if DEBUG_FORTH_DOT
 	ld a, 'i'
 	ld (debug_mark),a
 	pop af
-	;call break_point_state
-	;rst 030h
 	CALLMONITOR
-	;call display_reg_state
-	;call display_dump_at_hl
 endif	
 
 
@@ -588,10 +565,19 @@ endif
 ;	dw .LOOP
 ;	db 3
 ;	db "DO",0       
-; |DO ( u1 u2 -- )   Loop starting at u2 with a limit of u1
+; |DO ( u1 u2 -- )   Loop starting at u2 with a limit of u1 | TEST
 
 ; TODO push pc to rsp stack
+
+		ld hl, (os_tok_ptr)
+		FORTH_RSP_NEXT
+
 ; TODO save tos to i value
+
+		FORTH_DSP_VALUEHL
+
+		ld (os_current_i), hl
+
 		NEXT
 .LOOP:
 	CWHEAD .COLN 14 "LOOP" 4 WORD_FLAG_CODE
@@ -599,9 +585,14 @@ endif
 ;	dw .COLN
 ;	db 5
 ;	db "LOOP",0      
-; |LOOP ( -- )     Current loop end marker
+; |LOOP ( -- )     Current loop end marker | TEST
 
 	; TODO pop tos as current loop count to hl
+
+	FORTH_DSP_VALUEHL
+
+
+
 	; TODO if new tos (loop limit) is not same as hl, inc hl, push hl to tos, pop rsp and set pc to it
 	; TODO else end of loop. pop rsp and bin
 
@@ -664,14 +655,14 @@ endif
 	inc hl
 	inc hl
 	inc hl
+	inc hl 
 	inc hl
 	inc hl
 	inc hl
 	inc hl
 	inc hl
 	inc hl
-	inc hl
-	inc hl     ; TODO how many do we really need?
+	inc hl     ; TODO how many do we really need?     maybe only 6
 ;       exec word buffer
 ;	<ptr word>  
 	inc hl
@@ -890,7 +881,7 @@ if DEBUG_FORTH_UWORD
 	pop bc
 endif
 
-; TODO update word dict linked list for new word
+; update word dict linked list for new word
 
 
 ld hl, (os_last_new_uword)		; get the start of the last added uword
@@ -901,12 +892,16 @@ ld (hl), e
 inc hl
 ld (hl), d
 
-ld (os_last_new_uword), hl      ; update last new uword ptr
+if DEBUG_FORTH_UWORD
+	ld bc, (os_last_new_uword)		; get the last word so we can check it worked in debug
+endif
+
+ld (os_last_new_uword), de      ; update last new uword ptr
 
 
 if DEBUG_FORTH_UWORD
 	push af
-	ld a, ';'
+	ld a, '+'
 	ld (debug_mark),a
 	pop af
 	CALLMONITOR
@@ -2173,7 +2168,7 @@ endif
 ;	db "BSAVE",0              ; |BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at address a for s bytes
 		NEXT
 .BLOAD:
-	CWHEAD .END 71 "BLOAD" 5 WORD_FLAG_CODE
+	CWHEAD .LIST 71 "BLOAD" 5 WORD_FLAG_CODE
 ;   db 71
 ;	dw .V0
 ;	db 6
@@ -2182,7 +2177,30 @@ endif
 		NEXT
 ;;;; counter gap
 
+.LIST:
+	CWHEAD .FORGET 72 "LIST" 4 WORD_FLAG_CODE
+;| LIST ( uword -- )    List the code to the word on TOS
+		NEXT
 
+.FORGET:
+	CWHEAD .I 73 "FORGET" 6 WORD_FLAG_CODE
+;| FORGET ( uword -- )    Forget the uword on TOS
+
+		NEXT
+.I: 
+
+	CWHEAD .END 73 "I" 1 WORD_FLAG_CODE
+;	db "I",0               ;| I ( -- ) Loop counter|TEST
+
+		ld hl,(os_current_i)
+		call forth_push_numhl
+
+		NEXT
+;  db 153               
+;	dw .END
+;	db 2
+;	db "I",0               ;| I ( -- ) Loop counter
+;		NEXT
 ;.V0:   db 143               
 ;	dw .V1
 ;	db 3

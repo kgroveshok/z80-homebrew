@@ -683,6 +683,13 @@ endif
 ;
 	FORTH_RSP_TOS
 
+	push hl
+
+	; get rid of the RSP pointer as DO will add it back in
+	FORTH_RSP_POP
+	pop hl
+
+
 	ld (os_tok_ptr), hl
 		if DEBUG_FORTH_WORDS
 			push af

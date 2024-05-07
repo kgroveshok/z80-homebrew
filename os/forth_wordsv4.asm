@@ -589,12 +589,19 @@ endif
 
 	; TODO pop tos as current loop count to hl
 
-	FORTH_DSP_VALUEHL
-
-
-
 	; TODO if new tos (loop limit) is not same as hl, inc hl, push hl to tos, pop rsp and set pc to it
-	; TODO else end of loop. pop rsp and bin
+
+	FORTH_DSP_VALUEHL
+	push hl
+
+	; TODO next item on the stack is the limit. get it
+
+	; TODO get direct stack point
+	; TODO go back to previous word
+	; TODO get limit
+	; TODO is I at limit?
+	; TODO if at limit pop both limit and current off stack do NEXT
+	; TODO if not at limit. Inc I and update TOS get RTS off stack and reset parser
 
 		NEXT
 .COLN:

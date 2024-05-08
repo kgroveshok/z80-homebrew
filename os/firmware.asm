@@ -13,21 +13,23 @@ DEBUG_KEY: equ 0
 DEBUG_KEY_MATRIX: equ 0
 DEBUG_STORECF: equ 0
 DEBUG_STORESE: equ 1        ; TODO  w locks up, r returns. 
-DEBUG_FORTH: equ 1
-DEBUG_FORTH_WORDS: equ 1
-DEBUG_FORTH_PARSE: equ 1
-DEBUG_FORTH_PARSE_KEY: equ 1
-DEBUG_FORTH_PARSE_EXEC: equ 1
+DEBUG_FORTH_PARSE_EXEC: equ 0     ; 6
 DEBUG_FORTH_PARSE_NEXTWORD: equ 0
-DEBUG_FORTH_TOK: equ 1
 DEBUG_FORTH_JP: equ 0
-DEBUG_FORTH_PUSH: equ 1
 DEBUG_FORTH_MALLOC: equ 0
 DEBUG_FORTH_DOT: equ 0
 DEBUG_FORTH_DOT_KEY: equ 0
 DEBUG_FORTH_MALLOC_GUARD: equ 1
 DEBUG_FORTH_MATHS: equ 0
-DEBUG_FORTH_UWORD: equ 1
+
+
+DEBUG_FORTH_PARSE_KEY: equ 0   ; 5
+DEBUG_FORTH_TOK: equ 0   ; 4
+DEBUG_FORTH_PARSE: equ 0 ; 3
+DEBUG_FORTH: equ 0  ;2
+DEBUG_FORTH_WORDS: equ 0 ; 1
+DEBUG_FORTH_PUSH: equ 0   ; 1
+DEBUG_FORTH_UWORD: equ 0   ; 1
 
 FORTH_ENABLE_FREE: equ 1
 FORTH_ENABLE_FLOATMATH: equ 0
@@ -304,7 +306,7 @@ hardware_init:
 
 ; debug mark setup
 
-ld a, 'a'
+ld a, '_'
 ld (debug_mark),a
 ld a,0
 ld (debug_mark+1),a

@@ -310,7 +310,9 @@ malloc_error:
 	call str_at_display
 	call update_display
 	;call break_point_state
+	call cin_wait
 
+	ld a, '*'
 	CALLMONITOR
 
 	pop hl

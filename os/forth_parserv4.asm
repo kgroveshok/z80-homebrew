@@ -44,10 +44,10 @@ if DEBUG_FORTH_PARSE_KEY
 	;call display_dump_at_hl
 endif	
 ;	inc hl  ; skip token null term 
-if DEBUG_FORTH_PARSE_KEY
 	ld bc,(cli_ptr)   ; move to next token to parse in the input stream
 	ld de,(cli_origptr)   ; move to next token to parse in the input stream
 	ld hl,(os_tok_ptr)   ; move to next token to parse in the input stream
+if DEBUG_FORTH_PARSE_KEY
 	push af
 	ld a, '}'
 	ld (debug_mark),a
@@ -276,8 +276,8 @@ endif
 	;ld (hl),d
 
 
-if DEBUG_FORTH_PARSE_KEY
 	ld hl,(os_tok_malloc)
+if DEBUG_FORTH_PARSE_KEY
 	push af
 	ld a, 'U'
 	ld (debug_mark),a

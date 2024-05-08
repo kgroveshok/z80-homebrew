@@ -190,7 +190,7 @@ cli:
 	ld hl,scratch
 	call forthparse
 	call forthexec
-
+	call forthexec_cleanup
 ;	call parsenext
 
 	; TODO on return from forth parsing should there be a prompt to return to system? but already in system.

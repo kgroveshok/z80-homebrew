@@ -408,7 +408,6 @@ endif
 
 if DEBUG_FORTH_PARSE_EXEC
 	; see if disabled
-	push af
 
 	ld a, (os_view_disable)
 	cp '*'
@@ -439,13 +438,12 @@ if DEBUG_FORTH_PARSE_EXEC
 ;	call delay1s
 ;	call delay1s
 	pop hl
-.skip: pop af
+.skip: 
 endif	
 .execpnchar:    ; compare char between token and string to parse
 
 if DEBUG_FORTH_PARSE_EXEC
 	; see if disabled
-	push af
 
 	ld a, (os_view_disable)
 	cp '*'
@@ -465,7 +463,7 @@ ld a,(hl)
 	call str_at_display
 	call update_display
 ;	call delay250ms
-.skip2: pop af
+.skip2: 
 endif
 	ld hl,(cli_token)
 	ld a, (hl)	 ; char in word token
@@ -572,7 +570,6 @@ endif
 
 if DEBUG_FORTH_PARSE_EXEC
 
-	push af
 	; see if disabled
 
 	ld a, (os_view_disable)
@@ -585,7 +582,7 @@ if DEBUG_FORTH_PARSE_EXEC
 	call str_at_display
 	call update_display
 	call delay250ms
-.noskip: pop af
+.noskip: 
 
 endif	
 
@@ -597,7 +594,6 @@ endif
 .execendofdict: 
 
 if DEBUG_FORTH_PARSE_EXEC
-	push af
 	; see if disabled
 
 	ld a, (os_view_disable)
@@ -618,7 +614,7 @@ if DEBUG_FORTH_PARSE_EXEC
 	call delay1s
 	call delay1s
 	call delay1s
-.ispskip: pop af
+.ispskip: 
 	
 endif	
 
@@ -763,8 +759,8 @@ if DEBUG_FORTH_PUSH
 endif	
 	;push af
 if DEBUG_FORTH_PUSH
-	push af
 	; see if disabled
+	push af
 
 	ld a, (os_view_disable)
 	cp '*'
@@ -903,12 +899,11 @@ endif
 if DEBUG_FORTH_PUSH
 	; see if disabled
 
+
 	push af
 	ld a, (os_view_disable)
 	cp '*'
 	jr z, .pskip2
-
-	push af
 	push hl
 push hl
 	call clear_display
@@ -936,7 +931,6 @@ pop hl
 	call update_display
 	call delay1s
 	call delay1s
-	pop af
 .pskip2: 
 
 	pop af

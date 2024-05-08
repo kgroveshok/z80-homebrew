@@ -533,11 +533,31 @@ endif
 ;	dw .THEN
 ;	db 3
 ;	db "IF",0     
-;  |IF ( w -- f )     If TOS is true exec code following before??
-; TODO Eval stack
-; TODO on result extract portion to exec, malloc it and start exec on that block
-; TODO once exec, position next exec point past both blocks
+;  |IF ( w -- f )     If TOS is true exec code following up to THEN - Note: currently not supporting ELSE or nested IF 
+;
+; TODO eval TOS
 
+	FORTH_DSP_VALUEHL
+
+	push hl
+	FORTH_DSP_POP
+	pop hl
+
+	dec hl
+	jr nz, .ifok
+
+
+; TODO if not true then skip to THEN
+
+	; TODO get tok_ptr
+	; TODO consume toks until we get to THEN
+
+
+
+.ifok:		
+	; Exec next words normally
+
+	; if true then exec following IF as normal
 
 		NEXT
 .THEN:
@@ -547,6 +567,7 @@ endif
 ;	db 5
 ;	db "THEN",0    
 ; |THEN ( -- )     control????
+; TODO Does nothing is is a marker for the end of an IF block
 		NEXT
 .ELSE:
 	CWHEAD .DO 12 "ELSE" 2 WORD_FLAG_CODE
@@ -554,7 +575,7 @@ endif
 ;	dw .DO
 ;	db 5
 ;	db "ELSE",0      
-; |ELSE ( -- )     control???
+; |ELSE ( -- )   Not supported - does nothing
 
 
 
@@ -1999,7 +2020,7 @@ endif
 ; | LEN (  u1 -- u2 ) Push the length of the string on TOS
 	       NEXT
 .CHAR:
-	CWHEAD .RND 57 "CHAR" 4 WORD_FLAG_CODE
+	CWHEAD .RND16 57 "CHAR" 4 WORD_FLAG_CODE
 ;   db 57
 ;	  dw .RND
  ;         db 5
@@ -2020,13 +2041,9 @@ endif
 
 	       NEXT
 
-.RND:
-	CWHEAD .WORDS 58 "RND" 3 WORD_FLAG_CODE
-;   db 58
-;	  dw .WORDS
- ;         db 4
-;	  db "RND",0	
-; | RND (  -- )  | TO TEST
+.RND16:
+	CWHEAD .WORDS 58 "RND16" 5 WORD_FLAG_CODE
+; | RND16 (  -- n ) Generate a random 16bit number and push to stack | DONE
 		call prng16 
 		call forth_push_numhl
 	       NEXT
@@ -2165,7 +2182,7 @@ endif
 ;	dw .MONITOR
 ;	db 3
 ;	db "BP",0      
-;| BP ( u1 -- ) Enable or disable break point monitoring | TEST
+;| BP ( u1 -- ) Enable or disable break point monitoring | DONE
 		; get byte count
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -2304,7 +2321,7 @@ endif
 
 		NEXT
 .DLOOP:
-	CWHEAD .END 75 "-LOOP" 5 WORD_FLAG_CODE
+	CWHEAD .RND8 75 "-LOOP" 5 WORD_FLAG_CODE
 ;	db 14
 ;	dw .COLN
 ;	db 5
@@ -2312,79 +2329,58 @@ endif
 ; | -LOOP ( -- )    Decrement and test loop counter 
 
 	NEXT
+.RND8:
+	CWHEAD .NOP 76 "RND8" 4 WORD_FLAG_CODE
+; | RND8 (  -- n ) Generate a random 8bit number and push to stack | DONE
+		ld hl,(xrandc)
+		inc hl
+		call xrnd
+		ld l,a	
+		ld h,0
+		call forth_push_numhl
+	       NEXT
 
-;  db 153               
-;	dw .END
-;	db 2
-;	db "I",0               ;| I ( -- ) Loop counter
-;		NEXT
-;.V0:   db 143               
-;	dw .V1
-;	db 3
-;	db "@0",0
-;		NEXT
-;
-;.V1:   db 144               
-;	dw .V2
-;	db 3
-;	db "@1",0
-;		NEXT
-;
-;
-;.V2:   db 145               
-;	dw .V3
-;	db 3
-;	db "@2",0
-;		NEXT
-;
-;
-;.V3:   db 146               
-;	dw .V4
-;	db 3
-;	db "@3",0
-;		NEXT
-;
-;
-;.V4:   db 147              
-;	dw .V5
-;	db 3
-;	db "@4",0
-;		NEXT
-;
-;.V5:   db 148               
-;	dw .V6
-;	db 3
-;	db "@5",0
-;		NEXT
-;
-;.V6:   db 149               
-;	dw .V7
-;	db 3
-;	db "@6",0
-;		NEXT
-;
-;.V7:   db 150               
-;	dw .V8
-;	db 3
-;	db "@7",0
-;		NEXT
-;
-;.V8:   db 151               
-;	dw .V9
-;	db 3
-;	db "@8",0
-;		NEXT
-;
-;.V9:   db 152               
-;	dw .I
-;	db 3
-;	db "@9",0
-;		NEXT
-;.I:   db 153               
-;	dw .END
-;	db 2
-;	db "I",0               ;| I ( -- ) Loop counter
-;		NEXT
+.NOP:
+	CWHEAD .ATQ 77 "NOP" 3 WORD_FLAG_CODE
+; | NOP (  --  ) Do nothing | DONE
+	       NEXT
+.ATQ:
+	CWHEAD .VARS 78 "AT?" 3 WORD_FLAG_CODE
+;| AT? ( u1 u2 -- n )  Push to stack ASCII value at row u2 col u1 |
+	       NEXT
+
+
+; var handler
+
+
+.VARS:
+	CWHEAD .V0Q 100 "V0!" 3 WORD_FLAG_CODE
+;| V0! ( u1 -- )  Store value to v0  |
+	       NEXT
+.V0Q:
+	CWHEAD .V1S 101 "V0@" 3 WORD_FLAG_CODE
+;| V0@ ( --u )  Put value of v0 onto stack |
+	       NEXT
+.V1S:
+	CWHEAD .V1Q 102 "V1!" 3 WORD_FLAG_CODE
+;| V1! ( u1 -- )  Store value to v1 |
+	       NEXT
+.V1Q:
+	CWHEAD .V2S 103 "V1@" 3 WORD_FLAG_CODE
+;| V1@ ( --u )  Put value of v1 onto stack |
+	       NEXT
+.V2S:
+	CWHEAD .V2Q 104 "V2!" 3 WORD_FLAG_CODE
+;| V2! ( u1 -- )  Store value to v2 |
+	       NEXT
+.V2Q:
+	CWHEAD .END 105 "V2@" 3 WORD_FLAG_CODE
+;| V2@ ( --u )  Put value of v2 onto stack |
+	       NEXT
+
+
+
+
 
 
 ; Hardware specific words I may need

@@ -123,6 +123,7 @@ FORTH_RSP_POP: macro
 	call macro_forth_rsp_pop
 	endm
 
+
 macro_forth_rsp_pop:
 	push hl
 	ld hl,(cli_ret_sp)
@@ -131,6 +132,10 @@ macro_forth_rsp_pop:
 	ld (cli_ret_sp), hl
 	; TODO do stack underflow checks
 	pop hl
+	ret
+
+forthexec_cleanup:
+	FORTH_RSP_POP
 	ret
 
 forth_call_hl:
@@ -323,14 +328,8 @@ display_data_sp:
 
 	ld a, (os_view_disable)
 	cp '*'
-	jr nz, .ddata
-	pop af
-	ret
+	jr z, .skipdsp
 
-.ddata:
-	pop af
-
-	push af
 	push hl
 	push hl
 push hl
@@ -384,6 +383,7 @@ pop hl
 	call delay1s
 	call delay1s
 	pop hl
+.skipdsp:
 	pop af
 	ret
 
@@ -817,6 +817,12 @@ startcmds:
 	dw test1
 	dw test2
 	dw test3
+	dw test4
+	dw test5
+	dw test6
+	dw test7
+	dw test8
+	dw test9
 	
 	dw start1
 	dw start2
@@ -825,6 +831,13 @@ startcmds:
 test1:		db ": aa 1 2 3 ;  ", 0, 0, 0, FORTH_END_BUFFER
 test2:     	db "111 aa 888 999  ",0, 0, 0, FORTH_END_BUFFER
 test3:     	db ": bb 77 ;  ",0, 0, 0, FORTH_END_BUFFER
+test4:     	db "$0002 $0001 do i . loop bb  ",0, 0, 0, FORTH_END_BUFFER
+test5:     	db ": hline $0013 $0001 do i $0001 at 1 . i $0004 at 1 . loop ;   ",0, 0, 0, FORTH_END_BUFFER
+test6:     	db ": vline $0004 $0001 do $0001 i at 1 . $0013 i at 1 . loop ;   ",0, 0, 0, FORTH_END_BUFFER
+test7:     	db ": box hline vline ;  ",0, 0, 0, FORTH_END_BUFFER
+test8:     	db ": world box $0003 $0003 at Hello-World! . ;  ",0, 0, 0, FORTH_END_BUFFER
+test9:     	db "world  ",0, 0, 0, FORTH_END_BUFFER
+
 looptest1:     	db "$0003 $0001 do i . loop 8  ",0, 0, 0, FORTH_END_BUFFER
 looptest2:     	db "$0003 $0001 do i . $0001 pause loop 8  ",0, 0, 0, FORTH_END_BUFFER
 
@@ -912,6 +925,8 @@ forth_startup:
 	ld hl, scratch
 	call forthparse
 	call forthexec
+	call forthexec_cleanup
+
 	ld a, display_row_4
 	ld de, endprog
 

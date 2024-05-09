@@ -159,6 +159,11 @@ forth_init:
 ;	call delay1s
 ;	call delay1s
 
+	; enable auto display updates (slow.....)
+
+	ld a, 1
+	ld (cli_autodisplay), a
+
 	; reenable breakpoint
 
 	ld a,0
@@ -728,9 +733,9 @@ display_reg_state:
 	ld a, display_row_2
 	call str_at_display
 
-	pop af
-	ld h,0
-	ld l, a
+	pop hl
+;	ld h,0
+;	ld l, a
 	ld a, display_row_2+3
 	call display_word_at
 
@@ -753,9 +758,9 @@ display_reg_state:
 	ld a, display_row_3
 	call str_at_display
 
-	pop de
-	ld h,d
-	ld l, e
+	pop hl
+;	ld h,d
+;	ld l, e
 	ld a, display_row_3+3
 	call display_word_at
 
@@ -766,9 +771,9 @@ display_reg_state:
 	ld a, display_row_3+10
 	call str_at_display
 
-	pop bc
-	ld h,b
-	ld l, c
+	pop hl
+;	ld h,b
+;	ld l, c
 	ld a, display_row_3+13
 	call display_word_at
 
@@ -814,17 +819,30 @@ display_reg_state:
 
 
 startcmds:
-	dw looptest1
-	dw looptest2
-	dw test1
-	dw test2
-	dw test3
-	dw test4
+	dw ifthtest1
+	dw ifthtest2
+	dw ifthtest3
+	dw mmtest1
+	dw mmtest2
+	dw mmtest3
+	dw mmtest4
+	dw mmtest5
+	dw mmtest6
+;	dw iftest1
+;	dw iftest2
+;	dw iftest3
+;	dw looptest1
+;	dw looptest2
+;	dw test1
+;	dw test2
+;	dw test3
+;	dw test4
 	dw test5
 	dw test6
 	dw test7
 	dw test8
 	dw test9
+	dw test10
 	
 	dw start1
 	dw start2
@@ -834,15 +852,29 @@ test1:		db ": aa 1 2 3 ;  ", 0, 0, 0, FORTH_END_BUFFER
 test2:     	db "111 aa 888 999  ",0, 0, 0, FORTH_END_BUFFER
 test3:     	db ": bb 77 ;  ",0, 0, 0, FORTH_END_BUFFER
 test4:     	db "$0002 $0001 do i . loop bb  ",0, 0, 0, FORTH_END_BUFFER
-test5:     	db ": hline $0013 $0001 do i $0001 at 1 . i $0004 at 1 . loop ;   ",0, 0, 0, FORTH_END_BUFFER
-test6:     	db ": vline $0004 $0001 do $0001 i at 1 . $0013 i at 1 . loop ;   ",0, 0, 0, FORTH_END_BUFFER
+test5:     	db ": hline $0013 $0000 do i $0001 at 1 . i $0004 at 1 . loop ;   ",0, 0, 0, FORTH_END_BUFFER
+test6:     	db ": vline $0004 $0001 do $0000 i at 1 . $0013 i at 1 . loop ;   ",0, 0, 0, FORTH_END_BUFFER
 test7:     	db ": box hline vline ;  ",0, 0, 0, FORTH_END_BUFFER
-test8:     	db ": world box $0003 $0003 at Hello-World! . ;  ",0, 0, 0, FORTH_END_BUFFER
-test9:     	db "world  ",0, 0, 0, FORTH_END_BUFFER
+test8:     	db ": world cls box $0003 $0003 at Hello-World! . ;  ",0, 0, 0, FORTH_END_BUFFER
+test9:     	db ": sw $0001 adsp world ;  ",0, 0, 0, FORTH_END_BUFFER
+test10:     	db ": fw $0000 adsp world ;  ",0, 0, 0, FORTH_END_BUFFER
 
+mmtest1:     	db "cls $0001 $0008 MIN . $0002 pause  ",0, 0, 0, FORTH_END_BUFFER
+mmtest2:     	db "cls $0101 $0008 MIN . $0002 pause  ",0, 0, 0, FORTH_END_BUFFER
+mmtest3:     	db "cls $0001 $0008 MAX . $0002 pause  ",0, 0, 0, FORTH_END_BUFFER
+mmtest4:     	db "cls $0101 $0008 MAX . $0002 pause  ",0, 0, 0, FORTH_END_BUFFER
+mmtest5:     	db "cls $0001 $0001 MIN . $0002 pause  ",0, 0, 0, FORTH_END_BUFFER
+mmtest6:     	db "cls $0001 $0001 MAX . $0002 pause  ",0, 0, 0, FORTH_END_BUFFER
+
+iftest1:     	db "$0001 IF  ",0, 0, 0, FORTH_END_BUFFER
+iftest2:     	db "$0000 IF  ",0, 0, 0, FORTH_END_BUFFER
+iftest3:     	db "$0002 $0003 - IF  ",0, 0, 0, FORTH_END_BUFFER
 looptest1:     	db "$0003 $0001 do i . loop 8  ",0, 0, 0, FORTH_END_BUFFER
 looptest2:     	db "$0003 $0001 do i . $0001 pause loop 8  ",0, 0, 0, FORTH_END_BUFFER
 
+ifthtest1:     	db "$0001 IF is-true . $0005 pause THEN next-word . $0005 pause  ",0, 0, 0, FORTH_END_BUFFER
+ifthtest2:     	db "$0000 IF is-true . $0005 pause THEN next-word . $0005 pause  ",0, 0, 0, FORTH_END_BUFFER
+ifthtest3:     	db "$0002 $0003 - IF is-true . $0005 pause THEN next-word . $0005 pause  ",0, 0, 0, FORTH_END_BUFFER
 
 start1:     	db ": bpon $0000 bp ;  ",0, 0, 0, FORTH_END_BUFFER
 start2:     	db ": bpoff $0001 bp ;  ",0, 0, 0, FORTH_END_BUFFER

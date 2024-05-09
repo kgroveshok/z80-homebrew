@@ -105,7 +105,7 @@ main:
 	ld a, 0
 	ld (hl),a
 	ld de, os_word_scratch
-	ld a, display_row_1 + 12
+	ld a, display_row_1 + 13
 	call str_at_display
 	call update_display
 
@@ -222,7 +222,7 @@ cli:
 	ld a, kLCD_Line1        ; TODO prompt using direct screen line address. Correct this to frame buffer
 	jp cli
 
-freeram: db "Free bytes: ",0
+freeram: db "Free bytes: $",0
 asc: db "1A2F"
 endprog: db "End prog...",0
 

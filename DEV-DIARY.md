@@ -407,8 +407,8 @@ And here we are before final bits...
 
 Copied off the firmware code to a new dir for further development of the final OS...
 
-Stage 4.0 NOW
--------------
+Stage 4.0 (DONE)
+-----------------
 
 Code a basic core part of an OS which uses the screen, keyboard and storage. A super monitor program. From there could then add
 Forth which could provide the drivers for add on hardware.
@@ -503,6 +503,36 @@ New approach will be as follows:
 2.5     Single central PC covering all malloc 
 3.0 Parser remains much the same. Break each word to a zero term string.
 4.0 Data and return stacks remain the same.
+
+
+9th May
+-------
+
+Reached v1.0 of the firmware. Now have working (a few odd bugs still) Forth system. Limited features as half of the advanced words have
+yet to be finished, but enough works for simple logic, looping, 16bit int maths and user word creation - See word list.
+
+With a minimal working OS next is to return to hardware and create a larger keyboard for easier typing and get the SPI or CF persistent
+storage working.
+
+Added a rough build of a case (many slight faults) and FreeCad, STLs and gcode can be found in the case subdirectory. Enhancements as they come.
+
+
+![](stage4.0/firmv1hello1.jpg)
+![](stage4.0/firmv1hello2.jpg)
+![](stage4.0/firmv1inside.jpg)
+![](stage4.0/firmv1startup.jpg)
+
+![](https://youtu.be/GDhO9y0qguw)
+
+
+Stage 4.1 NOW
+-------------
+
+New full sized keyboard to work on
+
+
+![](stage4.0/4x10matrix.jpg)
+
 
 Stage 4.5 TODO
 --------------

@@ -116,6 +116,8 @@ endif
 	cp ' '
 	jr nz,  .ptoken2
 
+; TODO consume comments held between ( and )
+
 	; we have a space so change to zero term for dict match later
 	dec hl
 	ld a,0
@@ -737,7 +739,9 @@ endif
 	jr .defstr
 
 
-.fapstr:   
+.fapstr:
+
+   
 	; get string length
 	inc hl ; skip past current double quote and look for the last one
 	ld a, '"'
@@ -1145,12 +1149,166 @@ macro_dsp_valuehl:
 	pop de
 
 	if DEBUG_FORTH_PUSH
-
-	;call break_point_state
-	;rst 030h
 	CALLMONITOR
-	;	call display_data_sp
 	endif
 	ret
+
+
+
+findnexttok:
+
+	; hl is pointer to move
+	; de is the token to locate
+
+		if DEBUG_FORTH
+			push af
+			ld a, 'f'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+	push de
+
+.fnt1:	
+	; find first char of token to locate
+
+	ld a, (de)
+	ld c,a
+	ld a,(hl)
+	call toUpper
+		if DEBUG_FORTH
+			push af
+			ld a, '1'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+	cp c
+
+	jr z, .fnt2cmpmorefirst	
+
+	; first char not found move to next char
+
+	inc hl
+	jr .fnt1
+
+.fnt2cmpmorefirst:	
+	; first char of token found. 
+
+	push hl     ; save start of token just in case it is the right one
+	exx
+	pop hl        ; save it to hl'
+	exx
+
+
+.fnt2cmpmore:	
+	; compare the rest
+	
+	inc hl
+	inc de
+	
+	ld a, (de)
+	ld c,a
+	ld a,(hl)
+	call toUpper
+
+		if DEBUG_FORTH
+			push af
+			ld a, '2'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+	; c has the token to find char
+	; a has the mem to scan char
+
+	cp c
+	jr z,.fntmatch1
+
+	; they are not the same
+
+		if DEBUG_FORTH
+			push af
+			ld a, '3'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+	pop de	; reset de token to look for
+	push de
+	jr .fnt1
+	
+.fntmatch1:
+
+	; is the same char a null which means we might have a full hit?
+		if DEBUG_FORTH
+			push af
+			ld a, '4'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+
+	cp 0
+	jr z, .fntmatchyes
+
+	; are we at the end of the token to find?
+
+		if DEBUG_FORTH
+			push af
+			ld a, '5'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+	ld a, 0
+	cp c
+
+	jr nz, .fnt2cmpmore    ; no, so keep going to a direct hit
+
+		if DEBUG_FORTH
+			push af
+			ld a, '6'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+	; token to find is exhusted but no match to stream
+
+	; restore tok pointer and continue on
+	pop de
+	push de
+	jr .fnt1
+
+
+.fntmatchyes:
+
+	; hl now contains the end of the found token
+
+	; get rid of saved token pointer to find
+
+	pop de
+
+		if DEBUG_FORTH
+			push af
+			ld a, '9'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+
+	; hl will be on the null term so forward on
+
+	; get back the saved start of the token
+
+	exx
+	push hl     ; save start of token just in case it is the right one
+	exx
+	pop hl        ; save it to hl
+
+	ret
+
+	
+
 
 ; eof

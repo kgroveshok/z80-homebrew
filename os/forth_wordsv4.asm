@@ -394,7 +394,7 @@ sysdict:
 		call forth_push_numhl
 		NEXT
 .EMIT:
-	CWHEAD .DOT 7 "EMIT" 4 WORD_FLAG_CODE
+	CWHEAD .DOTH 7 "EMIT" 4 WORD_FLAG_CODE
 ;	db 7
 ;	dw .DOT
 ;	db 5
@@ -411,6 +411,17 @@ sysdict:
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
 		NEXT
+.DOTH:
+	CWHEAD .DOT 8 ".-" 2 WORD_FLAG_CODE
+;	db 8
+;	dw .SWAP
+;	db 2
+;	db ".",0 
+        ;| .- ( u -- )    Display TOS replacing any dashes with space   |DONE
+		; get value off TOS and display it
+	jp .dotgo
+	NEXT
+
 .DOT:
 	CWHEAD .SWAP 8 "." 1 WORD_FLAG_CODE
 ;	db 8
@@ -420,7 +431,7 @@ sysdict:
         ;| . ( u -- )    Display TOS   |DONE
 		; get value off TOS and display it
 
-
+.dotgo:
 
 		FORTH_DSP_VALUE 
 if DEBUG_FORTH_DOT
@@ -483,7 +494,11 @@ endif
 
 .dotwrite:		ld a, (f_cursor_ptr)
 		call str_at_display
+ld a,(cli_autodisplay)
+cp 0
+jr z, .noupdate
 		call update_display
+.noupdate:
 if DEBUG_FORTH_DOT_KEY
 		call next_page_prompt
 endif	
@@ -533,9 +548,9 @@ endif
 ;	dw .THEN
 ;	db 3
 ;	db "IF",0     
-;  |IF ( w -- f )     If TOS is true exec code following up to THEN - Note: currently not supporting ELSE or nested IF 
+;  |IF ( w -- f )     If TOS is true exec code following up to THEN - Note: currently not supporting ELSE or nested IF | DONE
 ;
-; TODO eval TOS
+; eval TOS
 
 	FORTH_DSP_VALUEHL
 
@@ -543,21 +558,76 @@ endif
 	FORTH_DSP_POP
 	pop hl
 
-	dec hl
-	jr nz, .ifok
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, 'I'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+	or a        ; clear carry flag
+	ld de, 0
+	ex de,hl
+	sbc hl, de
+	jr nz, .iftrue
 
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, 'f'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
 
-; TODO if not true then skip to THEN
+; if not true then skip to THEN
 
 	; TODO get tok_ptr
 	; TODO consume toks until we get to THEN
 
+	ld hl, (os_tok_ptr)
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, 'h'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+			
+		endif
+	ld de, .ifthen
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, 'd'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+	call findnexttok 
 
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, 'z'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+	; TODO replace below with ; exec using tok_ptr
+	ld (os_tok_ptr), hl
+	jp exec1
+	NEXT
 
-.ifok:		
+.ifthen:  db "THEN",0
+
+.iftrue:		
 	; Exec next words normally
 
 	; if true then exec following IF as normal
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, 'T'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
 
 		NEXT
 .THEN:
@@ -566,8 +636,7 @@ endif
 ;	dw .ELSE
 ;	db 5
 ;	db "THEN",0    
-; |THEN ( -- )     control????
-; TODO Does nothing is is a marker for the end of an IF block
+; |THEN ( -- )    Does nothing. It is a marker for the end of an IF block | DONE
 		NEXT
 .ELSE:
 	CWHEAD .DO 12 "ELSE" 2 WORD_FLAG_CODE
@@ -2345,10 +2414,27 @@ endif
 ; | NOP (  --  ) Do nothing | DONE
 	       NEXT
 .ATQ:
-	CWHEAD .VARS 78 "AT?" 3 WORD_FLAG_CODE
+	CWHEAD .AUTODSP 78 "AT?" 3 WORD_FLAG_CODE
 ;| AT? ( u1 u2 -- n )  Push to stack ASCII value at row u2 col u1 |
 	       NEXT
 
+.AUTODSP:
+	CWHEAD .VARS 79 "ADSP" 4 WORD_FLAG_CODE
+;| ADSP ( u1 --  )  Enable/Disable Auto screen updates (SLOW). If off, use DRAW to refresh. Default is on. $0003 will enable direct screen writes (TODO) | DONE
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		push hl
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		pop hl
+
+		ld a,l
+		ld (cli_autodisplay), a
+	       NEXT
 
 ; var handler
 

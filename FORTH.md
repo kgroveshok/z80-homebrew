@@ -48,6 +48,15 @@ While still a lot of dev going on see os/forth_words.asm there is also a shell s
 are working and what are left to do
 
 
+Restrictions
+============
+
+
+* So far IF THEN is working but can't do nested IFs. DO LOOP is working and likewise can't do nested loops.
+* 16bit Int maths is working.
+* Frame buffer display is slowing things down so now have a word to disable refresh on every . and rely on DRAW to refresh on demand.
+
+
 
 
 

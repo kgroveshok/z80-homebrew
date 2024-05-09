@@ -13,23 +13,23 @@ DEBUG_KEY: equ 0
 DEBUG_KEY_MATRIX: equ 0
 DEBUG_STORECF: equ 0
 DEBUG_STORESE: equ 1        ; TODO  w locks up, r returns. 
-DEBUG_FORTH_PARSE_EXEC: equ 0     ; 6
+DEBUG_FORTH_PARSE_EXEC: equ 1     ; 6
 DEBUG_FORTH_PARSE_NEXTWORD: equ 0
 DEBUG_FORTH_JP: equ 0
 DEBUG_FORTH_MALLOC: equ 0
 DEBUG_FORTH_DOT: equ 0
 DEBUG_FORTH_DOT_KEY: equ 0
 DEBUG_FORTH_MALLOC_GUARD: equ 1
-DEBUG_FORTH_MATHS: equ 0
+DEBUG_FORTH_MATHS: equ 1
 
 
-DEBUG_FORTH_PARSE_KEY: equ 0   ; 5
-DEBUG_FORTH_TOK: equ 0   ; 4
-DEBUG_FORTH_PARSE: equ 0 ; 3
-DEBUG_FORTH: equ 0  ;2
-DEBUG_FORTH_WORDS: equ 0 ; 1
-DEBUG_FORTH_PUSH: equ 0   ; 1
-DEBUG_FORTH_UWORD: equ 0   ; 1
+DEBUG_FORTH_PARSE_KEY: equ 1   ; 5
+DEBUG_FORTH_TOK: equ 1   ; 4
+DEBUG_FORTH_PARSE: equ 1 ; 3
+DEBUG_FORTH: equ 1  ;2
+DEBUG_FORTH_WORDS: equ 1 ; 1
+DEBUG_FORTH_PUSH: equ 1   ; 1
+DEBUG_FORTH_UWORD: equ 1   ; 1
 
 FORTH_ENABLE_FREE: equ 1
 FORTH_ENABLE_FLOATMATH: equ 0
@@ -165,7 +165,8 @@ cli_nextword: equ cli_execword - 2      ; pointer to start of next word in dict
 cli_ptr: equ cli_nextword - 2           ; pointer to start of word to parse by forth kernel (working)
 cli_origptr: equ cli_ptr - 2           ; pointer to start of word to parse which resets cli_ptr on each word test
 
-cli_var_array: equ cli_origptr - ( 10 * 2 ) ; word or string pointer variables using @0-@9
+cli_autodisplay: equ cli_origptr - 1 ;     ; true will auto update the display (slow) otherwise need to use DRAW
+cli_var_array: equ cli_autodisplay - ( 10 * 2 ) ; word or string pointer variables using @0-@9
 cli_ret_sp: equ cli_var_array - 2    ; ret stack pointer
 cli_data_sp: equ cli_ret_sp - 2   ; data stack pointer
 cli_ret_stack: equ cli_data_sp - 128      ; TODO could I just use normal stack for this? - use linked list for looping
@@ -314,7 +315,7 @@ ld (debug_mark+1),a
 		ret
 
 
-bootmsg:	db "z80-homebrew OS v0.5",0
+bootmsg:	db "z80-homebrew OS v1.0",0
 bootmsg1:	db "by Kevin Groves",0
 ;bootmsg2:	db "Firmware v0.1",0
 
@@ -330,6 +331,10 @@ include "firmware_lcd.asm"
 ; moved text_input entry points to here and leave the firmware hardware modules as abstraction layer
 ; test scancode
 include "firmware_key_4x4.asm"
+; using existing 4 wire x 4 resistor array for input
+;include "firmware_key_4x10.asm"
+; need to mod the board for 5 rows due to resistor array
+;include "firmware_key_5x10.asm"
 
 ; storage hardware interface
 

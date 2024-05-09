@@ -330,7 +330,12 @@ include "firmware_lcd.asm"
 ; must supply cin, and cin_wait for low level hardware abstraction 
 ; moved text_input entry points to here and leave the firmware hardware modules as abstraction layer
 ; test scancode
-include "firmware_key_4x4.asm"
+
+;;;;;
+;;;
+; Moved out to mini and maxi versions
+;
+; include "firmware_key_4x4.asm"
 ; using existing 4 wire x 4 resistor array for input
 ;include "firmware_key_4x10.asm"
 ; need to mod the board for 5 rows due to resistor array

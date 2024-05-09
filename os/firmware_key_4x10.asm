@@ -277,19 +277,73 @@ cin: 	call .mtoc
 
 	; TODO optimise the code....
 
+
+
+; using decade counter....
+
+
+; TODO reset decade counter to start of scan
+
+; reset 15
+; clock 14
+; ce 13
+
+; 1 - q5
+; 2 - q1
+; 3 - q0
+; 4 - q2
+; 5 - q6
+; 6 - q7
+; 7 - q3
+; 8 - vss
+; 9 - q8
+; 10 - q4
+; 11 - q9
+; 12 - cout
+; 16 - vdd
+
+; clock      ce       reset     output
+; 0          x        0         n
+; x          1        0         n
+; x          x        1         q0
+; rising     0        0         n+1
+; falling    x        0         n
+; x          rising   0         n
+; 1          falling  0         x+1
+;
+; x = dont care, if n < 5 carry = 1 otherwise 0
+
+; 
+; reset 
+; 13=0, 14=0, 15=1 .. 15=0
+;
+; handshake line
+; 14=1.... read line 14=0
+
+
+
+
+
+; TODO hand shake clock for next column scan
+; TODO detect each row
+
+
+
+
+
+
+
+
+
 ; scan keyboard row 1
 	ld a, 128
 	ld hl, keyscan_table
 	call .rowscan
 
-	 
 
 	ld a, 64
 	ld hl, keyscan_table+key_cols
 	call .rowscan
-
-
-
 
 	ld a, 32
 	ld hl, keyscan_table+(key_cols*2)

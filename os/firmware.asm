@@ -9,7 +9,7 @@ Device_C: equ 080h
 Device_D: equ 0c0h
 
 
-DEBUG_KEY: equ 0
+DEBUG_KEY: equ 1
 DEBUG_KEY_MATRIX: equ 0
 DEBUG_STORECF: equ 0
 DEBUG_STORESE: equ 1        ; TODO  w locks up, r returns. 
@@ -51,7 +51,7 @@ stacksize: equ 255
 ; keyscan table needs rows x cols buffer
 
 key_rows: equ 4
-key_cols: equ 12
+key_cols: equ 10     ; TODO move out to mini and maxi
 keyscan_table_row1: equ tos-stacksize-key_cols-1
 keyscan_table_row2: equ keyscan_table_row1-key_cols-1
 keyscan_table_row3: equ keyscan_table_row2-key_cols-1

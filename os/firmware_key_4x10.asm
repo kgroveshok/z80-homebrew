@@ -113,7 +113,8 @@ key_init:
 
 ; character in from keyboard
 
-.matrix_to_char: db "D#0*C987B654A321"
+.matrix_to_char: db "1234567890qwertyuiopasdfghjkl_+zxcvbnm,."
+;.matrix_to_char: db "D#0*C987B654A321"
 
 
 ; map the physical key to a char dependant on state
@@ -268,8 +269,238 @@ cin: 	call .mtoc
 ;	ld (hl),a,
 ;	ret
 
-	
+; map matrix key held to char on face of key
+
+.mtoc:
 testkey:
+
+
+
+
+; reset counter
+ld a, 128
+out (portbdata),a
+
+ld b, 10
+ld c, 0       ; current clock toggle
+
+.colscan1:
+
+; For each column scan for switches
+
+push bc
+ld hl, scratch
+call .rowscan
+pop bc
+
+
+; get back current column
+
+; translate the row scan
+
+; 
+; row 1
+
+ld a,b
+
+LD   hl, keyscan_table_row1+10
+
+call subafromhl
+;call addatohl
+
+ld de, scratch
+
+ld a,(de)
+ld (hl),a
+
+
+
+
+; row 2
+
+ld a,b
+
+LD   hl, keyscan_table_row2+10
+
+;call addatohl
+call subafromhl
+
+
+ld de, scratch+1
+
+ld a,(de)
+ld (hl),a
+
+
+; row 3
+
+ld a,b
+
+LD   hl, keyscan_table_row3+10
+
+;call addatohl
+call subafromhl
+
+ld de, scratch+2
+
+ld a,(de)
+ld (hl),a
+
+
+
+; row 4
+
+ld a,b
+
+LD   hl, keyscan_table_row4+10
+
+;call addatohl
+call subafromhl
+
+ld de, scratch+3
+
+ld a,(de)
+ld (hl),a
+
+
+ld a, 64
+out (portbdata),a
+
+ld a, 0
+out (portbdata),a
+
+; toggle clk and move to next column
+;ld a, 64
+;cp c
+;
+;jr z, .coltoglow
+;ld c, a
+;jr .coltog
+;.coltoglow:
+;ld c, 0
+;.coltog:
+;ld a, c
+;out (portbdata),a
+
+djnz .colscan1
+
+ld a,11
+LD   hl, keyscan_table_row1
+call addatohl
+ld a, 0
+ld (hl), a
+
+
+ld a,11
+LD   hl, keyscan_table_row2
+call addatohl
+ld a, 0
+ld (hl), a
+
+ld a,11
+LD   hl, keyscan_table_row3
+call addatohl
+ld a, 0
+ld (hl), a
+
+ld a,11
+LD   hl, keyscan_table_row4
+call addatohl
+ld a, 0
+ld (hl), a
+
+;	; flag if key D is held down and remove from reporting
+;	ld bc, .key_map_fd  
+;	ld hl, keyscan_table
+;	ld de, key_fd
+;	call .key_shift_hold
+;	cp 255
+;	jr z, .cinmap
+;	; flag if key C is held down and remove from reporting
+;	ld bc, .key_map_fc  
+;	ld hl, keyscan_table+key_cols
+;	ld de, key_fc
+;	call .key_shift_hold
+;	cp 255
+;	jr z, .cinmap
+;	; flag if key B is held down and remove from reporting
+;	ld bc, .key_map_fb  
+;	ld hl, keyscan_table+(key_cols*2)
+;	ld de, key_fb
+;	call .key_shift_hold
+;	cp 255
+;	jr z, .cinmap
+;	; flag if key A is held down and remove from reporting
+;	ld bc, .key_map_fa  
+;	ld hl, keyscan_table+(key_cols*3)
+;	ld de, key_fa
+;	call .key_shift_hold
+;	cp 255
+;	jr z, .cinmap
+
+	ld de, .matrix_to_char
+
+
+.cinmap1: 
+	if DEBUG_KEY
+            LD   A, kLCD_Line4
+            CALL fLCD_Pos       ;Position cursor to location in A
+		push de
+            LD   DE, keyscan_table
+            CALL fLCD_Str       ;Display string pointed to by DE
+		pop de
+	endif
+
+	; scan key matrix table for any held key
+
+	; de holds either the default matrix or one selected above
+
+	ld hl, keyscan_table
+	ld b,key_cols*key_rows
+
+.cin11:	ld a,(hl)
+	cp '#'
+	jr z, .cinhit1
+	inc hl
+	inc de
+	dec b
+	jr nz, .cin11
+	; no key found held
+	ld a,0
+	ret
+.cinhit1: push de
+	pop hl
+	ld a,(hl)
+	ret
+
+; flag a control key is held 
+; hl is key pin, de is flag indicator
+
+.key_shift_hold1:
+	push bc
+	ld a, 1
+	ld (cursor_shape),a
+	ld b, 0
+	ld a, (hl)
+	cp '.'
+	jr z, .key_shift11
+	ld b, 255
+	ld a, '+'    ; hide key from later scans
+	ld (hl),a
+	ld a, 2
+	ld (cursor_shape),a
+.key_shift11:
+	; write flag indicator
+	ld a,b
+	ld (de),a
+
+	pop de    ; de now holds the key map ptr
+	ret
+
+	
+	
+	
+matrix:
 	;call matrix
 	; TODO optimise the code....
 
@@ -525,7 +756,7 @@ jr .cyclestart
 
 ; map matrix key held to char on face of key
 
-.mtoc:
+.mtocold:
 
 
 ; reset counter
@@ -805,7 +1036,7 @@ out (portbdata),a
 
 ; test function to display hardware view of matrix state
 
-matrix:
+matrixold:
 
 
 

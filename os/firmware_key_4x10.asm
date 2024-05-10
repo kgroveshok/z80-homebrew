@@ -270,10 +270,165 @@ cin: 	call .mtoc
 
 	
 testkey:
-	call matrix
+	;call matrix
 	; TODO optimise the code....
 
 
+
+; reset counter
+ld a, 128
+out (portbdata),a
+
+ld b, 10
+ld c, 0       ; current clock toggle
+
+.colscan:
+
+; For each column scan for switches
+
+push bc
+ld hl, scratch
+call .rowscan
+pop bc
+
+
+; get back current column
+
+; translate the row scan
+
+; 
+; row 1
+
+ld a,b
+
+LD   hl, keyscan_table_row1+10
+
+call subafromhl
+;call addatohl
+
+ld de, scratch
+
+ld a,(de)
+ld (hl),a
+
+
+
+
+; row 2
+
+ld a,b
+
+LD   hl, keyscan_table_row2+10
+
+;call addatohl
+call subafromhl
+
+
+ld de, scratch+1
+
+ld a,(de)
+ld (hl),a
+
+
+; row 3
+
+ld a,b
+
+LD   hl, keyscan_table_row3+10
+
+;call addatohl
+call subafromhl
+
+ld de, scratch+2
+
+ld a,(de)
+ld (hl),a
+
+
+
+; row 4
+
+ld a,b
+
+LD   hl, keyscan_table_row4+10
+
+;call addatohl
+call subafromhl
+
+ld de, scratch+3
+
+ld a,(de)
+ld (hl),a
+
+
+ld a, 64
+out (portbdata),a
+
+ld a, 0
+out (portbdata),a
+
+; toggle clk and move to next column
+;ld a, 64
+;cp c
+;
+;jr z, .coltoglow
+;ld c, a
+;jr .coltog
+;.coltoglow:
+;ld c, 0
+;.coltog:
+;ld a, c
+;out (portbdata),a
+
+djnz .colscan
+
+ld a,11
+LD   hl, keyscan_table_row1
+call addatohl
+ld a, 0
+ld (hl), a
+
+
+ld a,11
+LD   hl, keyscan_table_row2
+call addatohl
+ld a, 0
+ld (hl), a
+
+ld a,11
+LD   hl, keyscan_table_row3
+call addatohl
+ld a, 0
+ld (hl), a
+
+ld a,11
+LD   hl, keyscan_table_row4
+call addatohl
+ld a, 0
+ld (hl), a
+; Display text on first line
+            LD   A, kLCD_Line1
+            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   DE, keyscan_table_row1
+            ;LD   DE, MsgHello
+            CALL fLCD_Str       ;Display string pointed to by DE
+
+; Display text on second line
+            LD   A, kLCD_Line2
+            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   DE, keyscan_table_row2
+            CALL fLCD_Str       ;Display string pointed to by DE
+            LD   A, kLCD_Line3
+            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   DE, keyscan_table_row3
+            CALL fLCD_Str       ;Display string pointed to by DE
+            LD   A, kLCD_Line4
+            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   DE, keyscan_table_row4
+            CALL fLCD_Str       ;Display string pointed to by DE
+
+	call delay250ms
+	jp testkey
 
 ; using decade counter....
 
@@ -517,7 +672,6 @@ out (portbdata),a
 
 
 
-	ret
 
 ;	push hl
 ;	push de
@@ -765,9 +919,13 @@ out (portbdata),a
 
 .rscandone: ret
 
+;addatohl:
+;
+ ;add   a, l    ; A = A+L
+  ;  ld    l, a    ; L = A+L
+   ; adc   a, h    ; A = A+L+H+carry
+   ; sub   l       ; A = H+carry
+   ; ld    h, a    ; H = H+carry
 
-
-;endif
-
-
+;ret
 ; eof

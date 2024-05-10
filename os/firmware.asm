@@ -51,7 +51,7 @@ stacksize: equ 255
 ; keyscan table needs rows x cols buffer
 
 key_rows: equ 4
-key_cols: equ 10     ; TODO move out to mini and maxi
+key_cols: equ 12    ; TODO move out to mini and maxi
 keyscan_table_row1: equ tos-stacksize-key_cols-1
 keyscan_table_row2: equ keyscan_table_row1-key_cols-1
 keyscan_table_row3: equ keyscan_table_row2-key_cols-1

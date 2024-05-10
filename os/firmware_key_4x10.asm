@@ -271,12 +271,12 @@ cin: 	call .mtoc
 
 ; map matrix key held to char on face of key
 
-.mtoc:
 testkey:
+	jp matrix
 
 
 
-
+.mtoc:
 ; reset counter
 ld a, 128
 out (portbdata),a

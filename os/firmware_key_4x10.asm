@@ -269,12 +269,8 @@ cin: 	call .mtoc
 ;	ret
 
 	
-
-; map matrix key held to char on face of key
-
-.mtoc:
-
-
+testkey:
+	call matrix
 	; TODO optimise the code....
 
 
@@ -330,26 +326,91 @@ cin: 	call .mtoc
 
 
 
+; reset 128
+; clock 64
+; ce 32
+
+
+.cyclestart:
+
+; reset counter
+ld a, 128
+out (portbdata),a
+
+; loop leds
+ld b,10
+
+.cycle1:
+push bc
+ld a, 0
+out (portbdata),a
+call delay250ms
+
+ld a, 64
+out (portbdata),a
+call delay250ms
+
+ld a, 0
+out (portbdata),a
+call delay250ms
+
+pop bc
+djnz .cycle1
+
+
+jr .cyclestart
 
 
 
+
+
+
+
+
+
+; map matrix key held to char on face of key
+
+.mtoc:
+
+
+; reset counter
+ld a, 128
+out (portbdata),a
 
 
 ; scan keyboard row 1
+ld a, 0
+out (portbdata),a
+;ld a, 64
+;out (portbdata),a
+
+
 	ld a, 128
 	ld hl, keyscan_table
 	call .rowscan
 
+;ld a, 0
+;out (portbdata),a
+ld a, 64
+out (portbdata),a
 
 	ld a, 64
 	ld hl, keyscan_table+key_cols
 	call .rowscan
 
+ld a, 0
+out (portbdata),a
+;ld a, 64
+;out (portbdata),a
 	ld a, 32
 	ld hl, keyscan_table+(key_cols*2)
 	call .rowscan
 
 
+;ld a, 0
+;out (portbdata),a
+ld a, 64
+out (portbdata),a
 
 	ld a, 16
 	ld hl, keyscan_table+(key_cols*3)
@@ -594,19 +655,38 @@ matrix:
 
 
 
+; reset counter
+ld a, 128
+out (portbdata),a
 ; scan keyboard row 1
+ld a, 0
+out (portbdata),a
+;ld a, 64
+;out (portbdata),a
 	ld a, 128
 	ld hl, keyscan_table_row1
 	call .rowscan
 
+;ld a, 0
+;out (portbdata),a
+ld a, 64
+out (portbdata),a
 	ld a, 64
 	ld hl, keyscan_table_row2
 	call .rowscan
 
+ld a, 0
+out (portbdata),a
+;ld a, 64
+;out (portbdata),a
 	ld a, 32
 	ld hl, keyscan_table_row3
 	call .rowscan
 
+;ld a, 0
+;out (portbdata),a
+ld a, 64
+out (portbdata),a
 	ld a, 16
 	ld hl, keyscan_table_row4
 	call .rowscan
@@ -637,7 +717,7 @@ matrix:
 
 ; pass de as row display flags
 .rowscan: 
-	out (portbdata),a
+;	out (portbdata),a
 	in a,(portbdata)
 	ld c,a
 	; reset flags for the row 

@@ -65,6 +65,10 @@ coldstart:
 
 	
 
+jp  testkey
+
+
+
 
 
 ;stop:	nop

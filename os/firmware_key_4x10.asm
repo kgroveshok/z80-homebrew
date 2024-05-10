@@ -113,7 +113,12 @@ key_init:
 
 ; character in from keyboard
 
-.matrix_to_char: db "1234567890qwertyuiopasdfghjkl_+zxcvbnm,."
+;.matrix_to_char: db "1234567890qwertyuiopasdfghjkl_+zxcvbnm,."
+.matrix_to_char:
+		db "+zxcvbnm,=",0,0
+		db "asdfghjkl_",0,0
+		db "qwertyuiop",0,0
+		 db "1234567890",0,0
 ;.matrix_to_char: db "D#0*C987B654A321"
 
 
@@ -272,142 +277,66 @@ cin: 	call .mtoc
 ; map matrix key held to char on face of key
 
 testkey:
-	jp matrix
+	; scan keyboard matrix and generate raw scan map
+	call matrix
+	; get char 
+	call .mapbasickeys
+
+if DEBUG_KEY
+
+; Display text on first line
+            LD   A, kLCD_Line1
+            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   DE, keyscan_table_row1
+            ;LD   DE, MsgHello
+            CALL fLCD_Str       ;Display string pointed to by DE
+
+; Display text on second line
+            LD   A, kLCD_Line2
+            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   DE, keyscan_table_row2
+            CALL fLCD_Str       ;Display string pointed to by DE
+            LD   A, kLCD_Line3
+            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   DE, keyscan_table_row3
+            CALL fLCD_Str       ;Display string pointed to by DE
+            LD   A, kLCD_Line4
+            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   DE, keyscan_table_row4
+            CALL fLCD_Str       ;Display string pointed to by DE
+
+	call delay250ms
+endif
+ call delay250ms
+	jp testkey
+
+
+; convert the raw key map 
+.mapbasickeys:
+	ld hl, .matrix_to_char
+	ld de,keyscan_table_row4
+
+	ld b, 46   ; 30 keys to remap + 8 nulls 
+.remap:
+	ld a,(de)
+	cp '#'
+	jr nz, .remapnext
+	;CALLMONITOR
+	ld a,(hl)
+	ld (de),a
+
+
+
+.remapnext:
+	inc hl
+	inc de
+	djnz .remap
+	
+	ret
 
 
 
 .mtoc:
-; reset counter
-ld a, 128
-out (portbdata),a
-
-ld b, 10
-ld c, 0       ; current clock toggle
-
-.colscan1:
-
-; For each column scan for switches
-
-push bc
-ld hl, scratch
-call .rowscan
-pop bc
-
-
-; get back current column
-
-; translate the row scan
-
-; 
-; row 1
-
-ld a,b
-
-LD   hl, keyscan_table_row1+10
-
-call subafromhl
-;call addatohl
-
-ld de, scratch
-
-ld a,(de)
-ld (hl),a
-
-
-
-
-; row 2
-
-ld a,b
-
-LD   hl, keyscan_table_row2+10
-
-;call addatohl
-call subafromhl
-
-
-ld de, scratch+1
-
-ld a,(de)
-ld (hl),a
-
-
-; row 3
-
-ld a,b
-
-LD   hl, keyscan_table_row3+10
-
-;call addatohl
-call subafromhl
-
-ld de, scratch+2
-
-ld a,(de)
-ld (hl),a
-
-
-
-; row 4
-
-ld a,b
-
-LD   hl, keyscan_table_row4+10
-
-;call addatohl
-call subafromhl
-
-ld de, scratch+3
-
-ld a,(de)
-ld (hl),a
-
-
-ld a, 64
-out (portbdata),a
-
-ld a, 0
-out (portbdata),a
-
-; toggle clk and move to next column
-;ld a, 64
-;cp c
-;
-;jr z, .coltoglow
-;ld c, a
-;jr .coltog
-;.coltoglow:
-;ld c, 0
-;.coltog:
-;ld a, c
-;out (portbdata),a
-
-djnz .colscan1
-
-ld a,11
-LD   hl, keyscan_table_row1
-call addatohl
-ld a, 0
-ld (hl), a
-
-
-ld a,11
-LD   hl, keyscan_table_row2
-call addatohl
-ld a, 0
-ld (hl), a
-
-ld a,11
-LD   hl, keyscan_table_row3
-call addatohl
-ld a, 0
-ld (hl), a
-
-ld a,11
-LD   hl, keyscan_table_row4
-call addatohl
-ld a, 0
-ld (hl), a
 
 ;	; flag if key D is held down and remove from reporting
 ;	ld bc, .key_map_fd  
@@ -498,7 +427,8 @@ ld (hl), a
 	ret
 
 	
-	
+
+; scans keyboard matrix and flags key press in memory array	
 	
 matrix:
 	;call matrix
@@ -637,6 +567,9 @@ LD   hl, keyscan_table_row4
 call addatohl
 ld a, 0
 ld (hl), a
+
+if DEBUG_KEY_MATRIX
+
 ; Display text on first line
             LD   A, kLCD_Line1
             CALL fLCD_Pos       ;Position cursor to location in A
@@ -658,8 +591,10 @@ ld (hl), a
             LD   DE, keyscan_table_row4
             CALL fLCD_Str       ;Display string pointed to by DE
 
-	call delay250ms
-	jp testkey
+call delay250ms
+	jp matrix
+endif
+ret
 
 ; using decade counter....
 

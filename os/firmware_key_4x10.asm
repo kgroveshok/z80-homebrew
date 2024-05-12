@@ -230,7 +230,7 @@ cin_wait: 	call cin
 				ld a,0
 				ld (hl),a
 
-				    LD   A, kLCD_Line1+15
+				    LD   A, kLCD_Line1+11
 				    CALL fLCD_Pos       ;Position cursor to location in A
 				    LD   DE, key_repeat_ct
 				    ;LD   DE, MsgHello
@@ -253,7 +253,7 @@ cin_wait: 	call cin
 					ld a,0
 					ld (hl),a
 
-					    LD   A, kLCD_Line2+15
+					    LD   A, kLCD_Line2+11
 					    CALL fLCD_Pos       ;Position cursor to location in A
 					    LD   DE, key_repeat_ct
 					    ;LD   DE, MsgHello
@@ -276,7 +276,7 @@ cin_wait: 	call cin
 					ld a,0
 					ld (hl),a
 
-					    LD   A, kLCD_Line2+15
+					    LD   A, kLCD_Line2+11
 					    CALL fLCD_Pos       ;Position cursor to location in A
 					    LD   DE, key_repeat_ct
 					    ;LD   DE, MsgHello
@@ -301,7 +301,7 @@ if DEBUG_KEYCINWAIT
 	ld a,0
 	ld (hl),a
 
-            LD   A, kLCD_Line2+15
+            LD   A, kLCD_Line2+11
             CALL fLCD_Pos       ;Position cursor to location in A
             LD   DE, key_repeat_ct
             ;LD   DE, MsgHello
@@ -401,6 +401,27 @@ endif
 	cp b
 	jr z, .cina1
 	ld a,b		
+if DEBUG_KEYCIN
+	push af
+
+	ld hl,key_repeat_ct
+	inc hl
+	call hexout
+	ld hl,key_repeat_ct+3
+	ld a,0
+	ld (hl),a
+	ld hl,key_repeat_ct
+	ld a, '3'	
+	ld (hl),a
+
+            LD   A, kLCD_Line4+15
+            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   DE, key_repeat_ct
+            ;LD   DE, MsgHello
+            CALL fLCD_Str       ;Display string pointed to by DE
+
+	pop af
+endif
 	ret
 
 ; detect keyboard modifier key press and apply new overlay to the face key held

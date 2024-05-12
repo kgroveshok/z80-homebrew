@@ -219,14 +219,99 @@ key_init:
 ; add cin and cin_wait
 
 cin_wait: 	call cin
+			if DEBUG_KEYCINWAIT
+				push af
+				
+				ld hl,key_repeat_ct
+				ld (hl),a
+				inc hl
+				call hexout
+				ld hl,key_repeat_ct+3
+				ld a,0
+				ld (hl),a
+
+				    LD   A, kLCD_Line1+15
+				    CALL fLCD_Pos       ;Position cursor to location in A
+				    LD   DE, key_repeat_ct
+				    ;LD   DE, MsgHello
+				    CALL fLCD_Str       ;Display string pointed to by DE
+
+
+
+				pop af
+			endif
 	cp 0
 	jr z, cin_wait   ; block until key press
 
+				if DEBUG_KEYCINWAIT
+					push af
+
+					ld a, 'A'	
+					ld hl,key_repeat_ct
+					ld (hl),a
+					inc hl
+					ld a,0
+					ld (hl),a
+
+					    LD   A, kLCD_Line2+15
+					    CALL fLCD_Pos       ;Position cursor to location in A
+					    LD   DE, key_repeat_ct
+					    ;LD   DE, MsgHello
+					    CALL fLCD_Str       ;Display string pointed to by DE
+
+				call delay500ms
+
+					pop af
+				endif
 	push af   ; save key pressed
 
-.cin_wait1:	call cin
+.cin_wait1:	
+				if DEBUG_KEYCINWAIT
+					push af
+
+					ld a, 'b'	
+					ld hl,key_repeat_ct
+					ld (hl),a
+					inc hl
+					ld a,0
+					ld (hl),a
+
+					    LD   A, kLCD_Line2+15
+					    CALL fLCD_Pos       ;Position cursor to location in A
+					    LD   DE, key_repeat_ct
+					    ;LD   DE, MsgHello
+					    CALL fLCD_Str       ;Display string pointed to by DE
+
+
+				call delay500ms
+
+					pop af
+				endif
+
+call cin
 	cp 0
 	jr nz, .cin_wait1  	; wait for key release
+if DEBUG_KEYCINWAIT
+	push af
+
+	ld a, '3'	
+	ld hl,key_repeat_ct
+	ld (hl),a
+	inc hl
+	ld a,0
+	ld (hl),a
+
+            LD   A, kLCD_Line2+15
+            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   DE, key_repeat_ct
+            ;LD   DE, MsgHello
+            CALL fLCD_Str       ;Display string pointed to by DE
+
+
+call delay500ms
+
+	pop af
+endif
 
 	pop af   ; get key
 	ret
@@ -237,22 +322,22 @@ cin: 	call .mtoc
 if DEBUG_KEYCIN
 	push af
 	
-	ld hl,scratch
+	ld hl,key_repeat_ct
 	ld (hl),a
 	inc hl
-	ld hl, os_word_scratch+1
 	call hexout
-	ld hl,scratch+3
+	ld hl,key_repeat_ct+3
 	ld a,0
 	ld (hl),a
 
             LD   A, kLCD_Line1+15
             CALL fLCD_Pos       ;Position cursor to location in A
-            LD   DE, scratch
+            LD   DE, key_repeat_ct
             ;LD   DE, MsgHello
             CALL fLCD_Str       ;Display string pointed to by DE
 
 
+call delay500ms
 
 	pop af
 endif
@@ -262,12 +347,55 @@ endif
 	cp 0
 	ret z
 
+if DEBUG_KEYCIN
+	push af
+
+	ld a, '1'	
+	ld hl,key_repeat_ct
+	ld (hl),a
+	inc hl
+	ld a,0
+	ld (hl),a
+
+            LD   A, kLCD_Line2+15
+            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   DE, key_repeat_ct
+            ;LD   DE, MsgHello
+            CALL fLCD_Str       ;Display string pointed to by DE
+
+
+call delay500ms
+
+	pop af
+endif
+
 	; stop key bounce
 
-;	ld (key_held),a		 ; save it
+	ld (key_held),a		 ; save it
 	ld b, a
 
 .cina1:	push bc
+if DEBUG_KEYCIN
+	push af
+
+	ld a, '2'	
+	ld hl,key_repeat_ct
+	ld (hl),a
+	inc hl
+	ld a,0
+	ld (hl),a
+
+            LD   A, kLCD_Line2+15
+            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   DE, key_repeat_ct
+            ;LD   DE, MsgHello
+            CALL fLCD_Str       ;Display string pointed to by DE
+
+call delay500ms
+
+
+	pop af
+endif
 	call .mtoc
 	pop bc
 	cp b
@@ -417,18 +545,22 @@ endif
 
 ; get first char reported
 
-	ld de,keyscan_table_row4
+	ld hl,keyscan_table_row4
 
 	ld b, 46   ; 30 keys to remap + 8 nulls 
 .findkey:
-	ld a,(de)
-	cp KEY_MATRIX_NO_PRESS
+	ld a,(hl)
+	cp 0
+;	jr z, .nextkey
+;	cp KEY_MATRIX_NO_PRESS
 	jr nz, .foundkey
-	inc de
+;.nextkey:
+	inc hl
 	djnz .findkey
 	ld a,0
 	ret
 .foundkey:
+	ld a,(hl)
 	ret
 	
 

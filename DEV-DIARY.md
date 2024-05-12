@@ -483,6 +483,7 @@ TODO uwords are not exec. need to add the pc ptr for the exec to the start of th
 
 
 May 2024
+--------
 
 Now have uword creation however the decision to have a PC stored for each exec line so i can handle loops is 
 proving to be a problem as the exec of the uword is needing it and it isnt setup right.
@@ -528,10 +529,19 @@ Added a rough build of a case (many slight faults) and FreeCad, STLs and gcode c
 Stage 4.1 NOW
 -------------
 
-New full sized keyboard to work on
+New full sized keyboard to work on:
 
 
 ![](stage4.0/4x10matrix.jpg)
+
+12 May
+------
+
+Now have keyboard working. Need to tidy up wiring and possibly move it to strip board for some stability. The keyboard
+cable needs looking at as currenly a load of link wires masking taped together. 
+
+Next to look at SPI storage...
+
 
 
 Stage 4.5 TODO

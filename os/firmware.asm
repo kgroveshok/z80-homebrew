@@ -242,13 +242,13 @@ KEY_BS: equ 8
 KEY_HOME: equ 2
 KEY_SHIFTLOCK: equ 4
 ;if DEBUG_KEY
-;	KEY_MATRIX_NO_PRESS: equ '+'
-;	KEY_SHIFT:   equ '+'
-;	KEY_SYMBOLSHIFT:  equ '+'
+;	KEY_MATRIX_NO_PRESS: equ '.'
+;	KEY_SHIFT:   equ '.'
+;	KEY_SYMBOLSHIFT:  equ '.'
 ;else
-	KEY_SHIFT:   equ '.'
-	KEY_SYMBOLSHIFT:  equ '.'
-	KEY_MATRIX_NO_PRESS: equ '.'
+	KEY_SHIFT:   equ '~'
+	KEY_SYMBOLSHIFT:  equ '~'
+	KEY_MATRIX_NO_PRESS: equ '~'
 ;endif
 
 

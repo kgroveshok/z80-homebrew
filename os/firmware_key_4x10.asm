@@ -119,6 +119,16 @@ key_init:
 		db "asdfghjkl_",0,0
 		db "qwertyuiop",0,0
 		 db "1234567890",0,0
+.matrix_to_shift:
+		db "+ZXCVbnm,=",0,0
+		db "ASDFGHJKL_",0,0
+		db "QWERTYUIOP",0,0
+		 db "!2£$%^&*()",0,0
+.matrix_to_symbolshift:
+		db "+<>cvb,.,=",0,0
+		db "/?dfghjkl_",0,0
+		db "-_+=[]{}@#",0,0
+		 db "1234567890",0,0
 ;.matrix_to_char: db "D#0*C987B654A321"
 
 
@@ -279,8 +289,42 @@ cin: 	call .mtoc
 testkey:
 	; scan keyboard matrix and generate raw scan map
 	call matrix
-	; get char 
-	call .mapbasickeys
+
+	; reuse c bit 0 left modifer button - ie shift
+        ; reuse c bit 1 for right modifer button - ie symbol shift
+	; both can be used with their other mappings and if seen together can do extra mappings (forth keywords????)
+
+	ld c, 0
+
+	; TODO set flags for modifer key presses
+
+	ld hl,keyscan_table_row4
+
+	ld a, (hl)
+	cp '#'
+	jr z, .nextmodcheck
+	set 0, c
+	ld hl, .matrix_to_shift
+	jr .dokeymap
+	; TODO for now igonre
+.nextmodcheck:
+	ld hl,keyscan_table_row4+9
+
+	ld a, (hl)
+	cp '#'
+	jr z, .donemodcheck
+	set 1, c 
+	ld hl, .matrix_to_symbolshift
+	jr .dokeymap
+.donemodcheck:
+	; no modifer found so just map to normal keys
+	; get mtoc map matrix to respective keys
+	ld hl, .matrix_to_char
+
+.dokeymap:
+	;ld (key_fa), c 
+	call .mapkeys
+
 
 if DEBUG_KEY
 
@@ -310,10 +354,11 @@ endif
  call delay250ms
 	jp testkey
 
+	
+	ret
 
-; convert the raw key map 
-.mapbasickeys:
-	ld hl, .matrix_to_char
+; convert the raw key map given hl for destination key
+.mapkeys:
 	ld de,keyscan_table_row4
 
 	ld b, 46   ; 30 keys to remap + 8 nulls 

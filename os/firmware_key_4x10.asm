@@ -123,7 +123,7 @@ key_init:
 		db KEY_SHIFT,"ZXCVBNM",KEY_BS,KEY_SYMBOLSHIFT,0,0
 		db "ASDFGHJKL",KEY_CR,0,0
 		db "QWERTYUIOP",0,0
-		 db "!2£$%^&*()",0,0
+		 db "!",'"',"#$%^&*()",0,0
 .matrix_to_symbolshift:
 		db KEY_SHIFT,"<>cvb,.",KEY_BS,KEY_SYMBOLSHIFT,0,0
 		db "/?dfghjkl",KEY_CR,0,0
@@ -330,7 +330,7 @@ if DEBUG_KEYCIN
 	ld a,0
 	ld (hl),a
 
-            LD   A, kLCD_Line1+15
+            LD   A, kLCD_Line3+15
             CALL fLCD_Pos       ;Position cursor to location in A
             LD   DE, key_repeat_ct
             ;LD   DE, MsgHello
@@ -357,7 +357,7 @@ if DEBUG_KEYCIN
 	ld a,0
 	ld (hl),a
 
-            LD   A, kLCD_Line2+15
+            LD   A, kLCD_Line4+15
             CALL fLCD_Pos       ;Position cursor to location in A
             LD   DE, key_repeat_ct
             ;LD   DE, MsgHello
@@ -378,21 +378,21 @@ endif
 if DEBUG_KEYCIN
 	push af
 
-	ld a, '2'	
 	ld hl,key_repeat_ct
-	ld (hl),a
 	inc hl
+	call hexout
+	ld hl,key_repeat_ct+3
 	ld a,0
 	ld (hl),a
+	ld hl,key_repeat_ct
+	ld a, '2'	
+	ld (hl),a
 
-            LD   A, kLCD_Line2+15
+            LD   A, kLCD_Line4+15
             CALL fLCD_Pos       ;Position cursor to location in A
             LD   DE, key_repeat_ct
             ;LD   DE, MsgHello
             CALL fLCD_Str       ;Display string pointed to by DE
-
-call delay500ms
-
 
 	pop af
 endif
@@ -539,7 +539,7 @@ if DEBUG_KEY
             LD   DE, keyscan_table_row4
             CALL fLCD_Str       ;Display string pointed to by DE
 
-	call delay250ms
+	;call delay250ms
 endif
 ;	jp testkey
 
@@ -551,10 +551,10 @@ endif
 .findkey:
 	ld a,(hl)
 	cp 0
-;	jr z, .nextkey
-;	cp KEY_MATRIX_NO_PRESS
+	jr z, .nextkey
+	cp KEY_MATRIX_NO_PRESS
 	jr nz, .foundkey
-;.nextkey:
+.nextkey:
 	inc hl
 	djnz .findkey
 	ld a,0

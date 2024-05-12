@@ -9,9 +9,9 @@ Device_C: equ 080h
 Device_D: equ 0c0h
 
 
-DEBUG_KEYCINWAIT: equ 1
-DEBUG_KEYCIN: equ 1
-DEBUG_KEY: equ 1
+DEBUG_KEYCINWAIT: equ 0
+DEBUG_KEYCIN: equ 0
+DEBUG_KEY: equ 0
 DEBUG_KEY_MATRIX: equ 0
 DEBUG_STORECF: equ 0
 DEBUG_STORESE: equ 1        ; TODO  w locks up, r returns. 
@@ -59,10 +59,11 @@ keyscan_table_row2: equ keyscan_table_row1-key_cols-1
 keyscan_table_row3: equ keyscan_table_row2-key_cols-1
 keyscan_table_row4: equ keyscan_table_row3-key_cols-1
 keyscan_table: equ keyscan_table_row4-(key_cols*key_rows)-1
+keyscan_scancol: equ keyscan_table-key_cols
 ;keyscan_table_len: equ key_rows*key_cols
 ;keybufptr: equ keyscan_table - 2
 ;keysymbol: equ keybufptr - 1
-key_held: equ keyscan_table-1	; currently held
+key_held: equ keyscan_scancol-1	; currently held
 key_held_prev: equ key_held - 1   ; previously held (to detect bounce and cycle of key if required)
 key_repeat_ct: equ key_held_prev - 4 ; timers (two words)
 key_fa: equ key_repeat_ct -1 ;

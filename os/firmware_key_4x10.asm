@@ -727,7 +727,7 @@ ld c, 0       ; current clock toggle
 ; For each column scan for switches
 
 push bc
-ld hl, scratch
+ld hl, keyscan_scancol
 call .rowscan
 pop bc
 
@@ -746,7 +746,7 @@ LD   hl, keyscan_table_row1+10
 call subafromhl
 ;call addatohl
 
-ld de, scratch
+ld de, keyscan_scancol
 
 ld a,(de)
 ld (hl),a
@@ -764,7 +764,7 @@ LD   hl, keyscan_table_row2+10
 call subafromhl
 
 
-ld de, scratch+1
+ld de, keyscan_scancol+1
 
 ld a,(de)
 ld (hl),a
@@ -779,7 +779,7 @@ LD   hl, keyscan_table_row3+10
 ;call addatohl
 call subafromhl
 
-ld de, scratch+2
+ld de, keyscan_scancol+2
 
 ld a,(de)
 ld (hl),a
@@ -795,7 +795,7 @@ LD   hl, keyscan_table_row4+10
 ;call addatohl
 call subafromhl
 
-ld de, scratch+3
+ld de, keyscan_scancol+3
 
 ld a,(de)
 ld (hl),a

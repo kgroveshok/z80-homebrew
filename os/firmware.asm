@@ -9,7 +9,8 @@ Device_C: equ 080h
 Device_D: equ 0c0h
 
 
-DEBUG_KEY: equ 1
+DEBUG_KEYCIN: equ 1
+DEBUG_KEY: equ 0
 DEBUG_KEY_MATRIX: equ 0
 DEBUG_STORECF: equ 0
 DEBUG_STORESE: equ 1        ; TODO  w locks up, r returns. 
@@ -238,6 +239,14 @@ KEY_TAB:  equ 9
 KEY_BS: equ 8
 KEY_HOME: equ 2
 KEY_SHIFTLOCK: equ 4
+KEY_SHIFT:   equ 0
+KEY_SYMBOLSHIFT:  equ 0
+if DEBUG_KEY
+	KEY_MATRIX_NO_PRESS: equ '+'
+else
+	KEY_MATRIX_NO_PRESS: equ 0
+endif
+
 
 
 ;TODO macro to calc col and row offset into screen

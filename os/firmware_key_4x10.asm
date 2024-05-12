@@ -115,18 +115,18 @@ key_init:
 
 ;.matrix_to_char: db "1234567890qwertyuiopasdfghjkl_+zxcvbnm,."
 .matrix_to_char:
-		db "+zxcvbnm,=",0,0
-		db "asdfghjkl_",0,0
+		db KEY_SHIFT,"zxcvbnm ",KEY_SYMBOLSHIFT,0,0
+		db "asdfghjkl",KEY_CR,0,0
 		db "qwertyuiop",0,0
 		 db "1234567890",0,0
 .matrix_to_shift:
-		db "+ZXCVbnm,=",0,0
-		db "ASDFGHJKL_",0,0
+		db KEY_SHIFT,"ZXCVBNM",KEY_BS,KEY_SYMBOLSHIFT,0,0
+		db "ASDFGHJKL",KEY_CR,0,0
 		db "QWERTYUIOP",0,0
 		 db "!2£$%^&*()",0,0
 .matrix_to_symbolshift:
-		db "+<>cvb,.,=",0,0
-		db "/?dfghjkl_",0,0
+		db KEY_SHIFT,"<>cvb,.",KEY_BS,KEY_SYMBOLSHIFT,0,0
+		db "/?dfghjkl",KEY_CR,0,0
 		db "-_+=[]{}@#",0,0
 		 db "1234567890",0,0
 ;.matrix_to_char: db "D#0*C987B654A321"
@@ -234,6 +234,30 @@ cin_wait: 	call cin
 
 cin: 	call .mtoc
 
+if DEBUG_KEYCIN
+	push af
+	
+	ld hl,scratch
+	ld (hl),a
+	inc hl
+	ld hl, os_word_scratch+1
+	call hexout
+	ld hl,scratch+3
+	ld a,0
+	ld (hl),a
+
+            LD   A, kLCD_Line1+15
+            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   DE, scratch
+            ;LD   DE, MsgHello
+            CALL fLCD_Str       ;Display string pointed to by DE
+
+
+
+	pop af
+endif
+
+
 	; no key held
 	cp 0
 	ret z
@@ -286,7 +310,45 @@ cin: 	call .mtoc
 
 ; map matrix key held to char on face of key
 
-testkey:
+.mtoc:
+
+; test decade counter strobes
+
+;.decadetest1:
+
+; reset counter
+;ld a, 128
+;out (portbdata),a
+
+
+;ld b, 5
+;.dec1:
+;ld a, 0
+;out (portbdata),a
+;call delay1s
+
+;ld a, 32
+;out (portbdata),a
+;call delay1s
+;call delay1s
+;call delay1s
+;
+;ld a, 64+32
+;out (portbdata),a
+;call delay1s
+;;djnz .dec1
+;
+;jp .decadetest1
+
+
+
+
+
+
+
+
+
+
 	; scan keyboard matrix and generate raw scan map
 	call matrix
 
@@ -302,7 +364,7 @@ testkey:
 
 	ld a, (hl)
 	cp '#'
-	jr z, .nextmodcheck
+	jr nz, .nextmodcheck
 	set 0, c
 	ld hl, .matrix_to_shift
 	jr .dokeymap
@@ -312,7 +374,7 @@ testkey:
 
 	ld a, (hl)
 	cp '#'
-	jr z, .donemodcheck
+	jr nz, .donemodcheck
 	set 1, c 
 	ld hl, .matrix_to_symbolshift
 	jr .dokeymap
@@ -351,11 +413,24 @@ if DEBUG_KEY
 
 	call delay250ms
 endif
- call delay250ms
-	jp testkey
+;	jp testkey
 
-	
+; get first char reported
+
+	ld de,keyscan_table_row4
+
+	ld b, 46   ; 30 keys to remap + 8 nulls 
+.findkey:
+	ld a,(de)
+	cp KEY_MATRIX_NO_PRESS
+	jr nz, .foundkey
+	inc de
+	djnz .findkey
+	ld a,0
 	ret
+.foundkey:
+	ret
+	
 
 ; convert the raw key map given hl for destination key
 .mapkeys:
@@ -381,7 +456,7 @@ endif
 
 
 
-.mtoc:
+.mtocold2:
 
 ;	; flag if key D is held down and remove from reporting
 ;	ld bc, .key_map_fd  
@@ -490,6 +565,12 @@ ld c, 0       ; current clock toggle
 
 .colscan:
 
+; set current column
+; disable clock enable and set clock low
+
+;ld a, 0
+;out (portbdata),a
+
 ; For each column scan for switches
 
 push bc
@@ -566,6 +647,8 @@ ld de, scratch+3
 ld a,(de)
 ld (hl),a
 
+; handshake next column
+
 
 ld a, 64
 out (portbdata),a
@@ -636,7 +719,7 @@ if DEBUG_KEY_MATRIX
             LD   DE, keyscan_table_row4
             CALL fLCD_Str       ;Display string pointed to by DE
 
-call delay250ms
+;call delay250ms
 	jp matrix
 endif
 ret
@@ -1086,7 +1169,7 @@ out (portbdata),a
 	in a,(portbdata)
 	ld c,a
 	; reset flags for the row 
-	ld b,'.'
+	ld b,KEY_MATRIX_NO_PRESS
 	and 1
 	jr z, .p1on
 	ld b,'#'
@@ -1094,7 +1177,7 @@ out (portbdata),a
 	ld (hl), b
 	inc hl
 
-	ld b,'.'
+	ld b,KEY_MATRIX_NO_PRESS
 	ld a,c
 	and 2
 ;	bit 0,a
@@ -1104,7 +1187,7 @@ out (portbdata),a
 	ld (hl), b
 	inc hl
 ;
-	ld b,'.'
+	ld b,KEY_MATRIX_NO_PRESS
 	ld a,c
 	and 4
 ;;	bit 0,a
@@ -1114,7 +1197,7 @@ out (portbdata),a
 	ld (hl), b
 	inc hl
 ;;
-	ld b,'.'
+	ld b,KEY_MATRIX_NO_PRESS
 ;;	bit 0,a
 	ld a,c
 	and 8

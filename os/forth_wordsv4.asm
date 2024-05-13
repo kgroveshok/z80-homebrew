@@ -2201,7 +2201,7 @@ endif
 
 		; TODO Get SPI byte
 
-		call spi_read_byte
+		call se_readbyte
 
 		ld h, 0
 		ld l, a

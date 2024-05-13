@@ -1,12 +1,17 @@
-
 ; 4 x 10 decade counter scanner
+
+
+; TODO do cursor shape change for shift keys
+; TODO rows are round the wrong way for the pin sequence on the header. Reverse the row mappings
+; TODO hard coded positions for the shift keys. Change to work like 4x4 and detect and then hide them
+
 
 ; bit mask for each scan column and row for teing the matrix
 
 ; out 
-key_row_bitmask:    db 128, 64, 32, 16
+;ey_row_bitmask:    db 128, 64, 32, 16
 ; in
-key_col_bitmask:    db 1, 2, 4, 8
+;key_col_bitmask:    db 1, 2, 4, 8
 
 ; row/col to character map
 
@@ -115,103 +120,103 @@ key_init:
 
 ;.matrix_to_char: db "1234567890qwertyuiopasdfghjkl_+zxcvbnm,."
 .matrix_to_char:
-		db KEY_SHIFT,"zxcvbnm ",KEY_SYMBOLSHIFT,0,0
-		db "asdfghjkl",KEY_CR,0,0
-		db "qwertyuiop",0,0
-		 db "1234567890",0,0
+		db KEY_SHIFT,"zxcvbnm ",KEY_SYMBOLSHIFT,0
+		db "asdfghjkl",KEY_CR,0
+		db "qwertyuiop",0
+		 db "1234567890",0
 .matrix_to_shift:
-		db KEY_SHIFT,"ZXCVBNM",KEY_BS,KEY_SYMBOLSHIFT,0,0
-		db "ASDFGHJKL",KEY_CR,0,0
-		db "QWERTYUIOP",0,0
-		 db "!",'"',"#$%^&*()",0,0
+		db KEY_SHIFT,"ZXCVBNM",KEY_BS,KEY_SYMBOLSHIFT,0
+		db "ASDFGHJKL",KEY_CR,0
+		db "QWERTYUIOP",0
+		 db "!",'"',"#$%^&*()",0
 .matrix_to_symbolshift:
-		db KEY_SHIFT,"<>cvb,.",KEY_BS,KEY_SYMBOLSHIFT,0,0
-		db "/?dfghjkl",KEY_CR,0,0
-		db "-_+=[]{}@#",0,0
-		 db "1234567890",0,0
+		db KEY_SHIFT,"<>:;b,.",KEY_BS,KEY_SYMBOLSHIFT,0
+		db "_?*fghjk=",KEY_CR,0
+		db "-/+*[]{}@#",0
+		 db "1234567890",0
 ;.matrix_to_char: db "D#0*C987B654A321"
 
 
 ; map the physical key to a char dependant on state
 
-.key_map_fa: 
-
-		db 'D'
-		db KEY_CR    ; cr
-		db ' '
-		db  KEY_SHIFTLOCK   ; TODO Shift lock
-		db 'C'
-		db 'y'
-		db 'v'
-		db 's'
-		db 'B'
-		db 'p'
-		db 'm'
-		db 'j'
-		db 'A'
-		db 'g'
-		db 'd'
-		db 'a'
-
-.key_map_fb:
-
-		db 'A'
-		db '+' 
-		db '<'
-		db  "'"  
-
-		db 'A'
-		db 'z'
-		db 'w'
-		db 't'
-		db 'A'
-		db 'q'
-		db 'n'
-		db 'k'
-		db 'A'
-		db 'h'
-		db 'e'
- 		db 'b'
-
-.key_map_fc: 
-
-
-		db 'A'
-		db '-' 
-		db '>'
-		db  '='   	
-		db 'A'
-		db '?'
-		db 'x'
-		db 'u'
-		db 'A'
-		db 'r'
-		db 'o'
-		db 'l'
-		db 'A'
-		db 'i'
-		db 'f'
-		db 'c'
-
-	
-.key_map_fd:
-
-		db 'A'
-		db '/' 
-		db '%' 
-		db KEY_BS  ; back space
-		db 'A'
-		db '!'
-		db '@'
-		db ';'
-		db 'A'
-		db ':'
-		db '.'
-		db ','
-		db 'A'
-		db '$'
-		db '&'
-	 	db '"'
+;.key_map_fa: 
+;
+;		db 'D'
+;		db KEY_CR    ; cr
+;		db ' '
+;		db  KEY_SHIFTLOCK   ; TODO Shift lock
+;		db 'C'
+;		db 'y'
+;		db 'v'
+;		db 's'
+;		db 'B'
+;		db 'p'
+;		db 'm'
+;		db 'j'
+;		db 'A'
+;		db 'g'
+;		db 'd'
+;		db 'a'
+;
+;.key_map_fb:
+;
+;		db 'A'
+;		db '+' 
+;		db '<'
+;		db  "'"  
+;
+;		db 'A'
+;		db 'z'
+;		db 'w'
+;		db 't'
+;		db 'A'
+;		db 'q'
+;		db 'n'
+;		db 'k'
+;		db 'A'
+;		db 'h'
+;		db 'e'
+ ;		db 'b'
+;
+;.key_map_fc: 
+;
+;
+;		db 'A'
+;		db '-' 
+;		db '>'
+;		db  '='   	
+;		db 'A'
+;		db '?'
+;		db 'x'
+;		db 'u'
+;		db 'A'
+;		db 'r'
+;		db 'o'
+;		db 'l'
+;		db 'A'
+;		db 'i'
+;		db 'f'
+;		db 'c'
+;
+;	
+;.key_map_fd:
+;
+;		db 'A'
+;		db '/' 
+;		db '%' 
+;		db KEY_BS  ; back space
+;		db 'A'
+;		db '!'
+;		db '@'
+;		db ';'
+;		db 'A'
+;		db ':'
+;		db '.'
+;		db ','
+;		db 'A'
+;		db '$'
+;		db '&'
+;	 	db '"'
 
 		
 	
@@ -568,7 +573,8 @@ endif
 
 	ld hl,keyscan_table_row4
 
-	ld b, 46   ; 30 keys to remap + 8 nulls 
+	;ld b, 46   ; 30 keys to remap + 8 nulls 
+	ld b, ((key_cols+1)*key_rows)    ; 30 keys to remap + 8 nulls 
 .findkey:
 	ld a,(hl)
 	cp 0
@@ -589,7 +595,7 @@ endif
 .mapkeys:
 	ld de,keyscan_table_row4
 
-	ld b, 46   ; 30 keys to remap + 8 nulls 
+	ld b, ((key_cols+1)*key_rows)    ; 30 keys to remap + 8 nulls 
 .remap:
 	ld a,(de)
 	cp '#'
@@ -708,6 +714,13 @@ matrix:
 	; TODO optimise the code....
 
 
+;ld hl, keyscan_table_row1
+;ld de, keyscan_table_row1+1
+;ld bc,46
+;ld a,KEY_MATRIX_NO_PRESS
+;ldir
+
+
 
 ; reset counter
 ld a, 128
@@ -824,26 +837,26 @@ out (portbdata),a
 
 djnz .colscan
 
-ld a,11
+ld a,10
 LD   hl, keyscan_table_row1
 call addatohl
 ld a, 0
 ld (hl), a
 
 
-ld a,11
+ld a,10
 LD   hl, keyscan_table_row2
 call addatohl
 ld a, 0
 ld (hl), a
 
-ld a,11
+ld a,10
 LD   hl, keyscan_table_row3
 call addatohl
 ld a, 0
 ld (hl), a
 
-ld a,11
+ld a,10
 LD   hl, keyscan_table_row4
 call addatohl
 ld a, 0
@@ -972,140 +985,140 @@ jr .cyclestart
 
 ; map matrix key held to char on face of key
 
-.mtocold:
-
-
-; reset counter
-ld a, 128
-out (portbdata),a
-
-
-; scan keyboard row 1
-ld a, 0
-out (portbdata),a
-;ld a, 64
+;.mtocold:
+;
+;
+;; reset counter
+;ld a, 128
 ;out (portbdata),a
-
-
-	ld a, 128
-	ld hl, keyscan_table
-	call .rowscan
-
+;
+;
+;; scan keyboard row 1
 ;ld a, 0
 ;out (portbdata),a
-ld a, 64
-out (portbdata),a
-
-	ld a, 64
-	ld hl, keyscan_table+key_cols
-	call .rowscan
-
-ld a, 0
-out (portbdata),a
+;;ld a, 64
+;;out (portbdata),a
+;
+;
+;	ld a, 128
+;	ld hl, keyscan_table
+;	call .rowscan
+;
+;;ld a, 0
+;;out (portbdata),a
 ;ld a, 64
 ;out (portbdata),a
-	ld a, 32
-	ld hl, keyscan_table+(key_cols*2)
-	call .rowscan
-
-
+;
+;	ld a, 64
+;	ld hl, keyscan_table+key_cols
+;	call .rowscan
+;
 ;ld a, 0
 ;out (portbdata),a
-ld a, 64
-out (portbdata),a
-
-	ld a, 16
-	ld hl, keyscan_table+(key_cols*3)
-	call .rowscan
-
-
-	; flag if key D is held down and remove from reporting
-	ld bc, .key_map_fd  
-	ld hl, keyscan_table
-	ld de, key_fd
-	call .key_shift_hold
-	cp 255
-	jr z, .cinmap
-	; flag if key C is held down and remove from reporting
-	ld bc, .key_map_fc  
-	ld hl, keyscan_table+key_cols
-	ld de, key_fc
-	call .key_shift_hold
-	cp 255
-	jr z, .cinmap
-	; flag if key B is held down and remove from reporting
-	ld bc, .key_map_fb  
-	ld hl, keyscan_table+(key_cols*2)
-	ld de, key_fb
-	call .key_shift_hold
-	cp 255
-	jr z, .cinmap
-	; flag if key A is held down and remove from reporting
-	ld bc, .key_map_fa  
-	ld hl, keyscan_table+(key_cols*3)
-	ld de, key_fa
-	call .key_shift_hold
-	cp 255
-	jr z, .cinmap
-
-	ld de, .matrix_to_char
-
-
-.cinmap: 
-	if DEBUG_KEY
-            LD   A, kLCD_Line4
-            CALL fLCD_Pos       ;Position cursor to location in A
-		push de
-            LD   DE, keyscan_table
-            CALL fLCD_Str       ;Display string pointed to by DE
-		pop de
-	endif
+;;ld a, 64
+;;out (portbdata),a
+;	ld a, 32
+;	ld hl, keyscan_table+(key_cols*2)
+;	call .rowscan
+;
+;
+;;ld a, 0
+;;out (portbdata),a
+;ld a, 64
+;out (portbdata),a
+;
+;	ld a, 16
+;	ld hl, keyscan_table+(key_cols*3)
+;	call .rowscan
+;
+;
+;	; flag if key D is held down and remove from reporting
+;	ld bc, .key_map_fd  
+;	ld hl, keyscan_table
+;	ld de, key_fd
+;	call .key_shift_hold
+;	cp 255
+;	jr z, .cinmap
+;	; flag if key C is held down and remove from reporting
+;	ld bc, .key_map_fc  
+;	ld hl, keyscan_table+key_cols
+;	ld de, key_fc
+;	call .key_shift_hold
+;	cp 255
+;	jr z, .cinmap
+;	; flag if key B is held down and remove from reporting
+;	ld bc, .key_map_fb  
+;	ld hl, keyscan_table+(key_cols*2)
+;	ld de, key_fb
+;	call .key_shift_hold
+;	cp 255
+;	jr z, .cinmap
+;	; flag if key A is held down and remove from reporting
+;	ld bc, .key_map_fa  
+;	ld hl, keyscan_table+(key_cols*3)
+;	ld de, key_fa
+;	call .key_shift_hold
+;	cp 255
+;	jr z, .cinmap
+;
+;	ld de, .matrix_to_char
+;
+;
+;.cinmap: 
+;	if DEBUG_KEY
+;            LD   A, kLCD_Line4
+;            CALL fLCD_Pos       ;Position cursor to location in A
+;		push de
+;            LD   DE, keyscan_table
+;            CALL fLCD_Str       ;Display string pointed to by DE
+;		pop de
+;	endif
 
 	; scan key matrix table for any held key
 
 	; de holds either the default matrix or one selected above
 
-	ld hl, keyscan_table
-	ld b,key_cols*key_rows
-
-.cin1:	ld a,(hl)
-	cp '#'
-	jr z, .cinhit
-	inc hl
-	inc de
-	dec b
-	jr nz, .cin1
-	; no key found held
-	ld a,0
-	ret
-.cinhit: push de
-	pop hl
-	ld a,(hl)
-	ret
+;	ld hl, keyscan_table
+;	ld b,key_cols*key_rows
+;
+;.cin1:	ld a,(hl)
+;	cp '#'
+;	jr z, .cinhit
+;	inc hl
+;	inc de
+;	dec b
+;	jr nz, .cin1
+;	; no key found held
+;	ld a,0
+;	ret
+;.cinhit: push de
+;	pop hl
+;	ld a,(hl)
+;	ret
 
 ; flag a control key is held 
 ; hl is key pin, de is flag indicator
 
-.key_shift_hold:
-	push bc
-	ld a, 1
-	ld (cursor_shape),a
-	ld b, 0
-	ld a, (hl)
-	cp '.'
-	jr z, .key_shift1
-	ld b, 255
-	ld a, '+'    ; hide key from later scans
-	ld (hl),a
-	ld a, 2
-	ld (cursor_shape),a
-.key_shift1:
-	; write flag indicator
-	ld a,b
-	ld (de),a
-
-	pop de    ; de now holds the key map ptr
-	ret
+;.key_shift_hold:
+;	push bc
+;	ld a, 1
+;	ld (cursor_shape),a
+;	ld b, 0
+;	ld a, (hl)
+;	cp '.'
+;	jr z, .key_shift1
+;	ld b, 255
+;	ld a, '+'    ; hide key from later scans
+;	ld (hl),a
+;	ld a, 2
+;	ld (cursor_shape),a
+;.key_shift1:
+;	; write flag indicator
+;	ld a,b
+;	ld (de),a
+;
+;	pop de    ; de now holds the key map ptr
+;	ret
 
 	
 	

@@ -2170,8 +2170,10 @@ endif
 
 		; TODO Send SPI byte
 
+
 		ld a, e
 		call se_writebyte
+
 		
 
 		NEXT
@@ -2419,7 +2421,7 @@ endif
 	       NEXT
 
 .AUTODSP:
-	CWHEAD .VARS 79 "ADSP" 4 WORD_FLAG_CODE
+	CWHEAD .SEO 79 "ADSP" 4 WORD_FLAG_CODE
 ;| ADSP ( u1 --  )  Enable/Disable Auto screen updates (SLOW). If off, use DRAW to refresh. Default is on. $0003 will enable direct screen writes (TODO) | DONE
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -2436,6 +2438,111 @@ endif
 		ld (cli_autodisplay), a
 	       NEXT
 
+.SEO:
+	CWHEAD .SEI 80 "SEO" 3 WORD_FLAG_CODE
+;   db 61
+;	dw .SPII
+;	db 5
+;	db "SPIO",0      
+;| SEO ( u1 u2 -- ) Send byte u1 to Serial EEPROM device at address u2 |  DONE
+
+		; get port
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		push hl    ; u2 - byte
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		; get byte to send
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		push hl    ; u1 - addr
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		; one value on hl get other one back
+
+		pop de   ; u1 - byte
+
+		pop hl   ; u2 - addr
+
+		; TODO Send SPI byte
+
+
+		ld a, e
+		call se_writebyte
+
+		
+
+		NEXT
+
+.SEI:
+	CWHEAD .SESEL 81 "SEI" 3 WORD_FLAG_CODE
+;   db 62
+;	dw .SCROLL
+;	db 5
+;	db "SPII",0      
+;| SEI ( u2 -- u1 ) Get a byte from Serial EEPROM device at address u2 |  DONE
+
+		; get port
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		push hl
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		; one value on hl get other one back
+
+		pop hl
+
+
+		; TODO Get SPI byte
+
+		call se_readbyte
+
+		ld h, 0
+		ld l, a
+		call forth_push_numhl
+
+		NEXT
+.SESEL:
+	CWHEAD .VARS 82 "SESEL" 5 WORD_FLAG_CODE
+;   db 62
+;	dw .SCROLL
+;	db 5
+;	db "SPII",0      
+;| SESEL ( u1 -- ) Select Serial EEPROM Bank Device at bank address u1 |  TODO
+
+		; get bank
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		push hl
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		; one value on hl get other one back
+
+		pop hl
+
+
+		; TODO Get SPI byte
+
+;		call se_readbyte
+
+
+		NEXT
 ; var handler
 
 

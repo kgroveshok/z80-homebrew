@@ -79,6 +79,9 @@ BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at a
  NOP (  --  ) Do nothing | DONE
  AT? ( u1 u2 -- n )  Push to stack ASCII value at row u2 col u1 |
  ADSP ( u1 --  )  Enable/Disable Auto screen updates (SLOW). If off, use DRAW to refresh. Default is on. $0003 will enable direct screen writes (TODO) | DONE
+ SEO ( u1 u2 -- ) Send byte u1 to Serial EEPROM device at address u2 |  DONE
+ SEI ( u2 -- u1 ) Get a byte from Serial EEPROM device at address u2 |  DONE
+ SESEL ( u1 -- ) Select Serial EEPROM Bank Device at bank address u1 |  TODO
  V0! ( u1 -- )  Store value to v0  |
  V0@ ( --u )  Put value of v0 onto stack |
  V1! ( u1 -- )  Store value to v1 |
@@ -128,6 +131,8 @@ OVER ( n1 n2 -- n1 n2 n1 )  Copy one below TOS onto TOS | DONE
  RND8 (  -- n ) Generate a random 8bit number and push to stack | DONE
  NOP (  --  ) Do nothing | DONE
  ADSP ( u1 --  )  Enable/Disable Auto screen updates (SLOW). If off, use DRAW to refresh. Default is on. $0003 will enable direct screen writes (TODO) | DONE
+ SEO ( u1 u2 -- ) Send byte u1 to Serial EEPROM device at address u2 |  DONE
+ SEI ( u2 -- u1 ) Get a byte from Serial EEPROM device at address u2 |  DONE
 Words still left to do
 ----------------------
   EMIT ( u -- )        Display ascii character  TOS   |
@@ -168,6 +173,7 @@ BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at a
  FORGET ( uword -- )    Forget the uword on TOS
  -LOOP ( -- )    Decrement and test loop counter 
  AT? ( u1 u2 -- n )  Push to stack ASCII value at row u2 col u1 |
+ SESEL ( u1 -- ) Select Serial EEPROM Bank Device at bank address u1 |  TODO
  V0! ( u1 -- )  Store value to v0  |
  V0@ ( --u )  Put value of v0 onto stack |
  V1! ( u1 -- )  Store value to v1 |

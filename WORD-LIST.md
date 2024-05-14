@@ -81,7 +81,17 @@ BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at a
  ADSP ( u1 --  )  Enable/Disable Auto screen updates (SLOW). If off, use DRAW to refresh. Default is on. $0003 will enable direct screen writes (TODO) | DONE
  SEO ( u1 u2 -- ) Send byte u1 to Serial EEPROM device at address u2 |  DONE
  SEI ( u2 -- u1 ) Get a byte from Serial EEPROM device at address u2 |  DONE
- SESEL ( u1 -- ) Select Serial EEPROM Bank Device at bank address u1 |  TODO
+ BANK ( u1 -- ) Select Serial EEPROM Bank Device at bank address u1 |  TODO
+ SFREE ( -- n )  Gets number of blocks free on current storage bank |
+ CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS |
+ APPEND ( u n --  )  Appends data u to file id on current storage bank |
+ SDEL ( n --  )  Deletes all data for file id n on current storage bank |
+ OPEN ( n --  )  Sets file id to point to first data page |
+ READ ( n --  )  Reads next page of file id  |
+ EOF ( n -- u )  Returns EOF state of file id n |
+ ( ( -- )  Start of comment |
+ ) ( -- )  End of comment |
+ MENU ( u1....ux n ut -- n ) Create a menu. Ut is the title, n is the number of menu items on stack. Push number selection to TOS |
  V0! ( u1 -- )  Store value to v0  |
  V0@ ( --u )  Put value of v0 onto stack |
  V1! ( u1 -- )  Store value to v1 |
@@ -173,7 +183,17 @@ BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at a
  FORGET ( uword -- )    Forget the uword on TOS
  -LOOP ( -- )    Decrement and test loop counter 
  AT? ( u1 u2 -- n )  Push to stack ASCII value at row u2 col u1 |
- SESEL ( u1 -- ) Select Serial EEPROM Bank Device at bank address u1 |  TODO
+ BANK ( u1 -- ) Select Serial EEPROM Bank Device at bank address u1 |  TODO
+ SFREE ( -- n )  Gets number of blocks free on current storage bank |
+ CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS |
+ APPEND ( u n --  )  Appends data u to file id on current storage bank |
+ SDEL ( n --  )  Deletes all data for file id n on current storage bank |
+ OPEN ( n --  )  Sets file id to point to first data page |
+ READ ( n --  )  Reads next page of file id  |
+ EOF ( n -- u )  Returns EOF state of file id n |
+ ( ( -- )  Start of comment |
+ ) ( -- )  End of comment |
+ MENU ( u1....ux n ut -- n ) Create a menu. Ut is the title, n is the number of menu items on stack. Push number selection to TOS |
  V0! ( u1 -- )  Store value to v0  |
  V0@ ( --u )  Put value of v0 onto stack |
  V1! ( u1 -- )  Store value to v1 |

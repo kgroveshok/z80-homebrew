@@ -2515,12 +2515,12 @@ endif
 
 		NEXT
 .SESEL:
-	CWHEAD .VARS 82 "SESEL" 5 WORD_FLAG_CODE
+	CWHEAD .SFREE 82 "BANK" 4 WORD_FLAG_CODE
 ;   db 62
 ;	dw .SCROLL
 ;	db 5
 ;	db "SPII",0      
-;| SESEL ( u1 -- ) Select Serial EEPROM Bank Device at bank address u1 |  TODO
+;| BANK ( u1 -- ) Select Serial EEPROM Bank Device at bank address u1 |  TODO
 
 		; get bank
 
@@ -2543,6 +2543,54 @@ endif
 
 
 		NEXT
+
+.SFREE:
+	CWHEAD .CREATE 83 "SFREE" 5 WORD_FLAG_CODE
+;| SFREE ( -- n )  Gets number of blocks free on current storage bank |
+	       NEXT
+
+.CREATE:
+	CWHEAD .APPEND 84 "CREATE" 6 WORD_FLAG_CODE
+;| CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS |
+	       NEXT
+
+.APPEND:
+	CWHEAD .SDEL 85 "APPEND" 6 WORD_FLAG_CODE
+;| APPEND ( u n --  )  Appends data u to file id on current storage bank |
+	       NEXT
+.SDEL:
+	CWHEAD .OPEN 86 "SDEL" 4 WORD_FLAG_CODE
+;| SDEL ( n --  )  Deletes all data for file id n on current storage bank |
+	       NEXT
+
+.OPEN:
+	CWHEAD .READ 87 "OPEN" 4 WORD_FLAG_CODE
+;| OPEN ( n --  )  Sets file id to point to first data page |
+	       NEXT
+.READ:
+	CWHEAD .EOF 88 "READ" 4 WORD_FLAG_CODE
+;| READ ( n --  )  Reads next page of file id  |
+	       NEXT
+.EOF:
+	CWHEAD .COMO 89 "EOF" 3 WORD_FLAG_CODE
+;| EOF ( n -- u )  Returns EOF state of file id n |
+	       NEXT
+.COMO:
+	CWHEAD .COMC 90 "(" 1 WORD_FLAG_CODE
+;| ( ( -- )  Start of comment |
+	       NEXT
+.COMC:
+	CWHEAD .MENU 91 ")" 1 WORD_FLAG_CODE
+;| ) ( -- )  End of comment |
+	       NEXT
+.MENU:
+	CWHEAD .VARS 92 "MENU" 4 WORD_FLAG_CODE
+;| MENU ( u1....ux n ut -- n ) Create a menu. Ut is the title, n is the number of menu items on stack. Push number selection to TOS |
+	       NEXT
+
+
+
+
 ; var handler
 
 

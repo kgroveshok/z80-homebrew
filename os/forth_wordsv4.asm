@@ -1680,6 +1680,7 @@ endif
 ;	db 4
 ;	db "DIR",0               
 ; |DIR ( u -- w... u )   Using bank number u push directory entries from persistent storage as w with count u 
+		call storage_get_block_0
 		NEXT
 .SAVE:
 	CWHEAD .LOAD 39 "SAVE" 4 WORD_FLAG_CODE
@@ -2546,12 +2547,36 @@ endif
 
 .SFREE:
 	CWHEAD .CREATE 83 "SFREE" 5 WORD_FLAG_CODE
-;| SFREE ( -- n )  Gets number of blocks free on current storage bank |
+;| SFREE ( -- n )  Gets number of blocks free on current storage bank | TO TEST
+
+		call storage_freeblocks
+
+		call forth_push_numhl
+
 	       NEXT
 
 .CREATE:
 	CWHEAD .APPEND 84 "CREATE" 6 WORD_FLAG_CODE
-;| CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS |
+;| CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS | TO TEST
+
+		
+		call storage_get_block_0
+
+		; TODO pop hl
+
+		FORTH_DSP_VALUE
+
+		push hl
+		FORTH_DSP_POP
+		pop hl
+
+		call storage_create
+
+		; push file id to stack
+		call forth_push_numhl
+
+
+
 	       NEXT
 
 .APPEND:

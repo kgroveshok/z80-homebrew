@@ -404,6 +404,8 @@ storage_get_block_0:
 ;         Write this block back
 
 
+; TODO do find block id and mark as zero until all gone
+
 ; Find Free Block
 ; ---------------
 ;
@@ -620,6 +622,12 @@ storage_create:
 ;
 
 ; Read file block
+
+
+; EOF file id
+
+
+
 
 
 

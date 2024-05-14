@@ -148,7 +148,10 @@ iErrorReg:  equ iErrorNum -1              ;Error register
 iErrorVer:  equ iErrorReg - 1              ;Verify error flag
 
 store_bank_active: equ iErrorVer - (5 + 8 ) 		; indicator of which storage banks are available to use 5 on board and 8 in cart
-store_page: equ store_bank_active-128            ; page size for eeprom
+
+STORE_BLOCK_LOG:  equ   255     ; TODO remove.... Logical block size   
+
+store_page: equ store_bank_active-STORE_BLOCK_LOG            ; page size for eeprom
 ;
 ; spi vars
 ; 

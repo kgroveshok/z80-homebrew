@@ -67,6 +67,17 @@ coldstart:
 
 ;jp  testkey
 
+call storage_get_block_0
+
+ld hl, 0
+ld de, store_page
+call storage_read_block
+
+	
+ld hl, 10
+ld de, store_page
+call storage_read_block
+
 
 
 

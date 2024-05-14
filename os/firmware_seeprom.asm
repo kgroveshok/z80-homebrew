@@ -24,6 +24,10 @@ storage_bdata: equ Device_C+1    ; device c port b - ext storage cart
 storage_bctl: equ Device_C+3     ; device c port b
 
 
+; TODO move these to hardware driver file
+
+STORE_BLOCK_PHY:   equ 64    ; physical block size on storage   64byte on 256k eeprom
+STORE_DEVICE_MAXBLOCKS:  equ  512 ; how many blocks are there on this storage device
 ; storage bank file system format
 ;
 ; first page of bank:
@@ -165,8 +169,90 @@ se_writebyte:
        out (storage_adata),a
        ld (spi_portbyte), a
 
+	; pause for internal write cycle
+	ld a, 10
+	call aDelayInMS
     ret
 
+; buffer to write in de
+; address in hl 
+se_writepage:
+       
+    ;   ld c, a
+	push de
+        push hl
+
+    ; initi write mode
+    ;
+    ;CS low
+
+       ld a,(spi_portbyte)
+       res SPI_CE0,a           ; TODO pass the ce bank bit mask
+       out (storage_adata),a
+       ld (spi_portbyte), a
+
+    ;clock out wren instruction
+
+    ld a, store_wren_ins
+    call spi_send_byte 
+
+    ;cs high to enable write latch
+
+       ld a,(spi_portbyte)
+       set SPI_CE0,a           ; TODO pass the ce bank bit mask
+       out (storage_adata),a
+       ld (spi_portbyte), a
+
+	nop
+    ;
+    ; intial write data
+    ;
+    ; cs low
+    
+       ld a,(spi_portbyte)
+       res SPI_CE0,a           ; TODO pass the ce bank bit mask
+       out (storage_adata),a
+       ld (spi_portbyte), a
+
+    ; clock out write instruction
+    
+    ld a, store_write_ins 
+    call spi_send_byte 
+
+    ; clock out address (depending on address size)
+    
+    pop hl
+    ld a,h    ; address out msb first
+    call spi_send_byte 
+    ld a,l
+    call spi_send_byte 
+
+    ; clock out byte(s) for page
+
+	pop hl
+	ld b, STORE_BLOCK_PHY
+.bytewrite:
+
+	ld a,(hl)
+    push hl
+	push bc
+    call spi_send_byte 
+	pop bc
+	pop hl
+
+    ; end write with ce high
+       ld a,(spi_portbyte)
+       set SPI_CE0,a           ; TODO pass the ce bank bit mask - perhaps have a call that sets it
+       out (storage_adata),a
+       ld (spi_portbyte), a
+
+	inc hl
+	djnz .bytewrite
+
+	; pause for internal write cycle
+	ld a, 20
+	call aDelayInMS
+    ret
 ; returns byte in a
 ; address in hl 
 se_readbyte:

@@ -152,11 +152,13 @@ store_bank_active: equ iErrorVer - (5 + 8 ) 		; indicator of which storage banks
 STORE_BLOCK_LOG:  equ   255     ; TODO remove.... Logical block size   
 
 store_page: equ store_bank_active-STORE_BLOCK_LOG            ; page size for eeprom
+store_tmpid: equ store_page - 1
+store_tmppageid: equ store_tmpid-2
 ;
 ; spi vars
 ; 
 
-spi_portbyte: equ store_page - 1      ; holds bit mask to send to spi bus
+spi_portbyte: equ store_tmppageid - 1      ; holds bit mask to send to spi bus
 
 ;;;;; forth cli params
 

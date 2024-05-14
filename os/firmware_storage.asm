@@ -19,10 +19,6 @@
 ; Block 0 on storage is a config state
 
 
-; TODO move these to hardware driver file
-
-STORE_BLOCK_PHY:   equ 64    ; physical block size on storage   64byte on 256k eeprom
-STORE_DEVICE_MAXBLOCKS:  equ  512 ; how many blocks are there on this storage device
 
 ; TODO add read phy block and write phy block functions
 ; TODO add presence check (i.e. read write byte 0 of block 0 for eeprom)
@@ -145,12 +141,24 @@ storage_write_block:
 	; TODO bank selection
 
 	; for each of the physical blocks read it into the buffer
-	ld b, STORE_BLOCK_PHY
+;	ld b, STORE_BLOCK_PHY
 
 	if DEBUG_STORESE
-		push de
+
+		push af
+		ld a, 'W'
+		ld (debug_mark),a
+		pop af
+		CALLMONITOR
 	endif
-	
+
+	call se_writepage
+
+	ret
+
+
+
+
 .wl1:   
 
 	; read physical block at hl into de
@@ -168,8 +176,6 @@ storage_write_block:
 ;		CALLMONITOR
 ;	endif
 	call se_writebyte
-	ld a, 10
-	call aDelayInMS
 ;	call delay250ms
 	nop
 	nop
@@ -322,6 +328,7 @@ storage_get_block_0:
 		call addatohl
 		djnz .setmark1
 
+	ld b, STORE_DEVICE_MAXBLOCKS/2
 .setmark2:   	ld a,0
 		push hl
 		push bc
@@ -408,6 +415,55 @@ storage_get_block_0:
 ;         Return block id
 
 
+; hl starting page number
+; hl contains free page number or zero if no pages free
+
+; TODO change to find file id and use zero for free block
+
+storage_findfree:
+
+	; now locate first 0 page to mark as a free block
+
+	ld b, STORE_DEVICE_MAXBLOCKS/2
+;	ld hl, STORE_BLOCK_PHY
+
+.ff1:   	
+		push hl
+		push bc
+		call se_readbyte
+		pop bc
+		pop hl
+
+		; is free?
+		cp 0
+		ret z
+
+
+		ld a, STORE_BLOCK_PHY
+		call addatohl
+		djnz .ff1
+
+	ld b, STORE_DEVICE_MAXBLOCKS/2
+.ff2:   	
+		push hl
+		push bc
+		call se_readbyte
+		pop bc
+		pop hl
+
+		; is free?
+		cp 0
+		ret z
+
+		ld a, STORE_BLOCK_PHY
+		call addatohl
+		djnz .ff2
+
+
+	; no free marks!
+		ld hl, 0
+	ret
+
 ; Free Space
 ; ----------
 ;
@@ -421,6 +477,60 @@ storage_get_block_0:
 ; 
 
 
+; hl contains count of free blocks
+
+storage_freeblocks:
+
+	; now locate first 0 page to mark as a free block
+
+	ld b, STORE_DEVICE_MAXBLOCKS/2
+	ld hl, STORE_BLOCK_PHY
+	ld de, 0
+
+.fb1:   	
+		push hl
+		push bc
+		push de
+		call se_readbyte
+		pop de
+		pop bc
+		pop hl
+
+		; is free?
+		cp 0
+		jr nz, .ff1cont
+		inc de
+
+.ff1cont:
+
+
+		ld a, STORE_BLOCK_PHY
+		call addatohl
+		djnz .fb1
+
+	ld b, STORE_DEVICE_MAXBLOCKS/2
+.fb2:   	
+		push hl
+		push bc
+		push de
+		call se_readbyte
+		pop de
+		pop bc
+		pop hl
+
+		; is free?
+		cp 0
+		jr nz, .ff2cont
+		inc de
+
+.ff2cont:
+
+		ld a, STORE_BLOCK_PHY
+		call addatohl
+		djnz .fb2
+
+	ex de, hl
+	ret
 
 ; Get File ID
 ; -----------
@@ -450,6 +560,58 @@ storage_get_block_0:
 ; Write buffer to free block 
 
 
+; hl point to file name
+; hl returns file id
+
+storage_create:
+	push hl
+	call storage_get_block_0
+
+	ld a,(store_page)	; get current file id
+	inc a
+	ld (store_page),a
+	
+	ld (store_tmpid),a			; save id
+
+	ld hl, 0
+	call storage_write_block	 ; save update
+
+	; 
+	
+	ld hl, STORE_BLOCK_PHY
+	call storage_findfree
+
+	; hl now contains the free page to use for the file header page
+
+	ld (store_tmppageid), hl
+	
+	ld a,(store_tmpid)    ; get file id
+
+	ld (store_page),a    ; set page id
+	
+	
+	ld de, store_page+1    ; get buffer for term string to use as file name
+	pop hl    ; get zero term string
+	push hl
+	ld a, 0
+	call strlent
+	ld b,0
+	ld c,l
+	pop hl
+	ex de, hl
+	ldir    ; copy zero term string
+
+	; write file header page
+
+	ld hl,(store_tmppageid)
+	ld de, store_page
+	call storage_write_block
+
+	ld a, (store_tmpid)
+	ld l, a
+	ld h,0
+	ret
+	
 
 
 ;

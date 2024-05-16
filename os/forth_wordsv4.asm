@@ -1679,7 +1679,7 @@ endif
 ;	dw .SAVE
 ;	db 4
 ;	db "DIR",0               
-; |DIR ( u -- w... u )   Using bank number u push directory entries from persistent storage as w with count u 
+; |DIR ( u -- lab id ... c t )   Using bank number u push directory entries from persistent storage as w with count u  | DONE
 
 	call storage_get_block_0
 
@@ -1693,6 +1693,13 @@ endif
 			pop af
 			CALLMONITOR
 		endif
+
+	; check for empty drive
+
+	ld a, 0
+	cp b
+	jr z, .dirdone
+
 	; for each of the current ids do a search for them and if found push to stack
 
 .diritem:	push bc
@@ -1736,6 +1743,14 @@ endif
 		call storage_read_block
 		;pop hl
 
+		; push file id to stack
+	
+		ld h, 0
+		ld l, c
+		call forth_push_numhl
+
+		; push file name
+
 		ld hl, store_page
 		inc hl   ; get past id
 		if DEBUG_FORTH_WORDS
@@ -1756,7 +1771,8 @@ endif
 		endif
 .dirnotfound:
 		djnz .diritem
-		
+	
+.dirdone:	
 		if DEBUG_FORTH_WORDS
 			push af
 			ld a, '-'
@@ -2656,7 +2672,7 @@ endif
 
 .SFREE:
 	CWHEAD .CREATE 83 "SFREE" 5 WORD_FLAG_CODE
-;| SFREE ( -- n )  Gets number of blocks free on current storage bank | TO TEST
+;| SFREE ( -- n )  Gets number of blocks free on current storage bank | DONE
 
 		call storage_freeblocks
 
@@ -2666,7 +2682,7 @@ endif
 
 .CREATE:
 	CWHEAD .APPEND 84 "CREATE" 6 WORD_FLAG_CODE
-;| CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS | TO TEST
+;| CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS | DONE
 
 		
 ;		call storage_get_block_0

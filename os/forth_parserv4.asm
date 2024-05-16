@@ -435,7 +435,11 @@ if DEBUG_FORTH_PARSE_EXEC
 	ld a, display_row_2+10
 	call str_at_display
 	call update_display
+	ld a, 100
+	call aDelayInMS
+	if DEBUG_FORTH_PARSE_EXEC_SLOW
 	call delay250ms
+	endif
 ;	call delay1s
 ;	call delay1s
 ;	call delay1s
@@ -583,7 +587,7 @@ if DEBUG_FORTH_PARSE_EXEC
 	ld a, display_row_3
 	call str_at_display
 	call update_display
-	ld a, 50
+	ld a, 100
 	call aDelayInMS
 	
 	if DEBUG_FORTH_PARSE_EXEC_SLOW
@@ -618,9 +622,13 @@ if DEBUG_FORTH_PARSE_EXEC
 	ld a, display_row_3
 	call str_at_display
 	call update_display
+	ld a, 100
+	call aDelayInMS
+	if DEBUG_FORTH_PARSE_EXEC_SLOW
 	call delay1s
 	call delay1s
 	call delay1s
+	endif
 .ispskip: 
 	
 endif	

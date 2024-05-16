@@ -2716,23 +2716,46 @@ endif
 .APPEND:
 	CWHEAD .SDEL 85 "APPEND" 6 WORD_FLAG_CODE
 ;| APPEND ( u n --  )  Appends data u to file id on current storage bank |
+
+		; TODO get id
+		; TODO get ptr to tos
+		; TODO for each buffer size
+		; TODO   find next free block
+		; TODO   set marker
+		; TODO   write buffer
+		
+
 	       NEXT
 .SDEL:
 	CWHEAD .OPEN 86 "SDEL" 4 WORD_FLAG_CODE
 ;| SDEL ( n --  )  Deletes all data for file id n on current storage bank |
+		; TODO get id
+		; TODO find id blocks
+		; TODO   set marker to zero
+		; TODO   write buffer
 	       NEXT
 
 .OPEN:
 	CWHEAD .READ 87 "OPEN" 4 WORD_FLAG_CODE
 ;| OPEN ( n --  )  Sets file id to point to first data page |
+
+		; TODO set start of stream for id to first block
+
 	       NEXT
 .READ:
 	CWHEAD .EOF 88 "READ" 4 WORD_FLAG_CODE
-;| READ ( n --  )  Reads next page of file id  |
+;| READ ( n -- n  )  Reads next page of file id and push to stack |
+
+		; TODO read block from current stream id
+		; TODO if the block does not contain zero term keep reading blocks until zero found
+		; TODO push the block to stack
+		; TODO save the block id to stream
+
 	       NEXT
 .EOF:
 	CWHEAD .COMO 89 "EOF" 3 WORD_FLAG_CODE
 ;| EOF ( n -- u )  Returns EOF state of file id n |
+		; TODO if current block id for stream is zero then push true else false
 	       NEXT
 .COMO:
 	CWHEAD .COMC 90 "(" 1 WORD_FLAG_CODE

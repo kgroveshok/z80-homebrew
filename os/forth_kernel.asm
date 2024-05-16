@@ -311,7 +311,7 @@ malloc_error:
 	call clear_display
 	ld de, .mallocerr
 	ld a,0
-	ld de,os_word_scratch
+;	ld de,os_word_scratch
 	call str_at_display
 	call update_display
 	;call break_point_state
@@ -621,7 +621,7 @@ break_point_state:
 	ld de, (os_view_de)
 	ld bc, (os_view_bc)
 	call display_reg_state
-	jr .bps9
+	jr .bpschk
 
 .bps2:  cp '2'
 	jr nz, .bps3
@@ -630,7 +630,7 @@ break_point_state:
 	ld hl, (os_view_hl)
 	call display_dump_at_hl
 
-	jr .bps9
+	jr .bpschk
 
 .bps3:  cp '3'
 	jr nz, .bps4
@@ -639,7 +639,7 @@ break_point_state:
 	ld hl, (os_view_de)
 	call display_dump_at_hl
 
-	jr .bps9
+	jr .bpschk
 .bps4:  cp '4'
 	jr nz, .bps5
 
@@ -647,7 +647,7 @@ break_point_state:
 	ld hl, (os_view_bc)
 	call display_dump_at_hl
 
-	jr .bps9
+	jr .bpschk
 .bps5:  cp '5'
         jr nz, .bps7
 
@@ -655,22 +655,30 @@ break_point_state:
 	ld hl, (cli_ptr)
 	call display_dump_at_hl
 
-	jr .bps9
+	jr .bpschk
 .bps7:  cp '6'
 	jr nz, .bps8b
 	
 	; display cur orig ptr
 	ld hl, (cli_origptr)
 	call display_dump_at_hl
-	jr .bps9
+	jr .bpschk
 .bps8b:  cp '7'
-	jr nz, .bps8c
+	jr nz, .bps9
 	
 	; display dsp
 	ld hl, (cli_data_sp)
 	call display_dump_at_hl
 
-	jr .bps9
+	jr .bpschk
+.bps9:  cp '9'
+	jr nz, .bps8c
+	
+	; display SP
+;	ld hl, sp
+	call display_dump_at_hl
+
+	jr .bpschk
 .bps8c:  cp '8'
 	jr nz, .bps8
 	
@@ -678,9 +686,9 @@ break_point_state:
 	ld hl, (cli_ret_sp)
 	call display_dump_at_hl
 
-	jr .bps9
+	jr .bpschk
 .bps8:  cp '0'
-	jr nz, .bps9
+	jr nz, .bpschk
 	ld a, (os_view_af)
 	ld hl, (os_view_hl)
 	ld de, (os_view_de)
@@ -688,7 +696,7 @@ break_point_state:
 	pop af
 	ret
 
-.bps9:  
+.bpschk:  
 	call delay1s
 ld a,display_row_4 + display_cols - 1
         ld de, endprg

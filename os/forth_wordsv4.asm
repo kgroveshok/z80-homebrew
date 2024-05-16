@@ -1680,7 +1680,116 @@ endif
 ;	db 4
 ;	db "DIR",0               
 ; |DIR ( u -- w... u )   Using bank number u push directory entries from persistent storage as w with count u 
+
+	call storage_get_block_0
+
+	ld hl, store_page     ; get current id count
+	ld b, (hl)
+	ld c, 0    ; count of files  
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, 'D'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+	; for each of the current ids do a search for them and if found push to stack
+
+.diritem:	push bc
+		ld hl, STORE_BLOCK_PHY
+		ld d, 0
+		ld e,b
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, 'd'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+		call storage_findnextid
+		pop bc
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, 'f'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+
+		; if found hl will be non zero
+
+		ld a, l
+		add h
+
+		cp 0
+		jr z, .dirnotfound
+
+		; increase count
+
+		inc c
+
+		; get file header and push the file name
+
+		push bc
+		;push hl
+		ld de, store_page
+		call storage_read_block
+		;pop hl
+
+		ld hl, store_page
+		inc hl   ; get past id
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, 'p'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+		call forth_apushstrhl
+		pop bc
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, ','
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+.dirnotfound:
+		djnz .diritem
+		
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, '-'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+
+		; push a count of the dir items found
+
+		ld h, 0
+		ld l, c
+		call forth_push_numhl
+
+		; push the bank label
+
 		call storage_get_block_0
+
+	
+ 		ld hl, store_page+3
+
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, '='
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+		call forth_apushstrhl
+		;call forth_apush
+
+
+	
 		NEXT
 .SAVE:
 	CWHEAD .LOAD 39 "SAVE" 4 WORD_FLAG_CODE
@@ -2560,7 +2669,7 @@ endif
 ;| CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS | TO TEST
 
 		
-		call storage_get_block_0
+;		call storage_get_block_0
 
 		; TODO pop hl
 
@@ -2570,8 +2679,17 @@ endif
 		FORTH_DSP_POP
 		pop hl
 
+		inc hl   ; move past the type marker
+
 		call storage_create
 
+	if DEBUG_STORESE
+		push af
+		ld a, '='
+		ld (debug_mark),a
+		pop af
+		CALLMONITOR
+	endif
 		; push file id to stack
 		call forth_push_numhl
 

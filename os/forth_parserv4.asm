@@ -583,7 +583,12 @@ if DEBUG_FORTH_PARSE_EXEC
 	ld a, display_row_3
 	call str_at_display
 	call update_display
-	call delay250ms
+	ld a, 50
+	call aDelayInMS
+	
+	if DEBUG_FORTH_PARSE_EXEC_SLOW
+		call delay250ms
+	endif
 .noskip: 
 
 endif	
@@ -1308,7 +1313,18 @@ findnexttok:
 
 	ret
 
-	
 
+forth_apushstrhl:     
+	; push of string requires use of cli_origptr
+	; bodge use
+
+	; get current cli_origptr, save, update with temp pointer 
+	ld de, (cli_origptr)
+	ld (cli_origptr), hl
+	push de
+	call forth_apush
+	pop de
+	ld (cli_origptr), de
+        ret	
 
 ; eof

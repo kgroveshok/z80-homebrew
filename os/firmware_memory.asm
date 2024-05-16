@@ -305,6 +305,13 @@ malloc:
       push  IX
 
 	
+		if DEBUG_FORTH_MALLOC
+			push af
+			ld a, '^'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
 
       ld    A, H                    ; Exit if no space requested
       or    L
@@ -480,6 +487,13 @@ malloc_no_space:
       ex    DE, HL                  ; Alloc addr into HL for return
 
 malloc_early_exit:
+		if DEBUG_FORTH_MALLOC
+			push af
+			ld a, '&'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
       pop   IX
       pop   DE
       pop   BC

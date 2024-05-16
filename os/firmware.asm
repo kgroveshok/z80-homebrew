@@ -16,9 +16,10 @@ DEBUG_KEY_MATRIX: equ 0
 DEBUG_STORECF: equ 0
 DEBUG_STORESE: equ 1        ; TODO  w locks up, r returns. 
 DEBUG_FORTH_PARSE_EXEC: equ 1     ; 6
+DEBUG_FORTH_PARSE_EXEC_SLOW: equ 0     ; 6
 DEBUG_FORTH_PARSE_NEXTWORD: equ 0
 DEBUG_FORTH_JP: equ 0
-DEBUG_FORTH_MALLOC: equ 0
+DEBUG_FORTH_MALLOC: equ 1
 DEBUG_FORTH_DOT: equ 0
 DEBUG_FORTH_DOT_KEY: equ 0
 DEBUG_FORTH_MALLOC_GUARD: equ 1
@@ -45,7 +46,7 @@ MALLOC_2: equ 0
 
 
 tos:	equ 0ffffh
-stacksize: equ 255
+stacksize: equ 512
 
 
 ; memory allocation 

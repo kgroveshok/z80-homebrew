@@ -250,7 +250,7 @@ se_writepage:
 	djnz .bytewrite
 
 	; pause for internal write cycle
-	ld a, 20
+	ld a, 100
 	call aDelayInMS
     ret
 ; returns byte in a

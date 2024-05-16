@@ -141,7 +141,7 @@ storage_write_block:
 	; TODO bank selection
 
 	; for each of the physical blocks read it into the buffer
-;	ld b, STORE_BLOCK_PHY
+	ld b, STORE_BLOCK_PHY
 
 	if DEBUG_STORESE
 
@@ -152,10 +152,11 @@ storage_write_block:
 		CALLMONITOR
 	endif
 
-	call se_writepage
+; might not be working
+;	call se_writepage
 
-	ret
-
+;	ret
+;
 
 
 
@@ -197,7 +198,6 @@ storage_write_block:
 	djnz .wl1
 
 	if DEBUG_STORESE
-		pop de
 
 		push af
 		ld a, 'W'
@@ -385,6 +385,9 @@ storage_get_block_0:
 ;         Display type flags for file
 ;       
 
+; moving to words as this requires stack control
+
+
 ; Delete File
 ; -----------
 ;
@@ -404,8 +407,6 @@ storage_get_block_0:
 ;         Write this block back
 
 
-; TODO do find block id and mark as zero until all gone
-
 ; Find Free Block
 ; ---------------
 ;
@@ -419,25 +420,35 @@ storage_get_block_0:
 
 ; hl starting page number
 ; hl contains free page number or zero if no pages free
+; de contains the file id to locate
 
 ; TODO change to find file id and use zero for free block
 
-storage_findfree:
+storage_findnextid:
 
 	; now locate first 0 page to mark as a free block
 
 	ld b, STORE_DEVICE_MAXBLOCKS/2
 ;	ld hl, STORE_BLOCK_PHY
 
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, 'F'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
 .ff1:   	
 		push hl
 		push bc
+		push de
 		call se_readbyte
+		pop de
 		pop bc
 		pop hl
 
-		; is free?
-		cp 0
+		; is found?
+		cp e
 		ret z
 
 
@@ -449,12 +460,14 @@ storage_findfree:
 .ff2:   	
 		push hl
 		push bc
+		push de
 		call se_readbyte
+		pop de
 		pop bc
 		pop hl
 
-		; is free?
-		cp 0
+		; is found?
+		cp e
 		ret z
 
 		ld a, STORE_BLOCK_PHY
@@ -462,6 +475,13 @@ storage_findfree:
 		djnz .ff2
 
 
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, 'n'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
 	; no free marks!
 		ld hl, 0
 	ret
@@ -566,6 +586,13 @@ storage_freeblocks:
 ; hl returns file id
 
 storage_create:
+	if DEBUG_STORESE
+		push af
+		ld a, 'c'
+		ld (debug_mark),a
+		pop af
+		CALLMONITOR
+	endif
 	push hl
 	call storage_get_block_0
 
@@ -576,12 +603,30 @@ storage_create:
 	ld (store_tmpid),a			; save id
 
 	ld hl, 0
+	ld de, store_page
+	if DEBUG_STORESE
+		ld de, store_page
+		push af
+		ld a, 'w'
+		ld (debug_mark),a
+		pop af
+		CALLMONITOR
+	endif
 	call storage_write_block	 ; save update
 
+	if DEBUG_STORESE
+		ld de, store_page
+		push af
+		ld a, 'C'
+		ld (debug_mark),a
+		pop af
+		CALLMONITOR
+	endif
 	; 
 	
 	ld hl, STORE_BLOCK_PHY
-	call storage_findfree
+	ld de, 0
+	call storage_findnextid
 
 	; hl now contains the free page to use for the file header page
 
@@ -593,25 +638,61 @@ storage_create:
 	
 	
 	ld de, store_page+1    ; get buffer for term string to use as file name
+	if DEBUG_STORESE
+		push af
+		ld a, 'c'
+		ld (debug_mark),a
+		pop af
+		CALLMONITOR
+	endif
 	pop hl    ; get zero term string
 	push hl
 	ld a, 0
 	call strlent
+	inc hl   ; cover zero term
 	ld b,0
 	ld c,l
 	pop hl
-	ex de, hl
+	;ex de, hl
+	if DEBUG_STORESE
+		push af
+		ld a, 'a'
+		ld (debug_mark),a
+		pop af
+		CALLMONITOR
+	endif
 	ldir    ; copy zero term string
+	if DEBUG_STORESE
+		push af
+		ld a, 'A'
+		ld (debug_mark),a
+		pop af
+		CALLMONITOR
+	endif
 
 	; write file header page
 
 	ld hl,(store_tmppageid)
 	ld de, store_page
+	if DEBUG_STORESE
+		push af
+		ld a, 'b'
+		ld (debug_mark),a
+		pop af
+		CALLMONITOR
+	endif
 	call storage_write_block
 
 	ld a, (store_tmpid)
 	ld l, a
 	ld h,0
+	if DEBUG_STORESE
+		push af
+		ld a, 'z'
+		ld (debug_mark),a
+		pop af
+		CALLMONITOR
+	endif
 	ret
 	
 

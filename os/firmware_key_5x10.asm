@@ -830,7 +830,7 @@ LD   hl, keyscan_table_row5+10
 ;call addatohl
 call subafromhl
 
-ld de, keyscan_scancol+3
+ld de, keyscan_scancol+4
 
 ld a,(de)
 ld (hl),a
@@ -912,7 +912,7 @@ if DEBUG_KEY_MATRIX
             CALL fLCD_Pos       ;Position cursor to location in A
             LD   DE, keyscan_table_row4
             CALL fLCD_Str       ;Display string pointed to by DE
-            LD   A, kLCD_Line1+10
+            LD   A, kLCD_Line4+10
             CALL fLCD_Pos       ;Position cursor to location in A
             LD   DE, keyscan_table_row5
             CALL fLCD_Str       ;Display string pointed to by DE
@@ -1405,6 +1405,15 @@ out (portbdata),a
 	ld (hl), b
 	inc hl
 
+	ld b,KEY_MATRIX_NO_PRESS
+;;	bit 0,a
+	ld a,c
+	and 16
+	jr z, .p5on
+	ld b,'#'
+.p5on:
+	ld (hl), b
+	inc hl
 ; zero term
 	ld b,0
 	ld (hl), b

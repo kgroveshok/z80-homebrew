@@ -550,11 +550,12 @@ Can format, create and get a directory on the SPI storage.
 Have added some more looping words and using loop stack so DO loops can access the stack
 
 TODO fix a spurious return stack issue on REPEAT...UNTIL
-TODO add two char detection for hex numbers
+DONE add two char detection for hex numbers
 TODO do the append and read spi functions
 TODO sort out the input box to not do direct screen writes as well as provide better editing
 TODO add cursor key support on the keyboard
 
+TODO May have issue with append. If prev file is deleted first zero will be before header rec. Need a new file system. CP/M?
 
 
 

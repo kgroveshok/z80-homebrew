@@ -440,7 +440,8 @@ get_word_hl:
 ;	jr c, .single_byte_hl		; <
 
 	;call isdigithl
-	;jr z, .single_byte_hl
+	cp 0
+	jr z, .single_byte_hl
 
 .getwhln:   ; hex word so get next byte
 

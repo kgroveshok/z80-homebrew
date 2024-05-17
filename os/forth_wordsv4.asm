@@ -2566,7 +2566,124 @@ endif
 ;	dw .COLN
 ;	db 5
 ;	db "LOOP",0      
-; | -LOOP ( -- )    Decrement and test loop counter 
+; | -LOOP ( -- )    Decrement and test loop counter  | DONE
+	; pop tos as current loop count to hl
+
+	; if new tos (loop limit) is not same as hl, inc hl, push hl to tos, pop rsp and set pc to it
+
+	FORTH_LOOP_TOS
+	push hl
+
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, 'l'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+	; next item on the stack is the limit. get it
+
+
+	FORTH_LOOP_POP
+
+	FORTH_LOOP_TOS
+
+	pop de		 ; de = i, hl = limit
+
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, 'l'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+
+	; go back to previous word
+
+	push de    ; save I for inc later
+
+
+	; get limit
+	;  is I at limit?
+
+
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, 'L'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+
+	sbc hl, de
+
+
+	;  if at limit pop both limit and current off stack do NEXT and get rid of saved DO
+
+		jr nz, .mloopnotdone
+
+	pop hl   ; get rid of saved I
+	FORTH_LOOP_POP     ; get rid of limit
+
+	FORTH_RSP_POP     ; get rid of DO ptr
+
+if DEBUG_FORTH_WORDS
+	push af
+	ld a, '>'
+	ld (debug_mark),a
+	pop af
+	CALLMONITOR
+endif
+
+		NEXTW
+	; if not at limit. Inc I and update TOS get RTS off stack and reset parser
+
+.mloopnotdone:
+
+	pop hl    ; get I
+	dec hl
+
+   	; save new I
+
+
+		; set I counter
+
+		ld (os_current_i), hl
+
+		
+	FORTH_LOOP_NEXT
+
+
+		if DEBUG_FORTH_WORDS
+			ex de,hl
+		endif
+
+;	; get DO ptr
+;
+	FORTH_RSP_TOS
+
+	;push hl
+
+	; not going to DO any more
+	; get rid of the RSP pointer as DO will add it back in
+	;FORTH_RSP_POP
+	;pop hl
+
+
+	ld (os_tok_ptr), hl
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, '<'
+			ld (debug_mark),a
+			pop af
+		CALLMONITOR
+	endif
+	jp exec1
+
+		
+
+
+		NEXTW
 
 	NEXTW
 .RND8:

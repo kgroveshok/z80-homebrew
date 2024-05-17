@@ -37,7 +37,7 @@ DRAW ( -- ) Draw contents of current frame buffer  | DONE
 DUMP ( x --  ) With address x display dump   |DONE
 CDUMP ( -- ) continue dump of memory from DUMP |  DONE
 DEPTH ( -- u ) Push count of stack | DONE
-DIR ( u -- w... u )   Using bank number u push directory entries from persistent storage as w with count u 
+DIR ( u -- lab id ... c t )   Using bank number u push directory entries from persistent storage as w with count u  | DONE
 SAVE  ( w u -- )    Save user word memory to file name w on bank u
  LOAD ( w u -- )    Load user word memory from file name w on bank u
  AT ( u1 u2 -- )  Set next output via . or emit at row u2 col u1 |DONE
@@ -74,7 +74,7 @@ BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at a
  LIST ( uword -- )    List the code to the word on TOS
  FORGET ( uword -- )    Forget the uword on TOS
  I ( -- ) Current loop counter | DONE
- -LOOP ( -- )    Decrement and test loop counter 
+ -LOOP ( -- )    Decrement and test loop counter  | DONE
  RND8 (  -- n ) Generate a random 8bit number and push to stack | DONE
  NOP (  --  ) Do nothing | DONE
  AT? ( u1 u2 -- n )  Push to stack ASCII value at row u2 col u1 |
@@ -82,16 +82,18 @@ BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at a
  SEO ( u1 u2 -- ) Send byte u1 to Serial EEPROM device at address u2 |  DONE
  SEI ( u2 -- u1 ) Get a byte from Serial EEPROM device at address u2 |  DONE
  BANK ( u1 -- ) Select Serial EEPROM Bank Device at bank address u1 |  TODO
- SFREE ( -- n )  Gets number of blocks free on current storage bank |
- CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS |
+ SFREE ( -- n )  Gets number of blocks free on current storage bank | DONE
+ CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS | DONE
  APPEND ( u n --  )  Appends data u to file id on current storage bank |
  SDEL ( n --  )  Deletes all data for file id n on current storage bank |
  OPEN ( n --  )  Sets file id to point to first data page |
- READ ( n --  )  Reads next page of file id  |
+ READ ( n -- n  )  Reads next page of file id and push to stack |
  EOF ( n -- u )  Returns EOF state of file id n |
  ( ( -- )  Start of comment |
  ) ( -- )  End of comment |
  MENU ( u1....ux n ut -- n ) Create a menu. Ut is the title, n is the number of menu items on stack. Push number selection to TOS |
+ REPEAT ( --  ) Start REPEAT...UNTIL loop  |
+ UNTIL ( u -- ) Exit REPEAT...UNTIL loop if TOS is false  |
  V0! ( u1 -- )  Store value to v0  |
  V0@ ( --u )  Put value of v0 onto stack |
  V1! ( u1 -- )  Store value to v1 |
@@ -127,6 +129,7 @@ DRAW ( -- ) Draw contents of current frame buffer  | DONE
 DUMP ( x --  ) With address x display dump   |DONE
 CDUMP ( -- ) continue dump of memory from DUMP |  DONE
 DEPTH ( -- u ) Push count of stack | DONE
+DIR ( u -- lab id ... c t )   Using bank number u push directory entries from persistent storage as w with count u  | DONE
  AT ( u1 u2 -- )  Set next output via . or emit at row u2 col u1 |DONE
  WAITK ( -- w )      wait for keypress TOS is key press | DONE
 HOME ( -- )    Reset the current cursor for output to home |DONE
@@ -138,11 +141,14 @@ OVER ( n1 n2 -- n1 n2 n1 )  Copy one below TOS onto TOS | DONE
  BP ( u1 -- ) Enable or disable break point monitoring | DONE
  MONITOR ( -- ) Display system breakpoint/monitor | DONE
  I ( -- ) Current loop counter | DONE
+ -LOOP ( -- )    Decrement and test loop counter  | DONE
  RND8 (  -- n ) Generate a random 8bit number and push to stack | DONE
  NOP (  --  ) Do nothing | DONE
  ADSP ( u1 --  )  Enable/Disable Auto screen updates (SLOW). If off, use DRAW to refresh. Default is on. $0003 will enable direct screen writes (TODO) | DONE
  SEO ( u1 u2 -- ) Send byte u1 to Serial EEPROM device at address u2 |  DONE
  SEI ( u2 -- u1 ) Get a byte from Serial EEPROM device at address u2 |  DONE
+ SFREE ( -- n )  Gets number of blocks free on current storage bank | DONE
+ CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS | DONE
 Words still left to do
 ----------------------
   EMIT ( u -- )        Display ascii character  TOS   |
@@ -155,7 +161,6 @@ ELSE ( -- )   Not supported - does nothing
 CALL ( w -- w  ) machine code call to address w  push the result of hl to stack | TO TEST
 IN ( u1-- u )    Perform z80 IN with u1 being the port number. Push result to TOS | TO TEST
  OUT ( u1 u2 -- ) Perform Z80 OUT to port u2 sending byte u1 | TO TEST
-DIR ( u -- w... u )   Using bank number u push directory entries from persistent storage as w with count u 
 SAVE  ( w u -- )    Save user word memory to file name w on bank u
  LOAD ( w u -- )    Load user word memory from file name w on bank u
 KEY ( -- w f )      scan for keypress but do not wait true if next item on stack is key press
@@ -181,19 +186,18 @@ BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at a
  BLOAD ( w u a -- )    Load binary file from file name w on bank u into address u
  LIST ( uword -- )    List the code to the word on TOS
  FORGET ( uword -- )    Forget the uword on TOS
- -LOOP ( -- )    Decrement and test loop counter 
  AT? ( u1 u2 -- n )  Push to stack ASCII value at row u2 col u1 |
  BANK ( u1 -- ) Select Serial EEPROM Bank Device at bank address u1 |  TODO
- SFREE ( -- n )  Gets number of blocks free on current storage bank |
- CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS |
  APPEND ( u n --  )  Appends data u to file id on current storage bank |
  SDEL ( n --  )  Deletes all data for file id n on current storage bank |
  OPEN ( n --  )  Sets file id to point to first data page |
- READ ( n --  )  Reads next page of file id  |
+ READ ( n -- n  )  Reads next page of file id and push to stack |
  EOF ( n -- u )  Returns EOF state of file id n |
  ( ( -- )  Start of comment |
  ) ( -- )  End of comment |
  MENU ( u1....ux n ut -- n ) Create a menu. Ut is the title, n is the number of menu items on stack. Push number selection to TOS |
+ REPEAT ( --  ) Start REPEAT...UNTIL loop  |
+ UNTIL ( u -- ) Exit REPEAT...UNTIL loop if TOS is false  |
  V0! ( u1 -- )  Store value to v0  |
  V0@ ( --u )  Put value of v0 onto stack |
  V1! ( u1 -- )  Store value to v1 |

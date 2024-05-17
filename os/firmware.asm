@@ -12,7 +12,7 @@ Device_D: equ 0c0h
 DEBUG_KEYCINWAIT: equ 0
 DEBUG_KEYCIN: equ 0
 DEBUG_KEY: equ 0
-DEBUG_KEY_MATRIX: equ 0
+DEBUG_KEY_MATRIX: equ 1
 DEBUG_STORECF: equ 0
 DEBUG_STORESE: equ 1        ; TODO  w locks up, r returns. 
 DEBUG_FORTH_PARSE_EXEC: equ 1     ; 6
@@ -53,13 +53,14 @@ stacksize: equ 512
 
 ; keyscan table needs rows x cols buffer
 
-key_rows: equ 4
+key_rows: equ 5     ; TODO move out to mini and maxi + 1 null
 key_cols: equ 10    ; TODO move out to mini and maxi + 1 null
 keyscan_table_row1: equ tos-stacksize-key_cols-1
 keyscan_table_row2: equ keyscan_table_row1-key_cols-1
 keyscan_table_row3: equ keyscan_table_row2-key_cols-1
 keyscan_table_row4: equ keyscan_table_row3-key_cols-1
-keyscan_table: equ keyscan_table_row4-(key_cols*key_rows)-1
+keyscan_table_row5: equ keyscan_table_row4-key_cols-1
+keyscan_table: equ keyscan_table_row5-(key_cols*key_rows)-1
 keyscan_scancol: equ keyscan_table-key_cols
 ;keyscan_table_len: equ key_rows*key_cols
 ;keybufptr: equ keyscan_table - 2

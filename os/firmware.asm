@@ -12,7 +12,7 @@ Device_D: equ 0c0h
 DEBUG_KEYCINWAIT: equ 0
 DEBUG_KEYCIN: equ 0
 DEBUG_KEY: equ 0
-DEBUG_KEY_MATRIX: equ 1
+DEBUG_KEY_MATRIX: equ 0
 DEBUG_STORECF: equ 0
 DEBUG_STORESE: equ 1        ; TODO  w locks up, r returns. 
 DEBUG_FORTH_PARSE_EXEC: equ 1     ; 6
@@ -250,6 +250,14 @@ KEY_TAB:  equ 9
 KEY_BS: equ 8
 KEY_HOME: equ 2
 KEY_SHIFTLOCK: equ 4
+
+KEY_UP: equ 14
+KEY_DOWN: equ 15
+KEY_LEFT: equ 16
+KEY_RIGHT: equ 17
+KEY_HOME: equ 18
+KEY_END: equ 19
+
 ;if DEBUG_KEY
 ;	KEY_MATRIX_NO_PRESS: equ '.'
 ;	KEY_SHIFT:   equ '.'

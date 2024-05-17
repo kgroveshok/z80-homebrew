@@ -8,34 +8,6 @@
 
 ; bit mask for each scan column and row for teing the matrix
 
-; out 
-;ey_row_bitmask:    db 128, 64, 32, 16
-; in
-;key_col_bitmask:    db 1, 2, 4, 8
-
-; row/col to character map
-
-; char, state use   123xxsss   - bit 8,7,6 this key selects specified state, s is this key is member of that state
-;  
-
-; physical key matrix map to face of key
-
-
-;      	1	2	3	A
-;   	abc”	def&	ghi$	s1
-;			
-;	4	5	6	B
-; 	jkl,	mno.	pqr:	s2
-;			
-; 	7	8	9	C
-;	stu;	vwx@	yz?!	s3
-;			
-; 	*	0	#	D
-; 	shift lck '	Space < >	Enter ( )	s4
-;       tab bs 		
-
-
-
 
 key_init:
 
@@ -120,19 +92,19 @@ key_init:
 
 ;.matrix_to_char: db "1234567890qwertyuiopasdfghjkl_+zxcvbnm,."
 .matrix_to_char:
-		db KEY_SHIFT,"zxcvbnm ",KEY_SYMBOLSHIFT,0
+		db KEY_SHIFT,"zxcvbn",KEY_UP,KEY_DOWN,"m",KEY_LEFT, KEY_RIGHT,0
 		db KEY_SHIFT,"zxcvbnm ",KEY_SYMBOLSHIFT,0
 		db "asdfghjkl",KEY_CR,0
 		db "qwertyuiop",0
 		 db "1234567890",0
 .matrix_to_shift:
-		db KEY_SHIFT,"ZXCVBNM",KEY_BS,KEY_SYMBOLSHIFT,0
+		db KEY_SHIFT,"zxcvbn",KEY_UP,KEY_DOWN,"m",KEY_HOME, KEY_END,0
 		db KEY_SHIFT,"ZXCVBNM",KEY_BS,KEY_SYMBOLSHIFT,0
 		db "ASDFGHJKL",KEY_CR,0
 		db "QWERTYUIOP",0
 		 db "!",'"',"#$%^&*()",0
 .matrix_to_symbolshift:
-		db KEY_SHIFT,"<>:;b,.",KEY_BS,KEY_SYMBOLSHIFT,0
+		db KEY_SHIFT,"zxcvbn",KEY_UP,KEY_DOWN,"m",KEY_LEFT, KEY_RIGHT,0
 		db KEY_SHIFT,"<>:;b,.",KEY_BS,KEY_SYMBOLSHIFT,0
 		db "_?*fghjk=",KEY_CR,0
 		db "-/+*[]{}@#",0

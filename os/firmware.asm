@@ -248,7 +248,6 @@ portbctl:   equ Device_D+3    ; port b control
 KEY_CR:   equ 13
 KEY_TAB:  equ 9
 KEY_BS: equ 8
-KEY_HOME: equ 2
 KEY_SHIFTLOCK: equ 4
 
 KEY_UP: equ 14

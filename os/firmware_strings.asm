@@ -66,7 +66,33 @@ input_str:	ld (input_at_pos), a
 
 		jr .instr1
 
-.instr2:	; no special key pressed to see if we have room to store it
+.instr2:	cp KEY_LEFT    ; cursor left
+		jr nz, .instr3
+		dec hl
+		ld (input_ptr),hl
+		jr .instr1
+	
+.instr3:	cp KEY_RIGHT ; cursor right
+		jr nz, .instr4
+		inc hl
+		ld (input_ptr),hl
+		jr .instr1
+
+.instr4:	cp KEY_HOME    ; jump to start of line
+		jr nz, .instr5
+		dec hl
+		ld (input_ptr),hl
+		jr .instr1
+
+.instr5:	cp KEY_END     ; jump to end of line
+		jr nz, .instrnew
+		dec hl
+		ld (input_ptr),hl
+		jr .instr1
+
+
+
+.instrnew:	; no special key pressed to see if we have room to store it
 
 		; TODO do string size test
 

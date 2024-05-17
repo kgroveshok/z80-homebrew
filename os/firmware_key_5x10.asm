@@ -92,19 +92,19 @@ key_init:
 
 ;.matrix_to_char: db "1234567890qwertyuiopasdfghjkl_+zxcvbnm,."
 .matrix_to_char:
-		db KEY_SHIFT,"zxcvbn",KEY_UP,KEY_DOWN,"m",KEY_LEFT, KEY_RIGHT,0
+		db KEY_SHIFT,"zxcv",KEY_UP,KEY_DOWN,"m",KEY_LEFT, KEY_RIGHT,0
 		db KEY_SHIFT,"zxcvbnm ",KEY_SYMBOLSHIFT,0
 		db "asdfghjkl",KEY_CR,0
 		db "qwertyuiop",0
 		 db "1234567890",0
 .matrix_to_shift:
-		db KEY_SHIFT,"zxcvbn",KEY_UP,KEY_DOWN,"m",KEY_HOME, KEY_END,0
+		db KEY_SHIFT,"zxcv",KEY_UP,KEY_DOWN,"m",KEY_HOME, KEY_END,0
 		db KEY_SHIFT,"ZXCVBNM",KEY_BS,KEY_SYMBOLSHIFT,0
 		db "ASDFGHJKL",KEY_CR,0
 		db "QWERTYUIOP",0
 		 db "!",'"',"#$%^&*()",0
 .matrix_to_symbolshift:
-		db KEY_SHIFT,"zxcvbn",KEY_UP,KEY_DOWN,"m",KEY_LEFT, KEY_RIGHT,0
+		db KEY_SHIFT,"zxcv",KEY_UP,KEY_DOWN,"m",KEY_LEFT, KEY_RIGHT,0
 		db KEY_SHIFT,"<>:;b,.",KEY_BS,KEY_SYMBOLSHIFT,0
 		db "_?*fghjk=",KEY_CR,0
 		db "-/+*[]{}@#",0

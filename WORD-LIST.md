@@ -92,8 +92,8 @@ BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at a
  ( ( -- )  Start of comment |
  ) ( -- )  End of comment |
  MENU ( u1....ux n ut -- n ) Create a menu. Ut is the title, n is the number of menu items on stack. Push number selection to TOS |
- REPEAT ( --  ) Start REPEAT...UNTIL loop  |
- UNTIL ( u -- ) Exit REPEAT...UNTIL loop if TOS is false  |
+ REPEAT ( --  ) Start REPEAT...UNTIL loop  | DONE
+ UNTIL ( u -- ) Exit REPEAT...UNTIL loop if TOS is false  | DONE
  V0! ( u1 -- )  Store value to v0  |
  V0@ ( --u )  Put value of v0 onto stack |
  V1! ( u1 -- )  Store value to v1 |
@@ -149,6 +149,8 @@ OVER ( n1 n2 -- n1 n2 n1 )  Copy one below TOS onto TOS | DONE
  SEI ( u2 -- u1 ) Get a byte from Serial EEPROM device at address u2 |  DONE
  SFREE ( -- n )  Gets number of blocks free on current storage bank | DONE
  CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS | DONE
+ REPEAT ( --  ) Start REPEAT...UNTIL loop  | DONE
+ UNTIL ( u -- ) Exit REPEAT...UNTIL loop if TOS is false  | DONE
 Words still left to do
 ----------------------
   EMIT ( u -- )        Display ascii character  TOS   |
@@ -196,8 +198,6 @@ BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at a
  ( ( -- )  Start of comment |
  ) ( -- )  End of comment |
  MENU ( u1....ux n ut -- n ) Create a menu. Ut is the title, n is the number of menu items on stack. Push number selection to TOS |
- REPEAT ( --  ) Start REPEAT...UNTIL loop  |
- UNTIL ( u -- ) Exit REPEAT...UNTIL loop if TOS is false  |
  V0! ( u1 -- )  Store value to v0  |
  V0@ ( --u )  Put value of v0 onto stack |
  V1! ( u1 -- )  Store value to v1 |

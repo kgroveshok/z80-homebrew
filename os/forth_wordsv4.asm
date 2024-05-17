@@ -2932,14 +2932,118 @@ endif
 
 
 .REPEAT:
-	CWHEAD .VARS 93 "REPEAT" 5 WORD_FLAG_CODE
-;| REPEAT ( --  ) Start REPEAT...UNTIL loop  |
+	CWHEAD .UNTIL 93 "REPEAT" 5 WORD_FLAG_CODE
+;| REPEAT ( --  ) Start REPEAT...UNTIL loop  | DONE
+;  push pc to rsp stack past the REPEAT
+
+		ld hl, (os_tok_ptr)
+		inc hl   ; R
+		inc hl  ; E
+		inc hl   ; P
+		inc hl   ; E
+		inc hl   ; A
+		inc hl   ; T
+		inc hl   ; zero
+		FORTH_RSP_NEXT
+
+
+		if DEBUG_FORTH_WORDS
+			pop bc
+			push af
+			ld a, 'R'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+
+		NEXTW
 	       NEXTW
 
 .UNTIL:
 	CWHEAD .VARS 94 "UNTIL" 5 WORD_FLAG_CODE
-;| UNTIL ( u -- ) Exit REPEAT...UNTIL loop if TOS is false  |
-	       NEXTW
+;| UNTIL ( u -- ) Exit REPEAT...UNTIL loop if TOS is false  | DONE
+
+	; pop tos as check
+
+	; if new tos (loop limit) is not same as hl, inc hl, push hl to tos, pop rsp and set pc to it
+
+	FORTH_DSP_VALUEHL
+
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, 'U'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+
+	push hl
+	FORTH_DSP_POP
+
+	pop hl
+
+	; test if true
+
+
+	ld a,l
+	add h
+
+	cp 0
+
+	jr nz, .untilnotdone
+
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, 'f'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
+
+
+
+	FORTH_RSP_POP     ; get rid of DO ptr
+
+if DEBUG_FORTH_WORDS
+	push af
+	ld a, '>'
+	ld (debug_mark),a
+	pop af
+	CALLMONITOR
+endif
+
+		NEXTW
+	; if not at limit. Inc I and update TOS get RTS off stack and reset parser
+
+.untilnotdone:
+
+
+;	; get DO ptr
+;
+	FORTH_RSP_TOS
+
+	;push hl
+
+	; not going to DO any more
+	; get rid of the RSP pointer as DO will add it back in
+	;FORTH_RSP_POP
+	;pop hl
+
+
+	ld (os_tok_ptr), hl
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, '<'
+			ld (debug_mark),a
+			pop af
+		CALLMONITOR
+	endif
+	jp exec1
+
+		
+
+
+		NEXTW
 
 ; var handler
 

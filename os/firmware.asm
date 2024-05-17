@@ -19,7 +19,7 @@ DEBUG_FORTH_PARSE_EXEC: equ 1     ; 6
 DEBUG_FORTH_PARSE_EXEC_SLOW: equ 0     ; 6
 DEBUG_FORTH_PARSE_NEXTWORD: equ 0
 DEBUG_FORTH_JP: equ 0
-DEBUG_FORTH_MALLOC: equ 1
+DEBUG_FORTH_MALLOC: equ 0
 DEBUG_FORTH_DOT: equ 0
 DEBUG_FORTH_DOT_KEY: equ 0
 DEBUG_FORTH_MALLOC_GUARD: equ 1
@@ -177,9 +177,11 @@ cli_origptr: equ cli_ptr - 2           ; pointer to start of word to parse which
 cli_autodisplay: equ cli_origptr - 1 ;     ; true will auto update the display (slow) otherwise need to use DRAW
 cli_var_array: equ cli_autodisplay - ( 10 * 2 ) ; word or string pointer variables using @0-@9
 cli_ret_sp: equ cli_var_array - 2    ; ret stack pointer
-cli_data_sp: equ cli_ret_sp - 2   ; data stack pointer
+cli_loop_sp: equ cli_ret_sp - 2   ; data stack pointer
+cli_data_sp: equ cli_loop_sp - 2   ; data stack pointer
 cli_ret_stack: equ cli_data_sp - 128      ; TODO could I just use normal stack for this? - use linked list for looping
-cli_data_stack: equ cli_ret_stack - 512		 ; 
+cli_loop_stack: equ cli_data_sp - 128      ; TODO could I just use normal stack for this? - use linked list for looping
+cli_data_stack: equ cli_loop_stack - 512		 ; 
 
 ; os/forth token vars
 

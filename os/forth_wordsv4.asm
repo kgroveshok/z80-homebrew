@@ -108,7 +108,7 @@ sysdict:
 		
 		
 
-			FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+			FORTH_DSP_POP      ; TODO add stock underflow checks and throws 
 
 		; get next number
 
@@ -179,7 +179,7 @@ sysdict:
 .dot_done:
 		call forth_push_numhl
 
-		NEXT
+		NEXTW
 .NEG:
 
 	CWHEAD .DIV 3 "-" 1 WORD_FLAG_CODE
@@ -240,7 +240,7 @@ sysdict:
 		call forth_push_numhl
 .neg_done:
 
-		NEXT
+		NEXTW
 .DIV:
 	CWHEAD .MUL 4 "/" 1 WORD_FLAG_CODE
 ;	db 4
@@ -320,7 +320,7 @@ sysdict:
 
 		call forth_push_numhl
 .div_done:
-		NEXT
+		NEXTW
 .MUL:
 	CWHEAD .DUP 5 "*" 1 WORD_FLAG_CODE
 ; 	db 5
@@ -379,7 +379,7 @@ sysdict:
 		call forth_push_numhl
 
 .mul_done:
-		NEXT
+		NEXTW
 .DUP:
 	CWHEAD .EMIT 6 "DUP" 3 WORD_FLAG_CODE
 ;	db 6
@@ -392,7 +392,7 @@ sysdict:
 
 	; TODO add floating point number detection
 		call forth_push_numhl
-		NEXT
+		NEXTW
 .EMIT:
 	CWHEAD .DOTH 7 "EMIT" 4 WORD_FLAG_CODE
 ;	db 7
@@ -410,7 +410,7 @@ sysdict:
 
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
-		NEXT
+		NEXTW
 .DOTH:
 	CWHEAD .DOT 8 ".-" 2 WORD_FLAG_CODE
 ;	db 8
@@ -420,7 +420,7 @@ sysdict:
         ;| .- ( u -- )    Display TOS replacing any dashes with space   |DONE
 		; get value off TOS and display it
 	jp .dotgo
-	NEXT
+	NEXTW
 
 .DOT:
 	CWHEAD .SWAP 8 "." 1 WORD_FLAG_CODE
@@ -524,7 +524,7 @@ if DEBUG_FORTH_DOT
 endif	
 
 
-		NEXT
+		NEXTW
 .SWAP:
 	CWHEAD .IF 9 "SWAP" 4 WORD_FLAG_CODE
 ;	db 9
@@ -541,7 +541,7 @@ endif
 ;		dec hl
 ;		dec hl
 
-		NEXT
+		NEXTW
 .IF:
 	CWHEAD .THEN 10 "IF" 2 WORD_FLAG_CODE
 ;	db 10
@@ -613,7 +613,7 @@ endif
 	; TODO replace below with ; exec using tok_ptr
 	ld (os_tok_ptr), hl
 	jp exec1
-	NEXT
+	NEXTW
 
 .ifthen:  db "THEN",0
 
@@ -629,7 +629,7 @@ endif
 			CALLMONITOR
 		endif
 
-		NEXT
+		NEXTW
 .THEN:
 	CWHEAD .ELSE 11 "THEN" 4 WORD_FLAG_CODE
 ;	db 11
@@ -637,7 +637,7 @@ endif
 ;	db 5
 ;	db "THEN",0    
 ; |THEN ( -- )    Does nothing. It is a marker for the end of an IF block | DONE
-		NEXT
+		NEXTW
 .ELSE:
 	CWHEAD .DO 12 "ELSE" 2 WORD_FLAG_CODE
 ; 	db 12
@@ -648,7 +648,7 @@ endif
 
 
 
-		NEXT
+		NEXTW
 .DO:
 	CWHEAD .LOOP 13 "DO" 2 WORD_FLAG_CODE
 ;	db 13
@@ -657,18 +657,48 @@ endif
 ;	db "DO",0       
 ; |DO ( u1 u2 -- )   Loop starting at u2 with a limit of u1 | DONE
 
-;  push pc to rsp stack
+;  push pc to rsp stack past the DO
 
 		ld hl, (os_tok_ptr)
+		inc hl   ; D
+		inc hl  ; O
+		inc hl   ; null
 		FORTH_RSP_NEXT
 
 		if DEBUG_FORTH_WORDS
 			push hl
 		endif 
 
-; save tos to i value
+; get counters from data stack
+
 
 		FORTH_DSP_VALUEHL
+		push hl		 ; hl now has starting counter which needs to be tos
+
+		FORTH_DSP_POP
+
+
+		FORTH_DSP_VALUEHL
+		push hl		 ; hl now has starting limit counter
+
+		FORTH_DSP_POP
+
+; put counters on the loop stack
+
+		pop hl			 ; limit counter
+		pop de			; start counter
+
+		; push limit counter
+
+		FORTH_LOOP_NEXT
+
+		; push start counter
+
+		ex de, hl
+		FORTH_LOOP_NEXT
+
+
+		; init first round of I counter
 
 		ld (os_current_i), hl
 
@@ -681,7 +711,7 @@ endif
 			CALLMONITOR
 		endif
 
-		NEXT
+		NEXTW
 .LOOP:
 	CWHEAD .COLN 14 "LOOP" 4 WORD_FLAG_CODE
 ;	db 14
@@ -694,15 +724,22 @@ endif
 
 	; if new tos (loop limit) is not same as hl, inc hl, push hl to tos, pop rsp and set pc to it
 
-	FORTH_DSP_VALUEHL
+	FORTH_LOOP_TOS
 	push hl
 
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, 'l'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
 	; next item on the stack is the limit. get it
 
 
-	FORTH_DSP_POP
+	FORTH_LOOP_POP
 
-	FORTH_DSP_VALUEHL
+	FORTH_LOOP_TOS
 
 	pop de		 ; de = i, hl = limit
 
@@ -717,6 +754,7 @@ endif
 	; go back to previous word
 
 	push de    ; save I for inc later
+
 
 	; get limit
 	;  is I at limit?
@@ -738,7 +776,7 @@ endif
 		jr nz, .loopnotdone
 
 	pop hl   ; get rid of saved I
-	FORTH_DSP_POP     ; get rid of limit
+	FORTH_LOOP_POP     ; get rid of limit
 
 	FORTH_RSP_POP     ; get rid of DO ptr
 
@@ -750,7 +788,7 @@ if DEBUG_FORTH_WORDS
 	CALLMONITOR
 endif
 
-		NEXT
+		NEXTW
 	; if not at limit. Inc I and update TOS get RTS off stack and reset parser
 
 .loopnotdone:
@@ -761,8 +799,12 @@ endif
    	; save new I
 
 
+		; set I counter
 
-	call forth_push_numhl
+		ld (os_current_i), hl
+
+		
+	FORTH_LOOP_NEXT
 
 
 		if DEBUG_FORTH_WORDS
@@ -773,11 +815,12 @@ endif
 ;
 	FORTH_RSP_TOS
 
-	push hl
+	;push hl
 
+	; not going to DO any more
 	; get rid of the RSP pointer as DO will add it back in
-	FORTH_RSP_POP
-	pop hl
+	;FORTH_RSP_POP
+	;pop hl
 
 
 	ld (os_tok_ptr), hl
@@ -793,7 +836,7 @@ endif
 		
 
 
-		NEXT
+		NEXTW
 .COLN:
 	CWHEAD .SCOLN 15 ":" 1 WORD_FLAG_CODE
 ;	db 15
@@ -1132,7 +1175,7 @@ if DEBUG_FORTH_UWORD
 	pop af
 	CALLMONITOR
 endif
-		NEXT
+		NEXTW
 .DROP:
 	CWHEAD .DUP2 17 "DROP" 4 WORD_FLAG_CODE
 ;   db 17
@@ -1141,7 +1184,7 @@ endif
 ;	db "DROP",0        
 ; |DROP ( w -- )   drop the TOS item   |DONE
 		FORTH_DSP_POP
-		NEXT
+		NEXTW
 .DUP2:
 	CWHEAD .DROP2 18 "2DUP" 4 WORD_FLAG_CODE
 ;	db 18
@@ -1149,7 +1192,7 @@ endif
 ;	db 5
 ;	db "2DUP",0      i
 ; |2DUP ( w1 w2 -- w1 w2 w1 w2 ) Duplicate the top two items on TOS  
-		NEXT
+		NEXTW
 .DROP2:
 	CWHEAD .SWAP2 19 "2DROP" 5 WORD_FLAG_CODE
 ;	db 19
@@ -1159,7 +1202,7 @@ endif
 ; |2DROP ( w w -- )    Double drop | DONE
 		FORTH_DSP_POP
 		FORTH_DSP_POP
-		NEXT
+		NEXTW
 .SWAP2:
 	CWHEAD .AT 20 "2SWAP" 5 WORD_FLAG_CODE
 ;	db 20
@@ -1167,7 +1210,7 @@ endif
 ;	db 5
 ;	db "2SWAP",0      
 ; |2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items
-		NEXT
+		NEXTW
 .AT:
 	CWHEAD .CAT 21 "@" 1 WORD_FLAG_CODE
 ;	db 21
@@ -1191,7 +1234,7 @@ endif
 		ld h, 0
 		call forth_push_numhl
 
-		NEXT           
+		NEXTW
 .CAT:
 	CWHEAD .BANG 22 "C@" 2 WORD_FLAG_CODE
 ;	db 22
@@ -1200,7 +1243,7 @@ endif
 ;	db "C@",0        
 ; |C@  ( w -- ) Push onto TOS byte stored at address   |DONE
 		jp .getbyteat
-		NEXT
+		NEXTW
 .BANG:
 	CWHEAD .CBANG 23 "!" 1 WORD_FLAG_CODE
 ;   db 23
@@ -1231,7 +1274,7 @@ endif
 		ld (hl),e
 
 
-		NEXT
+		NEXTW
 .CBANG:
 	CWHEAD .LZERO 24 "C!" 2 WORD_FLAG_CODE
 ;	db 24
@@ -1240,7 +1283,7 @@ endif
 ;	db "C!",0       
 ; |C!  ( x w -- ) Store x at address w  | DONE
 		jp .storebyteat
-		NEXT
+		NEXTW
 .LZERO:
 	CWHEAD .TZERO 25 "0<" 2 WORD_FLAG_CODE
 ;	db 25
@@ -1248,7 +1291,7 @@ endif
 ;	db 3
 ;	db "0<",0       
 ; |0< ( u -- f ) Push true if u is less than o | CANT DO UNTIL FLOAT
-		NEXT
+		NEXTW
 .TZERO:
 	CWHEAD .LESS 26 "0=" 2 WORD_FLAG_CODE
 ;  db 26
@@ -1299,7 +1342,7 @@ endif
 .tz_done:
 		call forth_push_numhl
 
-		NEXT
+		NEXTW
 .LESS:
 	CWHEAD .GT 27 "<" 1 WORD_FLAG_CODE
 ;   db 27
@@ -1357,7 +1400,7 @@ endif
 		endif
 		call forth_push_numhl
 
-		NEXT
+		NEXTW
 .GT:
 	CWHEAD .EQUAL 28 ">" 1 WORD_FLAG_CODE
 ;	db 28
@@ -1415,7 +1458,7 @@ endif
 		endif
 		call forth_push_numhl
 
-		NEXT
+		NEXTW
 .EQUAL:
 	CWHEAD .SCALL 29 "=" 1 WORD_FLAG_CODE
 ;  db 29
@@ -1487,7 +1530,7 @@ endif
 		endif
 		call forth_push_numhl
 
-		NEXT
+		NEXTW
 .SCALL:
 	CWHEAD .SIN 30 "CALL" 4 WORD_FLAG_CODE
 ;	db 30
@@ -1513,7 +1556,7 @@ endif
 		; TODO push value back onto stack for another op etc
 
 		call forth_push_numhl
-		NEXT
+		NEXTW
 .SIN:
 	CWHEAD .SOUT 31 "IN" 2 WORD_FLAG_CODE
 ;	db 31
@@ -1545,7 +1588,7 @@ endif
 		; TODO push value back onto stack for another op etc
 
 		call forth_push_numhl
-		NEXT
+		NEXTW
 .SOUT:
 	CWHEAD .CLS 32 "OUT" 3 WORD_FLAG_CODE
 ;   db 32
@@ -1582,7 +1625,7 @@ endif
 
 		out (c), l
 
-		NEXT
+		NEXTW
 
 .CLS:
 	CWHEAD .DRAW 33 "CLS" 3 WORD_FLAG_CODE
@@ -1593,7 +1636,7 @@ endif
 ; |CLS ( -- ) clear frame buffer    |DONE
 		call clear_display
 		jp .home		; and home cursor
-		NEXT
+		NEXTW
 
 .DRAW:
 	CWHEAD .DUMP 34 "DRAW" 4 WORD_FLAG_CODE
@@ -1603,7 +1646,7 @@ endif
 ;	db "DRAW",0     
 ; |DRAW ( -- ) Draw contents of current frame buffer  | DONE
 		call update_display
-		NEXT
+		NEXTW
 
 .DUMP:
 	CWHEAD .CDUMP 35 "DUMP" 4 WORD_FLAG_CODE
@@ -1629,7 +1672,7 @@ endif
 
 		call dumpcont	; skip old style of param parsing	
 		ret			; TODO command causes end of remaining parsing so cant do: $0000 DUMP $8000 DUMP
-		NEXT
+		NEXTW
 .CDUMP:
 	CWHEAD .DEPTH 36 "CDUMP" 5 WORD_FLAG_CODE
 ;   db 36                      ; continue memory dump
@@ -1640,7 +1683,7 @@ endif
 		call clear_display
 		call dumpcont	
 		ret			; TODO command causes end of remaining parsing so cant do: $0000 DUMP CDUMP $8000 DUMP
-		NEXT
+		NEXTW
 
 
 .DEPTH:
@@ -1670,7 +1713,7 @@ endif
 	;rr l
 
 		call forth_push_numhl
-		NEXT
+		NEXTW
 
 .DIR:
 	CWHEAD .SAVE 38 "DIR" 3 WORD_FLAG_CODE
@@ -1806,7 +1849,7 @@ endif
 
 
 	
-		NEXT
+		NEXTW
 .SAVE:
 	CWHEAD .LOAD 39 "SAVE" 4 WORD_FLAG_CODE
 ;   db 39
@@ -1814,7 +1857,7 @@ endif
 ;	db 5
 ;	db "SAVE",0              
 ; |SAVE  ( w u -- )    Save user word memory to file name w on bank u
-		NEXT
+		NEXTW
 .LOAD:
 	CWHEAD .DAT 40 "LOAD" 4 WORD_FLAG_CODE
 ;   db 40
@@ -1822,7 +1865,7 @@ endif
 ;	db 5
 ;	db "LOAD",0               
 ;| LOAD ( w u -- )    Load user word memory from file name w on bank u
-		NEXT
+		NEXTW
 .DAT:
 	CWHEAD .KEY 41 "AT" 2 WORD_FLAG_CODE
 ;   db 41                     
@@ -1861,7 +1904,7 @@ endif
 
 		; calculate 
 
-		NEXT
+		NEXTW
 .KEY:
 	CWHEAD .WAITK 42 "KEY" 3 WORD_FLAG_CODE
 ;   db 42               
@@ -1869,7 +1912,7 @@ endif
 ;	db 4
 ;	db "KEY",0     
 ; |KEY ( -- w f )      scan for keypress but do not wait true if next item on stack is key press
-		NEXT
+		NEXTW
 .WAITK:
 	CWHEAD .ACCEPT 43 "WAITK" 5 WORD_FLAG_CODE
 ;   db 43               
@@ -1881,7 +1924,7 @@ endif
 		ld l, a
 		ld h, 0
 		call forth_push_numhl
-		NEXT
+		NEXTW
 .ACCEPT:
 	CWHEAD .HOME 44 "ACCEPT" 6 WORD_FLAG_CODE
 ;   db 44               
@@ -1904,7 +1947,7 @@ endif
 			CALLMONITOR
 		endif
 		call forth_apush
-		NEXT
+		NEXTW
 
 .HOME:
 	CWHEAD .OVER 45 "HOME" 4 WORD_FLAG_CODE
@@ -1915,7 +1958,7 @@ endif
 ; |HOME ( -- )    Reset the current cursor for output to home |DONE
 .home:		ld a, 0		; and home cursor
 		ld (f_cursor_ptr), a
-		NEXT
+		NEXTW
 
 .OVER:
 	CWHEAD .PAUSE 46 "OVER" 4 WORD_FLAG_CODE
@@ -1948,7 +1991,7 @@ endif
 		call forth_push_numhl
 		pop hl
 		call forth_push_numhl
-		NEXT
+		NEXTW
 
 .PAUSE:
 	CWHEAD .PAUSES 47 "PAUSEMS" 7 WORD_FLAG_CODE
@@ -1964,7 +2007,7 @@ endif
 
 		ld a, l
 		call aDelayInMS
-	       NEXT
+	       NEXTW
 .PAUSES: 
 	CWHEAD .ROT 48 "PAUSE" 5 WORD_FLAG_CODE
 ;  db 48
@@ -1996,7 +2039,7 @@ endif
 		endif
 		djnz .pauses1
 
-	       NEXT
+	       NEXTW
 .ROT:
 	CWHEAD .SPACE 49 "ROT" 3 WORD_FLAG_CODE
 ;   db 49
@@ -2004,7 +2047,7 @@ endif
  ;         db 4
 ;	  db "ROT",0	
 ; | ROT (  -- )  
-	       NEXT
+	       NEXTW
 
 .SPACE:
 	CWHEAD .SPACES 50 "SPACE" 5 WORD_FLAG_CODE
@@ -2016,7 +2059,7 @@ endif
 		ld hl, ' '
 		call forth_push_numhl
 		
-	       NEXT
+	       NEXTW
 
 .SPACES:
 	CWHEAD .CONCAT 51 "SPACES" 6 WORD_FLAG_CODE
@@ -2069,7 +2112,7 @@ endif
 		endif
 		call forth_apush
 
-	       NEXT
+	       NEXTW
 .CONCAT:
 	CWHEAD .MIN 52 "CONCAT" 6 WORD_FLAG_CODE
 ;   db 52
@@ -2077,7 +2120,7 @@ endif
  ;         db 7
 ;	  db "CONCAT",0	
 ; | CONCAT ( s1 s2 -- s3 ) A string of u spaces is pushed onto the stack
-	       NEXT
+	       NEXTW
 
 .MIN:
 	CWHEAD .MAX 53 "MIN" 3 WORD_FLAG_CODE
@@ -2123,7 +2166,7 @@ endif
 		endif
 		call forth_push_numhl
 
-	       NEXT
+	       NEXTW
 
 .mincont: 
 	pop bc   ; tidy up
@@ -2137,7 +2180,7 @@ endif
 		endif
 		call forth_push_numhl
 
-	       NEXT
+	       NEXTW
 .MAX:
 	CWHEAD .FIND 54 "MAX" 3 WORD_FLAG_CODE
 ;   db 54
@@ -2182,7 +2225,7 @@ endif
 		endif
 		call forth_push_numhl
 
-	       NEXT
+	       NEXTW
 
 .maxcont: 
 	pop bc   ; tidy up
@@ -2195,7 +2238,7 @@ endif
 			CALLMONITOR
 		endif
 		call forth_push_numhl
-	       NEXT
+	       NEXTW
 
 .FIND:
 	CWHEAD .LEN 55 "FIND" 4 WORD_FLAG_CODE
@@ -2204,7 +2247,7 @@ endif
  ;         db 5
 ;	  db "FIND",0	
 ; | FIND (  -- )  
-	       NEXT
+	       NEXTW
 
 .LEN:
 	CWHEAD .CHAR 56 "LEN" 3 WORD_FLAG_CODE
@@ -2213,7 +2256,7 @@ endif
  ;         db 4
 ;	  db "LEN",0	
 ; | LEN (  u1 -- u2 ) Push the length of the string on TOS
-	       NEXT
+	       NEXTW
 .CHAR:
 	CWHEAD .RND16 57 "CHAR" 4 WORD_FLAG_CODE
 ;   db 57
@@ -2234,14 +2277,14 @@ endif
 		ld l,a
 		call forth_push_numhl
 
-	       NEXT
+	       NEXTW
 
 .RND16:
 	CWHEAD .WORDS 58 "RND16" 5 WORD_FLAG_CODE
 ; | RND16 (  -- n ) Generate a random 16bit number and push to stack | DONE
 		call prng16 
 		call forth_push_numhl
-	       NEXT
+	       NEXTW
 .WORDS:
 	CWHEAD .UWORDS 59 "WORDS" 5 WORD_FLAG_CODE
 ;   db 59
@@ -2249,7 +2292,7 @@ endif
  ;         db 6
 ;	  db "WORDS",0	
 ; | WORDS (  -- )   List the system and user word dict
-	       NEXT
+	       NEXTW
 
 .UWORDS:
 	CWHEAD .SPIO 60 "UWORDS" 6 WORD_FLAG_CODE
@@ -2258,7 +2301,7 @@ endif
  ;         db 7
 ;	  db "UWORDS",0	
 ; | UWORDS (  -- )   List user word dict
-	       NEXT
+	       NEXTW
 
 .SPIO:
 	CWHEAD .SPII 61 "SPIO" 4 WORD_FLAG_CODE
@@ -2302,7 +2345,7 @@ endif
 
 		
 
-		NEXT
+		NEXTW
 
 .SPII:
 	CWHEAD .SCROLL 62 "SPII" 5 WORD_FLAG_CODE
@@ -2335,7 +2378,7 @@ endif
 		ld l, a
 		call forth_push_numhl
 
-		NEXT
+		NEXTW
 .SCROLL:
 	CWHEAD .BP 63 "SCROLL" 6 WORD_FLAG_CODE
 ;   db 63
@@ -2372,7 +2415,7 @@ endif
 
 		; TODO Get SPI byte
 
-		NEXT
+		NEXTW
 .BP:
 	CWHEAD .MONITOR 64 "BP" 2 WORD_FLAG_CODE
 ;   db 64
@@ -2400,7 +2443,7 @@ endif
 .bpset:		ld (os_view_disable), a
 
 
-		NEXT
+		NEXTW
 
 
 .MONITOR:
@@ -2413,7 +2456,7 @@ endif
 	;	rst 030h
 	CALLMONITOR
 
-		NEXT
+		NEXTW
 
 
 .MALLOC:
@@ -2437,7 +2480,7 @@ endif
 		call malloc
 
 		call forth_push_numhl
-		NEXT
+		NEXTW
 
 .FREE:
 	CWHEAD .STRLEN 67 "FREE" 4 WORD_FLAG_CODE
@@ -2459,7 +2502,7 @@ endif
 		pop hl
 		call free
 
-		NEXT
+		NEXTW
 
 .STRLEN:
 	CWHEAD .STRCPY 68 "STRLEN" 6 WORD_FLAG_CODE
@@ -2469,7 +2512,7 @@ endif
 ;	db "STRLEN",0      
 ;| STRLEN ( u1 -- Using given address u1 push then zero term length string to TOS )   |
 
-		NEXT
+		NEXTW
 
 .STRCPY:
 	CWHEAD .BSAVE 69 "STRCPY" 6 WORD_FLAG_CODE
@@ -2479,7 +2522,7 @@ endif
 ;	db "STRCPY",0      
 ;| STRCPY ( u1 u2 -- Copy string u2 to u1 )   |
 
-		NEXT
+		NEXTW
 .BSAVE:  
 
 	CWHEAD .BLOAD 70 "BSAVE" 5 WORD_FLAG_CODE
@@ -2487,7 +2530,7 @@ endif
 ;	dw .BLOAD
 ;	db 6
 ;	db "BSAVE",0              ; |BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at address a for s bytes
-		NEXT
+		NEXTW
 .BLOAD:
 	CWHEAD .LIST 71 "BLOAD" 5 WORD_FLAG_CODE
 ;   db 71
@@ -2495,19 +2538,19 @@ endif
 ;	db 6
 ;	db "BLOAD",0               
 ;| BLOAD ( w u a -- )    Load binary file from file name w on bank u into address u
-		NEXT
+		NEXTW
 ;;;; counter gap
 
 .LIST:
 	CWHEAD .FORGET 72 "LIST" 4 WORD_FLAG_CODE
 ;| LIST ( uword -- )    List the code to the word on TOS
-		NEXT
+		NEXTW
 
 .FORGET:
 	CWHEAD .I 73 "FORGET" 6 WORD_FLAG_CODE
 ;| FORGET ( uword -- )    Forget the uword on TOS
 
-		NEXT
+		NEXTW
 .I: 
 
 	CWHEAD .DLOOP 74 "I" 1 WORD_FLAG_CODE
@@ -2516,7 +2559,7 @@ endif
 		ld hl,(os_current_i)
 		call forth_push_numhl
 
-		NEXT
+		NEXTW
 .DLOOP:
 	CWHEAD .RND8 75 "-LOOP" 5 WORD_FLAG_CODE
 ;	db 14
@@ -2525,7 +2568,7 @@ endif
 ;	db "LOOP",0      
 ; | -LOOP ( -- )    Decrement and test loop counter 
 
-	NEXT
+	NEXTW
 .RND8:
 	CWHEAD .NOP 76 "RND8" 4 WORD_FLAG_CODE
 ; | RND8 (  -- n ) Generate a random 8bit number and push to stack | DONE
@@ -2535,16 +2578,16 @@ endif
 		ld l,a	
 		ld h,0
 		call forth_push_numhl
-	       NEXT
+	       NEXTW
 
 .NOP:
 	CWHEAD .ATQ 77 "NOP" 3 WORD_FLAG_CODE
 ; | NOP (  --  ) Do nothing | DONE
-	       NEXT
+	       NEXTW
 .ATQ:
 	CWHEAD .AUTODSP 78 "AT?" 3 WORD_FLAG_CODE
 ;| AT? ( u1 u2 -- n )  Push to stack ASCII value at row u2 col u1 |
-	       NEXT
+	       NEXTW
 
 .AUTODSP:
 	CWHEAD .SEO 79 "ADSP" 4 WORD_FLAG_CODE
@@ -2562,7 +2605,7 @@ endif
 
 		ld a,l
 		ld (cli_autodisplay), a
-	       NEXT
+	       NEXTW
 
 .SEO:
 	CWHEAD .SEI 80 "SEO" 3 WORD_FLAG_CODE
@@ -2606,7 +2649,7 @@ endif
 
 		
 
-		NEXT
+		NEXTW
 
 .SEI:
 	CWHEAD .SESEL 81 "SEI" 3 WORD_FLAG_CODE
@@ -2639,7 +2682,7 @@ endif
 		ld l, a
 		call forth_push_numhl
 
-		NEXT
+		NEXTW
 .SESEL:
 	CWHEAD .SFREE 82 "BANK" 4 WORD_FLAG_CODE
 ;   db 62
@@ -2668,7 +2711,7 @@ endif
 ;		call se_readbyte
 
 
-		NEXT
+		NEXTW
 
 .SFREE:
 	CWHEAD .CREATE 83 "SFREE" 5 WORD_FLAG_CODE
@@ -2678,7 +2721,7 @@ endif
 
 		call forth_push_numhl
 
-	       NEXT
+	       NEXTW
 
 .CREATE:
 	CWHEAD .APPEND 84 "CREATE" 6 WORD_FLAG_CODE
@@ -2711,7 +2754,7 @@ endif
 
 
 
-	       NEXT
+	       NEXTW
 
 .APPEND:
 	CWHEAD .SDEL 85 "APPEND" 6 WORD_FLAG_CODE
@@ -2725,7 +2768,7 @@ endif
 		; TODO   write buffer
 		
 
-	       NEXT
+	       NEXTW
 .SDEL:
 	CWHEAD .OPEN 86 "SDEL" 4 WORD_FLAG_CODE
 ;| SDEL ( n --  )  Deletes all data for file id n on current storage bank |
@@ -2733,7 +2776,7 @@ endif
 		; TODO find id blocks
 		; TODO   set marker to zero
 		; TODO   write buffer
-	       NEXT
+	       NEXTW
 
 .OPEN:
 	CWHEAD .READ 87 "OPEN" 4 WORD_FLAG_CODE
@@ -2741,7 +2784,7 @@ endif
 
 		; TODO set start of stream for id to first block
 
-	       NEXT
+	       NEXTW
 .READ:
 	CWHEAD .EOF 88 "READ" 4 WORD_FLAG_CODE
 ;| READ ( n -- n  )  Reads next page of file id and push to stack |
@@ -2751,27 +2794,35 @@ endif
 		; TODO push the block to stack
 		; TODO save the block id to stream
 
-	       NEXT
+	       NEXTW
 .EOF:
 	CWHEAD .COMO 89 "EOF" 3 WORD_FLAG_CODE
 ;| EOF ( n -- u )  Returns EOF state of file id n |
 		; TODO if current block id for stream is zero then push true else false
-	       NEXT
+	       NEXTW
 .COMO:
 	CWHEAD .COMC 90 "(" 1 WORD_FLAG_CODE
 ;| ( ( -- )  Start of comment |
-	       NEXT
+	       NEXTW
 .COMC:
 	CWHEAD .MENU 91 ")" 1 WORD_FLAG_CODE
 ;| ) ( -- )  End of comment |
-	       NEXT
+	       NEXTW
 .MENU:
-	CWHEAD .VARS 92 "MENU" 4 WORD_FLAG_CODE
+	CWHEAD .REPEAT 92 "MENU" 4 WORD_FLAG_CODE
 ;| MENU ( u1....ux n ut -- n ) Create a menu. Ut is the title, n is the number of menu items on stack. Push number selection to TOS |
-	       NEXT
+	       NEXTW
 
 
+.REPEAT:
+	CWHEAD .VARS 93 "REPEAT" 5 WORD_FLAG_CODE
+;| REPEAT ( --  ) Start REPEAT...UNTIL loop  |
+	       NEXTW
 
+.UNTIL:
+	CWHEAD .VARS 94 "UNTIL" 5 WORD_FLAG_CODE
+;| UNTIL ( u -- ) Exit REPEAT...UNTIL loop if TOS is false  |
+	       NEXTW
 
 ; var handler
 
@@ -2779,27 +2830,27 @@ endif
 .VARS:
 	CWHEAD .V0Q 100 "V0!" 3 WORD_FLAG_CODE
 ;| V0! ( u1 -- )  Store value to v0  |
-	       NEXT
+	       NEXTW
 .V0Q:
 	CWHEAD .V1S 101 "V0@" 3 WORD_FLAG_CODE
 ;| V0@ ( --u )  Put value of v0 onto stack |
-	       NEXT
+	       NEXTW
 .V1S:
 	CWHEAD .V1Q 102 "V1!" 3 WORD_FLAG_CODE
 ;| V1! ( u1 -- )  Store value to v1 |
-	       NEXT
+	       NEXTW
 .V1Q:
 	CWHEAD .V2S 103 "V1@" 3 WORD_FLAG_CODE
 ;| V1@ ( --u )  Put value of v1 onto stack |
-	       NEXT
+	       NEXTW
 .V2S:
 	CWHEAD .V2Q 104 "V2!" 3 WORD_FLAG_CODE
 ;| V2! ( u1 -- )  Store value to v2 |
-	       NEXT
+	       NEXTW
 .V2Q:
 	CWHEAD .END 105 "V2@" 3 WORD_FLAG_CODE
 ;| V2@ ( --u )  Put value of v2 onto stack |
-	       NEXT
+	       NEXTW
 
 
 
@@ -2826,7 +2877,7 @@ endif
 ; use to jp here for user dict words to save on macro expansion 
 
 user_dict_next:
-	NEXT
+	NEXTW
 
 
 user_exec:

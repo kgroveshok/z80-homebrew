@@ -27,7 +27,7 @@ CWHEAD:   macro nxtword opcode lit len opflags
 	endm
 
 
-NEXT: macro 
+NEXTW: macro 
 	jp macro_next
 	endm
 
@@ -1334,5 +1334,60 @@ forth_apushstrhl:
 	pop de
 	ld (cli_origptr), de
         ret	
+
+
+; increase loop stack pointer and save hl to it
+	
+FORTH_LOOP_NEXT: macro
+	call macro_forth_loop_next
+	endm
+
+macro_forth_loop_next:
+	push hl
+	push de
+	ex de,hl
+	ld hl,(cli_loop_sp)
+	inc hl
+	inc hl
+	ld (cli_loop_sp),hl
+	ld (hl), e
+	inc hl
+	ld (hl), d
+	pop de
+	pop hl
+	ret
+
+; get current ret stack pointer and save to hl 
+	
+FORTH_LOOP_TOS: macro
+	call macro_forth_loop_tos
+	endm
+
+macro_forth_loop_tos:
+	push de
+	ld hl,(cli_loop_sp)
+	ld e, (hl)
+	inc hl
+	ld d, (hl)
+	ex de, hl
+	pop de
+	ret
+
+; pop loop stack pointer
+	
+FORTH_LOOP_POP: macro
+	call macro_forth_loop_pop
+	endm
+
+
+macro_forth_loop_pop:
+	push hl
+	ld hl,(cli_loop_sp)
+	dec hl
+	dec hl
+	ld (cli_loop_sp), hl
+	; TODO do stack underflow checks
+	pop hl
+	ret
 
 ; eof

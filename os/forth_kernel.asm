@@ -827,15 +827,15 @@ display_reg_state:
 
 
 startcmds:
-	dw ifthtest1
-	dw ifthtest2
-	dw ifthtest3
-	dw mmtest1
-	dw mmtest2
-	dw mmtest3
-	dw mmtest4
-	dw mmtest5
-	dw mmtest6
+;	dw ifthtest1
+;	dw ifthtest2
+;	dw ifthtest3
+;	dw mmtest1
+;	dw mmtest2
+;	dw mmtest3
+;	dw mmtest4
+;	dw mmtest5
+;	dw mmtest6
 ;	dw iftest1
 ;	dw iftest2
 ;	dw iftest3
@@ -1008,7 +1008,6 @@ forth_startup:
 	call clear_display
 	call update_display
 	ret
-
 
 
 ; eof

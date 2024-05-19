@@ -490,7 +490,7 @@ endif
 	; TODO set flags for modifer key presses 
 	; TODO do a search for modifer key...
 
-	ld hl,keyscan_table_row5
+	ld hl,keyscan_table_row4
 
 	ld a, (hl)
 	cp '#'
@@ -500,7 +500,7 @@ endif
 	jr .dokeymap
 	; TODO for now igonre
 .nextmodcheck:
-	ld hl,keyscan_table_row5+9
+	ld hl,keyscan_table_row4+9
 
 	ld a, (hl)
 	cp '#'
@@ -508,6 +508,52 @@ endif
 	set 1, c 
 	ld hl, .matrix_to_symbolshift
 	jr .dokeymap
+
+	; no modifer found so just map to normal keys
+	; get mtoc map matrix to respective keys
+;	ld hl, .matrix_to_char
+;	ld hl, .matrix_to_char
+;	ld b, ((key_cols+1)*key_rows)    ; 30 keys to remap + 8 nulls 
+;	ld a, KEY_SHIFT
+;	call findchar
+;
+;	; got offset to key modifer in b
+;
+;	ld hl,keyscan_table_row5
+;
+;	ld a,b
+;	call addatohl
+;	ld a,(hl)
+;
+;	cp '#'
+;	jr nz, .nextmodcheck
+;	set 0, c
+;	ld hl, .matrix_to_char
+;	jr .dokeymap
+;	; TODO for now igonre
+;.nextmodcheck:
+;	ld hl, .matrix_to_symbolshift
+;	ld b, ((key_cols+1)*key_rows)    ; 30 keys to remap + 8 nulls 
+;	ld a, KEY_SYMBOLSHIFT
+;	call findchar
+;
+;
+;	; got offset to key modifer in b
+;
+;	ld hl,keyscan_table_row5
+;
+;	ld a,b
+;	call addatohl
+;	ld a,(hl)
+;
+;	cp '#'
+;	jr nz, .donemodcheck
+;	set 1, c 
+;	ld hl, .matrix_to_symbolshift
+;	jr .dokeymap
+
+
+
 .donemodcheck:
 	; no modifer found so just map to normal keys
 	; get mtoc map matrix to respective keys

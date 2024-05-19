@@ -250,6 +250,9 @@ KEY_TAB:  equ 9
 KEY_BS: equ 8
 KEY_SHIFTLOCK: equ 4
 
+;KEY_SHIFT:   equ 5
+;KEY_SYMBOLSHIFT:  equ 6
+
 KEY_UP: equ 14
 KEY_DOWN: equ 15
 KEY_LEFT: equ 16
@@ -265,7 +268,7 @@ KEY_END: equ 19
 	KEY_SHIFT:   equ '~'
 	KEY_SYMBOLSHIFT:  equ '~'
 	KEY_MATRIX_NO_PRESS: equ '~'
-;endif
+;endi
 
 
 

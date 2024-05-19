@@ -825,6 +825,42 @@ NoMatch:
     RET
 
 
+findchar:
+	; HL string to search in 
+	; A char to locate
+	; B max string length to search
+
+	; returns hl pointer to char
+	; b contains position
+	; if b or a are zero then not found
+	push de
+	push bc
+
+.fc1:	ld e,(hl)
+	cp e
+	jr z,.fc2
+	inc hl
+	djnz .fc1
+
+	pop bc
+	pop de
+	ld a, 0
+	ld b, 0 
+	ret
+.fc2:
+	ld e,b
+	pop bc
+	push af
+	ld a,b
+	sub e
+	ld b, a
+	pop af
+	
+	
+
+
+	pop de
+	ret
 
 ; eof
 

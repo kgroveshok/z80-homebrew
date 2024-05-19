@@ -730,12 +730,24 @@ storage_create:
 ;
 ; Append File
 ;
-;
+; hl - file id to locate
+; de - pointer to (multi block) string to write
 
-; Read file block
+
+storage_append:
+		; TODO 1. if file id is NOT the same as cached block:
+		; TODO ...use find file to locate last block of file and save to cache
+		;
+		; TODO 2. inc last block extent count (save to cache)
+		; TODO 3. construct block with file id, extent number, as much that will fit
+		; TODO 4. find next free block
+		; TODO 5. write buffer
+		; TODO 6. any more of input buffer to write?
+		; TODO 7. Yes, go to 2
 
 
-; EOF file id
+		ret
+
 
 
 

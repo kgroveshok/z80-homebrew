@@ -2878,12 +2878,20 @@ endif
 ;| APPEND ( u n --  )  Appends data u to file id on current storage bank |
 
 		; TODO get id
-		; TODO get ptr to tos
-		; TODO for each buffer size
-		; TODO   find next free block
-		; TODO   set marker
-		; TODO   write buffer
-		
+
+		FORTH_DSP_VALUE
+		push hl 	; save file id
+
+		FORTH_DSP_POP
+
+		FORTH_DSP_VALUE
+		push hl 	; save ptr to string to save
+
+		FORTH_DSP_POP
+
+		pop de
+		pop hl
+		call storage_append		
 
 	       NEXTW
 .SDEL:

@@ -1747,7 +1747,7 @@ endif
 
 .diritem:	push bc
 		ld hl, STORE_BLOCK_PHY
-		ld d, 0
+		ld d, 0		 ; look for extent 0 of block id as this contains file name
 		ld e,b
 		if DEBUG_FORTH_WORDS
 			push af

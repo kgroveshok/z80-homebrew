@@ -42,12 +42,9 @@
 ;
 ; Block 1 > File storage
 ;
-;      Byte 0 file id
-;           Byte 1 - File type flags:   bit 0-First block. 1-Forth Word else other data type
-;
-;           Of first block of file:
-;
-;           Byte 2-15 - File name
+;      Byte 0 file id    - block 0 file details
+;      Byte 1 block id - block 0 is file 
+;            Byte 2-15 - File name
 ;
 ;       - to end of block data
 ;
@@ -420,7 +417,8 @@ storage_get_block_0:
 
 ; hl starting page number
 ; hl contains free page number or zero if no pages free
-; de contains the file id to locate
+; e contains the file id to locate
+; d contains the block number
 
 ; TODO change to find file id and use zero for free block
 
@@ -443,14 +441,21 @@ storage_findnextid:
 		push bc
 		push de
 		call se_readbyte
+		ld e,a
+		inc hl
+		call se_readbyte
+		ld d, a
+
+		call cmp16
+		jr z, .fffound
+
 		pop de
 		pop bc
 		pop hl
 
 		; is found?
-		cp e
-		ret z
-
+		;cp e
+		;ret z
 
 		ld a, STORE_BLOCK_PHY
 		call addatohl
@@ -458,17 +463,25 @@ storage_findnextid:
 
 	ld b, STORE_DEVICE_MAXBLOCKS/2
 .ff2:   	
+
 		push hl
 		push bc
 		push de
 		call se_readbyte
+		ld e,a
+		inc hl
+		call se_readbyte
+		ld d, a
+
+		call cmp16
+		jr z, .fffound
+
 		pop de
 		pop bc
 		pop hl
-
 		; is found?
-		cp e
-		ret z
+		;cp e
+		;ret z
 
 		ld a, STORE_BLOCK_PHY
 		call addatohl
@@ -485,6 +498,15 @@ storage_findnextid:
 	; no free marks!
 		ld hl, 0
 	ret
+.fffound:
+	
+
+		pop de
+		pop bc
+		pop hl
+	ret
+
+
 
 ; Free Space
 ; ----------
@@ -633,8 +655,16 @@ storage_create:
 	ld (store_tmppageid), hl
 	
 	ld a,(store_tmpid)    ; get file id
+	ld a, (store_filecache)			; save to cache
 
 	ld (store_page),a    ; set page id
+
+	inc hl 		; init block 0 of file
+        ld a, 0
+	ld (hl),a
+	ld a, (store_filecache+1)  	; save to cache
+
+	inc hl    ; file name
 	
 	
 	ld de, store_page+1    ; get buffer for term string to use as file name

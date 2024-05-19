@@ -81,7 +81,11 @@ storage_init:
 ;  
 ;
 
+		; init file extent cache to save on slow reads
 
+;	ld hl, store_filecache
+;	ld de, 0
+;	ld hl,(de)	
 
 
     ret

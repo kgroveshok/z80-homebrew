@@ -527,6 +527,25 @@ subafromhl:
 Skip:
 	ret
 
+
+; compare hl and de
+; returns: 
+; if hl = de, z=1, s=0, c0=0
+; if hl > de, z=0, s=0, c=0
+; if hl < de, z=0, s=1, c=1
+cmp16:	
+	or a
+	sbc hl,de
+	ret po
+	ld a,h
+	rra
+	xor 01000000B
+	scf
+	adc a,a
+	ret
+
+
+
 if FORTH_ENABLE_FLOATMATH
 include "float/bbcmath.z80"
 endif

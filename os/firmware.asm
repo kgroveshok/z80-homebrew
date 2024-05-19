@@ -151,11 +151,13 @@ iErrorVer:  equ iErrorReg - 1              ;Verify error flag
 
 store_bank_active: equ iErrorVer - (5 + 8 ) 		; indicator of which storage banks are available to use 5 on board and 8 in cart
 
-STORE_BLOCK_LOG:  equ   255     ; TODO remove.... Logical block size   
+STORE_BLOCK_LOG:  equ   STORE_BLOCK_PHY     ; TODO remove.... Logical block size   
 
 store_page: equ store_bank_active-STORE_BLOCK_LOG            ; page size for eeprom
-store_tmpid: equ store_page - 1
-store_tmppageid: equ store_tmpid-2
+store_ffpage: equ store_page-STORE_BLOCK_LOG            ; page size for eeprom
+store_tmpid: equ store_ffpage - 1
+store_filecache: equ store_tmpid+(2*5)   ;  TODO (using just one for now)  file id + extent count cache * 5
+store_tmppageid: equ store_filecache-2
 ;
 ; spi vars
 ; 

@@ -70,6 +70,10 @@ storage_init:
 ;            LD   A, SPI_DO      ; only one input line  the rest are outputs
             OUT  (storage_actl),A   ;Port A = all lines are outputs
 
+	; set default bank
+	ld a, 0
+	ld (spi_device), a
+
 		; ensure the spi bus is in a default stable state
 		call se_stable_spi
 

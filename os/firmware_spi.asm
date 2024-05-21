@@ -13,8 +13,8 @@ SPI_SCLK: equ 5      ; chip pin 6 - port a5  - pin 9
 SPI_CE0: equ 0      ; chip pin 1 - port a3 - pin 15
 SPI_CE1: equ 1      ;    port a1 pin 14 
 SPI_CE2: equ 2      ;    port a2 pin pin 13
-SPI_CE3: equ 3      ; port    a3 pin pin 12
-SPI_CE4: equ 4      ; port a4     pin 10
+SPI_CE3: equ 4      ; port    a3 pin pin 12
+SPI_CE4: equ 8      ; port a4     pin 10
 
 
 

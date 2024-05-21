@@ -71,6 +71,39 @@ update_display:
 ; TODO scrolling
 
 
+; move cursor right one char
+cursor_right:
+
+	; TODO shift right
+	; TODO if beyond max col
+	; TODO       cursor_next_line
+
+	ret
+
+
+cursor_next_line:
+	; TODO first char
+	; TODO line down
+	; TODO if past last row
+	; TODO    scroll up
+
+	ret
+
+cursor_left:
+	; TODO shift left
+	; TODO if beyond left 
+	; TODO     cursor prev line
+	
+	ret
+
+cursor_prev_line:
+	; TODO last char
+	; TODO line up
+	; TODO if past first row
+	; TODO   scroll down
+
+	ret
+
 
 ; eof
 

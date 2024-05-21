@@ -85,11 +85,17 @@ input_str:	ld (input_at_pos), a
 		jr .instr1
 
 .instr5:	cp KEY_END     ; jump to end of line
-		jr nz, .instrnew
+		jr nz, .instr6
 		dec hl
 		ld (input_ptr),hl
 		jr .instr1
+.instr6:        cp KEY_UP      ; recall last command
+		jr nz, .instrnew
 
+	ld hl, scratch
+	ld de, os_last_cmd
+	call strcpy
+		jr .instr1
 
 
 .instrnew:	; no special key pressed to see if we have room to store it

@@ -48,6 +48,10 @@ MALLOC_2: equ 0
 tos:	equ 0ffffh
 stacksize: equ 512
 
+if STORAGE_SE == 0
+	STORE_BLOCK_PHY:   equ 64    ; physical block size on storage   64byte on 256k eeprom
+	STORE_DEVICE_MAXBLOCKS:  equ  512 ; how many blocks are there on this storage device
+endif
 
 ; memory allocation 
 
@@ -151,7 +155,7 @@ iErrorVer:  equ iErrorReg - 1              ;Verify error flag
 
 store_bank_active: equ iErrorVer - (5 + 8 ) 		; indicator of which storage banks are available to use 5 on board and 8 in cart
 
-STORE_BLOCK_LOG:  equ   STORE_BLOCK_PHY     ; TODO remove.... Logical block size   
+STORE_BLOCK_LOG:  equ   255      ; TODO remove.... Logical block size   
 
 store_page: equ store_bank_active-STORE_BLOCK_LOG            ; page size for eeprom
 store_ffpage: equ store_page-STORE_BLOCK_LOG            ; page size for eeprom
@@ -163,12 +167,12 @@ store_tmppageid: equ store_filecache-2
 ; 
 
 spi_portbyte: equ store_tmppageid - 1      ; holds bit mask to send to spi bus
-
+spi_device: equ spi_portbyte - 1    ; bit mask to or to select the spi device pin
 ;;;;; forth cli params
 
 ; TODO use a different frame buffer for forth???
 
-f_cursor_ptr:  equ spi_portbyte - 1  ; offset into frame buffer for any . or EMIT output
+f_cursor_ptr:  equ spi_device - 1  ; offset into frame buffer for any . or EMIT output
 cli_buffer: equ f_cursor_ptr - 20     ; temp hold - maybe not needed
 cli_origtoken: equ cli_buffer - 2     ; pointer to the text of token for this word being checked
 cli_token: equ cli_origtoken - 2     ; pointer to the text of token for this word being checked
@@ -188,7 +192,7 @@ cli_data_stack: equ cli_loop_stack - 512		 ;
 
 ; os/forth token vars
 
-os_last_cmd: equ cli_data_stack-30
+os_last_cmd: equ cli_data_stack-255         
 os_current_i: equ os_last_cmd-2
 os_cur_ptr: equ os_current_i-2
 os_word_scratch: equ os_cur_ptr-30
@@ -378,8 +382,12 @@ include "firmware_lcd.asm"
 ; storage hardware interface
 
 ; use microchip serial eeprom for storage
-include "firmware_spi.asm"
-include "firmware_seeprom.asm"
+
+
+if STORAGE_SE
+	include "firmware_spi.asm"
+	include "firmware_seeprom.asm"
+endif
 
 ; use cf card for storage - throwing timeout errors. Hardware or software?????
 ;include "firmware_cf.asm"

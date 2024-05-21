@@ -162,6 +162,12 @@ cli:
 	call input_str
 
 
+	; copy input to last command
+
+	ld de, scratch
+	ld hl, os_last_cmd
+	call strcpy
+
 	; look for monitor commands
 
 	ld a,(scratch)

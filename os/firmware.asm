@@ -108,7 +108,9 @@ input_start:  equ input_ptr - 2    ; ptr to the start of string
 input_size: equ input_start -1  ; number of chars
 input_display_size: equ input_size -1  ; TODO number of chars that are displayable. if < input_size then scroll 
 input_at_pos: equ input_display_size - 1 ; frame buffer offset for start of input
-input_cursor: equ input_at_pos - 1 ; offset of cursor to current start of string
+input_under_cursor: equ input_at_pos - 1 ; char under the cursor so we can blink it
+input_at_cursor: equ input_under_cursor - 1 ; offset of cursor to current start of string
+input_cursor: equ input_at_cursor - 1 ; offset of cursor to current start of string
 
 key_actual_pressed: equ input_cursor - 1 
 key_symbol: equ key_actual_pressed - 1 

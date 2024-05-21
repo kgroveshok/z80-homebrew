@@ -13,10 +13,14 @@ input_str:    	ld (input_at_pos),a      ; save display position to start
 		ld (input_start), hl     ; save ptr to buffer
 		ld a,d
 	        ld (input_size), a       ; save length of input area
-		ld a, 0
+		ld a, c
 		ld (input_cursor),a      ; init cursor start position 
 		ld a,e
 	        ld (input_display_size), a       ; save length of input area that is displayed TODO
+
+
+		ld a,(input_start)
+		ld (input_under_cursor),a 	; save what is under the cursor
 
 		; init cursor shape
 		ld hl, cursor_shape
@@ -27,14 +31,25 @@ input_str:    	ld (input_at_pos),a      ; save display position to start
 		ld (hl), a
 
 
-	if DEBUG_INPUT
-		push af
-		ld a, 'I'
-		ld (debug_mark),a
-		pop af
-		CALLMONITOR
-	endif
+;	if DEBUG_INPUT
+;		push af
+;		ld a, 'I'
+;		ld (debug_mark),a
+;		pop af
+;		CALLMONITOR
+;	endif
 .is1:		; main entry loop
+
+		; display cursor 
+
+;		ld hl, (input_start)
+;		ld a, (input_cursor)
+;		call addatohl
+
+;		ld a, (hl)
+;		ld (input_under_cursor),a
+;		ld a, '_'
+;		ld (hl), a
 
 		; display string
 
@@ -44,20 +59,57 @@ input_str:    	ld (input_at_pos),a      ; save display position to start
 ;	        call update_display
 
 		; find place to put the cursor
-		ld c, (input_at_pos)
-		ld h, (input_cursor)
-		ld a, 0
-		add h
-		add c
-		ld l, a
-		ld de, cursor_shape
+;		add h
+;		ld l, display_row_1
+;		sub l
+; (input_at_pos)
+		;ld c, a
+;		ld a, (input_cursor)
+		;ld b, h
+		;add h
+		;ld l,h
+
+		ld h, 0
+		ld l,(input_at_pos)
+		ld a, (input_cursor)
+		call addatohl
+		ld a, 074H-19			; TODO BUG I dont know why offset is showing 74H
+		call subafromhl
+		ld a,l
+		ld (input_at_cursor), a
+
 	if DEBUG_INPUT
-		push af
-		ld a, 'c'
-		ld (debug_mark),a
-		pop af
-		CALLMONITOR
+		ld a,(input_at_pos)
+		ld hl, LFSRSeed
+		call hexout
+		ld a, (input_cursor)
+		ld hl, LFSRSeed+2
+		call hexout
+		ld a,(input_at_cursor)
+		ld hl, LFSRSeed+4
+		call hexout
+
+		ld hl, LFSRSeed+6
+		ld a, 0
+		ld (hl),a
+		ld a, display_row_4
+		ld de, LFSRSeed
+		call str_at_display
 	endif
+		;ld h,0
+;		ld a, (input_at_pos)
+		;ld a, (input_cursor)
+		;call addatohl
+		;ld a, l
+		ld a,(input_at_cursor)
+		ld de, cursor_shape
+;	if DEBUG_INPUT
+;		push af
+;		ld a, 'c'
+;		ld (debug_mark),a
+;		pop af
+;		CALLMONITOR
+;	endif
 		call str_at_display
 	        call update_display
 		
@@ -77,13 +129,18 @@ input_str:    	ld (input_at_pos),a      ; save display position to start
 
 		pop hl
 
-	if DEBUG_INPUT
-		push af
-		ld a, 'i'
-		ld (debug_mark),a
-		pop af
-		CALLMONITOR
-	endif
+		; replace char under cursor
+
+;		ld a, (input_under_cursor) 	; get what is under the cursor
+;		ld (hl),a
+
+;	if DEBUG_INPUT
+;		push af
+;		ld a, 'i'
+;		ld (debug_mark),a
+;		pop af
+;		CALLMONITOR
+;	endif
 		cp KEY_LEFT
 		jr nz, .isk1
 		ld a, (input_cursor)
@@ -139,13 +196,13 @@ input_str:    	ld (input_at_pos),a      ; save display position to start
 		inc a				; TODO check max string length and scroll 
 		ld (input_cursor), a		; inc cursor pos
 				
-	if DEBUG_INPUT
-		push af
-		ld a, '+'
-		ld (debug_mark),a
-		pop af
-		CALLMONITOR
-	endif
+;	if DEBUG_INPUT
+;		push af
+;		ld a, '+'
+;		ld (debug_mark),a
+;		pop af
+;		CALLMONITOR
+;	endif
 		jp .is1
 		
 

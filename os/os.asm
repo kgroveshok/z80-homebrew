@@ -146,6 +146,10 @@ main:
 	
 
 	;ld a, kLCD_Line2        ; TODO prompt using direct screen line address. Correct this to frame buffer
+	ld hl, scratch	
+
+	ld a, 0		 ; init cli input
+	ld (hl), a
 	ld a, display_row_2        ; TODO prompt using direct screen line address. Correct this to frame buffer
 cli:
 	; show cli prompt
@@ -161,10 +165,6 @@ cli:
 	ld c, 0
 	ld d, 255    ; TODO fix input_str to actually take note of max string input length
 	ld e, 40
-	ld hl, scratch	
-
-	ld a, 0		 ; init cli input
-	ld (hl), a
 
 	call input_str
 
@@ -232,6 +232,10 @@ cli:
         call clear_display
 	call update_display		
 
+	ld hl, scratch	
+
+	ld a, 0		 ; init cli input
+	ld (hl), a
 
 	; TODO f_cursor_ptr should inc row (scroll if required) and set start of row for next input 
 

@@ -145,7 +145,8 @@ main:
 	ld (os_word_scratch+1),a	
 	
 
-	ld a, kLCD_Line2        ; TODO prompt using direct screen line address. Correct this to frame buffer
+	;ld a, kLCD_Line2        ; TODO prompt using direct screen line address. Correct this to frame buffer
+	ld a, display_row_2        ; TODO prompt using direct screen line address. Correct this to frame buffer
 cli:
 	; show cli prompt
 	;push af
@@ -157,8 +158,14 @@ cli:
 	;pop af
 	;inc a
 	;ld a, kLCD_Line4+1	 ; TODO using direct screen line writes. Correct this to frame buffer
+	ld c, 0
 	ld d, 255    ; TODO fix input_str to actually take note of max string input length
+	ld e, 40
 	ld hl, scratch	
+
+	ld a, 0		 ; init cli input
+	ld (hl), a
+
 	call input_str
 
 
@@ -240,7 +247,8 @@ cli:
 	;call clear_display
 	;call update_display
 
-	ld a, kLCD_Line1        ; TODO prompt using direct screen line address. Correct this to frame buffer
+	;ld a, kLCD_Line1        ; TODO prompt using direct screen line address. Correct this to frame buffer
+	ld a, display_row_1        ; TODO prompt using direct screen line address. Correct this to frame buffer
 	jp cli
 
 freeram: db "Free bytes: $",0

@@ -9,6 +9,7 @@ Device_C: equ 080h
 Device_D: equ 0c0h
 
 
+DEBUG_INPUT: equ 1
 DEBUG_KEYCINWAIT: equ 0
 DEBUG_KEYCIN: equ 0
 DEBUG_KEY: equ 0
@@ -105,7 +106,8 @@ debug_mark: equ hardware_word - 2
 input_ptr:  equ debug_mark - 2    ; ptr to the current cursor position of string currently being edited  on entry starting 
 input_start:  equ input_ptr - 2    ; ptr to the start of string 
 input_size: equ input_start -1  ; number of chars
-input_at_pos: equ input_size - 1 ; frame buffer offset for start of input
+input_display_size: equ input_size -1  ; TODO number of chars that are displayable. if < input_size then scroll 
+input_at_pos: equ input_display_size - 1 ; frame buffer offset for start of input
 input_cursor: equ input_at_pos - 1 ; offset of cursor to current start of string
 
 key_actual_pressed: equ input_cursor - 1 
@@ -136,7 +138,7 @@ display_write_tmp: equ display_fb_active - 2
 cursor_col: equ display_write_tmp-1
 cursor_row: equ cursor_col-1
 cursor_ptr: equ cursor_row - 1     ;  actual offset into lcd memory for row and col combo
-cursor_shape: equ cursor_ptr - 1   ; char used for the current cursor 
+cursor_shape: equ cursor_ptr - 2   ; char used for the current cursor 
 
 ; maths vars
 

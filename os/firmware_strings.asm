@@ -4,10 +4,178 @@
 ; input text string, end on cr with zero term
 ; a offset into frame buffer to start prompt
 ; d is max length
-; e is current cursor position
+; e is display size TODO
+; c is current cursor position
 ; hl is ptr to where string will be stored
 
-input_str:	ld (input_at_pos), a
+
+input_str:    	ld (input_at_pos),a      ; save display position to start
+		ld (input_start), hl     ; save ptr to buffer
+		ld a,d
+	        ld (input_size), a       ; save length of input area
+		ld a, 0
+		ld (input_cursor),a      ; init cursor start position 
+		ld a,e
+	        ld (input_display_size), a       ; save length of input area that is displayed TODO
+
+		; init cursor shape
+		ld hl, cursor_shape
+		ld a, '_'
+		ld (hl), a
+		inc hl
+		ld a, 0
+		ld (hl), a
+
+
+	if DEBUG_INPUT
+		push af
+		ld a, 'I'
+		ld (debug_mark),a
+		pop af
+		CALLMONITOR
+	endif
+.is1:		; main entry loop
+
+		; display string
+
+		ld de, (input_start)
+		ld a, (input_at_pos)
+		call str_at_display
+;	        call update_display
+
+		; find place to put the cursor
+		ld c, (input_at_pos)
+		ld h, (input_cursor)
+		ld a, 0
+		add h
+		add c
+		ld l, a
+		ld de, cursor_shape
+	if DEBUG_INPUT
+		push af
+		ld a, 'c'
+		ld (debug_mark),a
+		pop af
+		CALLMONITOR
+	endif
+		call str_at_display
+	        call update_display
+		
+
+
+		; get ptr to char to input into
+
+		ld hl, (input_start)
+		ld a, (input_cursor)
+		call addatohl
+		push hl
+
+		; wait
+	
+		; TODO loop without wait to flash the cursor and char under cursor	
+		call cin_wait
+
+		pop hl
+
+	if DEBUG_INPUT
+		push af
+		ld a, 'i'
+		ld (debug_mark),a
+		pop af
+		CALLMONITOR
+	endif
+		cp KEY_LEFT
+		jr nz, .isk1
+		ld a, (input_cursor)
+		dec  a 		; TODO check underflow
+		ld (input_cursor), a
+		
+		jp .is1
+
+.isk1:		cp KEY_RIGHT
+		jr nz, .isk2
+
+		ld a, (input_cursor)
+		inc  a 		; TODO check overflow
+		ld (input_cursor), a
+		jp .is1
+
+.isk2:		cp KEY_UP
+		jr nz, .isk3
+
+		jp .is1
+
+.isk3:		cp KEY_BS
+		jr nz, .isk4
+
+		ld a, (input_cursor)
+		dec  a 		; TODO check underflow
+		ld (input_cursor), a
+		ld a, 0
+		dec hl
+		ld (hl), a
+
+		jp .is1
+
+.isk4:		cp KEY_CR
+		jr z, .endinput
+
+		; else add the key press to the end
+
+		ld c, a			; save key pressed
+
+		ld a,(hl)		; get what is currently under char
+
+		cp 0			; we are at the end of the string
+		jr nz, .updchar
+		
+		; add a char to the end of the string
+	
+		ld (hl),c
+		inc hl
+		ld a,0
+		ld (hl),a
+		ld a, (input_cursor)
+		inc a				; TODO check max string length and scroll 
+		ld (input_cursor), a		; inc cursor pos
+				
+	if DEBUG_INPUT
+		push af
+		ld a, '+'
+		ld (debug_mark),a
+		pop af
+		CALLMONITOR
+	endif
+		jp .is1
+		
+
+
+
+.updchar:
+		ld (hl), c		; otherwise overwrite current char
+
+		ld a, (input_cursor)
+		inc  a 		; TODO check overflow
+		ld (input_cursor), a
+		jp .is1
+
+.endinput:	; TODO look for end of string
+
+		; add trailing space for end of token
+
+		ld a, ' '
+		ld (hl),a
+		; TODO eof of parse marker
+
+		inc hl
+		ld a, 0
+		ld (hl),a
+
+
+		ret
+
+
+input_str_prev:	ld (input_at_pos), a
 		ld (input_start), hl
 		ld a,1			; add cursor
 		ld (hl),a

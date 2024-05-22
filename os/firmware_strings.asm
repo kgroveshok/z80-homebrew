@@ -295,7 +295,8 @@ ld hl, (input_ptr)
 		push hl
 		inc hl
 		pop de
-		ld c, (input_len)
+		ld a, (input_len)		; TODO BUG WAS ld c, (input...
+		ld c,a
 		ld b,0
 		ldir 
 

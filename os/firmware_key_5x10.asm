@@ -600,7 +600,7 @@ endif
 	ld hl,keyscan_table_row5
 
 	;ld b, 46   ; 30 keys to remap + 8 nulls 
-	ld b, ((key_cols+1)*key_rows)    ; 30 keys to remap + 8 nulls 
+	ld b, (key_cols+1)*key_rows    ; 30 keys to remap + 8 nulls 
 .findkey:
 	ld a,(hl)
 	cp 0
@@ -621,7 +621,7 @@ endif
 .mapkeys:
 	ld de,keyscan_table_row5
 
-	ld b, ((key_cols+1)*key_rows)    ; 30 keys to remap + 8 nulls 
+	ld b, (key_cols+1)*key_rows    ; 30 keys to remap + 8 nulls 
 .remap:
 	ld a,(de)
 	cp '#'

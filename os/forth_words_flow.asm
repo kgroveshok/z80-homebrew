@@ -114,6 +114,13 @@
 ;	db "DO",0       
 ; |DO ( u1 u2 -- )   Loop starting at u2 with a limit of u1 | DONE
 
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, 'd'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
 ;  push pc to rsp stack past the DO
 
 		ld hl, (os_tok_ptr)
@@ -122,9 +129,9 @@
 		inc hl   ; null
 		FORTH_RSP_NEXT
 
-		if DEBUG_FORTH_WORDS
-			push hl
-		endif 
+		;if DEBUG_FORTH_WORDS
+	;		push hl
+;		endif 
 
 ; get counters from data stack
 
@@ -132,12 +139,33 @@
 		FORTH_DSP_VALUEHL
 		push hl		 ; hl now has starting counter which needs to be tos
 
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, '1'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
 		FORTH_DSP_POP
 
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, '2'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
 
 		FORTH_DSP_VALUEHL
 		push hl		 ; hl now has starting limit counter
 
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, '3'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
 		FORTH_DSP_POP
 
 ; put counters on the loop stack
@@ -147,11 +175,25 @@
 
 		; push limit counter
 
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, '4'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
 		FORTH_LOOP_NEXT
 
 		; push start counter
 
 		ex de, hl
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, '5'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
 		FORTH_LOOP_NEXT
 
 
@@ -160,7 +202,6 @@
 		ld (os_current_i), hl
 
 		if DEBUG_FORTH_WORDS
-			pop bc
 			push af
 			ld a, 'D'
 			ld (debug_mark),a

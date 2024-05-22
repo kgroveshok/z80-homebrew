@@ -1340,6 +1340,7 @@ forth_apushstrhl:
 	
 FORTH_LOOP_NEXT: macro
 	call macro_forth_loop_next
+	;nop
 	endm
 
 macro_forth_loop_next:
@@ -1349,11 +1350,18 @@ macro_forth_loop_next:
 	ld hl,(cli_loop_sp)
 	inc hl
 	inc hl
+		if DEBUG_FORTH_WORDS
+			push af
+			ld a, 'L'
+			ld (debug_mark),a
+			pop af
+			CALLMONITOR
+		endif
 	ld (cli_loop_sp),hl
 	ld (hl), e
 	inc hl
 	ld (hl), d
-	pop de
+	pop de    ; been reversed so save a swap on restore
 	pop hl
 	ret
 

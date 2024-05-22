@@ -28,10 +28,10 @@ DEBUG_FORTH_MATHS: equ 1
 
 
 DEBUG_FORTH_PARSE_KEY: equ 1   ; 5
-DEBUG_FORTH_TOK: equ 1   ; 4
-DEBUG_FORTH_PARSE: equ 1 ; 3
+DEBUG_FORTH_TOK: equ 1     ; 4
+DEBUG_FORTH_PARSE: equ 1    ; 3
 DEBUG_FORTH: equ 1  ;2
-DEBUG_FORTH_WORDS: equ 1 ; 1
+DEBUG_FORTH_WORDS: equ 1   ; 1
 DEBUG_FORTH_PUSH: equ 1   ; 1
 DEBUG_FORTH_UWORD: equ 1   ; 1
 
@@ -201,7 +201,7 @@ cli_data_stack: equ cli_loop_stack - 512		 ;
 
 ; os/forth token vars
 
-os_last_cmd: equ cli_data_stack-255         
+os_last_cmd: equ cli_data_stack-290         
 os_current_i: equ os_last_cmd-2
 os_cur_ptr: equ os_current_i-2
 os_word_scratch: equ os_cur_ptr-30

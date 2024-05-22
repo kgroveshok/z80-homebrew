@@ -186,6 +186,14 @@ forth_init:
 	inc hl
 	ld (hl),a
 
+	ld hl, cli_loop_stack
+	ld (cli_loop_sp), hl	
+	; set bottom of stack
+	ld a,0
+	ld (hl),a
+	inc hl
+	ld (hl),a
+
 	call clear_display
 
 	ld a,0

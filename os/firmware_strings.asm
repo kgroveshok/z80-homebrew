@@ -9,6 +9,11 @@
 ; hl is ptr to where string will be stored
 
 
+; TODO check limit of buffer for new inserts
+; TODO check insert does not push beyond buffer
+; TODO scroll in a limited display area
+; TODO scroll whole screen on page wrap
+
 input_str:    	ld (input_at_pos),a      ; save display position to start
 		add c
 		ld (input_at_cursor),a	; save draw pos of cursor
@@ -28,7 +33,8 @@ input_str:    	ld (input_at_pos),a      ; save display position to start
 ;		ld a,(input_ptr)
 ;		ld (input_under_cursor),a 	; save what is under the cursor
 
-		; init cursor shape
+; TODO move out to cin as cursor shape is used by the 4x4 ???
+		; init cursor shape if not set by the cin routines
 		ld hl, cursor_shape
 		ld a, 255
 		ld (hl), a
@@ -140,7 +146,10 @@ ld hl, (input_ptr)
 		ld hl, LFSRSeed+8
 		call hexout
 
+		ld a,(input_len)
 		ld hl, LFSRSeed+10
+		call hexout
+		ld hl, LFSRSeed+12
 		ld a, 0
 		ld (hl),a
 		ld a, display_row_4
@@ -159,6 +168,12 @@ ld hl, (input_ptr)
 		ld de, cursor_shape
 		call str_at_display
 
+		; save length of current input string
+		ld hl, (input_start)
+		call strlenz
+		ld a,l
+		ld (input_len),a
+
 .skipcur:
 
 	        call update_display
@@ -171,7 +186,7 @@ ld hl, (input_ptr)
 		call cin    ; _wait
 
 		cp 0
-		jr z, .is1
+		jp z, .is1
 
 		; get ptr to char to input into
 
@@ -199,6 +214,10 @@ ld hl, (input_ptr)
 		jr nz, .isk1
 
 		ld a, (input_cursor)
+
+		cp 0
+		jp z, .is1 		; at start of line to ignore 
+
 		dec  a 		; TODO check underflow
 		ld (input_cursor), a
 
@@ -220,7 +239,12 @@ ld hl, (input_ptr)
 .isk1:		cp KEY_RIGHT
 		jr nz, .isk2
 
+		ld a,(input_len)		; TODO BUG why cant i load e direct?
+		ld e,a
 		ld a, (input_cursor)
+		cp e
+		jp z, .is1		; at the end of string so dont go right
+
 		inc  a 		; TODO check overflow
 		ld (input_cursor), a
 
@@ -248,25 +272,51 @@ ld hl, (input_ptr)
 		jr nz, .isk4
 
 		ld a, (input_cursor)
+
+		cp 0
+		jp z, .is1 		; at start of line to ignore 
+
 		dec  a 		; TODO check underflow
 		ld (input_cursor), a
 
-		ld a, 0
-		dec hl
-		ld (hl), a
+		; hl is source
+		; de needs to be source - 1
+
+;		ld a, 0
+;		dec hl
+;		ld (hl), a
 
 		ld hl, (input_ptr)
 		dec hl
 		ld (input_ptr), hl
 
+		; shift all data
+
+		push hl
+		inc hl
+		pop de
+		ld c, (input_len)
+		ld b,0
+		ldir 
+
+
+
+
 		ld a, (input_at_cursor)
 		dec a
 		ld (input_at_cursor), a
+
 
 		ld a, 1		; show cursor moving
 		ld (input_cur_onoff),a
 		ld a, CUR_BLINK_RATE
 		ld (input_cur_flash), a
+
+		; remove char
+		ld a, (input_at_cursor)
+		inc a
+		ld de,.iblank
+		call str_at_display
 
 		jp .is1
 
@@ -280,14 +330,18 @@ ld hl, (input_ptr)
 		ld a,(hl)		; get what is currently under char
 
 		cp 0			; we are at the end of the string
-		jr nz, .updchar
+		jr nz, .onchar
 		
 		; add a char to the end of the string
 	
 		ld (hl),c
 		inc hl
+;		ld a,' '
+;		ld (hl),a
+;		inc hl
 		ld a,0
 		ld (hl),a
+		dec hl
 
 		ld a, (input_cursor)
 		inc a				; TODO check max string length and scroll 
@@ -319,9 +373,67 @@ ld hl, (input_ptr)
 		
 
 
+		; if on a char then insert
+.onchar:
 
-.updchar:
+		; TODO over flow check: make sure insert does not blow out buffer
+
+		; need to do some maths to use lddr
+
+		push hl   ; save char pos
+		push bc
+
+		ld hl, (input_start)
+		ld a, (input_len)
+		call addatohl  		; end of string
+		inc hl
+		inc hl		; past zero term
+		push hl
+		inc hl
+		push hl 
+
+					; start and end of lddr set, now how much to move?
+
+				
+		ld a, (input_cursor)		; BUG TODO why cant i load directly into b???
+		ld b,a
+		ld a,(input_len)
+		ld e,a
+		sub b
+		inc a		;??
+		inc a		;??
+		inc a		;??
+
+		ld b,0
+		ld c,a
+
+	if DEBUG_INPUT
+		push af
+		ld a, 'i'
+		ld (debug_mark),a
+		pop af
+;		CALLMONITOR
+	endif
+		pop de
+		pop hl
+	if DEBUG_INPUT
+		push af
+		ld a, 'I'
+		ld (debug_mark),a
+		pop af
+;		CALLMONITOR
+	endif
+		lddr
+	
+
+
+		; TODO have a key for insert/overwrite mode????
+		pop bc
+		pop hl
 		ld (hl), c		; otherwise overwrite current char
+		
+
+
 
 		ld a, (input_cursor)
 		inc  a 		; TODO check overflow
@@ -337,6 +449,9 @@ ld hl, (input_ptr)
 
 		; add trailing space for end of token
 
+		ld hl, (input_start)
+		ld a,(input_len)
+		call addatohl
 		ld a, ' '
 		ld (hl),a
 		; TODO eof of parse marker
@@ -347,6 +462,8 @@ ld hl, (input_ptr)
 
 
 		ret
+
+.iblank: db " ",0
 
 
 input_str_prev:	ld (input_at_pos), a

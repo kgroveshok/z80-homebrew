@@ -9,7 +9,7 @@ Device_C: equ 080h
 Device_D: equ 0c0h
 
 
-DEBUG_INPUT: equ 1
+DEBUG_INPUT: equ 0     ; Debug input entry code
 DEBUG_KEYCINWAIT: equ 0
 DEBUG_KEYCIN: equ 0
 DEBUG_KEY: equ 0
@@ -112,7 +112,8 @@ input_under_cursor: equ input_at_pos - 1 ; char under the cursor so we can blink
 input_at_cursor: equ input_under_cursor - 1 ; offset of cursor to current start of string
 input_cur_flash: equ input_at_cursor - 2 ;  timeout for cursor flash
 input_cur_onoff: equ input_cur_flash - 1 ;  cursor blink on or off
-input_cursor: equ input_cur_onoff - 1 ; offset of cursor to current start of string
+input_len: equ input_cur_onoff - 5 ; length of current input
+input_cursor: equ input_len - 5 ; offset of cursor to current start of string
 
 CUR_BLINK_RATE: equ 15
 

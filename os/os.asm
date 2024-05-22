@@ -134,6 +134,8 @@ main:
 	ld hl, scratch	
 	ld a,0
 	ld (hl),a
+	inc hl
+	ld (hl),a
 
 	ld a,0
 	ld (os_last_cmd),a	; current command in use to enable repeated use with an enter etc
@@ -166,6 +168,7 @@ cli:
 	ld d, 255    ; TODO fix input_str to actually take note of max string input length
 	ld e, 40
 
+	ld hl, scratch	
 	call input_str
 
 

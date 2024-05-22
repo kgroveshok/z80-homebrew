@@ -10,26 +10,36 @@
 
 
 input_str:    	ld (input_at_pos),a      ; save display position to start
+		add c
+		ld (input_at_cursor),a	; save draw pos of cursor
 		ld (input_start), hl     ; save ptr to buffer
+		ld a, c
+		call addatohl
+		ld (input_ptr), hl     ; save ptr to point under the cursor
 		ld a,d
 	        ld (input_size), a       ; save length of input area
 		ld a, c
 		ld (input_cursor),a      ; init cursor start position 
 		ld a,e
 	        ld (input_display_size), a       ; save length of input area that is displayed TODO
+		
+		
 
-
-		ld a,(input_start)
-		ld (input_under_cursor),a 	; save what is under the cursor
+;		ld a,(input_ptr)
+;		ld (input_under_cursor),a 	; save what is under the cursor
 
 		; init cursor shape
 		ld hl, cursor_shape
-		ld a, '_'
+		ld a, 255
 		ld (hl), a
 		inc hl
 		ld a, 0
 		ld (hl), a
 
+		ld a, CUR_BLINK_RATE
+		ld (input_cur_flash), a
+		ld a, 1
+		ld (input_cur_onoff),a
 
 ;	if DEBUG_INPUT
 ;		push af
@@ -40,12 +50,43 @@ input_str:    	ld (input_at_pos),a      ; save display position to start
 ;	endif
 .is1:		; main entry loop
 
+
+
+		; pause 1ms
+
+		ld a, 1
+		call aDelayInMS
+
+		; dec flash counter
+		ld a, (input_cur_flash)
+		dec a
+		ld (input_cur_flash), a
+		cp 0
+		jr nz, .nochgstate
+
+
+		; change state
+		ld a,(input_cur_onoff)
+		neg
+		ld (input_cur_onoff),a
+
+
+		; reset on change of state
+		ld a, CUR_BLINK_RATE
+		ld (input_cur_flash), a
+
+.nochgstate:
+		
+		
+
 		; display cursor 
 
 ;		ld hl, (input_start)
 ;		ld a, (input_cursor)
 ;		call addatohl
 
+		; get char under cursor and replace with cursor
+ld hl, (input_ptr)
 ;		ld a, (hl)
 ;		ld (input_under_cursor),a
 ;		ld a, '_'
@@ -65,18 +106,20 @@ input_str:    	ld (input_at_pos),a      ; save display position to start
 ; (input_at_pos)
 		;ld c, a
 ;		ld a, (input_cursor)
-		;ld b, h
-		;add h
+;		ld l, (input_at_pos)
+;		;ld b, h
+;		add l
+;		ld (input_at_cursor),a
 		;ld l,h
 
-		ld h, 0
-		ld l,(input_at_pos)
-		ld a, (input_cursor)
-		call addatohl
-		ld a, 074H-19			; TODO BUG I dont know why offset is showing 74H
-		call subafromhl
-		ld a,l
-		ld (input_at_cursor), a
+;		ld h, 0
+;		ld l,(input_at_pos)
+;		ld a, (input_cursor)
+;		call addatohl
+;		ld a, 074H-19			; TODO BUG I dont know why offset is showing 74H
+;		call subafromhl
+;		ld a,l
+;		ld (input_at_cursor), a
 
 	if DEBUG_INPUT
 		ld a,(input_at_pos)
@@ -89,50 +132,61 @@ input_str:    	ld (input_at_pos),a      ; save display position to start
 		ld hl, LFSRSeed+4
 		call hexout
 
+		ld a,(input_cur_onoff)
 		ld hl, LFSRSeed+6
+		call hexout
+
+		ld a,(input_cur_flash)
+		ld hl, LFSRSeed+8
+		call hexout
+
+		ld hl, LFSRSeed+10
 		ld a, 0
 		ld (hl),a
 		ld a, display_row_4
 		ld de, LFSRSeed
 		call str_at_display
 	endif
-		;ld h,0
-;		ld a, (input_at_pos)
-		;ld a, (input_cursor)
-		;call addatohl
-		;ld a, l
+
+		; decide on if we are showing the cursor this time round
+
+		ld a, (input_cur_onoff)
+		cp 255
+		jr z, .skipcur
+
+
 		ld a,(input_at_cursor)
 		ld de, cursor_shape
-;	if DEBUG_INPUT
-;		push af
-;		ld a, 'c'
-;		ld (debug_mark),a
-;		pop af
-;		CALLMONITOR
-;	endif
 		call str_at_display
+
+.skipcur:
+
 	        call update_display
 		
 
 
-		; get ptr to char to input into
-
-		ld hl, (input_start)
-		ld a, (input_cursor)
-		call addatohl
-		push hl
-
 		; wait
 	
 		; TODO loop without wait to flash the cursor and char under cursor	
-		call cin_wait
+		call cin    ; _wait
 
-		pop hl
+		cp 0
+		jr z, .is1
+
+		; get ptr to char to input into
+
+		ld c,a
+		ld hl, (input_start)
+		ld a, (input_cursor)
+		call addatohl
+		ld (input_ptr), hl
+		ld a,c
 
 		; replace char under cursor
 
+;		ld hl, (input_ptr)
 ;		ld a, (input_under_cursor) 	; get what is under the cursor
-;		ld (hl),a
+;		ld (hl), a
 
 ;	if DEBUG_INPUT
 ;		push af
@@ -143,10 +197,24 @@ input_str:    	ld (input_at_pos),a      ; save display position to start
 ;	endif
 		cp KEY_LEFT
 		jr nz, .isk1
+
 		ld a, (input_cursor)
 		dec  a 		; TODO check underflow
 		ld (input_cursor), a
+
+		ld hl, (input_ptr)
+		dec hl
+		ld (input_ptr), hl
 		
+		ld a, (input_at_cursor)
+		dec a
+		ld (input_at_cursor), a
+
+		ld a, 1		; show cursor moving
+		ld (input_cur_onoff),a
+		ld a, CUR_BLINK_RATE*3
+		ld (input_cur_flash), a
+
 		jp .is1
 
 .isk1:		cp KEY_RIGHT
@@ -155,6 +223,20 @@ input_str:    	ld (input_at_pos),a      ; save display position to start
 		ld a, (input_cursor)
 		inc  a 		; TODO check overflow
 		ld (input_cursor), a
+
+		ld a, (input_at_cursor)
+		inc a
+		ld (input_at_cursor), a
+
+		ld hl, (input_ptr)
+		inc hl
+		ld (input_ptr), hl
+
+		ld a, 1		; show cursor moving
+		ld (input_cur_onoff),a
+		ld a, CUR_BLINK_RATE*2
+		ld (input_cur_flash), a
+
 		jp .is1
 
 .isk2:		cp KEY_UP
@@ -168,9 +250,23 @@ input_str:    	ld (input_at_pos),a      ; save display position to start
 		ld a, (input_cursor)
 		dec  a 		; TODO check underflow
 		ld (input_cursor), a
+
 		ld a, 0
 		dec hl
 		ld (hl), a
+
+		ld hl, (input_ptr)
+		dec hl
+		ld (input_ptr), hl
+
+		ld a, (input_at_cursor)
+		dec a
+		ld (input_at_cursor), a
+
+		ld a, 1		; show cursor moving
+		ld (input_cur_onoff),a
+		ld a, CUR_BLINK_RATE*2
+		ld (input_cur_flash), a
 
 		jp .is1
 
@@ -192,10 +288,22 @@ input_str:    	ld (input_at_pos),a      ; save display position to start
 		inc hl
 		ld a,0
 		ld (hl),a
+
 		ld a, (input_cursor)
 		inc a				; TODO check max string length and scroll 
 		ld (input_cursor), a		; inc cursor pos
 				
+		ld a, (input_at_cursor)
+		inc a
+		ld (input_at_cursor), a
+
+		ld hl, (input_ptr)
+		inc hl
+		ld (input_ptr), hl
+
+		ld hl, (input_ptr)
+		inc hl
+		ld (input_ptr), hl
 ;	if DEBUG_INPUT
 ;		push af
 ;		ld a, '+'
@@ -203,6 +311,10 @@ input_str:    	ld (input_at_pos),a      ; save display position to start
 ;		pop af
 ;		CALLMONITOR
 ;	endif
+		ld a, 1		; show cursor moving
+		ld (input_cur_onoff),a
+		ld a, CUR_BLINK_RATE*2
+		ld (input_cur_flash), a
 		jp .is1
 		
 
@@ -214,6 +326,11 @@ input_str:    	ld (input_at_pos),a      ; save display position to start
 		ld a, (input_cursor)
 		inc  a 		; TODO check overflow
 		ld (input_cursor), a
+
+		ld a, (input_at_cursor)
+		inc a
+		ld (input_at_cursor), a
+
 		jp .is1
 
 .endinput:	; TODO look for end of string

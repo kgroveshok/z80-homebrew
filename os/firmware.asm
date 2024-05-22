@@ -110,7 +110,11 @@ input_display_size: equ input_size -1  ; TODO number of chars that are displayab
 input_at_pos: equ input_display_size - 1 ; frame buffer offset for start of input
 input_under_cursor: equ input_at_pos - 1 ; char under the cursor so we can blink it
 input_at_cursor: equ input_under_cursor - 1 ; offset of cursor to current start of string
-input_cursor: equ input_at_cursor - 1 ; offset of cursor to current start of string
+input_cur_flash: equ input_at_cursor - 2 ;  timeout for cursor flash
+input_cur_onoff: equ input_cur_flash - 1 ;  cursor blink on or off
+input_cursor: equ input_cur_onoff - 1 ; offset of cursor to current start of string
+
+CUR_BLINK_RATE: equ 15
 
 key_actual_pressed: equ input_cursor - 1 
 key_symbol: equ key_actual_pressed - 1 

@@ -212,7 +212,7 @@ ld hl, (input_ptr)
 
 		ld a, 1		; show cursor moving
 		ld (input_cur_onoff),a
-		ld a, CUR_BLINK_RATE*3
+		ld a, CUR_BLINK_RATE
 		ld (input_cur_flash), a
 
 		jp .is1
@@ -234,7 +234,7 @@ ld hl, (input_ptr)
 
 		ld a, 1		; show cursor moving
 		ld (input_cur_onoff),a
-		ld a, CUR_BLINK_RATE*2
+		ld a, CUR_BLINK_RATE
 		ld (input_cur_flash), a
 
 		jp .is1
@@ -265,7 +265,7 @@ ld hl, (input_ptr)
 
 		ld a, 1		; show cursor moving
 		ld (input_cur_onoff),a
-		ld a, CUR_BLINK_RATE*2
+		ld a, CUR_BLINK_RATE
 		ld (input_cur_flash), a
 
 		jp .is1
@@ -313,7 +313,7 @@ ld hl, (input_ptr)
 ;	endif
 		ld a, 1		; show cursor moving
 		ld (input_cur_onoff),a
-		ld a, CUR_BLINK_RATE*2
+		ld a, CUR_BLINK_RATE
 		ld (input_cur_flash), a
 		jp .is1
 		

@@ -114,6 +114,14 @@ macro_forth_rsp_tos:
 	inc hl
 	ld d, (hl)
 	ex de, hl
+		if DEBUG_FORTH_WORDS
+			DMARK "RST"
+			;push af
+			;ld a, 'R'
+			;ld (debug_mark),a
+			;pop af
+			CALLMONITOR
+		endif
 	pop de
 	ret
 
@@ -368,7 +376,7 @@ pop hl
 
 		call str_at_display
 	ld de, debug_mark
-	ld a, display_row_1+18
+	ld a, display_row_1+17
 
 		call str_at_display
 
@@ -503,7 +511,7 @@ display_ptr_state:
 
 
 	ld de, debug_mark
-	ld a, display_row_1+display_cols-1
+	ld a, display_row_1+display_cols-2
 	call str_at_display
 
 	; display a
@@ -741,7 +749,7 @@ display_reg_state:
 
 
 	ld de, debug_mark
-	ld a, display_row_1+display_cols-1
+	ld a, display_row_1+display_cols-3
 	call str_at_display
 
 	; display a
@@ -867,13 +875,13 @@ startcmds:
 test1:		db ": aa 1 2 3 ;  ", 0, 0, 0, FORTH_END_BUFFER
 test2:     	db "111 aa 888 999  ",0, 0, 0, FORTH_END_BUFFER
 test3:     	db ": bb 77 ;  ",0, 0, 0, FORTH_END_BUFFER
-test4:     	db "$0002 $0001 do i . loop bb  ",0, 0, 0, FORTH_END_BUFFER
-test5:     	db ": hline $0013 $0000 do i $0001 at 1 . i $0004 at 1 . loop ;   ",0, 0, 0, FORTH_END_BUFFER
-test6:     	db ": vline $0004 $0001 do $0000 i at 1 . $0013 i at 1 . loop ;   ",0, 0, 0, FORTH_END_BUFFER
+test4:     	db "$02 $01 do i . loop bb  ",0, 0, 0, FORTH_END_BUFFER
+test5:     	db ": hline $13 $00 do i $01 at 1 . i $04 at 1 . loop ;   ",0, 0, 0, FORTH_END_BUFFER
+test6:     	db ": vline $04 $01 do $00 i at 1 . $13 i at 1 . loop ;   ",0, 0, 0, FORTH_END_BUFFER
 test7:     	db ": box hline vline ;  ",0, 0, 0, FORTH_END_BUFFER
-test8:     	db ": world cls box $0003 $0003 at Hello-World! . ;  ",0, 0, 0, FORTH_END_BUFFER
-test9:     	db ": sw $0001 adsp world ;  ",0, 0, 0, FORTH_END_BUFFER
-test10:     	db ": fw $0000 adsp world ;  ",0, 0, 0, FORTH_END_BUFFER
+test8:     	db ": world cls box $03 $03 at Hello-World! . ;  ",0, 0, 0, FORTH_END_BUFFER
+test9:     	db ": sw $01 adsp world ;  ",0, 0, 0, FORTH_END_BUFFER
+test10:     	db ": fw $00 adsp world draw $05 pause ;  ",0, 0, 0, FORTH_END_BUFFER
 
 mmtest1:     	db "cls $0001 $0008 MIN . $0002 pause  ",0, 0, 0, FORTH_END_BUFFER
 mmtest2:     	db "cls $0101 $0008 MIN . $0002 pause  ",0, 0, 0, FORTH_END_BUFFER

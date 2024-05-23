@@ -59,10 +59,11 @@
 
 if DEBUG_FORTH_UWORD
 	ld de, (os_tok_ptr)
-	push af
-	ld a, ':'
-	ld (debug_mark),a
-	pop af
+			DMARK ":01"
+;	push af
+;	ld a, ':'
+;	ld (debug_mark),a
+;	pop af
 	CALLMONITOR
 endif
 
@@ -103,10 +104,11 @@ endif
 
 
 if DEBUG_FORTH_UWORD
-	push af
-	ld a, 'z'
-	ld (debug_mark),a
-	pop af
+			DMARK ":02"
+;	push af
+;	ld a, 'z'
+;	ld (debug_mark),a
+;	pop af
 	CALLMONITOR
 endif
 
@@ -187,10 +189,11 @@ ucasetok:
 if DEBUG_FORTH_UWORD
 	push bc
 	ld bc, (os_new_malloc)
-	push af
-	ld a, 'x'
-	ld (debug_mark),a
-	pop af
+			DMARK ":0x"
+;	push af
+;	ld a, 'x'
+;	ld (debug_mark),a
+;	pop af
 	CALLMONITOR
 	pop bc
 endif
@@ -286,10 +289,11 @@ endif
 if DEBUG_FORTH_UWORD
 	push bc
 	ld bc, (os_new_malloc)
-	push af
-	ld a, ';'
-	ld (debug_mark),a
-	pop af
+			DMARK ":0A"
+;	push af
+;	ld a, ';'
+;	ld (debug_mark),a
+;	pop af
 	CALLMONITOR
 	pop bc
 endif
@@ -305,10 +309,11 @@ if DEBUG_FORTH_UWORD
 	inc bc
 	inc bc
 
-	push af
-	ld a, ';'
-	ld (debug_mark),a
-	pop af
+			DMARK ":0B"
+;	push af
+;	ld a, ';'
+;	ld (debug_mark),a
+;	pop af
 	CALLMONITOR
 	pop bc
 endif
@@ -332,10 +337,11 @@ ld (os_last_new_uword), de      ; update last new uword ptr
 
 
 if DEBUG_FORTH_UWORD
-	push af
-	ld a, '+'
-	ld (debug_mark),a
-	pop af
+			DMARK ":0+"
+;	push af
+;	ld a, '+'
+;	ld (debug_mark),a
+;	pop af
 	CALLMONITOR
 endif
 
@@ -361,10 +367,11 @@ ret    ; dont process any remaining parser tokens as they form new word
 		ld (os_tok_ptr),hl
 
 if DEBUG_FORTH_UWORD
-	push af
-	ld a, ';'
-	ld (debug_mark),a
-	pop af
+			DMARK "SCL"
+;	push af
+;	ld a, ';'
+;	ld (debug_mark),a
+;	pop af
 	CALLMONITOR
 endif
 		NEXTW
@@ -592,20 +599,22 @@ endif
 		pop hl
 		ld b, l
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, 'P'
-			ld (debug_mark),a
-			pop af
+			DMARK "PAU"
+			;push af
+			;ld a, 'P'
+			;ld (debug_mark),a
+			;pop af
 			CALLMONITOR
 		endif
 .pauses1:	push bc
 		call delay1s
 		pop bc
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, 'p'
-			ld (debug_mark),a
-			pop af
+			DMARK "PA1"
+			;push af
+			;ld a, 'p'
+			;ld (debug_mark),a
+			;pop af
 			CALLMONITOR
 		endif
 		djnz .pauses1

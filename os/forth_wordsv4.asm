@@ -140,10 +140,11 @@ user_exec:
 	FORTH_RSP_NEXT
 
 if DEBUG_FORTH_UWORD
-	push af
-	ld a, '-'
-	ld (debug_mark),a
-	pop af
+			DMARK "UEX"
+;	push af
+;	ld a, '-'
+;	ld (debug_mark),a
+;	pop af
 	CALLMONITOR
 endif
 

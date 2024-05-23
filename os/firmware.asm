@@ -47,7 +47,7 @@ MALLOC_2: equ 0
 
 
 tos:	equ 0ffffh
-stacksize: equ 512
+stacksize: equ 512*2
 
 if STORAGE_SE == 0
 	STORE_BLOCK_PHY:   equ 64    ; physical block size on storage   64byte on 256k eeprom
@@ -100,7 +100,7 @@ hardware_word: equ key_face_held - 2
 
 ; debug marker - optional display of debug point on the debug screens
 
-debug_mark: equ hardware_word - 2
+debug_mark: equ hardware_word - 4
 
 ; input_str vars
 input_ptr:  equ debug_mark - 2    ; ptr to the current cursor position of string currently being edited  on entry starting 
@@ -196,12 +196,12 @@ cli_ret_sp: equ cli_var_array - 2    ; ret stack pointer
 cli_loop_sp: equ cli_ret_sp - 2   ; data stack pointer
 cli_data_sp: equ cli_loop_sp - 2   ; data stack pointer
 cli_ret_stack: equ cli_data_sp - 128      ; TODO could I just use normal stack for this? - use linked list for looping
-cli_loop_stack: equ cli_data_sp - 128      ; TODO could I just use normal stack for this? - use linked list for looping
+cli_loop_stack: equ cli_data_sp - 512      ; TODO could I just use normal stack for this? - use linked list for looping
 cli_data_stack: equ cli_loop_stack - 512		 ; 
 
 ; os/forth token vars
 
-os_last_cmd: equ cli_data_stack-290         
+os_last_cmd: equ cli_data_stack-255
 os_current_i: equ os_last_cmd-2
 os_cur_ptr: equ os_current_i-2
 os_word_scratch: equ os_cur_ptr-30
@@ -287,6 +287,25 @@ KEY_END: equ 19
 
 
 
+
+; Macro to make adding debug marks easier
+
+DMARK: macro str
+	push af
+	ld a, (.dmark)
+	ld (debug_mark),a
+	ld a, (.dmark+1)
+	ld (debug_mark+1),a
+	ld a, (.dmark+2)
+	ld (debug_mark+2),a
+	jr .pastdmark
+.dmark: db str
+.pastdmark: pop af
+
+endm
+
+
+
 ;TODO macro to calc col and row offset into screen
 
 
@@ -356,8 +375,10 @@ hardware_init:
 
 ld a, '_'
 ld (debug_mark),a
-ld a,0
 ld (debug_mark+1),a
+ld (debug_mark+2),a
+ld a,0
+ld (debug_mark+3),a
 
 		ret
 

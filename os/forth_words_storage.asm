@@ -9,16 +9,25 @@
 ;	db "DIR",0               
 ; |DIR ( u -- lab id ... c t )   Using bank number u push directory entries from persistent storage as w with count u  | DONE
 
+		if DEBUG_FORTH_WORDS
+			DMARK "DIR"
+;			push af
+;			ld a, 'D'
+;			ld (debug_mark),a
+;			pop af
+			CALLMONITOR
+		endif
 	call storage_get_block_0
 
 	ld hl, store_page     ; get current id count
 	ld b, (hl)
 	ld c, 0    ; count of files  
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, 'D'
-			ld (debug_mark),a
-			pop af
+			DMARK "DI1"
+;			push af
+;			ld a, 'D'
+;			ld (debug_mark),a
+;			pop af
 			CALLMONITOR
 		endif
 
@@ -35,18 +44,20 @@
 		ld d, 0		 ; look for extent 0 of block id as this contains file name
 		ld e,b
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, 'd'
-			ld (debug_mark),a
-			pop af
+			DMARK "DI2"
+;			push af
+;			ld a, 'd'
+;			ld (debug_mark),a
+;			pop af
 			CALLMONITOR
 		endif
 		call storage_findnextid
 		pop bc
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, 'f'
-			ld (debug_mark),a
+			DMARK "DI3"
+			;push af
+		;	ld a, 'f'
+		;	ld (debug_mark),a
 			pop af
 			CALLMONITOR
 		endif
@@ -82,30 +93,33 @@
 		ld hl, store_page
 		inc hl   ; get past id
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, 'p'
-			ld (debug_mark),a
-			pop af
+			DMARK "DI4"
+;			push af
+;			ld a, 'p'
+;			ld (debug_mark),a
+;			pop af
 			CALLMONITOR
 		endif
 		call forth_apushstrhl
 		pop bc
-		if DEBUG_FORTH_WORDS
-			push af
-			ld a, ','
-			ld (debug_mark),a
-			pop af
-			CALLMONITOR
-		endif
+;		if DEBUG_FORTH_WORDS
+;			DMARK "DI5"
+;			push af
+;			ld a, ','
+;			ld (debug_mark),a
+;			pop af
+;			CALLMONITOR
+;		endif
 .dirnotfound:
 		djnz .diritem
 	
 .dirdone:	
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, '-'
-			ld (debug_mark),a
-			pop af
+			DMARK "DI6"
+			;push af
+			;ld a, '-'
+			;ld (debug_mark),a
+			;pop af
 			CALLMONITOR
 		endif
 
@@ -123,10 +137,11 @@
  		ld hl, store_page+3
 
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, '='
-			ld (debug_mark),a
-			pop af
+			;push af
+			DMARK "DI7"
+			;ld a, '='
+			;ld (debug_mark),a
+			;pop af
 			CALLMONITOR
 		endif
 		call forth_apushstrhl
@@ -268,6 +283,13 @@
 
 		FORTH_DSP_VALUE
 
+	if DEBUG_STORESE
+;		push af
+		DMARK "CRT"
+;		ld (debug_mark),a
+;		pop af
+		CALLMONITOR
+	endif
 		push hl
 		FORTH_DSP_POP
 		pop hl
@@ -277,10 +299,11 @@
 		call storage_create
 
 	if DEBUG_STORESE
-		push af
-		ld a, '='
-		ld (debug_mark),a
-		pop af
+		DMARK "CT1"
+		;push af
+		;ld a, '='
+		;ld (debug_mark),a
+		;pop af
 		CALLMONITOR
 	endif
 		; push file id to stack

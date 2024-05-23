@@ -16,23 +16,25 @@
 	pop hl
 
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, 'I'
-			ld (debug_mark),a
-			pop af
+			DMARK "IF1"
+;			push af
+;			ld a, 'I'
+;			ld (debug_mark),a
+;			pop af
 			CALLMONITOR
 		endif
 	or a        ; clear carry flag
 	ld de, 0
 	ex de,hl
 	sbc hl, de
-	jr nz, .iftrue
+	jp nz, .iftrue
 
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, 'f'
-			ld (debug_mark),a
-			pop af
+			DMARK "IF2"
+			;push af
+			;ld a, 'f'
+			;ld (debug_mark),a
+			;pop af
 			CALLMONITOR
 		endif
 
@@ -43,28 +45,31 @@
 
 	ld hl, (os_tok_ptr)
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, 'h'
-			ld (debug_mark),a
-			pop af
+			DMARK "IF3"
+			;push af
+			;ld a, 'h'
+			;ld (debug_mark),a
+			;pop af
 			CALLMONITOR
 			
 		endif
 	ld de, .ifthen
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, 'd'
-			ld (debug_mark),a
-			pop af
+			DMARK "IF4"
+			;push af
+			;ld a, 'd'
+			;ld (debug_mark),a
+			;pop af
 			CALLMONITOR
 		endif
 	call findnexttok 
 
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, 'z'
-			ld (debug_mark),a
-			pop af
+			DMARK "IF5"
+			;push af
+			;ld a, 'z'
+			;ld (debug_mark),a
+			;pop af
 			CALLMONITOR
 		endif
 	; TODO replace below with ; exec using tok_ptr
@@ -79,10 +84,11 @@
 
 	; if true then exec following IF as normal
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, 'T'
-			ld (debug_mark),a
-			pop af
+			DMARK "IFT"
+;			push af
+;			ld a, 'T'
+;			ld (debug_mark),a
+;			pop af
 			CALLMONITOR
 		endif
 
@@ -115,10 +121,14 @@
 ; |DO ( u1 u2 -- )   Loop starting at u2 with a limit of u1 | DONE
 
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, 'd'
-			ld (debug_mark),a
-			pop af
+;			push af
+;			ld a, 'D'
+;			ld (debug_mark),a
+;			ld a, 'O'
+;			ld (debug_mark+1),a
+;			pop af
+
+			DMARK "DO1"
 			CALLMONITOR
 		endif
 ;  push pc to rsp stack past the DO
@@ -127,7 +137,23 @@
 		inc hl   ; D
 		inc hl  ; O
 		inc hl   ; null
+		if DEBUG_FORTH_WORDS
+;			push af
+;			ld a, '1'
+;			ld (debug_mark+1),a
+;			pop af
+			DMARK "DO2"
+			CALLMONITOR
+		endif
 		FORTH_RSP_NEXT
+		if DEBUG_FORTH_WORDS
+			DMARK "DO3"
+;			push af
+;			ld a, '2'
+;			ld (debug_mark+1),a
+;			pop af
+			CALLMONITOR
+		endif
 
 		;if DEBUG_FORTH_WORDS
 	;		push hl
@@ -140,19 +166,21 @@
 		push hl		 ; hl now has starting counter which needs to be tos
 
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, '1'
-			ld (debug_mark),a
-			pop af
+			DMARK "DO4"
+			;push af
+			;ld a, 'a'
+			;ld (debug_mark+1),a
+			;pop af
 			CALLMONITOR
 		endif
 		FORTH_DSP_POP
 
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, '2'
-			ld (debug_mark),a
-			pop af
+			DMARK "DO5"
+			;push af
+			;ld a, 'b'
+			;ld (debug_mark+1),a
+			;pop af
 			CALLMONITOR
 		endif
 
@@ -160,10 +188,11 @@
 		push hl		 ; hl now has starting limit counter
 
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, '3'
-			ld (debug_mark),a
-			pop af
+			DMARK "DO6"
+			;push af
+			;ld a, '3'
+			;ld (debug_mark+1),a
+			;pop af
 			CALLMONITOR
 		endif
 		FORTH_DSP_POP
@@ -176,10 +205,11 @@
 		; push limit counter
 
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, '4'
-			ld (debug_mark),a
-			pop af
+			DMARK "DO7"
+			;ipush af
+			;ld a, '4'
+			;ld (debug_mark+1),a
+			;pop af
 			CALLMONITOR
 		endif
 		FORTH_LOOP_NEXT
@@ -188,10 +218,11 @@
 
 		ex de, hl
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, '5'
-			ld (debug_mark),a
-			pop af
+			DMARK "DO7"
+			;push af
+			;ld a, '5'
+			;ld (debug_mark+1),a
+			;pop af
 			CALLMONITOR
 		endif
 		FORTH_LOOP_NEXT
@@ -202,10 +233,11 @@
 		ld (os_current_i), hl
 
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, 'D'
-			ld (debug_mark),a
-			pop af
+			DMARK "DO8"
+			;push af
+			;ld a, 'D'
+			;ld (debug_mark),a
+			;pop af
 			CALLMONITOR
 		endif
 
@@ -226,10 +258,11 @@
 	push hl
 
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, 'l'
-			ld (debug_mark),a
-			pop af
+			DMARK "LOP"
+;		push af
+;		ld a, 'l'
+;		ld (debug_mark),a
+;		pop af
 			CALLMONITOR
 		endif
 	; next item on the stack is the limit. get it
@@ -242,10 +275,11 @@
 	pop de		 ; de = i, hl = limit
 
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, 'l'
-			ld (debug_mark),a
-			pop af
+			DMARK "LP1"
+			;push af
+			;ld a, 'l'
+			;ld (debug_mark),a
+			;pop af
 			CALLMONITOR
 		endif
 
@@ -259,10 +293,11 @@
 
 
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, 'L'
-			ld (debug_mark),a
-			pop af
+			DMARK "LP1"
+			;push af
+			;ld a, 'L'
+			;ld (debug_mark),a
+			;pop af
 			CALLMONITOR
 		endif
 
@@ -279,10 +314,11 @@
 	FORTH_RSP_POP     ; get rid of DO ptr
 
 if DEBUG_FORTH_WORDS
-	push af
-	ld a, '>'
-	ld (debug_mark),a
-	pop af
+			DMARK "LP>"
+;	push af
+;	ld a, '>'
+;	ld (debug_mark),a
+;	pop af
 	CALLMONITOR
 endif
 
@@ -301,6 +337,14 @@ endif
 
 		ld (os_current_i), hl
 
+		if DEBUG_FORTH_WORDS
+			DMARK "LPN"
+			;push af
+			;ld a, '6'
+			;ld (debug_mark),a
+			;pop af
+		CALLMONITOR
+		endif
 		
 	FORTH_LOOP_NEXT
 
@@ -311,8 +355,24 @@ endif
 
 ;	; get DO ptr
 ;
+		if DEBUG_FORTH_WORDS
+			DMARK "LP7"
+			;push af
+			;ld a, '7'
+			;ld (debug_mark),a
+			;pop af
+		CALLMONITOR
+		endif
 	FORTH_RSP_TOS
 
+		if DEBUG_FORTH_WORDS
+			DMARK "LP8"
+			;push af
+			;ld a, '8'
+			;ld (debug_mark),a
+			;pop af
+		CALLMONITOR
+		endif
 	;push hl
 
 	; not going to DO any more
@@ -320,13 +380,18 @@ endif
 	;FORTH_RSP_POP
 	;pop hl
 
-
+	;ld hl,(cli_ret_sp)
+	;ld e, (hl)
+	;inc hl
+	;ld d, (hl)
+	;ex de,hl
 	ld (os_tok_ptr), hl
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, '<'
-			ld (debug_mark),a
-			pop af
+			DMARK "LP<"
+			;push af
+			;ld a, '<'
+			;ld (debug_mark),a
+			;pop af
 		CALLMONITOR
 	endif
 	jp exec1
@@ -359,10 +424,11 @@ endif
 	push hl
 
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, 'l'
-			ld (debug_mark),a
-			pop af
+			DMARK "-LP"
+			;push af
+			;ld a, 'l'
+			;ld (debug_mark),a
+			;pop af
 			CALLMONITOR
 		endif
 	; next item on the stack is the limit. get it
@@ -375,10 +441,11 @@ endif
 	pop de		 ; de = i, hl = limit
 
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, 'l'
-			ld (debug_mark),a
-			pop af
+			DMARK "-L1"
+;			push af
+;			ld a, 'l'
+;			ld (debug_mark),a
+;			pop af
 			CALLMONITOR
 		endif
 
@@ -392,10 +459,11 @@ endif
 
 
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, 'L'
-			ld (debug_mark),a
-			pop af
+			DMARK "-L1"
+			;push af
+			;ld a, 'L'
+			;ld (debug_mark),a
+			;pop af
 			CALLMONITOR
 		endif
 
@@ -412,10 +480,11 @@ endif
 	FORTH_RSP_POP     ; get rid of DO ptr
 
 if DEBUG_FORTH_WORDS
-	push af
-	ld a, '>'
-	ld (debug_mark),a
-	pop af
+			DMARK "-L>"
+;	push af
+;	ld a, '>'
+;	ld (debug_mark),a
+;	pop af
 	CALLMONITOR
 endif
 
@@ -456,9 +525,10 @@ endif
 
 	ld (os_tok_ptr), hl
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, '<'
-			ld (debug_mark),a
+			DMARK "-L<"
+			;push af
+			;ld a, '<'
+			;ld (debug_mark),a
 			pop af
 		CALLMONITOR
 	endif
@@ -490,16 +560,17 @@ endif
 
 
 		if DEBUG_FORTH_WORDS
-			pop bc
-			push af
-			ld a, 'R'
-			ld (debug_mark),a
+			DMARK "REP"
+			;pop bc    ; TODO BUG ?????? what is this for????
+			;push af
+			;ld a, 'R'
+			;ld (debug_mark),a
 			pop af
 			CALLMONITOR
 		endif
 
 		NEXTW
-	       NEXTW
+;	       NEXTW
 
 .UNTIL:
 	CWHEAD .ENDFLOW 94 "UNTIL" 5 WORD_FLAG_CODE
@@ -512,10 +583,11 @@ endif
 	FORTH_DSP_VALUEHL
 
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, 'U'
-			ld (debug_mark),a
-			pop af
+			DMARK "UNT"
+	;		push af
+;			ld a, 'U'
+;			ld (debug_mark),a
+;			pop af
 			CALLMONITOR
 		endif
 
@@ -535,10 +607,11 @@ endif
 	jr nz, .untilnotdone
 
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, 'f'
-			ld (debug_mark),a
-			pop af
+			DMARK "UNf"
+			;push af
+			;ld a, 'f'
+			;ld (debug_mark),a
+			;pop af
 			CALLMONITOR
 		endif
 
@@ -547,10 +620,11 @@ endif
 	FORTH_RSP_POP     ; get rid of DO ptr
 
 if DEBUG_FORTH_WORDS
-	push af
-	ld a, '>'
-	ld (debug_mark),a
-	pop af
+			DMARK "UN>"
+;	push af
+;	ld a, '>'
+;	ld (debug_mark),a
+;	pop af
 	CALLMONITOR
 endif
 
@@ -574,10 +648,11 @@ endif
 
 	ld (os_tok_ptr), hl
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, '<'
-			ld (debug_mark),a
-			pop af
+			DMARK "UN<"
+			;push af
+			;ld a, '<'
+			;ld (debug_mark),a
+			;pop af
 		CALLMONITOR
 	endif
 	jp exec1

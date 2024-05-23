@@ -17,10 +17,11 @@
 			inc hl      ; now at start of numeric as string
 
 		if DEBUG_FORTH_DOT
-			push af
-			ld a, 'C'
-			ld (debug_mark),a
-			pop af
+			DMARK "ADD"
+			;push af
+			;ld a, 'C'
+			;ld (debug_mark),a
+			;pop af
 	;		call break_point_state
 	CALLMONITOR
 			;call display_reg_state
@@ -207,10 +208,11 @@
 
 
 		if DEBUG_FORTH_MATHS
-			push af
-			ld a, '/'
-			ld (debug_mark),a
-			pop af
+			DMARK "DIV"
+			;push af
+			;ld a, '/'
+			;ld (debug_mark),a
+			;pop af
 	;		call break_point_state
 	CALLMONITOR
 		endif
@@ -224,10 +226,11 @@
 	push bc
 
 		if DEBUG_FORTH_MATHS
-			push af
-			ld a, '1'
-			ld (debug_mark),a
-			pop af
+			DMARK "DI1"
+			;push af
+			;ld a, '1'
+			;ld (debug_mark),a
+			;pop af
 	;		call break_point_state
 	;rst 030h
 	CALLMONITOR
@@ -347,10 +350,11 @@
 
 	pop hl
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, 'm'
-			ld (debug_mark),a
-			pop af
+			DMARK "MIN"
+			;push af
+			;ld a, 'm'
+			;ld (debug_mark),a
+			;pop af
 			CALLMONITOR
 		endif
 		call forth_push_numhl
@@ -361,10 +365,11 @@
 	pop bc   ; tidy up
 	ex de , hl 
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, 'M'
-			ld (debug_mark),a
-			pop af
+			DMARK "MI1"
+			;push af
+			;ld a, 'M'
+			;ld (debug_mark),a
+			;pop af
 			CALLMONITOR
 		endif
 		call forth_push_numhl
@@ -406,10 +411,11 @@
 
 	pop hl
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, 'm'
-			ld (debug_mark),a
-			pop af
+			DMARK "MAX"
+			;push af
+			;ld a, 'm'
+			;ld (debug_mark),a
+			;pop af
 			CALLMONITOR
 		endif
 		call forth_push_numhl
@@ -420,10 +426,11 @@
 	pop bc   ; tidy up
 	ex de , hl 
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, 'M'
-			ld (debug_mark),a
-			pop af
+			DMARK "MA1"
+;			push af
+;			ld a, 'M'
+;			ld (debug_mark),a
+;			pop af
 			CALLMONITOR
 		endif
 		call forth_push_numhl

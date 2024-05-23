@@ -113,12 +113,13 @@ storage_read_block:
 	djnz .rl1
 
 	if DEBUG_STORESE
+		DMARK "SRB"
 		pop de
-
-		push af
-		ld a, 'R'
-		ld (debug_mark),a
-		pop af
+;
+;		push af
+;		ld a, 'R'
+;		ld (debug_mark),a
+;		pop af
 		CALLMONITOR
 	endif
 	ret	
@@ -141,11 +142,12 @@ storage_write_block:
 	ld b, STORE_BLOCK_PHY
 
 	if DEBUG_STORESE
+		DMARK "SWB"
 
-		push af
-		ld a, 'W'
-		ld (debug_mark),a
-		pop af
+		;push af
+		;ld a, 'W'
+		;ld (debug_mark),a
+		;pop af
 		CALLMONITOR
 	endif
 
@@ -195,11 +197,12 @@ storage_write_block:
 	djnz .wl1
 
 	if DEBUG_STORESE
+		DMARK "SW2"
 
-		push af
-		ld a, 'W'
-		ld (debug_mark),a
-		pop af
+		;push af
+		;ld a, 'W'
+		;ld (debug_mark),a
+		;pop af
 		CALLMONITOR
 	endif
 	ret	
@@ -227,11 +230,12 @@ storage_get_block_0:
 	call storage_read_block
 
 	if DEBUG_STORESE
+		DMARK "SB0"
 		ld de, store_page
-		push af
-		ld a, 'i'
-		ld (debug_mark),a
-		pop af
+;		push af
+;		ld a, 'i'
+;		ld (debug_mark),a
+;		pop af
 		CALLMONITOR
 	endif
 
@@ -250,10 +254,11 @@ storage_get_block_0:
 	; formatted then
 
 	if DEBUG_STORESE
-		push af
-		ld a, 'I'
-		ld (debug_mark),a
-		pop af
+		DMARK "SB1"
+		;push af
+		;ld a, 'I'
+		;ld (debug_mark),a
+		;pop af
 		CALLMONITOR
 	endif
 	ret
@@ -262,10 +267,11 @@ storage_get_block_0:
 	; bank not formatted so poke various bits to make sure
 
 	if DEBUG_STORESE
-		push af
-		ld a, 'f'
-		ld (debug_mark),a
-		pop af
+		DMARK "SB2"
+		;push af
+		;ld a, 'f'
+		;ld (debug_mark),a
+		;pop af
 		CALLMONITOR
 	endif
 
@@ -289,18 +295,20 @@ storage_get_block_0:
 	ld hl, 0
 	ld de, store_page
 	if DEBUG_STORESE
-		push af
-		ld a, 'F'
-		ld (debug_mark),a
-		pop af
+		DMARK "SB3"
+;		push af
+;		ld a, 'F'
+;		ld (debug_mark),a
+;		pop af
 		CALLMONITOR
 	endif
 	call storage_write_block
 	if DEBUG_STORESE
-		push af
-		ld a, '>'
-		ld (debug_mark),a
-		pop af
+		DMARK "SB4"
+;		push af
+;		ld a, '>'
+;		ld (debug_mark),a
+;		pop af
 		CALLMONITOR
 	endif
 
@@ -430,10 +438,11 @@ storage_findnextid:
 ;	ld hl, STORE_BLOCK_PHY
 
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, 'F'
-			ld (debug_mark),a
-			pop af
+		DMARK "FNI"
+		;	push af
+		;	ld a, 'F'
+		;	ld (debug_mark),a
+		;	pop af
 			CALLMONITOR
 		endif
 .ff1:   	
@@ -609,10 +618,11 @@ storage_freeblocks:
 
 storage_create:
 	if DEBUG_STORESE
-		push af
-		ld a, 'c'
-		ld (debug_mark),a
-		pop af
+		DMARK "SCR"
+		;push af
+		;ld a, 'c'
+		;ld (debug_mark),a
+		;pop af
 		CALLMONITOR
 	endif
 	push hl
@@ -628,20 +638,22 @@ storage_create:
 	ld de, store_page
 	if DEBUG_STORESE
 		ld de, store_page
-		push af
-		ld a, 'w'
-		ld (debug_mark),a
-		pop af
+		DMARK "SCw"
+		;push af
+		;ld a, 'w'
+		;ld (debug_mark),a
+		;pop af
 		CALLMONITOR
 	endif
 	call storage_write_block	 ; save update
 
 	if DEBUG_STORESE
 		ld de, store_page
-		push af
-		ld a, 'C'
-		ld (debug_mark),a
-		pop af
+		DMARK "SCC"
+		;push af
+		;ld a, 'C'
+		;ld (debug_mark),a
+		;pop af
 		CALLMONITOR
 	endif
 	; 
@@ -669,10 +681,11 @@ storage_create:
 	
 	ld de, store_page+1    ; get buffer for term string to use as file name
 	if DEBUG_STORESE
-		push af
-		ld a, 'c'
-		ld (debug_mark),a
-		pop af
+		DMARK "SCc"
+		;push af
+		;ld a, 'c'
+		;ld (debug_mark),a
+		;pop af
 		CALLMONITOR
 	endif
 	pop hl    ; get zero term string
@@ -685,18 +698,20 @@ storage_create:
 	pop hl
 	;ex de, hl
 	if DEBUG_STORESE
-		push af
-		ld a, 'a'
-		ld (debug_mark),a
-		pop af
+		DMARK "SCa"
+		;push af
+		;ld a, 'a'
+		;ld (debug_mark),a
+		;pop af
 		CALLMONITOR
 	endif
 	ldir    ; copy zero term string
 	if DEBUG_STORESE
-		push af
-		ld a, 'A'
-		ld (debug_mark),a
-		pop af
+		DMARK "SCA"
+;		push af
+;		ld a, 'A'
+;		ld (debug_mark),a
+;		pop af
 		CALLMONITOR
 	endif
 
@@ -705,10 +720,11 @@ storage_create:
 	ld hl,(store_tmppageid)
 	ld de, store_page
 	if DEBUG_STORESE
-		push af
-		ld a, 'b'
-		ld (debug_mark),a
-		pop af
+		DMARK "SCb"
+		;push af
+		;ld a, 'b'
+		;ld (debug_mark),a
+		;pop af
 		CALLMONITOR
 	endif
 	call storage_write_block
@@ -717,10 +733,11 @@ storage_create:
 	ld l, a
 	ld h,0
 	if DEBUG_STORESE
-		push af
-		ld a, 'z'
-		ld (debug_mark),a
-		pop af
+		DMARK "SCz"
+;		push af
+;		ld a, 'z'
+;		ld (debug_mark),a
+;		pop af
 		CALLMONITOR
 	endif
 	ret

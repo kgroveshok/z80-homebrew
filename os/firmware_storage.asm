@@ -327,6 +327,11 @@ storage_get_block_0:
 		call se_writebyte
 	ld a, 10
 	call aDelayInMS
+	inc hl
+		call se_writebyte
+	ld a, 10
+	call aDelayInMS
+	dec hl
 		pop bc
 		pop hl
 		ld a, STORE_BLOCK_PHY
@@ -340,6 +345,11 @@ storage_get_block_0:
 		call se_writebyte
 	ld a, 10
 	call aDelayInMS
+	inc hl
+		call se_writebyte
+	ld a, 10
+	call aDelayInMS
+	dec hl
 		pop bc
 		pop hl
 		ld a, STORE_BLOCK_PHY
@@ -411,6 +421,89 @@ storage_get_block_0:
 ;         Null file id
 ;         Write this block back
 
+storage_erase:
+
+	; hl contains the file id
+
+	ld e, l
+	ld d, 0
+	ld hl, STORE_BLOCK_PHY
+		if DEBUG_FORTH_WORDS
+			DMARK "ERA"
+			CALLMONITOR
+		endif
+	call storage_findnextid
+
+	push hl
+
+	; TODO check file not found
+
+	ld de, store_page
+	call storage_read_block
+
+		if DEBUG_FORTH_WORDS
+			DMARK "ER1"
+			CALLMONITOR
+		endif
+	ld a, (store_page)	; get file id
+	ld (store_tmpid), a
+
+	ld a, (store_page+2)    ; get count of extends
+	ld (store_tmpext), a
+
+	; wipe file header
+
+	pop hl
+	ld a, 0
+	ld (store_page), a
+	ld (store_page+1),a
+	ld de, store_page
+		if DEBUG_FORTH_WORDS
+			DMARK "ER2"
+			CALLMONITOR
+		endif
+	call storage_write_block
+
+
+	; wipe file extents
+
+	ld a, (store_tmpext)
+	ld b, a
+
+.eraext:	 
+	push bc
+
+	ld hl, STORE_BLOCK_PHY
+	ld a,(store_tmpid)
+	ld e, d
+	ld d, c	
+		if DEBUG_FORTH_WORDS
+			DMARK "ER3"
+			CALLMONITOR
+		endif
+	call storage_findnextid
+
+	push hl
+	call storage_read_block
+
+	; free block	
+
+	ld a, 0
+	ld (store_page), a
+	ld (store_page+1),a
+	ld de, store_page
+	pop hl
+		if DEBUG_FORTH_WORDS
+			DMARK "ER4"
+			CALLMONITOR
+		endif
+	call storage_write_block
+
+	pop bc
+	djnz .eraext
+
+	ret
+
 
 ; Find Free Block
 ; ---------------
@@ -439,10 +532,6 @@ storage_findnextid:
 
 		if DEBUG_FORTH_WORDS
 		DMARK "FNI"
-		;	push af
-		;	ld a, 'F'
-		;	ld (debug_mark),a
-		;	pop af
 			CALLMONITOR
 		endif
 .ff1:   	
@@ -454,7 +543,8 @@ storage_findnextid:
 		inc hl
 		call se_readbyte
 		ld d, a
-
+		pop hl
+		push hl
 		call cmp16
 		jr z, .fffound
 
@@ -482,6 +572,8 @@ storage_findnextid:
 		call se_readbyte
 		ld d, a
 
+		pop hl
+		push hl
 		call cmp16
 		jr z, .fffound
 
@@ -498,10 +590,11 @@ storage_findnextid:
 
 
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, 'n'
-			ld (debug_mark),a
-			pop af
+		DMARK "FN-"
+		;	push af
+		;	ld a, 'n'
+		;	ld (debug_mark),a
+		;	pop af
 			CALLMONITOR
 		endif
 	; no free marks!
@@ -513,6 +606,14 @@ storage_findnextid:
 		pop de
 		pop bc
 		pop hl
+		if DEBUG_FORTH_WORDS
+		DMARK "FNF"
+		;	push af
+		;	ld a, 'n'
+		;	ld (debug_mark),a
+		;	pop af
+			CALLMONITOR
+		endif
 	ret
 
 
@@ -616,16 +717,27 @@ storage_freeblocks:
 ; hl point to file name
 ; hl returns file id
 
+; file format:
+; byte 0 - file id
+; byte 1 - extent number
+; byte 2-> data
+
+; format for extent number 0:
+;
+; byte 0 - file id
+; byte 1 - extent 0
+; byte 2 - extent count
+; byte 3 -> file name and meta data
+
+
 storage_create:
 	if DEBUG_STORESE
 		DMARK "SCR"
-		;push af
-		;ld a, 'c'
-		;ld (debug_mark),a
-		;pop af
 		CALLMONITOR
 	endif
-	push hl
+
+	push hl		; save file name pointer
+
 	call storage_get_block_0
 
 	ld a,(store_page)	; get current file id
@@ -637,12 +749,7 @@ storage_create:
 	ld hl, 0
 	ld de, store_page
 	if DEBUG_STORESE
-		ld de, store_page
 		DMARK "SCw"
-		;push af
-		;ld a, 'w'
-		;ld (debug_mark),a
-		;pop af
 		CALLMONITOR
 	endif
 	call storage_write_block	 ; save update
@@ -650,10 +757,6 @@ storage_create:
 	if DEBUG_STORESE
 		ld de, store_page
 		DMARK "SCC"
-		;push af
-		;ld a, 'C'
-		;ld (debug_mark),a
-		;pop af
 		CALLMONITOR
 	endif
 	; 
@@ -662,30 +765,40 @@ storage_create:
 	ld de, 0
 	call storage_findnextid
 
+	ld (store_tmppageid), hl    ; save page to use 
+
+	; TODO detect 0 = no spare blocks
+
 	; hl now contains the free page to use for the file header page
+
+	if DEBUG_STORESE
+	DMARK "SCF"
+		CALLMONITOR
+	endif
 
 	ld (store_tmppageid), hl
 	
 	ld a,(store_tmpid)    ; get file id
-	ld a, (store_filecache)			; save to cache
+;	ld a, (store_filecache)			; save to cache
 
 	ld (store_page),a    ; set page id
+	ld a, 0			 ; extent 0 is file header
+	ld (store_page+1), a   ; set file extent
 
-	inc hl 		; init block 0 of file
-        ld a, 0
-	ld (hl),a
-	ld a, (store_filecache+1)  	; save to cache
+	ld (store_page+2), a   ; extent count for the file
 
-	inc hl    ; file name
+;	inc hl 		; init block 0 of file
+;	inc hl   		; skip file and extent id
+ ;       ld a, 0
+;	ld (hl),a
+;	ld a, (store_filecache+1)  	; save to cache
+
+;	inc hl    ; file name
 	
 	
-	ld de, store_page+1    ; get buffer for term string to use as file name
+	ld de, store_page+3    ; get buffer for term string to use as file name
 	if DEBUG_STORESE
 		DMARK "SCc"
-		;push af
-		;ld a, 'c'
-		;ld (debug_mark),a
-		;pop af
 		CALLMONITOR
 	endif
 	pop hl    ; get zero term string
@@ -708,10 +821,6 @@ storage_create:
 	ldir    ; copy zero term string
 	if DEBUG_STORESE
 		DMARK "SCA"
-;		push af
-;		ld a, 'A'
-;		ld (debug_mark),a
-;		pop af
 		CALLMONITOR
 	endif
 
@@ -752,18 +861,134 @@ storage_create:
 
 
 storage_append:
-		; TODO 1. if file id is NOT the same as cached block:
-		; TODO ...use find file to locate last block of file and save to cache
-		;
-		; TODO 2. inc last block extent count (save to cache)
-		; TODO 3. construct block with file id, extent number, as much that will fit
-		; TODO 4. find next free block
-		; TODO 5. write buffer
-		; TODO 6. any more of input buffer to write?
-		; TODO 7. Yes, go to 2
+	; hl -  file id to append to
+	; de - string to append
+
+	push de
+	
+	if DEBUG_STORESE
+		DMARK "AP1"
+		CALLMONITOR
+	endif
+
+	ld a, l
+	ld (store_tmpid), a
+
+	; get file header 
+
+	ld d, 0			 ; file extent to locate - file name details at item 0
+	ld a, (store_tmpid)
+	ld e, a
+
+		ld hl, STORE_BLOCK_PHY
+		call storage_findnextid
+
+	ld (store_tmppageid), hl
+
+	; TODO handle file id not found
+
+	if DEBUG_STORESE
+		DMARK "AP2"
+		CALLMONITOR
+	endif
+
+	; update file extent count
+
+	ld de, store_page
+
+	call storage_read_block
+
+	if DEBUG_STORESE
+		DMARK "AP3"
+		CALLMONITOR
+	endif
+;	ld (store_tmppageid), hl
+
+	ld a, (store_page+2)
+	inc a
+	ld (store_page+2), a
+	ld (store_tmpext), a
+	
+	if DEBUG_STORESE
+		DMARK "AP3"
+		CALLMONITOR
+	endif
+	ld hl, (store_tmppageid)
+	ld de, store_page
+	call storage_write_block
+
+	; find free block
+
+	ld de, 0			 ; file extent to locate
+
+		ld hl, STORE_BLOCK_PHY
+		call storage_findnextid
+
+		; TODO handle no space left
+		
+		ld (store_tmppageid), hl
+
+	if DEBUG_STORESE
+		DMARK "AP4"
+		CALLMONITOR
+	endif
+		; construct block
+
+		ld a, (store_tmpid)
+		ld (store_page), a   ; file id
+		ld a, (store_tmpext)   ; extent for this block
+		ld (store_page+1), a
+
+		pop hl    ; get string to write
+		ld b, STORE_BLOCK_PHY-2       ; exclude count of file id and extent
+		ld de, store_page+2
+
+	if DEBUG_STORESE
+		DMARK "AP5"
+		CALLMONITOR
+	endif
+
+		; fill buffer with data until end of string or full block
+
+.appd:		ld a, (hl)
+		ld (de), a
+		cp 0
+		jr z, .appdone
+		inc hl
+		inc de
+		djnz .appd
+
+.appdone:	push hl		 	; save current source in case we need to go around again
+		push af   		; save last byte dumped
 
 
-		ret
+	ld hl, (store_tmppageid)
+	ld de, store_page
+	if DEBUG_STORESE
+		DMARK "AP6"
+		CALLMONITOR
+	endif
+		call storage_write_block
+
+
+	; was that a full block of data written?
+	; any more to write out?
+
+	; if yes then set vars and jump to start of function again
+
+		pop af
+		pop de
+
+		cp 0		 ; no, string was fully written
+		ret z
+
+		; setup vars for next cycle
+
+		ld a, (store_tmpid)
+		ld l, a
+		ld h, 0
+
+	 	jp storage_append	 ; yes, need to write out some more
 
 
 

@@ -202,6 +202,14 @@ forth_init:
 	inc hl
 	ld (hl),a
 
+	; init extent of current open file
+
+	ld a, 0
+	ld (store_openext), a
+
+
+	; show start up screen
+
 	call clear_display
 
 	ld a,0

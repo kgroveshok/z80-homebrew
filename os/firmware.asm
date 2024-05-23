@@ -21,7 +21,7 @@ DEBUG_FORTH_PARSE_EXEC_SLOW: equ 0     ; 6
 DEBUG_FORTH_PARSE_NEXTWORD: equ 0
 DEBUG_FORTH_JP: equ 0
 DEBUG_FORTH_MALLOC: equ 0
-DEBUG_FORTH_DOT: equ 0
+DEBUG_FORTH_DOT: equ 1
 DEBUG_FORTH_DOT_KEY: equ 0
 DEBUG_FORTH_MALLOC_GUARD: equ 1
 DEBUG_FORTH_MATHS: equ 1
@@ -168,9 +168,11 @@ STORE_BLOCK_LOG:  equ   255      ; TODO remove.... Logical block size
 
 store_page: equ store_bank_active-STORE_BLOCK_LOG            ; page size for eeprom
 store_ffpage: equ store_page-STORE_BLOCK_LOG            ; page size for eeprom
-store_tmpid: equ store_ffpage - 1
-store_filecache: equ store_tmpid+(2*5)   ;  TODO (using just one for now)  file id + extent count cache * 5
-store_tmppageid: equ store_filecache-2
+store_tmpid: equ store_ffpage - 1		; page temp id
+store_tmpext: equ store_tmpid - 1		; file extent temp
+store_openext: equ store_tmpext - 1		; file extent of current opened file for read
+store_filecache: equ store_openext+(2*5)   ;  TODO (using just one for now)  file id + extent count cache * 5
+store_tmppageid: equ store_filecache-2    ; phyical page id temp
 ;
 ; spi vars
 ; 

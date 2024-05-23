@@ -11,10 +11,6 @@
 
 		if DEBUG_FORTH_WORDS
 			DMARK "DIR"
-;			push af
-;			ld a, 'D'
-;			ld (debug_mark),a
-;			pop af
 			CALLMONITOR
 		endif
 	call storage_get_block_0
@@ -24,10 +20,6 @@
 	ld c, 0    ; count of files  
 		if DEBUG_FORTH_WORDS
 			DMARK "DI1"
-;			push af
-;			ld a, 'D'
-;			ld (debug_mark),a
-;			pop af
 			CALLMONITOR
 		endif
 
@@ -35,7 +27,7 @@
 
 	ld a, 0
 	cp b
-	jr z, .dirdone
+	jp z, .dirdone
 
 	; for each of the current ids do a search for them and if found push to stack
 
@@ -43,24 +35,18 @@
 		ld hl, STORE_BLOCK_PHY
 		ld d, 0		 ; look for extent 0 of block id as this contains file name
 		ld e,b
-		if DEBUG_FORTH_WORDS
-			DMARK "DI2"
-;			push af
-;			ld a, 'd'
-;			ld (debug_mark),a
-;			pop af
-			CALLMONITOR
-		endif
+
+;		if DEBUG_FORTH_WORDS
+;			DMARK "DI2"
+;			CALLMONITOR
+;		endif
+
 		call storage_findnextid
-		pop bc
-		if DEBUG_FORTH_WORDS
-			DMARK "DI3"
-			;push af
-		;	ld a, 'f'
-		;	ld (debug_mark),a
-			pop af
-			CALLMONITOR
-		endif
+
+;		if DEBUG_FORTH_WORDS
+;			DMARK "DI3"
+;			CALLMONITOR
+;		endif
 
 		; if found hl will be non zero
 
@@ -72,50 +58,49 @@
 
 		; increase count
 
+		pop bc	
 		inc c
+		push bc
+		
 
 		; get file header and push the file name
 
-		push bc
-		;push hl
 		ld de, store_page
 		call storage_read_block
-		;pop hl
 
 		; push file id to stack
 	
+		ld a, (store_page)
 		ld h, 0
-		ld l, c
+		ld l, a
+		call forth_push_numhl
+
+		; push extent count to stack 
+	
+		ld a, (store_page+2)
+		ld h, 0
+		ld l, a
 		call forth_push_numhl
 
 		; push file name
 
-		ld hl, store_page
-		inc hl   ; get past id
+		ld hl, store_page+3
 		if DEBUG_FORTH_WORDS
-			DMARK "DI4"
-;			push af
-;			ld a, 'p'
-;			ld (debug_mark),a
-;			pop af
+			DMARK "DI5"
 			CALLMONITOR
 		endif
 		call forth_apushstrhl
-		pop bc
-;		if DEBUG_FORTH_WORDS
-;			DMARK "DI5"
-;			push af
-;			ld a, ','
-;			ld (debug_mark),a
-;			pop af
-;			CALLMONITOR
-;		endif
+		if DEBUG_FORTH_WORDS
+			DMARK "DI6"
+			CALLMONITOR
+		endif
 .dirnotfound:
+		pop bc    
 		djnz .diritem
 	
 .dirdone:	
 		if DEBUG_FORTH_WORDS
-			DMARK "DI6"
+			DMARK "DI7"
 			;push af
 			;ld a, '-'
 			;ld (debug_mark),a
@@ -138,7 +123,7 @@
 
 		if DEBUG_FORTH_WORDS
 			;push af
-			DMARK "DI7"
+			DMARK "DI8"
 			;ld a, '='
 			;ld (debug_mark),a
 			;pop af
@@ -319,28 +304,65 @@
 
 		; TODO get id
 
-		FORTH_DSP_VALUE
+		FORTH_DSP_VALUEHL
 		push hl 	; save file id
 
+	if DEBUG_STORESE
+		DMARK "APP"
+		;push af
+		;ld a, '='
+		;ld (debug_mark),a
+		;pop af
+		CALLMONITOR
+	endif
 		FORTH_DSP_POP
 
 		FORTH_DSP_VALUE
 		push hl 	; save ptr to string to save
 
+	if DEBUG_STORESE
+		DMARK "AP1"
+		;push af
+		;ld a, '='
+		;ld (debug_mark),a
+		;pop af
+		CALLMONITOR
+	endif
 		FORTH_DSP_POP
 
 		pop de
 		pop hl
+	if DEBUG_STORESE
+		DMARK "AP2"
+		;push af
+		;ld a, '='
+		;ld (debug_mark),a
+		;pop af
+		CALLMONITOR
+	endif
+		inc de ; skip var type indicator
+
 		call storage_append		
 
 	       NEXTW
 .SDEL:
-	CWHEAD .OPEN 86 "SDEL" 4 WORD_FLAG_CODE
-;| SDEL ( n --  )  Deletes all data for file id n on current storage bank |
+	CWHEAD .OPEN 86 "ERA" 4 WORD_FLAG_CODE
+;| ERA ( n --  )  Deletes all data for file id n on current storage bank | TEST
 		; TODO get id
 		; TODO find id blocks
 		; TODO   set marker to zero
 		; TODO   write buffer
+		FORTH_DSP_VALUEHL
+		push hl 	; save file id
+
+	if DEBUG_STORESE
+		DMARK "ERA"
+		CALLMONITOR
+	endif
+		FORTH_DSP_POP
+
+
+		call storage_erase
 	       NEXTW
 
 .OPEN:

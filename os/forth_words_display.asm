@@ -41,10 +41,7 @@
 
 		FORTH_DSP_VALUE 
 if DEBUG_FORTH_DOT
-	push af
-	ld a, 'z'
-	ld (debug_mark),a
-	pop af
+	DMARK "DOT"
 	CALLMONITOR
 endif	
 ;		.print:
@@ -74,10 +71,7 @@ endif
 	ld d, (hl)
 	ld hl, scratch
 if DEBUG_FORTH_DOT
-	push af
-	ld a, 'I'
-	ld (debug_mark),a
-	pop af
+	DMARK "DT1"
 	CALLMONITOR
 endif	
 
@@ -85,10 +79,7 @@ endif
 	ex de,hl
 
 if DEBUG_FORTH_DOT
-	push af
-	ld a, 'i'
-	ld (debug_mark),a
-	pop af
+	DMARK "DT2"
 	CALLMONITOR
 endif	
 
@@ -112,20 +103,14 @@ endif
 
 
 if DEBUG_FORTH_DOT
-	push af
-	ld a, 'h'
-	ld (debug_mark),a
-	pop af
+	DMARK "DTh"
 	CALLMONITOR
 endif	
 
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
 if DEBUG_FORTH_DOT
-	push af
-	ld a, 'i'
-	ld (debug_mark),a
-	pop af
+	DMARK "DTi"
 	CALLMONITOR
 endif	
 

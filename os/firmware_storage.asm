@@ -855,6 +855,43 @@ storage_create:
 
 
 ;
+; Read File
+;
+; h - file id to locate
+; l - extent to locate
+; de - pointer to string to read into
+;
+; returns hl is 0 if block not found ie end of file or pointer to start of data read
+storage_read:
+	push de
+
+; TODO how to handle multiple part blocks
+
+	; locate file extent to read
+
+	ld e, h
+	ld d, l
+	ld hl, STORE_BLOCK_PHY
+	call storage_findnextid
+
+	ld a, l
+	add h
+	cp 0
+	ret z			; block not found so EOF
+
+	; hl contains page number to load
+	pop de   ; get storage
+	push de
+	call storage_read_block
+		
+	pop hl 		 ; return start of data to show as not EOF
+	inc hl   ; past file id
+	inc hl   ; past ext
+		ret
+
+
+
+;
 ; Append File
 ;
 ; hl - file id to locate

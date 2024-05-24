@@ -382,7 +382,7 @@
 	       NEXTW
 .READ:
 	CWHEAD .EOF 88 "READ" 4 WORD_FLAG_CODE
-;| READ ( n -- n  )  Reads next page of file id and push to stack |
+;| READ ( n -- n  )  Reads next page of file id and push to stack | TESTING - Crashes on second read
 
 		; TODO store_openext use it. If zero it is EOF
 
@@ -391,6 +391,63 @@
 		; TODO push the block to stack
 		; TODO save the block id to stream
 
+
+		FORTH_DSP_VALUEHL
+
+		push hl
+
+	if DEBUG_STORESE
+		DMARK "REA"
+		CALLMONITOR
+	endif
+		FORTH_DSP_POP
+
+		pop hl
+	
+		ld h,l
+
+		ld a, (store_openext)
+		ld l, a
+
+		ld de, store_page
+	if DEBUG_STORESE
+		DMARK "RE1"
+		CALLMONITOR
+	endif
+		call storage_read
+
+	if DEBUG_STORESE
+		DMARK "RE2"
+		CALLMONITOR
+	endif
+	ld a, l
+	add h
+	cp 0
+	jr z, .readeof
+
+	; not eof so hl should point to data to push to stack
+
+	if DEBUG_STORESE
+		DMARK "RE3"
+		CALLMONITOR
+	endif
+	call forth_apushstrhl
+
+	; get next block 
+
+		ld a, (store_openext)
+		inc a
+		ld (store_openext), a
+
+
+	       NEXTW
+.readeof:	ld a, 0
+		ld (store_openext), a
+
+	if DEBUG_STORESE
+		DMARK "REF"
+		CALLMONITOR
+	endif
 	       NEXTW
 .EOF:
 	CWHEAD .FORMAT 89 "EOF" 3 WORD_FLAG_CODE

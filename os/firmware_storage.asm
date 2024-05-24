@@ -125,6 +125,35 @@ storage_read_block:
 	ret	
 	
 
+; File Size
+; ---------
+;
+;   hl file id
+;
+;  returns in hl the number of blocks
+
+storage_file_size:
+	ld e, l
+	ld d, 0
+	ld hl, STORE_BLOCK_PHY
+		if DEBUG_FORTH_WORDS
+			DMARK "SIZ"
+			CALLMONITOR
+		endif
+	call storage_findnextid
+
+	ld a, l
+	add h
+	cp 0
+	ret z			; block not found so EOF
+
+	ld de, store_page
+	call storage_read_block
+
+	ld a, (store_page+2)	 ; get extent count
+	ld l, a
+	ld h, 0
+ 	ret
 
 
 ; Write Block

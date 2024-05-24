@@ -248,12 +248,26 @@
 		NEXTW
 
 .SFREE:
-	CWHEAD .CREATE 83 "SFREE" 5 WORD_FLAG_CODE
-;| SFREE ( -- n )  Gets number of blocks free on current storage bank | DONE
+	CWHEAD .SIZE 83 "FFREE" 5 WORD_FLAG_CODE
+;| FFREE ( -- n )  Gets number of free file blocks on current storage bank | DONE
 
 		call storage_freeblocks
 
 		call forth_push_numhl
+
+	       NEXTW
+.SIZE:
+	CWHEAD .CREATE 83 "SIZE" 4 WORD_FLAG_CODE
+;| SIZE ( u -- n )  Gets number of blocks used by file id u and push to stack | DONE
+
+		FORTH_DSP_VALUEHL
+		push hl
+		FORTH_DSP_POP
+		pop hl
+		call storage_file_size
+
+		call forth_push_numhl
+ 
 
 	       NEXTW
 

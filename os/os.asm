@@ -176,7 +176,16 @@ cli:
 
 	ld de, scratch
 	ld hl, os_last_cmd
+;	ld bc, 250
+;	ldir
+	; TODO ldir is not working strcpy may not get all the terms on the input line????
 	call strcpy
+	ld a, 0
+	ld (hl), a
+	inc hl
+	ld (hl), a
+	inc hl
+	ld (hl), a
 
 	; look for monitor commands
 

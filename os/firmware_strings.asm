@@ -264,7 +264,39 @@ ld hl, (input_ptr)
 		jp .is1
 
 .isk2:		cp KEY_UP
+
 		jr nz, .isk3
+
+		; swap last command with the current on
+
+		; move cursor to start of string
+		ld hl, (input_start)
+		ld (input_ptr), hl
+
+		ld a, (input_at_pos)
+		ld (input_at_cursor), a
+
+		ld a, 0
+		ld (input_cursor), a
+		
+		; swap input and last command buffers
+
+		ld hl, scratch
+		ld de, os_last_cmd
+		ld b, 255
+.swap1:		ld a, (hl)
+		ld c,a
+		ld a, (de)
+		ld (hl), a
+		ld a,c
+		ld (de),a
+		inc hl
+		inc de
+		djnz .swap1
+
+
+
+
 
 		jp .is1
 

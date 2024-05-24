@@ -549,13 +549,24 @@ Next to look at SPI storage...
 Can format, create and get a directory on the SPI storage.
 Have added some more looping words and using loop stack so DO loops can access the stack
 
-TODO fix a spurious return stack issue on REPEAT...UNTIL
+DONE fix a spurious return stack issue on REPEAT...UNTIL
 DONE add two char detection for hex numbers
-TODO do the append and read spi functions
-TODO sort out the input box to not do direct screen writes as well as provide better editing
-TODO add cursor key support on the keyboard
+DONE do the append and read spi functions
+DONE BUT STILL NEEDS MORE WORK sort out the input box to not do direct screen writes as well as provide better editing
+DONE add cursor key support on the keyboard
 
-TODO May have issue with append. If prev file is deleted first zero will be before header rec. Need a new file system. CP/M?
+DONE May have issue with append. If prev file is deleted first zero will be before header rec. Need a new file system. CP/M?
+
+25th May
+--------
+
+Got more of the file control words in place. Up cursor should do last line recall
+
+TODO last line recall messing screen layout
+TODO need to add extra bank selection support
+TODO Design new keyboard layout PCB now I have key caps etc
+
+
 
 
 

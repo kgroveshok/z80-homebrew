@@ -342,6 +342,8 @@
 	endif
 		inc de ; skip var type indicator
 
+		; TODO how to append numerics????
+
 		call storage_append		
 
 	       NEXTW
@@ -368,14 +370,21 @@
 
 .OPEN:
 	CWHEAD .READ 87 "OPEN" 4 WORD_FLAG_CODE
-;| OPEN ( n --  )  Sets file id to point to first data page |
+;| OPEN ( n --  )  Sets file id to point to first data page for subsequent READs - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | DONE
 
-		; TODO set start of stream for id to first block
+		; TODO handle multiple file opens
+		FORTH_DSP_POP     ; for now just get rid of stream id
+
+	       	ld a, 1
+		ld (store_openext), a
+			
 
 	       NEXTW
 .READ:
 	CWHEAD .EOF 88 "READ" 4 WORD_FLAG_CODE
 ;| READ ( n -- n  )  Reads next page of file id and push to stack |
+
+		; TODO store_openext use it. If zero it is EOF
 
 		; TODO read block from current stream id
 		; TODO if the block does not contain zero term keep reading blocks until zero found
@@ -385,8 +394,23 @@
 	       NEXTW
 .EOF:
 	CWHEAD .FORMAT 89 "EOF" 3 WORD_FLAG_CODE
-;| EOF ( n -- u )  Returns EOF state of file id n |
+;| EOF ( n -- u )  Returns EOF logical state of file id n - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | DONE
 		; TODO if current block id for stream is zero then push true else false
+
+
+		; TODO handlue multiple file streams
+
+		FORTH_DSP_POP     ; for now just get rid of stream id
+
+		ld l, 1
+		ld a, (store_openext)
+		cp 0
+		jr  z, .eofdone
+		ld l, 0
+.eofdone:	ld h, 0
+		call forth_push_numhl
+
+
 	       NEXTW
 
 .FORMAT:

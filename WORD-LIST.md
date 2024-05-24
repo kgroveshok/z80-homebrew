@@ -85,9 +85,9 @@ BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at a
  CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS | DONE
  APPEND ( u n --  )  Appends data u to file id on current storage bank |
  ERA ( n --  )  Deletes all data for file id n on current storage bank | DONE
- OPEN ( n --  )  Sets file id to point to first data page |
+ OPEN ( n --  )  Sets file id to point to first data page for subsequent READs - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | DONE
  READ ( n -- n  )  Reads next page of file id and push to stack |
- EOF ( n -- u )  Returns EOF state of file id n |
+ EOF ( n -- u )  Returns EOF logical state of file id n - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | DONE
  FORMAT (  --  )  Formats the current bank selected (NO PROMPT!) |
  CONCAT ( s1 s2 -- s3 ) A string of u spaces is pushed onto the stack
  FIND (  -- )  
@@ -147,6 +147,8 @@ DIR ( u -- lab id ... c t )   Using bank number u push directory entries from pe
  SFREE ( -- n )  Gets number of blocks free on current storage bank | DONE
  CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS | DONE
  ERA ( n --  )  Deletes all data for file id n on current storage bank | DONE
+ OPEN ( n --  )  Sets file id to point to first data page for subsequent READs - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | DONE
+ EOF ( n -- u )  Returns EOF logical state of file id n - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | DONE
 Words still left to do
 ----------------------
 SWAP ( w1 w2 -- w2 w1 )    Swap top two items (of whatever type) on TOS
@@ -184,9 +186,7 @@ SAVE  ( w u -- )    Save user word memory to file name w on bank u
 BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at address a for s bytes
  BLOAD ( w u a -- )    Load binary file from file name w on bank u into address u
  APPEND ( u n --  )  Appends data u to file id on current storage bank |
- OPEN ( n --  )  Sets file id to point to first data page |
  READ ( n -- n  )  Reads next page of file id and push to stack |
- EOF ( n -- u )  Returns EOF state of file id n |
  FORMAT (  --  )  Formats the current bank selected (NO PROMPT!) |
  CONCAT ( s1 s2 -- s3 ) A string of u spaces is pushed onto the stack
  FIND (  -- )  

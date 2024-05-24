@@ -301,7 +301,7 @@ endif
 .regstatehl:	db "HL:",0
 .regstatede:	db "DE:",0
 .regstatebc:	db "BC:",0
-.regstatea:	db "AF:",0
+.regstatea:	db "A :",0
 .regstatedsp:	db "DSP:",0
 .regstatersp:	db "RSP:",0
 .mallocerr: 	db "Malloc Error",0
@@ -624,10 +624,14 @@ break_point_state:
 
 .bpsgo:
 
-	ld (os_view_af),a
 	ld (os_view_hl), hl
 	ld (os_view_de), de
 	ld (os_view_bc), bc
+	push hl
+	ld l, a
+	ld h, 0
+	ld (os_view_af),hl
+	pop hl	
 
 	ld a, '1'
 .bps1:  cp '*'
@@ -851,6 +855,13 @@ display_reg_state:
 
 
 startcmds:
+;	dw test11
+;	dw test12
+;	dw test13
+;	dw test14
+;	dw test15
+;	dw test16
+;	dw test17
 ;	dw ifthtest1
 ;	dw ifthtest2
 ;	dw ifthtest3
@@ -878,6 +889,7 @@ startcmds:
 	
 	dw start1
 	dw start2
+	dw start3
 	db 0, 0	
 
 test1:		db ": aa 1 2 3 ;  ", 0, 0, 0, FORTH_END_BUFFER
@@ -890,6 +902,13 @@ test7:     	db ": box hline vline ;  ",0, 0, 0, FORTH_END_BUFFER
 test8:     	db ": world cls box $03 $03 at Hello-World! . ;  ",0, 0, 0, FORTH_END_BUFFER
 test9:     	db ": sw $01 adsp world ;  ",0, 0, 0, FORTH_END_BUFFER
 test10:     	db ": fw $00 adsp world draw $05 pause ;  ",0, 0, 0, FORTH_END_BUFFER
+test11:     	db "hello create . ",0, 0, 0, FORTH_END_BUFFER
+test12:     	db "hello2 create . ",0, 0, 0, FORTH_END_BUFFER
+test13:     	db "some-text-1 $01 append ",0, 0, 0, FORTH_END_BUFFER
+test14:     	db "some-text-2 $01 append ",0, 0, 0, FORTH_END_BUFFER
+test15:     	db "some-text-3 $01 append ",0, 0, 0, FORTH_END_BUFFER
+test16:     	db "some-text-4 $01 append ",0, 0, 0, FORTH_END_BUFFER
+test17:     	db "some-text-in2-1 $02 append ",0, 0, 0, FORTH_END_BUFFER
 
 mmtest1:     	db "cls $0001 $0008 MIN . $0002 pause  ",0, 0, 0, FORTH_END_BUFFER
 mmtest2:     	db "cls $0101 $0008 MIN . $0002 pause  ",0, 0, 0, FORTH_END_BUFFER
@@ -910,7 +929,7 @@ ifthtest3:     	db "$0002 $0003 - IF is-true . $0005 pause THEN next-word . $000
 
 start1:     	db ": bpon $0000 bp ;  ",0, 0, 0, FORTH_END_BUFFER
 start2:     	db ": bpoff $0001 bp ;  ",0, 0, 0, FORTH_END_BUFFER
-
+start3:         db ": dirlist dir cls drop $01 do $08 i at . $01 i at . $04 i at . loop ;  ",0, 0, 0, FORTH_END_BUFFER
 
 
 sprompt1: db "Startup load...",0

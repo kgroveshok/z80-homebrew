@@ -347,7 +347,7 @@
 	       NEXTW
 .SDEL:
 	CWHEAD .OPEN 86 "ERA" 4 WORD_FLAG_CODE
-;| ERA ( n --  )  Deletes all data for file id n on current storage bank | TEST
+;| ERA ( n --  )  Deletes all data for file id n on current storage bank | DONE
 		; TODO get id
 		; TODO find id blocks
 		; TODO   set marker to zero
@@ -361,6 +361,7 @@
 	endif
 		FORTH_DSP_POP
 
+		pop hl
 
 		call storage_erase
 	       NEXTW

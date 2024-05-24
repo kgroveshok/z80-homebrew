@@ -475,8 +475,8 @@ storage_erase:
 
 	ld hl, STORE_BLOCK_PHY
 	ld a,(store_tmpid)
-	ld e, d
-	ld d, c	
+	ld e, a
+	ld d, b	
 		if DEBUG_FORTH_WORDS
 			DMARK "ER3"
 			CALLMONITOR
@@ -484,6 +484,7 @@ storage_erase:
 	call storage_findnextid
 
 	push hl
+	ld de, store_page
 	call storage_read_block
 
 	; free block	

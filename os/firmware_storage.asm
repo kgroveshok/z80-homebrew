@@ -405,6 +405,43 @@ storage_get_block_0:
 ; Set label
 ; Write block 0
 
+; label str pointer in hl
+
+storage_label:    
+
+	if DEBUG_STORESE
+		DMARK "LBL"
+		CALLMONITOR
+	endif
+
+	push hl
+
+	call storage_get_block_0
+
+	; set default label
+
+	pop hl
+
+ 	ld de, store_page+3
+	ld bc, 15
+	if DEBUG_STORESE
+		DMARK "LB3"
+		CALLMONITOR
+	endif
+	ldir
+	; save default page 0
+
+	ld hl, 0
+	ld de, store_page
+	if DEBUG_STORESE
+		DMARK "LBW"
+		CALLMONITOR
+	endif
+	call storage_write_block
+
+	ret
+
+
 
 ; Read Block 0 - Config
 ; ---------------------

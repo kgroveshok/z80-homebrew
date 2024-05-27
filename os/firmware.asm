@@ -16,6 +16,7 @@ DEBUG_KEY: equ 0
 DEBUG_KEY_MATRIX: equ 0
 DEBUG_STORECF: equ 0
 DEBUG_STORESE: equ 1        ; TODO  w locks up, r returns. 
+DEBUG_SPI_HARD_CE0: equ 1    ; only handshake on CE0 on port A
 DEBUG_FORTH_PARSE_EXEC: equ 1     ; 6
 DEBUG_FORTH_PARSE_EXEC_SLOW: equ 0     ; 6
 DEBUG_FORTH_PARSE_NEXTWORD: equ 0
@@ -177,8 +178,10 @@ store_tmppageid: equ store_filecache-2    ; phyical page id temp
 ; spi vars
 ; 
 
-spi_portbyte: equ store_tmppageid - 1      ; holds bit mask to send to spi bus
-spi_device: equ spi_portbyte - 1    ; bit mask to or to select the spi device pin
+spi_cartdev: equ store_tmppageid - 1      ; holds bit mask to send to portb (ext spi) devices
+spi_portbyte: equ spi_cartdev - 1      ; holds bit mask to send to spi bus 
+spi_device: equ spi_portbyte - 1    ; bit mask to send to porta (eeproms) devices
+
 ;;;;; forth cli params
 
 ; TODO use a different frame buffer for forth???

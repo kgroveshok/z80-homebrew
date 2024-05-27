@@ -33,7 +33,9 @@ SPI_CE4: equ 8      ; port a4     pin 10
 se_stable_spi:  
 
 	 ; set DI high, CE high , SCLK low
-	ld a, SPI_DI | SPI_CE0
+	;ld a, SPI_DI | SPI_CE0
+	ld a, SPI_DI 
+	call spi_ce_high
 	 out (storage_adata),a
 	ld (spi_portbyte),a
 
@@ -234,6 +236,59 @@ spi_read_byte:
 	ret
 
 
+
+spi_ce_high:
+
+	if DEBUG_SPI_HARD_CE0
+       set SPI_CE0,a           ; TODO pass the ce bank bit mask
+		ret
+
+	endif
+
+
+	push af
+
+	; send direct ce to port b
+	ld a, 255
+	out (storage_bdata), a
+
+	pop af
+
+	; for port a that shares with spi lines AND the mask
+ 
+	ld c, 31
+	add c
+
+	ret
+
+
+spi_ce_low:
+
+	if DEBUG_SPI_HARD_CE0
+       res SPI_CE0,a           ; TODO pass the ce bank bit mask
+		ret
+
+	endif
+	push af
+
+	; send direct ce to port b
+	ld a, (spi_cartdev)
+	out (storage_bdata), a
+
+
+	; for port a that shares with spi lines AND the mask
+
+	ld a, (spi_device) 
+	ld c, a
+
+	pop af
+	add c
+
+	ret
+
+
+
+; eof
 
 
 

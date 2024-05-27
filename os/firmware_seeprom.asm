@@ -70,9 +70,15 @@ storage_init:
 ;            LD   A, SPI_DO      ; only one input line  the rest are outputs
             OUT  (storage_actl),A   ;Port A = all lines are outputs
 
-	; set default bank
+            LD   A, 11001111b
+            OUT  (storage_bctl), A  ;Port A = PIO 'control' mode
+            LD   A, 00000000b
+            OUT  (storage_bctl),A   ;Port A = all lines are outputs
+
+	; set all external spi devices off
 	ld a, 0
 	ld (spi_device), a
+	ld (spi_cartdev), a
 
 		; ensure the spi bus is in a default stable state
 		call se_stable_spi
@@ -126,7 +132,8 @@ se_writebyte:
     ;CS low
 
        ld a,(spi_portbyte)
-       res SPI_CE0,a           ; TODO pass the ce bank bit mask
+	call spi_ce_low
+       ;res SPI_CE0,a           ; TODO pass the ce bank bit mask
        out (storage_adata),a
        ld (spi_portbyte), a
 
@@ -138,7 +145,8 @@ se_writebyte:
     ;cs high to enable write latch
 
        ld a,(spi_portbyte)
-       set SPI_CE0,a           ; TODO pass the ce bank bit mask
+	call spi_ce_high
+;       set SPI_CE0,a           ; TODO pass the ce bank bit mask
        out (storage_adata),a
        ld (spi_portbyte), a
 
@@ -149,7 +157,8 @@ se_writebyte:
     ; cs low
     
        ld a,(spi_portbyte)
-       res SPI_CE0,a           ; TODO pass the ce bank bit mask
+	call spi_ce_low
+       ;res SPI_CE0,a           ; TODO pass the ce bank bit mask
        out (storage_adata),a
        ld (spi_portbyte), a
 
@@ -173,7 +182,8 @@ se_writebyte:
 
     ; end write with ce high
        ld a,(spi_portbyte)
-       set SPI_CE0,a           ; TODO pass the ce bank bit mask - perhaps have a call that sets it
+;       set SPI_CE0,a           ; TODO pass the ce bank bit mask - perhaps have a call that sets it
+	call spi_ce_high
        out (storage_adata),a
        ld (spi_portbyte), a
 
@@ -195,7 +205,8 @@ se_writepage:
     ;CS low
 
        ld a,(spi_portbyte)
-       res SPI_CE0,a           ; TODO pass the ce bank bit mask
+	call spi_ce_low
+       ;res SPI_CE0,a           ; TODO pass the ce bank bit mask
        out (storage_adata),a
        ld (spi_portbyte), a
 
@@ -207,7 +218,8 @@ se_writepage:
     ;cs high to enable write latch
 
        ld a,(spi_portbyte)
-       set SPI_CE0,a           ; TODO pass the ce bank bit mask
+	call spi_ce_high
+       ;set SPI_CE0,a           ; TODO pass the ce bank bit mask
        out (storage_adata),a
        ld (spi_portbyte), a
 
@@ -218,7 +230,8 @@ se_writepage:
     ; cs low
     
        ld a,(spi_portbyte)
-       res SPI_CE0,a           ; TODO pass the ce bank bit mask
+       ;res SPI_CE0,a           ; TODO pass the ce bank bit mask
+	call spi_ce_low
        out (storage_adata),a
        ld (spi_portbyte), a
 
@@ -250,7 +263,8 @@ se_writepage:
 
     ; end write with ce high
        ld a,(spi_portbyte)
-       set SPI_CE0,a           ; TODO pass the ce bank bit mask - perhaps have a call that sets it
+	call spi_ce_high
+;       set SPI_CE0,a           ; TODO pass the ce bank bit mask - perhaps have a call that sets it
        out (storage_adata),a
        ld (spi_portbyte), a
 
@@ -273,7 +287,8 @@ se_readbyte:
     ;CS low
 
        ld a,(spi_portbyte)
-       res SPI_CE0,a           ; TODO pass the ce bank bit mask
+	call spi_ce_low
+       ;res SPI_CE0,a           ; TODO pass the ce bank bit mask
        out (storage_adata),a
        ld (spi_portbyte), a
 
@@ -298,7 +313,8 @@ se_readbyte:
 
     ; end write with ce high
        ld a,(spi_portbyte)
-       set SPI_CE0,a           ; TODO pass the ce bank bit mask - perhaps have a call that sets it
+;       set SPI_CE0,a           ; TODO pass the ce bank bit mask - perhaps have a call that sets it
+	call spi_ce_high
        out (storage_adata),a
        ld (spi_portbyte), a
 
@@ -472,6 +488,10 @@ ret
 
 
 storageread: ret
+
+
+
+
 
 
 endif

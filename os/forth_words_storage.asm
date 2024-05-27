@@ -485,7 +485,7 @@
 	       NEXTW
 
 .FORMAT:
-	CWHEAD .ENDSTORAGE 89 "FORMAT" 6 WORD_FLAG_CODE
+	CWHEAD .LABEL 89 "FORMAT" 6 WORD_FLAG_CODE
 ;| FORMAT (  --  )  Formats the current bank selected (NO PROMPT!) |
 		; TODO if current block id for stream is zero then push true else false
 	
@@ -499,6 +499,22 @@
 
 		call storage_get_block_0
 		
+	       NEXTW
+.LABEL:
+	CWHEAD .ENDSTORAGE 89 "LABEL" 5 WORD_FLAG_CODE
+;| LABEL ( u --  )  Sets the storage bank label to string on top of stack  | TEST
+		; TODO test to see if bank is selected
+	
+		FORTH_DSP_VALUE
+		
+		push hl
+		FORTH_DSP_POP
+		pop hl
+
+		inc hl   ; move past the type marker
+
+		call storage_label
+
 	       NEXTW
 
 .ENDSTORAGE:

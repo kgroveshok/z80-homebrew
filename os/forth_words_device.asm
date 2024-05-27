@@ -150,12 +150,15 @@
 
 
 .SESEL:
-	CWHEAD .ENDDEVICE 82 "BANK" 4 WORD_FLAG_CODE
+	CWHEAD .CARTDEV 82 "BANK" 4 WORD_FLAG_CODE
 ;   db 62
 ;	dw .SCROLL
 ;	db 5
 ;	db "SPII",0      
-;| BANK ( u1 -- ) Select Serial EEPROM Bank Device at bank address u1 |  TODO
+;| BANK ( u1 -- ) Select Serial EEPROM Bank Device at bank address u1 1-5 (disables CARTDEV). Set to zero to disable storage. |  TEST
+
+		ld a, 255
+		ld (spi_cartdev), a
 
 		; get bank
 
@@ -172,11 +175,110 @@
 		pop hl
 
 
-		; TODO Get SPI byte
+		ld c, 255
 
-;		call se_readbyte
+		ld a, l
 
+		if DEBUG_FORTH_WORDS
+			DMARK "BNK"
+			CALLMONITOR
+		endif
 
+		; active low
+
+		cp 0
+		jr z, .bset
+		cp 1
+		jr nz, .b2
+		res 0, c
+.b2:		cp 2
+		jr nz, .b3
+		res 1, c
+.b3:		cp 3
+		jr nz, .b4
+		res 2, c
+.b4:		cp 4
+		jr nz, .b5
+		res 3, c
+.b5:		cp 5
+		jr nz, .bset
+		res 4, c
+
+.bset:
+		ld a, c
+		ld (spi_device),a
+		if DEBUG_FORTH_WORDS
+			DMARK "BN2"
+			CALLMONITOR
+		endif
+
+		NEXTW
+
+.CARTDEV:
+	CWHEAD .ENDDEVICE 82 "CARTDEV" 7 WORD_FLAG_CODE
+;| CARTDEV ( u1 -- ) Select cart device 1-8 (Disables BANK). Set to zero to disable devices. |  TEST
+
+		; disable se storage bank selection
+
+		ld a, 31		; ce high
+		ld (spi_device), a
+
+		; get bank
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		push hl
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		; one value on hl get other one back
+
+		pop hl
+
+		; active low
+
+		ld c, 255
+
+		ld a, l
+		if DEBUG_FORTH_WORDS
+			DMARK "CDV"
+			CALLMONITOR
+		endif
+		cp 0
+		jr z, .cset
+		cp 1
+		jr nz, .c2
+		res 0, c
+.c2:		cp 2
+		jr nz, .c3
+		res 1, c
+.c3:		cp 3
+		jr nz, .c4
+		res 2, c
+.c4:		cp 4
+		jr nz, .c5
+		res 3, c
+.c5:		cp 5
+		jr nz, .c6
+		res 4, c
+.c6:		cp 6
+		jr nz, .c7
+		res 5, c
+.c7:		cp 7
+		jr nz, .c8
+		res 6, c
+.c8:		cp 8
+		jr nz, .cset
+		res 7, c
+.cset:		ld a, c
+		ld (spi_cartdev),a
+
+		if DEBUG_FORTH_WORDS
+			DMARK "CD2"
+			CALLMONITOR
+		endif
 		NEXTW
 
 

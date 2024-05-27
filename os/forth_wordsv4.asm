@@ -90,27 +90,72 @@ endif
 
 .VARS:
 	CWHEAD .V0Q 100 "V0!" 3 WORD_FLAG_CODE
-;| V0! ( u1 -- )  Store value to v0  |
+;| V0! ( u1 -- )  Store value to v0  | DONE
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		ld de, cli_var_array
+	
+		ex de, hl
+		ld (hl), e
+		inc hl
+		ld (hl), d
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
 	       NEXTW
 .V0Q:
 	CWHEAD .V1S 101 "V0@" 3 WORD_FLAG_CODE
-;| V0@ ( --u )  Put value of v0 onto stack |
+;| V0@ ( --u )  Put value of v0 onto stack | DONE
+		ld hl, (cli_var_array)
+		call forth_push_numhl
+
 	       NEXTW
 .V1S:
 	CWHEAD .V1Q 102 "V1!" 3 WORD_FLAG_CODE
-;| V1! ( u1 -- )  Store value to v1 |
+;| V1! ( u1 -- )  Store value to v1 | DONE
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		ld de, cli_var_array+2
+	
+		ex de, hl
+		ld (hl), e
+		inc hl
+		ld (hl), d
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 	       NEXTW
 .V1Q:
 	CWHEAD .V2S 103 "V1@" 3 WORD_FLAG_CODE
-;| V1@ ( --u )  Put value of v1 onto stack |
+;| V1@ ( --u )  Put value of v1 onto stack | DONE
+		ld hl, (cli_var_array+2)
+		call forth_push_numhl
 	       NEXTW
 .V2S:
 	CWHEAD .V2Q 104 "V2!" 3 WORD_FLAG_CODE
-;| V2! ( u1 -- )  Store value to v2 |
+;| V2! ( u1 -- )  Store value to v2 | DONE
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		ld de, cli_var_array+4
+	
+		ex de, hl
+		ld (hl), e
+		inc hl
+		ld (hl), d
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 	       NEXTW
 .V2Q:
 	CWHEAD .END 105 "V2@" 3 WORD_FLAG_CODE
-;| V2@ ( --u )  Put value of v2 onto stack |
+;| V2@ ( --u )  Put value of v2 onto stack | DONE
+		ld hl, (cli_var_array+4)
+		call forth_push_numhl
 	       NEXTW
 
 

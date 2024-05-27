@@ -1093,6 +1093,9 @@ FORTH_DSP_POP: macro
 macro_forth_dsp_pop:
 	; release malloc data
 
+	if DEBUG_FORTH_STACK_GUARD
+		call check_stacks
+	endif
 	;ld hl,(cli_data_sp)
 if DEBUG_FORTH_DOT
 		
@@ -1146,6 +1149,9 @@ endif
 	dec hl
 	ld (cli_data_sp), hl
 
+	if DEBUG_FORTH_STACK_GUARD
+		call check_stacks
+	endif
 	ret
 
 ; get the tos data type
@@ -1376,6 +1382,9 @@ FORTH_LOOP_NEXT: macro
 	endm
 
 macro_forth_loop_next:
+	if DEBUG_FORTH_STACK_GUARD
+		call check_stacks
+	endif
 	push hl
 	push de
 	ex de,hl
@@ -1396,6 +1405,9 @@ macro_forth_loop_next:
 	ld (hl), d
 	pop de    ; been reversed so save a swap on restore
 	pop hl
+	if DEBUG_FORTH_STACK_GUARD
+		call check_stacks
+	endif
 	ret
 
 ; get current ret stack pointer and save to hl 
@@ -1422,6 +1434,9 @@ FORTH_LOOP_POP: macro
 
 
 macro_forth_loop_pop:
+	if DEBUG_FORTH_STACK_GUARD
+		call check_stacks
+	endif
 	push hl
 	ld hl,(cli_loop_sp)
 	dec hl
@@ -1429,6 +1444,9 @@ macro_forth_loop_pop:
 	ld (cli_loop_sp), hl
 	; TODO do stack underflow checks
 	pop hl
+	if DEBUG_FORTH_STACK_GUARD
+		call check_stacks
+	endif
 	ret
 
 ; eof

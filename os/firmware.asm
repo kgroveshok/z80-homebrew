@@ -8,7 +8,7 @@ Device_B: equ 040h
 Device_C: equ 080h
 Device_D: equ 0c0h
 
-
+DEBUG_STK_FAULT: equ 0
 DEBUG_INPUT: equ 0     ; Debug input entry code
 DEBUG_KEYCINWAIT: equ 0
 DEBUG_KEYCIN: equ 0
@@ -26,6 +26,7 @@ DEBUG_FORTH_DOT: equ 1
 DEBUG_FORTH_DOT_KEY: equ 0
 DEBUG_FORTH_MALLOC_GUARD: equ 1
 DEBUG_FORTH_MATHS: equ 1
+DEBUG_FORTH_STACK_GUARD: equ 1
 
 
 DEBUG_FORTH_PARSE_KEY: equ 1   ; 5
@@ -47,7 +48,7 @@ MALLOC_1: equ 1
 MALLOC_2: equ 0
 
 
-tos:	equ 0ffffh
+tos:	equ 0fffdh
 stacksize: equ 512*2
 
 if STORAGE_SE == 0
@@ -57,11 +58,14 @@ endif
 
 ; memory allocation 
 
+chk_stund: equ tos+2           ; underflow check word
+chk_stovr: equ chk_stund-stacksize -2; overflow check word
+
 ; keyscan table needs rows x cols buffer
 
 key_rows: equ 5     ; TODO move out to mini and maxi + 1 null
 key_cols: equ 10    ; TODO move out to mini and maxi + 1 null
-keyscan_table_row1: equ tos-stacksize-key_cols-1
+keyscan_table_row1: equ chk_stovr -key_cols-1
 keyscan_table_row2: equ keyscan_table_row1-key_cols-1
 keyscan_table_row3: equ keyscan_table_row2-key_cols-1
 keyscan_table_row4: equ keyscan_table_row3-key_cols-1
@@ -200,13 +204,18 @@ cli_var_array: equ cli_autodisplay - ( 10 * 2 ) ; word or string pointer variabl
 cli_ret_sp: equ cli_var_array - 2    ; ret stack pointer
 cli_loop_sp: equ cli_ret_sp - 2   ; data stack pointer
 cli_data_sp: equ cli_loop_sp - 2   ; data stack pointer
-cli_ret_stack: equ cli_data_sp - 128      ; TODO could I just use normal stack for this? - use linked list for looping
-cli_loop_stack: equ cli_data_sp - 512      ; TODO could I just use normal stack for this? - use linked list for looping
-cli_data_stack: equ cli_loop_stack - 512		 ; 
+
+chk_ret_und: equ cli_data_sp-2           ; underflow check word
+cli_ret_stack: equ chk_ret_und - 128      ; TODO could I just use normal stack for this? - use linked list for looping
+chk_ret_ovr: equ cli_ret_stack -2; overflow check word
+cli_loop_stack: equ chk_ret_ovr - 512      ; TODO could I just use normal stack for this? - use linked list for looping
+chk_loop_ovr: equ cli_loop_stack -2; overflow check word
+cli_data_stack: equ chk_loop_ovr - 512		 ; 
+chk_data_ovr: equ cli_data_stack -2; overflow check word
 
 ; os/forth token vars
 
-os_last_cmd: equ cli_data_stack-255
+os_last_cmd: equ chk_data_ovr-255
 os_current_i: equ os_last_cmd-2
 os_cur_ptr: equ os_current_i-2
 os_word_scratch: equ os_cur_ptr-30
@@ -236,10 +245,14 @@ os_view_de: equ os_view_hl - 2
 os_view_bc: equ os_view_de - 2
 
 
+; stack checksum word
+
+chk_word: equ os_view_bc - 2		 ; this is the word to init and then check against to detect stack corruption. Held far away from all stacks
+
 ; with data stack could see memory filled with junk. need some memory management 
 ; malloc and free entry points added
 
-free_list:  equ os_view_bc - 4     ; Block struct for start of free list (MUST be 4 bytes)
+free_list:  equ chk_word - 4     ; Block struct for start of free list (MUST be 4 bytes)
 heap_size: equ  (free_list-08100h)      ; Number of bytes available in heap   TODO make all of user ram
 ;heap_start: equ free_list - heap_size  ; Starting address of heap
 heap_end: equ free_list-1  ; Starting address of heap

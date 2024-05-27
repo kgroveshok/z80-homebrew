@@ -66,6 +66,9 @@ FORTH_DSP_NEXT: macro
 
 
 macro_forth_dsp_next:
+	if DEBUG_FORTH_STACK_GUARD
+		call check_stacks
+	endif
 	push hl
 	push de
 	ex de,hl
@@ -78,6 +81,9 @@ macro_forth_dsp_next:
 	ld (hl), d
 	pop de
 	pop hl
+	if DEBUG_FORTH_STACK_GUARD
+		call check_stacks
+	endif
 	ret
 	
 ; increase ret stack pointer and save hl to it
@@ -87,6 +93,9 @@ FORTH_RSP_NEXT: macro
 	endm
 
 macro_forth_rsp_next:
+	if DEBUG_FORTH_STACK_GUARD
+		call check_stacks
+	endif
 	push hl
 	push de
 	ex de,hl
@@ -99,6 +108,9 @@ macro_forth_rsp_next:
 	ld (hl), d
 	pop de
 	pop hl
+	if DEBUG_FORTH_STACK_GUARD
+		call check_stacks
+	endif
 	ret
 
 ; get current ret stack pointer and save to hl 
@@ -133,6 +145,9 @@ FORTH_RSP_POP: macro
 
 
 macro_forth_rsp_pop:
+	if DEBUG_FORTH_STACK_GUARD
+		call check_stacks
+	endif
 	push hl
 	ld hl,(cli_ret_sp)
 	dec hl
@@ -140,6 +155,9 @@ macro_forth_rsp_pop:
 	ld (cli_ret_sp), hl
 	; TODO do stack underflow checks
 	pop hl
+	if DEBUG_FORTH_STACK_GUARD
+		call check_stacks
+	endif
 	ret
 
 forthexec_cleanup:
@@ -166,6 +184,12 @@ forth_init:
 ;
 ;	call delay1s
 ;	call delay1s
+
+	; setup stack over/under flow checks
+
+	if DEBUG_FORTH_STACK_GUARD
+		call chk_stk_init
+	endif
 
 	; enable auto display updates (slow.....)
 
@@ -336,6 +360,9 @@ malloc_error:
 	ld de, .mallocerr
 	ld a,0
 ;	ld de,os_word_scratch
+	call str_at_display
+	ld a, display_row_1+17
+	ld de, debug_mark
 	call str_at_display
 	call update_display
 	;call break_point_state
@@ -1052,5 +1079,130 @@ forth_startup:
 	call update_display
 	ret
 
+
+; stack over and underflow checks
+
+; init the words to detect the under/overflow
+
+chk_stk_init:
+	; a vague random number to check so we dont get any "lucky" hits
+	ld a, 45
+	ld l, a
+	nop
+	ld a, 23
+	ld h, a
+
+	ld (chk_word), hl     ; the word we need to check against
+
+;	ld (chk_stund), hl	; stack points....
+	ld (chk_stovr), hl
+	ld (chk_ret_und), hl
+	ld (chk_ret_ovr), hl
+	ld (chk_loop_ovr), hl
+	ld (chk_data_ovr), hl
+	ret
+	
+check_stacks:
+	; check all stack words
+
+	push hl
+	push de
+
+;	ld de,(chk_word)
+;	ld hl, (chk_stund)	; stack points....
+;	if DEBUG_STK_FAULT
+;		DMARK "FAa"
+;		CALLMONITOR
+;	endif
+;	call cmp16
+;	jp z, .chk_faulta
+;
+;	ld de, sfaultsu
+;	jp .chk_fault
+
+.chk_faulta: ld hl, (chk_stovr)
+	ld de,(chk_word)
+	if DEBUG_STK_FAULT
+		DMARK "FAb"
+		CALLMONITOR
+	endif
+	call cmp16
+	jr z, .chk_fault1
+	ld de, sfaultso
+	jp .chk_fault
+.chk_fault1: 
+	ld hl, (chk_ret_und)
+	ld de,(chk_word)
+	if DEBUG_STK_FAULT
+		DMARK "FAU"
+		CALLMONITOR
+	endif
+	call cmp16
+	jp z, .chk_fault2
+	ld de, sfaultru
+	jp .chk_fault
+.chk_fault2: 
+	ld hl, (chk_ret_ovr)
+	ld de,(chk_word)
+	if DEBUG_STK_FAULT
+		DMARK "FA1"
+		CALLMONITOR
+	endif
+	call cmp16
+	jp z, .chk_fault3
+	ld de, sfaultro
+	jp .chk_fault
+.chk_fault3: 
+	ld hl, (chk_loop_ovr)
+	ld de,(chk_word)
+	if DEBUG_STK_FAULT
+		DMARK "FA2"
+		CALLMONITOR
+	endif
+	call cmp16
+	jp z, .chk_fault4
+	ld de, sfaultlo
+	jp .chk_fault
+.chk_fault4: 
+	ld hl, (chk_data_ovr)
+	ld de,(chk_word)
+	if DEBUG_STK_FAULT
+		DMARK "FA3"
+		CALLMONITOR
+	endif
+	call cmp16
+	jp z, .chk_fault5
+	ld de, sfaultdo
+	jp .chk_fault
+
+
+.chk_fault5: 
+	pop de
+	pop hl
+
+	ret
+
+.chk_fault: 	call clear_display
+		ld a, display_row_2
+		call str_at_display
+		   ld de, .stackfault
+		ld a, display_row_1
+		call str_at_display
+		    ld de, debug_mark
+		ld a, display_row_1+17
+		call str_at_display
+		call update_display
+		halt
+
+
+
+.stackfault: 	db "Stack fault:",0
+
+sfaultsu: 	db	"Stack under flow",0
+sfaultso: 	db	"Stack over flow",0
+sfaultru:	db "RTS underflow",0
+sfaultro:	db "RTS overflow/LS underflow", 0
+sfaultlo:	db "LS overflow/DTS underflow", 0
+sfaultdo:	db "DTS overflow", 0
 
 ; eof

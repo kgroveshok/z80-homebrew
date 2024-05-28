@@ -13,10 +13,17 @@ SPI_SCLK: equ 5      ; chip pin 6 - port a5  - pin 9
 SPI_CE0: equ 0      ; chip pin 1 - port a3 - pin 15
 SPI_CE1: equ 1      ;    port a1 pin 14 
 SPI_CE2: equ 2      ;    port a2 pin pin 13
-SPI_CE3: equ 4      ; port    a3 pin pin 12
-SPI_CE4: equ 8      ; port a4     pin 10
+SPI_CE3: equ 3      ; port    a3 pin pin 12
+SPI_CE4: equ 4      ; port a4     pin 10
 
+; active low AND masks
 
+;SPI_CE0_MASK: equ    255-1
+;SPI_CE1_MASK: equ   255-2
+;SPI_CE2_MASK: equ   255-4
+;SPI_CE3_MASK: equ   255-8
+;SPI_CE4_MASK: equ   255-16
+SPI_CE_HIGH:  equ 255
 
 
 
@@ -39,6 +46,13 @@ se_stable_spi:
 	 out (storage_adata),a
 	ld (spi_portbyte),a
 
+	if DEBUG_SPI
+		push hl
+		ld l, a
+		DMARK "SPI"
+		CALLMONITOR
+		pop hl
+	endif
 	ret
 
 ; byte to send in a
@@ -256,9 +270,24 @@ spi_ce_high:
 
 	; for port a that shares with spi lines AND the mask
  
-	ld c, 31
-	add c
+	if DEBUG_SPI
+		push hl
+		ld h, a
+	endif
+;	ld c, SPI_CE_HIGH
+;	and c
+	set SPI_CE0, a
+	set SPI_CE1, a
+	set SPI_CE2, a
+	set SPI_CE3, a
+	set SPI_CE4, a
 
+	if DEBUG_SPI
+		ld l, a
+		DMARK "CEh"
+		CALLMONITOR
+		pop hl
+	endif
 	ret
 
 
@@ -269,11 +298,14 @@ spi_ce_low:
 		ret
 
 	endif
+
+	push bc
 	push af
 
 	; send direct ce to port b
 	ld a, (spi_cartdev)
 	out (storage_bdata), a
+
 
 
 	; for port a that shares with spi lines AND the mask
@@ -282,8 +314,50 @@ spi_ce_low:
 	ld c, a
 
 	pop af
-	add c
 
+	; detect CEx
+
+	if DEBUG_SPI
+		push hl
+		ld h, a
+	endif
+
+	bit SPI_CE0, c
+	jr nz, .cel1
+	res SPI_CE0, a
+	jr .celn
+.cel1:
+	bit SPI_CE1, c
+	jr nz, .cel2
+	res SPI_CE1, a
+	jr .celn
+.cel2:
+	bit SPI_CE2, c
+	jr nz, .cel3
+	res SPI_CE2, a
+	jr .celn
+.cel3:
+	bit SPI_CE3, c
+	jr nz, .cel4
+	res SPI_CE3, a
+	jr .celn
+.cel4:
+	bit SPI_CE4, c
+	jr nz, .celn
+	res SPI_CE4, a
+.celn:
+
+
+
+;	add c
+
+	if DEBUG_SPI
+		ld l, a
+		DMARK "CEl"
+		CALLMONITOR
+		pop hl
+	endif
+	pop bc
 	ret
 
 

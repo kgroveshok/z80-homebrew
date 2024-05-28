@@ -89,6 +89,8 @@ storage_read_block:
 ;	endif
 	call se_readbyte
 ;	if DEBUG_STORESE
+;		ld a,(spi_portbyte)
+;		ld l, a
 ;		push af
 ;		ld a, '1'
 ;		ld (debug_mark),a

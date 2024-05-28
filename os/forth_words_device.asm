@@ -175,7 +175,7 @@
 		pop hl
 
 
-		ld c, 255
+		ld c, SPI_CE_HIGH
 
 		ld a, l
 
@@ -220,7 +220,7 @@
 
 		; disable se storage bank selection
 
-		ld a, 31		; ce high
+		ld a, SPI_CE_HIGH		; ce high
 		ld (spi_device), a
 
 		; get bank

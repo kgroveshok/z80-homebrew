@@ -16,7 +16,8 @@ DEBUG_KEY: equ 0
 DEBUG_KEY_MATRIX: equ 0
 DEBUG_STORECF: equ 0
 DEBUG_STORESE: equ 1        ; TODO  w locks up, r returns. 
-DEBUG_SPI_HARD_CE0: equ 1    ; only handshake on CE0 on port A
+DEBUG_SPI_HARD_CE0: equ 0    ; only handshake on CE0 on port A
+DEBUG_SPI: equ 0    ; low level spi tests
 DEBUG_FORTH_PARSE_EXEC: equ 1     ; 6
 DEBUG_FORTH_PARSE_EXEC_SLOW: equ 0     ; 6
 DEBUG_FORTH_PARSE_NEXTWORD: equ 0

@@ -33,7 +33,8 @@ IN ( u1-- u )    Perform z80 IN with u1 being the port number. Push result to TO
  OUT ( u1 u2 -- ) Perform Z80 OUT to port u2 sending byte u1 | TO TEST
  SPIO ( u1 u2 -- ) Send byte u1 to SPI device u2 |  WIP
  SPII ( u1 -- ) Get a byte from SPI device u2 |  WIP
- BANK ( u1 -- ) Select Serial EEPROM Bank Device at bank address u1 |  TODO
+ BANK ( u1 -- ) Select Serial EEPROM Bank Device at bank address u1 1-5 (disables CARTDEV). Set to zero to disable storage. |  TEST
+ CARTDEV ( u1 -- ) Select cart device 1-8 (Disables BANK). Set to zero to disable devices. |  TEST
   EMIT ( u -- )        Display ascii character  TOS   |
  .- ( u -- )    Display TOS replacing any dashes with space   |DONE
  . ( u -- )    Display TOS   |DONE
@@ -81,14 +82,17 @@ BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at a
  BLOAD ( w u a -- )    Load binary file from file name w on bank u into address u
  SEO ( u1 u2 -- ) Send byte u1 to Serial EEPROM device at address u2 |  DONE
  SEI ( u2 -- u1 ) Get a byte from Serial EEPROM device at address u2 |  DONE
- SFREE ( -- n )  Gets number of blocks free on current storage bank | DONE
+ FFREE ( -- n )  Gets number of free file blocks on current storage bank | DONE
+ SIZE ( u -- n )  Gets number of blocks used by file id u and push to stack | DONE
  CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS | DONE
  APPEND ( u n --  )  Appends data u to file id on current storage bank |
  ERA ( n --  )  Deletes all data for file id n on current storage bank | DONE
  OPEN ( n --  )  Sets file id to point to first data page for subsequent READs - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | DONE
- READ ( n -- n  )  Reads next page of file id and push to stack |
+ READ ( n -- n  )  Reads next page of file id and push to stack | TESTING - Crashes on second read
  EOF ( n -- u )  Returns EOF logical state of file id n - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | DONE
  FORMAT (  --  )  Formats the current bank selected (NO PROMPT!) |
+ LABEL ( u --  )  Sets the storage bank label to string on top of stack  | DONE
+ LABELS (  -- b n .... c  )  Pushes each storage bank labels (n) along with id (b) onto the stack giving count (c) of banks  | DONE
  CONCAT ( s1 s2 -- s3 ) A string of u spaces is pushed onto the stack
  FIND (  -- )  
  LEN (  u1 -- u2 ) Push the length of the string on TOS
@@ -144,11 +148,14 @@ LOOP ( -- )     Increment and test loop counter  | DONE
 DIR ( u -- lab id ... c t )   Using bank number u push directory entries from persistent storage as w with count u  | DONE
  SEO ( u1 u2 -- ) Send byte u1 to Serial EEPROM device at address u2 |  DONE
  SEI ( u2 -- u1 ) Get a byte from Serial EEPROM device at address u2 |  DONE
- SFREE ( -- n )  Gets number of blocks free on current storage bank | DONE
+ FFREE ( -- n )  Gets number of free file blocks on current storage bank | DONE
+ SIZE ( u -- n )  Gets number of blocks used by file id u and push to stack | DONE
  CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS | DONE
  ERA ( n --  )  Deletes all data for file id n on current storage bank | DONE
  OPEN ( n --  )  Sets file id to point to first data page for subsequent READs - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | DONE
  EOF ( n -- u )  Returns EOF logical state of file id n - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | DONE
+ LABEL ( u --  )  Sets the storage bank label to string on top of stack  | DONE
+ LABELS (  -- b n .... c  )  Pushes each storage bank labels (n) along with id (b) onto the stack giving count (c) of banks  | DONE
 Words still left to do
 ----------------------
 SWAP ( w1 w2 -- w2 w1 )    Swap top two items (of whatever type) on TOS
@@ -168,7 +175,8 @@ IN ( u1-- u )    Perform z80 IN with u1 being the port number. Push result to TO
  OUT ( u1 u2 -- ) Perform Z80 OUT to port u2 sending byte u1 | TO TEST
  SPIO ( u1 u2 -- ) Send byte u1 to SPI device u2 |  WIP
  SPII ( u1 -- ) Get a byte from SPI device u2 |  WIP
- BANK ( u1 -- ) Select Serial EEPROM Bank Device at bank address u1 |  TODO
+ BANK ( u1 -- ) Select Serial EEPROM Bank Device at bank address u1 1-5 (disables CARTDEV). Set to zero to disable storage. |  TEST
+ CARTDEV ( u1 -- ) Select cart device 1-8 (Disables BANK). Set to zero to disable devices. |  TEST
   EMIT ( u -- )        Display ascii character  TOS   |
  SPACES ( u -- str )  A string of u spaces is pushed onto the stack | TO TEST
  SCROLL ( u1 c1 -- ) Scroll u1 lines/chars in direction c1 | WIP
@@ -186,7 +194,7 @@ SAVE  ( w u -- )    Save user word memory to file name w on bank u
 BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at address a for s bytes
  BLOAD ( w u a -- )    Load binary file from file name w on bank u into address u
  APPEND ( u n --  )  Appends data u to file id on current storage bank |
- READ ( n -- n  )  Reads next page of file id and push to stack |
+ READ ( n -- n  )  Reads next page of file id and push to stack | TESTING - Crashes on second read
  FORMAT (  --  )  Formats the current bank selected (NO PROMPT!) |
  CONCAT ( s1 s2 -- s3 ) A string of u spaces is pushed onto the stack
  FIND (  -- )  

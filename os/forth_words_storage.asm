@@ -501,8 +501,8 @@
 		
 	       NEXTW
 .LABEL:
-	CWHEAD .ENDSTORAGE 89 "LABEL" 5 WORD_FLAG_CODE
-;| LABEL ( u --  )  Sets the storage bank label to string on top of stack  | TEST
+	CWHEAD .LABELS 89 "LABEL" 5 WORD_FLAG_CODE
+;| LABEL ( u --  )  Sets the storage bank label to string on top of stack  | DONE
 		; TODO test to see if bank is selected
 	
 		FORTH_DSP_VALUE
@@ -514,6 +514,81 @@
 		inc hl   ; move past the type marker
 
 		call storage_label
+
+	       NEXTW
+.LABELS:
+	CWHEAD .ENDSTORAGE 89 "LABELS" 6 WORD_FLAG_CODE
+;| LABELS (  -- b n .... c  )  Pushes each storage bank labels (n) along with id (b) onto the stack giving count (c) of banks  | DONE
+		; 
+
+		; save the current device selected to restore afterwards
+	
+		ld a, (spi_device)
+		push af
+
+
+		; run through each of the banks
+
+		ld hl, 1
+		call forth_push_numhl
+		ld a, SPI_CE_HIGH
+		res SPI_CE0, a
+		ld (spi_device), a
+		call storage_get_block_0
+		ld hl, store_page+3
+		call forth_apushstrhl
+
+		
+		ld hl, 2
+		call forth_push_numhl
+		ld a, SPI_CE_HIGH
+		res SPI_CE1, a
+		ld (spi_device), a
+		call storage_get_block_0
+		ld hl, store_page+3
+		call forth_apushstrhl
+
+		
+		ld hl, 3
+		call forth_push_numhl
+		ld a, SPI_CE_HIGH
+		res SPI_CE2, a
+		ld (spi_device), a
+		call storage_get_block_0
+		ld hl, store_page+3
+		call forth_apushstrhl
+
+
+		ld hl, 4
+		call forth_push_numhl
+		ld a, SPI_CE_HIGH
+		res SPI_CE3, a
+		ld (spi_device), a
+		call storage_get_block_0
+		ld hl, store_page+3
+		call forth_apushstrhl
+
+		
+
+		ld hl, 5
+		call forth_push_numhl
+		ld a, SPI_CE_HIGH
+		res SPI_CE4, a
+		ld (spi_device), a
+		call storage_get_block_0
+		ld hl, store_page+3
+		call forth_apushstrhl
+
+		
+		; push fixed count of storage devices (on board) for now
+
+		ld hl, 5
+		call forth_push_numhl
+
+		; restore selected device 
+	
+		pop af
+		ld (spi_device), a
 
 	       NEXTW
 

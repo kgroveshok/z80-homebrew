@@ -314,7 +314,7 @@
 
 .APPEND:
 	CWHEAD .SDEL 85 "APPEND" 6 WORD_FLAG_CODE
-;| APPEND ( u n --  )  Appends data u to file id on current storage bank |
+;| APPEND ( u n --  )  Appends data u to file id on current storage bank | DONE
 
 		; TODO get id
 
@@ -486,7 +486,7 @@
 
 .FORMAT:
 	CWHEAD .LABEL 89 "FORMAT" 6 WORD_FLAG_CODE
-;| FORMAT (  --  )  Formats the current bank selected (NO PROMPT!) |
+;| FORMAT (  --  )  Formats the current bank selected (NO PROMPT!) | DONE
 		; TODO if current block id for stream is zero then push true else false
 	
 		; Wipes the bank check flags to cause a reformat on next block 0 read

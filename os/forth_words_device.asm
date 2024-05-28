@@ -155,7 +155,7 @@
 ;	dw .SCROLL
 ;	db 5
 ;	db "SPII",0      
-;| BANK ( u1 -- ) Select Serial EEPROM Bank Device at bank address u1 1-5 (disables CARTDEV). Set to zero to disable storage. |  TEST
+;| BANK ( u1 -- ) Select Serial EEPROM Bank Device at bank address u1 1-5 (disables CARTDEV). Set to zero to disable storage. |  DONE
 
 		ld a, 255
 		ld (spi_cartdev), a
@@ -216,7 +216,7 @@
 
 .CARTDEV:
 	CWHEAD .ENDDEVICE 82 "CARTDEV" 7 WORD_FLAG_CODE
-;| CARTDEV ( u1 -- ) Select cart device 1-8 (Disables BANK). Set to zero to disable devices. |  TEST
+;| CARTDEV ( u1 -- ) Select cart device 1-8 (Disables BANK). Set to zero to disable devices. |  DONE
 
 		; disable se storage bank selection
 

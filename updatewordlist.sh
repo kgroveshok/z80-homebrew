@@ -1,5 +1,5 @@
 #!/bin/sh
 
 cd os
-./wordlist.sh >../WORD-LIST.md
+./wordlist.sh | sed 's/$/\n\n/g'>../WORD-LIST.md
 

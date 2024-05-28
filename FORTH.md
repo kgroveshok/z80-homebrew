@@ -22,7 +22,7 @@ Words
 =====
 
 
-While still a lot of dev going on see ![FORTH_WORDS.md](FORTH-WORDS.md) for watch is working and what is left to do. There is also a shell script that lists the words from the source and shows which ones are working and what are left to do.
+While still a lot of dev going on see ![WORD-LIST.md](WORD-LIST.md) for watch is working and what is left to do. There is also a shell script that lists the words from the source and shows which ones are working and what are left to do.
 
 
 Restrictions

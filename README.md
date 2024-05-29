@@ -27,13 +27,24 @@ Current Specification/Feature Set
 * Z80 4MHz
 * 32K ROM
 * 32K RAM
-* PIO 1: Port A & B - Controlling 20x4 LCD and 4x4 matrix keypad (upgradable to 35 key matrix keyboard)
-* PIO 2: Port A - Persistent storage via Microchip serial EEPROMs. 320K on board (5 x 64k)
+* PIO 1: Port A & B - Controlling LCD and keyboard:
+   - Mini: 20x4 LCD and 4x4 matrix keypad 
+   - Mega: 20x4 LCD (40x4 LCD TODO) and 50 key matrix keyboard
+* PIO 2: Port A - Persistent storage via Microchip serial EEPROMs. Max 320K on board (5 x 64k). Currently set for 32k x 5
 * PIO 2: Port B - Exposed 8 bit bus and SPI bus. Used for more storage (512k/1024k), SPI devices or digital I/o
 * Exposed RC2014 connector
 * Digital video out (TODO)
+* Built-in address decoder for four devices (2 used above)
+* Sound chip (TODO)
+* External cart support via PIO 2 Port B. Adding support for:
+   - Real time clock (TODO)
+   - Extra storage via SD and/or Microchip serial EEPROMS  (TODO)
+   - RP Pico using SPI for extra features such as wifi network support
 
+* Hardware abstraction layers to allow for common entry points and drivers for different keyboards, screens, etc
+* Multiple frame buffer support
 * Built-in Forth OS (inspired by Jupiter Ace). Language defintion and progress etc in ![FORTH.md](FORTH.md)
+* Built-in full monitor for break points
 
 ![](stage4.0/Gerber_PCB_z80-system-3-sbc.zip)
 ![](stage4.0/Schematic_z80-system-4-sbc-2024-03-02.pdf)

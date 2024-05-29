@@ -4,9 +4,9 @@
 ; TODO have page 0 of storage as bios
 
 Device_A: equ 0h
-Device_B: equ 040h
-Device_C: equ 080h
-Device_D: equ 0c0h
+Device_B: equ 040h          ; Sound
+Device_C: equ 080h          ; Storage and ext cart devices
+Device_D: equ 0c0h             ; Keyboard and LCD
 
 DEBUG_STK_FAULT: equ 0
 DEBUG_INPUT: equ 0     ; Debug input entry code
@@ -37,6 +37,7 @@ DEBUG_FORTH: equ 1  ;2
 DEBUG_FORTH_WORDS: equ 1   ; 1
 DEBUG_FORTH_PUSH: equ 1   ; 1
 DEBUG_FORTH_UWORD: equ 1   ; 1
+
 
 FORTH_ENABLE_FREE: equ 1
 FORTH_ENABLE_FLOATMATH: equ 0
@@ -349,6 +350,11 @@ hardware_init:
 		call  heap_init
 	endif
 
+	; init sound hardware if present
+	if SOUND_ENABLE
+		call sound_init
+	endif
+
 	; lcd test sequence
 		
 	call update_display
@@ -452,6 +458,10 @@ include "firmware_maths.asm"     ; any odd maths stuff   TODO removed until I fi
 include "firmware_strings.asm"   ; string handling
 include "firmware_memory.asm"   ; malloc and free
 
+; device C
+if SOUND_ENABLE
+	include "firmware_sound.asm"
+endif
 
 
 

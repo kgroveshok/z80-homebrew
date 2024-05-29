@@ -333,6 +333,105 @@ enter:
 	jp cli
 
 
+; basic monitor support
+
+monitor:
+	; 
+	call clear_display
+	ld a, 0
+	ld de, .monprompt
+	call str_at_display
+	call update_display
+
+	; get a monitor command
+
+	ld c, 0     ; entry at top left
+	ld d, 100   ; max buffer size
+	ld e, 15    ; input scroll area
+	ld a, 0     ; init string
+	ld hl, os_input
+	ld (hl), a
+	inc hl
+	ld (hl), a
+	ld hl, os_input
+	ld a, 1     ; init string
+	call input_str
+
+        call clear_display
+	call update_display		
+
+	ld a, (os_input)
+	call toUpper
+	cp 'D'		; dump
+	jr z, .mondump	
+	cp 'C'		; dump
+	jr z, .moncdump	
+	cp 'M'		; dump
+	jr z, .moneditstart
+	cp 'U'		; dump
+	jr z, .monedit	
+	cp 'Q'		; dump
+	ret z	
+
+	jp monitor
+
+.monprompt: db ">", 0
+
+.moneditstart:
+	; get starting address
+
+	ld hl,os_input+2
+	call get_word_hl
+
+	ld (os_cur_ptr),hl	
+
+	jp monitor
+
+.monedit:
+	; get byte to load
+
+	ld hl,os_input+2
+	call get_byte
+
+	; get address to update
+	ld hl, (os_cur_ptr)
+
+	; update byte
+
+	ld (hl), a
+
+	; move to next address and save it
+
+	inc hl
+	ld (os_cur_ptr),hl	
+
+	jp monitor
+
+
+.mondump:   
+	ld hl,os_input+2
+	call get_word_hl
+
+	ld (os_cur_ptr),hl	
+	call dumpcont
+	ld a, display_row_4
+	ld de, endprog
+
+	call update_display		
+
+	call next_page_prompt
+	jp monitor
+.moncdump:
+	call dumpcont
+	ld a, display_row_4
+	ld de, endprog
+
+	call update_display		
+
+	call next_page_prompt
+	jp monitor
+
+
 dump:	; see if we are cotinuing on from the last command by not uncluding any address
 
 	ld a,(scratch+1)

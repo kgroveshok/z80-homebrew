@@ -46,6 +46,17 @@ disabled by using the asterisk and then using '0' to continue. See BP keyword.
 
 Top right of reg state shows labels which can then be looked up in the source code.
 
+Using '#' will launch a full featured monitor. 
+   D xxxxx to start a dump from hex address
+   C    Continue from last D
+   Q  Return to break point
+
+   M xxxx     Start edit address
+   U xx        Load byte into address and increment to next
+
+
+
+
 
 
 

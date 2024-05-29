@@ -735,11 +735,16 @@ break_point_state:
 
 	jr .bpschk
 .bps8c:  cp '8'
-	jr nz, .bps8
+	jr nz, .bps8d
 	
 	; display rsp
 	ld hl, (cli_ret_sp)
 	call display_dump_at_hl
+
+	jr .bpschk
+.bps8d:  cp '#'     ; access monitor sub system
+	jr nz, .bps8
+	call monitor
 
 	jr .bpschk
 .bps8:  cp '0'

@@ -64,9 +64,9 @@ chk_stund: equ tos+2           ; underflow check word
 chk_stovr: equ chk_stund-stacksize -2; overflow check word
 
 ; keyscan table needs rows x cols buffer
+;key_rows: equ 5     ; TODO move out to mini and maxi + 1 null
+;key_cols: equ 10    ; TODO move out to mini and maxi + 1 null
 
-key_rows: equ 5     ; TODO move out to mini and maxi + 1 null
-key_cols: equ 10    ; TODO move out to mini and maxi + 1 null
 keyscan_table_row1: equ chk_stovr -key_cols-1
 keyscan_table_row2: equ keyscan_table_row1-key_cols-1
 keyscan_table_row3: equ keyscan_table_row2-key_cols-1
@@ -130,8 +130,8 @@ key_shift: equ key_symbol - 1
 
 ; Display allocation
 
-display_rows: equ 4
-display_cols: equ 20
+;display_rows: equ 4     ; move out to mini and mega files
+;display_cols: equ 20
 
 display_fb_len: equ display_rows*display_cols
 
@@ -351,6 +351,7 @@ hardware_init:
 	endif
 
 	; init sound hardware if present
+
 	if SOUND_ENABLE
 		call sound_init
 	endif
@@ -414,7 +415,15 @@ bootmsg1:	db "by Kevin Groves",0
 
 ; a 4x20 lcd
 ; cout for display, low level positioning and writing functions (TODO) for hardware abstraction
-include "firmware_lcd.asm"
+
+;if display_cols == 20
+;	include "firmware_lcd_4x20.asm"
+;endif
+
+;if display_cols == 40
+;	include "firmware_lcd_4x40.asm"
+;endif
+
 ;
 ; TODO use the low spare two pins on port a of display pio to bit bang a serial out video display to an esp
 ; TODO abstract the bit bang video out interface for dual display

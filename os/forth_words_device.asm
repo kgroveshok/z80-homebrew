@@ -1,4 +1,14 @@
+; Device related words
 
+if SOUND_ENABLE
+.NOTE:
+	CWHEAD .SIN 31 "NOTE" 4 WORD_FLAG_CODE
+; | NOTE ( ud uf --  )  Plays a note of frequency uf for the duration of ud millseconds |
+
+	
+
+		NEXTW
+endif
 .SIN:
 	CWHEAD .SOUT 31 "IN" 2 WORD_FLAG_CODE
 ;	db 31

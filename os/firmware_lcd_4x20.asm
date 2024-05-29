@@ -304,7 +304,7 @@ display_row_4: equ display_row_3 + display_cols
 
 ; Cursor position values for the start of each line
 kLCD_Line1: EQU 0x00 
-kLCD_Line2: EQU 0x40 
+kLCD_Line2: EQU 0x40  
 kLCD_Line3: EQU kLCD_Line1+kLCDWidth
 kLCD_Line4: EQU kLCD_Line2+kLCDWidth 
 

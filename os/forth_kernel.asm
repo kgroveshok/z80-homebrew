@@ -1197,6 +1197,17 @@ check_stacks:
 		ld a, display_row_1+17
 		call str_at_display
 		call update_display
+
+	; prompt before entering montior for investigating issue
+
+	ld a, display_row_4
+	ld de, endprog
+
+	call update_display		
+
+	call next_page_prompt
+
+		call monitor
 		halt
 
 

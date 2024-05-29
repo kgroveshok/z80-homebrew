@@ -684,7 +684,7 @@ endif
 ;	db "MONITOR",0      
 ;| MONITOR ( -- ) Display system breakpoint/monitor | DONE
 	;	rst 030h
-	CALLMONITOR
+	call monitor
 
 		NEXTW
 

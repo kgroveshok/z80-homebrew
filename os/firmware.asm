@@ -143,7 +143,8 @@ display_fb2: equ  display_fb1-display_fb_len
 ;
 ; pointer to active frame buffer
 display_fb_active: equ display_fb2 - 2
-display_write_tmp: equ display_fb_active - 2
+display_lcde1e2: equ display_fb_active - 1         ; 0=e1, 1=e2   For E1/E2 selection when using the lcd 4x40 display
+display_write_tmp: equ display_lcde1e2 - 2
 
 
 ;

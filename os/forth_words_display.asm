@@ -1,11 +1,7 @@
 
 .EMIT:
 	CWHEAD .DOTH 7 "EMIT" 4 WORD_FLAG_CODE
-;	db 7
-;	dw .DOT
-;	db 5
-;	db "EMIT",0  
-;|  EMIT ( u -- )        Display ascii character  TOS   |
+; |  EMIT ( u -- )        Display ascii character  TOS   | DONE
 		; get value off TOS and display it
 
 
@@ -14,27 +10,37 @@
 		ld a,l
 		; TODO write to display
 
+		ld (os_input), a
+		ld a, 0
+		ld (os_input+1), a
+		
+		ld a, (f_cursor_ptr)
+		ld de, os_input
+		call str_at_display
+
+
+		ld a,(cli_autodisplay)
+		cp 0
+		jr z, .enoupdate
+				call update_display
+		.enoupdate:
+
+
+
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+ 
 
 		NEXTW
 .DOTH:
 	CWHEAD .DOT 8 ".-" 2 WORD_FLAG_CODE
-;	db 8
-;	dw .SWAP
-;	db 2
-;	db ".",0 
-        ;| .- ( u -- )    Display TOS replacing any dashes with space   |DONE
+        ; | .- ( u -- )    Display TOS replacing any dashes with space   | DONE
 		; get value off TOS and display it
 	jp .dotgo
 	NEXTW
 
 .DOT:
 	CWHEAD .CLS 8 "." 1 WORD_FLAG_CODE
-;	db 8
-;	dw .SWAP
-;	db 2
-;	db ".",0 
-        ;| . ( u -- )    Display TOS   |DONE
+        ; | . ( u -- )    Display TOS   | DONE
 		; get value off TOS and display it
 
 .dotgo:
@@ -119,32 +125,20 @@ endif
 
 .CLS:
 	CWHEAD .DRAW 33 "CLS" 3 WORD_FLAG_CODE
-;   db 33
-;	dw .DRAW
-;	db 4
-;	db "CLS",0     
-; |CLS ( -- ) clear frame buffer    |DONE
+; | CLS ( -- ) clear frame buffer    | DONE
 		call clear_display
 		jp .home		; and home cursor
 		NEXTW
 
 .DRAW:
 	CWHEAD .DUMP 34 "DRAW" 4 WORD_FLAG_CODE
-;   db 34
-;	dw .DUMP
-;	db 5
-;	db "DRAW",0     
-; |DRAW ( -- ) Draw contents of current frame buffer  | DONE
+; | DRAW ( -- ) Draw contents of current frame buffer  | DONE
 		call update_display
 		NEXTW
 
 .DUMP:
 	CWHEAD .CDUMP 35 "DUMP" 4 WORD_FLAG_CODE
-;   db 35				
-; |DUMP ( x --  ) With address x display dump   |DONE
-;	dw .CDUMP
-;	db 5
-;	db "DUMP",0
+; | DUMP ( x --  ) With address x display dump   | DONE
 ; TODO pop address to use off of the stack
 		call clear_display
 
@@ -165,11 +159,7 @@ endif
 		NEXTW
 .CDUMP:
 	CWHEAD .DAT 36 "CDUMP" 5 WORD_FLAG_CODE
-;   db 36                      ; continue memory dump
-;	dw .DEPTH
-;	db 6
-;	db "CDUMP",0              
-; |CDUMP ( -- ) continue dump of memory from DUMP |  DONE
+; | CDUMP ( -- ) continue dump of memory from DUMP | DONE
 		call clear_display
 		call dumpcont	
 		ret			; TODO command causes end of remaining parsing so cant do: $0000 DUMP CDUMP $8000 DUMP
@@ -180,11 +170,7 @@ endif
 
 .DAT:
 	CWHEAD .HOME 41 "AT" 2 WORD_FLAG_CODE
-;   db 41                     
-;	dw .KEY
-;	db 3
-;	db "AT",0            
-;| AT ( u1 u2 -- )  Set next output via . or emit at row u2 col u1 |DONE
+; | AT ( u1 u2 -- )  Set next output via . or emit at row u2 col u1 | DONE
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
 
@@ -221,11 +207,7 @@ endif
 
 .HOME:
 	CWHEAD .SPACE 45 "HOME" 4 WORD_FLAG_CODE
-;	db 45
-;	dw .OVER
-;	db 5
-;	db "HOME",0	
-; |HOME ( -- )    Reset the current cursor for output to home |DONE
+; | HOME ( -- )    Reset the current cursor for output to home | DONE
 .home:		ld a, 0		; and home cursor
 		ld (f_cursor_ptr), a
 		NEXTW
@@ -233,10 +215,6 @@ endif
 
 .SPACE:
 	CWHEAD .SPACES 50 "SPACE" 5 WORD_FLAG_CODE
-;   db 50
-;	  dw .SPACES
- ;         db 6
-;	  db "SPACE",0	
 ; | SPACE (  -- c ) Push the value of space onto the stack as a string  | DONE
 		ld hl, ' '
 		call forth_push_numhl
@@ -245,10 +223,6 @@ endif
 
 .SPACES:
 	CWHEAD .SCROLL 51 "SPACES" 6 WORD_FLAG_CODE
-;   db 51
-;	  dw .CONCAT
- ;         db 7
-;	  db "SPACES",0	
 ; | SPACES ( u -- str )  A string of u spaces is pushed onto the stack | TO TEST
 
 
@@ -256,10 +230,7 @@ endif
 
 		push hl    ; u
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, 'S'
-			ld (debug_mark),a
-			pop af
+			DMARK "SPA"
 			CALLMONITOR
 		endif
 
@@ -270,10 +241,7 @@ endif
 		ld hl, scratch 
 
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, 's'
-			ld (debug_mark),a
-			pop af
+			DMARK "SP2"
 			CALLMONITOR
 		endif
 		ld a, ' '
@@ -286,10 +254,7 @@ endif
 		ld (hl),a
 		ld hl, scratch
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, 'D'
-			ld (debug_mark),a
-			pop af
+			DMARK "SP3"
 			CALLMONITOR
 		endif
 		call forth_apush
@@ -300,11 +265,7 @@ endif
 
 .SCROLL:
 	CWHEAD .ATQ 63 "SCROLL" 6 WORD_FLAG_CODE
-;   db 63
-;	dw .BP
-;	db 7
-;	db "SCROLL",0      
-;| SCROLL ( u1 c1 -- ) Scroll u1 lines/chars in direction c1 | WIP
+; | SCROLL ( u1 c1 -- ) Scroll u1 lines/chars in direction c1 | WIP
 
 		; get port
 
@@ -341,12 +302,42 @@ endif
 
 .ATQ:
 	CWHEAD .AUTODSP 78 "AT?" 3 WORD_FLAG_CODE
-;| AT? ( u1 u2 -- n )  Push to stack ASCII value at row u2 col u1 |
+; | AT? ( u1 u2 -- n )  Push to stack ASCII value at row u2 col u1 | DONE
+
+		FORTH_DSP_VALUEHL
+		push hl
+	
+		FORTH_DSP_POP
+
+		pop hl
+
+		ld h, a		; how many rows
+		ld d, display_cols
+		call Mult8
+
+		push hl
+
+		FORTH_DSP_VALUEHL
+		push hl
+	
+		FORTH_DSP_POP
+
+		pop hl
+		pop de
+		add hl, de
+
+		ld a, (hl)
+
+		ld h,0
+		ld l, a
+		call forth_push_numhl
+
+
 	       NEXTW
 
 .AUTODSP:
 	CWHEAD .MENU 79 "ADSP" 4 WORD_FLAG_CODE
-;| ADSP ( u1 --  )  Enable/Disable Auto screen updates (SLOW). If off, use DRAW to refresh. Default is on. $0003 will enable direct screen writes (TODO) | DONE
+; | ADSP ( u1 --  )  Enable/Disable Auto screen updates (SLOW). If off, use DRAW to refresh. Default is on. $0003 will enable direct screen writes (TODO) | DONE
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
@@ -364,7 +355,7 @@ endif
 
 .MENU:
 	CWHEAD .ENDDISPLAY 92 "MENU" 4 WORD_FLAG_CODE
-;| MENU ( u1....ux n ut -- n ) Create a menu. Ut is the title, n is the number of menu items on stack. Push number selection to TOS |
+; | MENU ( u1....ux n ut -- n ) Create a menu. Ut is the title, n is the number of menu items on stack. Push number selection to TOS |
 	       NEXTW
 
 

@@ -11,11 +11,7 @@ if SOUND_ENABLE
 endif
 .SIN:
 	CWHEAD .SOUT 31 "IN" 2 WORD_FLAG_CODE
-;	db 31
-;	dw .SOUT
-;	db 3
-;	db "IN",0       
-; |IN ( u1-- u )    Perform z80 IN with u1 being the port number. Push result to TOS | TO TEST
+; | IN ( u1-- u )    Perform z80 IN with u1 being the port number. Push result to TOS | TO TEST
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
 		push hl
@@ -43,10 +39,6 @@ endif
 		NEXTW
 .SOUT:
 	CWHEAD .SPIO 32 "OUT" 3 WORD_FLAG_CODE
-;   db 32
-;	dw .CLS
-;	db 4
-;	db "OUT",0      
 ;| OUT ( u1 u2 -- ) Perform Z80 OUT to port u2 sending byte u1 | TO TEST
 
 		; get port
@@ -82,11 +74,7 @@ endif
 
 .SPIO:
 	CWHEAD .SPII 61 "SPIO" 4 WORD_FLAG_CODE
-;   db 61
-;	dw .SPII
-;	db 5
-;	db "SPIO",0      
-;| SPIO ( u1 u2 -- ) Send byte u1 to SPI device u2 |  WIP
+; | SPIO ( u1 u2 -- ) Send byte u1 to SPI device u2 |  WIP
 
 		; get port
 
@@ -126,11 +114,7 @@ endif
 
 .SPII:
 	CWHEAD .SESEL 62 "SPII" 5 WORD_FLAG_CODE
-;   db 62
-;	dw .SCROLL
-;	db 5
-;	db "SPII",0      
-;| SPII ( u1 -- ) Get a byte from SPI device u2 |  WIP
+; | SPII ( u1 -- ) Get a byte from SPI device u2 | WIP
 
 		; get port
 
@@ -161,11 +145,7 @@ endif
 
 .SESEL:
 	CWHEAD .CARTDEV 82 "BANK" 4 WORD_FLAG_CODE
-;   db 62
-;	dw .SCROLL
-;	db 5
-;	db "SPII",0      
-;| BANK ( u1 -- ) Select Serial EEPROM Bank Device at bank address u1 1-5 (disables CARTDEV). Set to zero to disable storage. |  DONE
+; | BANK ( u1 -- ) Select Serial EEPROM Bank Device at bank address u1 1-5 (disables CARTDEV). Set to zero to disable storage. | DONE
 
 		ld a, 255
 		ld (spi_cartdev), a
@@ -226,7 +206,7 @@ endif
 
 .CARTDEV:
 	CWHEAD .ENDDEVICE 82 "CARTDEV" 7 WORD_FLAG_CODE
-;| CARTDEV ( u1 -- ) Select cart device 1-8 (Disables BANK). Set to zero to disable devices. |  DONE
+; | CARTDEV ( u1 -- ) Select cart device 1-8 (Disables BANK). Set to zero to disable devices. |  DONE
 
 		; disable se storage bank selection
 

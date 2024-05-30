@@ -31,10 +31,6 @@
 
 		if DEBUG_FORTH_WORDS
 			DMARK "IF2"
-			;push af
-			;ld a, 'f'
-			;ld (debug_mark),a
-			;pop af
 			CALLMONITOR
 		endif
 
@@ -46,30 +42,18 @@
 	ld hl, (os_tok_ptr)
 		if DEBUG_FORTH_WORDS
 			DMARK "IF3"
-			;push af
-			;ld a, 'h'
-			;ld (debug_mark),a
-			;pop af
 			CALLMONITOR
 			
 		endif
 	ld de, .ifthen
 		if DEBUG_FORTH_WORDS
 			DMARK "IF4"
-			;push af
-			;ld a, 'd'
-			;ld (debug_mark),a
-			;pop af
 			CALLMONITOR
 		endif
 	call findnexttok 
 
 		if DEBUG_FORTH_WORDS
 			DMARK "IF5"
-			;push af
-			;ld a, 'z'
-			;ld (debug_mark),a
-			;pop af
 			CALLMONITOR
 		endif
 	; TODO replace below with ; exec using tok_ptr

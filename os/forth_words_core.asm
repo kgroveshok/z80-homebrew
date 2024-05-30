@@ -1,10 +1,6 @@
 
 .DUP:
 	CWHEAD .SWAP 6 "DUP" 3 WORD_FLAG_CODE
-;	db 6
-;	dw .EMIT
-;	db 4
-;	db "DUP",0   
 ; | DUP ( u -- u u )     Duplicate whatever item is on TOS | DONE
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -14,28 +10,17 @@
 		NEXTW
 .SWAP:
 	CWHEAD .COLN 9 "SWAP" 4 WORD_FLAG_CODE
-;	db 9
-;	dw .IF
-;	db 5
-;	db "SWAP",0    
-; |SWAP ( w1 w2 -- w2 w1 )    Swap top two items (of whatever type) on TOS
-;		FORTH_DSP
-;		ex de, hl
-;		ld hl,(de)
-;
-;		push hl
-;		FORTH_DSP
-;		dec hl
-;		dec hl
+; | SWAP ( w1 w2 -- w2 w1 )    Swap top two items  on TOS | DONE
+
+		FORTH_DSP_VALUEHL
+		push hl
+
+		
 
 		NEXTW
 .COLN:
 	CWHEAD .SCOLN 15 ":" 1 WORD_FLAG_CODE
-;	db 15
-;	dw .DROP
-;	db 2
-;	db ":",0     
-; |: ( -- )         Create new word |  DONE
+; | : ( -- )         Create new word | DONE
 
 	; get parser buffer length  of new word
 
@@ -60,10 +45,6 @@
 if DEBUG_FORTH_UWORD
 	ld de, (os_tok_ptr)
 			DMARK ":01"
-;	push af
-;	ld a, ':'
-;	ld (debug_mark),a
-;	pop af
 	CALLMONITOR
 endif
 
@@ -105,10 +86,6 @@ endif
 
 if DEBUG_FORTH_UWORD
 			DMARK ":02"
-;	push af
-;	ld a, 'z'
-;	ld (debug_mark),a
-;	pop af
 	CALLMONITOR
 endif
 
@@ -190,10 +167,6 @@ if DEBUG_FORTH_UWORD
 	push bc
 	ld bc, (os_new_malloc)
 			DMARK ":0x"
-;	push af
-;	ld a, 'x'
-;	ld (debug_mark),a
-;	pop af
 	CALLMONITOR
 	pop bc
 endif
@@ -290,10 +263,6 @@ if DEBUG_FORTH_UWORD
 	push bc
 	ld bc, (os_new_malloc)
 			DMARK ":0A"
-;	push af
-;	ld a, ';'
-;	ld (debug_mark),a
-;	pop af
 	CALLMONITOR
 	pop bc
 endif
@@ -310,10 +279,6 @@ if DEBUG_FORTH_UWORD
 	inc bc
 
 			DMARK ":0B"
-;	push af
-;	ld a, ';'
-;	ld (debug_mark),a
-;	pop af
 	CALLMONITOR
 	pop bc
 endif
@@ -338,10 +303,6 @@ ld (os_last_new_uword), de      ; update last new uword ptr
 
 if DEBUG_FORTH_UWORD
 			DMARK ":0+"
-;	push af
-;	ld a, '+'
-;	ld (debug_mark),a
-;	pop af
 	CALLMONITOR
 endif
 
@@ -358,7 +319,7 @@ ret    ; dont process any remaining parser tokens as they form new word
 	dw .DROP
 	db 2
 	db ";",0          
-; |; ( -- )     Terminate new word and return exec to previous exec level | DONE
+; | ; ( -- )     Terminate new word and return exec to previous exec level | DONE
 		FORTH_RSP_TOS
 		push hl
 		FORTH_RSP_POP
@@ -368,56 +329,57 @@ ret    ; dont process any remaining parser tokens as they form new word
 
 if DEBUG_FORTH_UWORD
 			DMARK "SCL"
-;	push af
-;	ld a, ';'
-;	ld (debug_mark),a
-;	pop af
 	CALLMONITOR
 endif
 		NEXTW
 
 .DROP:
 	CWHEAD .DUP2 17 "DROP" 4 WORD_FLAG_CODE
-;   db 17
-;	dw .DUP2
-;	db 5
-;	db "DROP",0        
-; |DROP ( w -- )   drop the TOS item   |DONE
+; | DROP ( w -- )   drop the TOS item   | DONE
 		FORTH_DSP_POP
 		NEXTW
 .DUP2:
 	CWHEAD .DROP2 18 "2DUP" 4 WORD_FLAG_CODE
-;	db 18
-;	dw .DROP2
-;	db 5
-;	db "2DUP",0      i
-; |2DUP ( w1 w2 -- w1 w2 w1 w2 ) Duplicate the top two items on TOS  
+; | 2DUP ( w1 w2 -- w1 w2 w1 w2 ) Duplicate the top two items on TOS  | DONE
+		FORTH_DSP_VALUEHL
+		push hl      ; 2
+
+		FORTH_DSP_POP
+		
+		FORTH_DSP_VALUEHL
+		push hl      ; 1
+
+		FORTH_DSP_POP
+
+		pop hl       ; 1
+		pop de       ; 2
+
+		call forth_push_numhl
+		ex hl, de
+		call forth_push_numhl
+
+		
+		ex de, hl
+
+		call forth_push_numhl
+		ex hl, de
+		call forth_push_numhl
+
+
 		NEXTW
 .DROP2:
 	CWHEAD .SWAP2 19 "2DROP" 5 WORD_FLAG_CODE
-;	db 19
-;	dw .SWAP2
-;	db 6
-;	db "2DROP",0      
-; |2DROP ( w w -- )    Double drop | DONE
+; | 2DROP ( w w -- )    Double drop | DONE
 		FORTH_DSP_POP
 		FORTH_DSP_POP
 		NEXTW
 .SWAP2:
 	CWHEAD .AT 20 "2SWAP" 5 WORD_FLAG_CODE
-;	db 20
-;	dw .AT
-;	db 5
-;	db "2SWAP",0      
-; |2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items
+; | 2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items
 		NEXTW
 .AT:
 	CWHEAD .CAT 21 "@" 1 WORD_FLAG_CODE
-;	db 21
-;	dw .CAT
-;	db 2
-;	db "@",0         
-;| @ ( w -- ) Push onto TOS byte stored at address   | DONE
+; | @ ( w -- ) Push onto TOS byte stored at address   | DONE
 
 .getbyteat:	
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -437,20 +399,12 @@ endif
 		NEXTW
 .CAT:
 	CWHEAD .BANG 22 "C@" 2 WORD_FLAG_CODE
-;	db 22
-;	dw .BANG
-;	db 3
-;	db "C@",0        
-; |C@  ( w -- ) Push onto TOS byte stored at address   |DONE
+; | C@  ( w -- ) Push onto TOS byte stored at address   | DONE
 		jp .getbyteat
 		NEXTW
 .BANG:
 	CWHEAD .CBANG 23 "!" 1 WORD_FLAG_CODE
-;   db 23
-;	dw .CBANG
-;	db 2
-;	db "!",0        
-; |! ( x w -- ) Store x at address w      | DONE
+; | ! ( x w -- ) Store x at address w      | DONE
 
 .storebyteat:		
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -477,20 +431,12 @@ endif
 		NEXTW
 .CBANG:
 	CWHEAD .SCALL 24 "C!" 2 WORD_FLAG_CODE
-;	db 24
-;	dw .LZERO
-;	db 3
-;	db "C!",0       
-; |C!  ( x w -- ) Store x at address w  | DONE
+; | C!  ( x w -- ) Store x at address w  | DONE
 		jp .storebyteat
 		NEXTW
 .SCALL:
 	CWHEAD .DEPTH 30 "CALL" 4 WORD_FLAG_CODE
-;	db 30
-;	dw .SIN
-;	db 5
-;	db "CALL",0	
-; |CALL ( w -- w  ) machine code call to address w  push the result of hl to stack | TO TEST
+; | CALL ( w -- w  ) machine code call to address w  push the result of hl to stack | TO TEST
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
 		push hl
@@ -512,11 +458,7 @@ endif
 		NEXTW
 .DEPTH:
 	CWHEAD .OVER 37 "DEPTH" 5 WORD_FLAG_CODE
-;   db 37                     ; stack count
-;	dw .DIR
-;	db 6
-;	db "DEPTH",0             
-; |DEPTH ( -- u ) Push count of stack | DONE
+; | DEPTH ( -- u ) Push count of stack | DONE
 		; take current TOS and remove from base value div by two to get count
 
 
@@ -540,11 +482,7 @@ endif
 		NEXTW
 .OVER:
 	CWHEAD .PAUSE 46 "OVER" 4 WORD_FLAG_CODE
-;  db 46
-;	dw .PAUSE
-;	db 5
-;	db "OVER",0	
-; |OVER ( n1 n2 -- n1 n2 n1 )  Copy one below TOS onto TOS | DONE
+; | OVER ( n1 n2 -- n1 n2 n1 )  Copy one below TOS onto TOS | DONE
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 		push hl    ; n2
@@ -573,10 +511,6 @@ endif
 
 .PAUSE:
 	CWHEAD .PAUSES 47 "PAUSEMS" 7 WORD_FLAG_CODE
-;   db 47
-;	  dw .PAUSES
- ;         db 8
-;	  db "PAUSEMS",0	
 ; | PAUSEMS ( n -- )  Pause for n millisconds | DONE
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 		push hl    ; n2
@@ -588,10 +522,6 @@ endif
 	       NEXTW
 .PAUSES: 
 	CWHEAD .ROT 48 "PAUSE" 5 WORD_FLAG_CODE
-;  db 48
-;	  dw .ROT
- ;         db 8
-;	  db "PAUSES",0	
 ; | PAUSE ( n -- )  Pause for n seconds | DONE
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 		push hl    ; n2
@@ -622,37 +552,61 @@ endif
 	       NEXTW
 .ROT:
 	CWHEAD .WORDS 49 "ROT" 3 WORD_FLAG_CODE
-;   db 49
-;	  dw .SPACE
- ;         db 4
-;	  db "ROT",0	
-; | ROT (  -- )  
+; | ROT ( u1 u2 u3 -- u2 u3 u1 ) Rotate top three items on stack | DONE
+
+		FORTH_DSP_VALUEHL
+		push hl    ; u3 
+
+		FORTH_DSP_POP
+  
+		FORTH_DSP_VALUEHL
+		push hl     ; u2
+
+		FORTH_DSP_POP
+
+		FORTH_DSP_VALUEHL
+		push hl     ; u1
+
+		FORTH_DSP_POP
+
+		pop bc      ; u1
+		pop hl      ; u2
+		pop de      ; u3
+
+
+		push bc
+		push de
+		push hl
+
+
+		pop hl
+		call forth_push_numhl
+
+		pop hl
+		call forth_push_numhl
+
+		pop hl
+		call forth_push_numhl
+		
+
+
+
+
+
 	       NEXTW
 .WORDS:
 	CWHEAD .UWORDS 59 "WORDS" 5 WORD_FLAG_CODE
-;   db 59
-;	  dw .UWORDS
- ;         db 6
-;	  db "WORDS",0	
 ; | WORDS (  -- )   List the system and user word dict
 	       NEXTW
 
 .UWORDS:
 	CWHEAD .BP 60 "UWORDS" 6 WORD_FLAG_CODE
-;   db 60
-;	  dw .SPIO
- ;         db 7
-;	  db "UWORDS",0	
 ; | UWORDS (  -- )   List user word dict
 	       NEXTW
 
 .BP:
 	CWHEAD .MONITOR 64 "BP" 2 WORD_FLAG_CODE
-;   db 64
-;	dw .MONITOR
-;	db 3
-;	db "BP",0      
-;| BP ( u1 -- ) Enable or disable break point monitoring | DONE
+; | BP ( u1 -- ) Enable or disable break point monitoring | DONE
 		; get byte count
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -678,12 +632,7 @@ endif
 
 .MONITOR:
 	CWHEAD .MALLOC 65 "MONITOR" 7 WORD_FLAG_CODE
-;   db 65
-;	dw .MALLOC
-;	db 8
-;	db "MONITOR",0      
-;| MONITOR ( -- ) Display system breakpoint/monitor | DONE
-	;	rst 030h
+; | MONITOR ( -- ) Display system breakpoint/monitor | DONE
 	call monitor
 
 		NEXTW
@@ -691,11 +640,7 @@ endif
 
 .MALLOC:
 	CWHEAD .FREE 66 "MALLOC" 6 WORD_FLAG_CODE
-;   db 66
-;	dw .FREE
-;	db 7
-;	db "MALLOC",0      
-;| MALLOC ( u -- u ) Allocate u bytes of memory space and push the pointer TOS  | TEST
+; | MALLOC ( u -- u ) Allocate u bytes of memory space and push the pointer TOS  | TEST
 		; get byte count
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -714,11 +659,7 @@ endif
 
 .FREE:
 	CWHEAD .LIST 67 "FREE" 4 WORD_FLAG_CODE
-;   db 67
-;	dw .STRLEN
-;	db 5
-;	db "FREE",0      
-;| FREE ( u --  ) Free memory block from malloc given u address  | TEST
+; | FREE ( u --  ) Free memory block from malloc given u address  | TEST
 		; get address
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -735,12 +676,12 @@ endif
 		NEXTW
 .LIST:
 	CWHEAD .FORGET 72 "LIST" 4 WORD_FLAG_CODE
-;| LIST ( uword -- )    List the code to the word on TOS
+; | LIST ( uword -- )    List the code to the word on TOS
 		NEXTW
 
 .FORGET:
 	CWHEAD .NOP 73 "FORGET" 6 WORD_FLAG_CODE
-;| FORGET ( uword -- )    Forget the uword on TOS
+; | FORGET ( uword -- )    Forget the uword on TOS
 
 		NEXTW
 .NOP:
@@ -749,11 +690,32 @@ endif
 	       NEXTW
 .COMO:
 	CWHEAD .COMC 90 "(" 1 WORD_FLAG_CODE
-;| ( ( -- )  Start of comment |
+; | ( ( -- )  Start of comment | DONE
+
+
+		ld, ( os_tok_ptr)
+	ld de, .closepar
+		
+		if DEBUG_FORTH_WORDS
+			DMARK ").."
+			CALLMONITOR
+		endif
+	call findnexttok 
+
+		if DEBUG_FORTH_WORDS
+			DMARK "IF5"
+			CALLMONITOR
+		endif
+	; replace below with ) exec using tok_ptr
+	ld (os_tok_ptr), hl
+	jp exec1
+
+	.closepar:   db ")",0
+
 	       NEXTW
 .COMC:
 	CWHEAD .ENDCORE 91 ")" 1 WORD_FLAG_CODE
-;| ) ( -- )  End of comment |
+; | ) ( -- )  End of comment |  DONE 
 	       NEXTW
 
 

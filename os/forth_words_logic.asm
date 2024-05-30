@@ -1,19 +1,11 @@
 
 .LZERO:
 	CWHEAD .TZERO 25 "0<" 2 WORD_FLAG_CODE
-;	db 25
-;	dw .TZERO
-;	db 3
-;	db "0<",0       
-; |0< ( u -- f ) Push true if u is less than o | CANT DO UNTIL FLOAT
+; | 0< ( u -- f ) Push true if u is less than o | CANT DO UNTIL FLOAT
 		NEXTW
 .TZERO:
 	CWHEAD .LESS 26 "0=" 2 WORD_FLAG_CODE
-;  db 26
-;	dw .LESS
-;	db 3
-;	db "0=",0         
-; |0= ( u -- f ) Push true if u equals 0 | TEST NO DEBUG
+; | 0= ( u -- f ) Push true if u equals 0 | TEST NO DEBUG
 	; TODO add floating point number detection
 		FORTH_DSP_VALUE
 		ld a,(hl)	; get type of value on TOS
@@ -60,11 +52,7 @@
 		NEXTW
 .LESS:
 	CWHEAD .GT 27 "<" 1 WORD_FLAG_CODE
-;   db 27
-;	dw .GT
-;	db 2
-;	db "<",0         
-; |< ( u1 u2 -- f ) True if u1 is less than u2 | DONE
+; | < ( u1 u2 -- f ) True if u1 is less than u2 | DONE
 	; TODO add floating point number detection
 		FORTH_DSP_VALUE
 		ld a,(hl)	; get type of value on TOS
@@ -107,10 +95,7 @@
 		pop hl
 
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, '<'
-			ld (debug_mark),a
-			pop af
+			DMARC "<  "
 			CALLMONITOR
 		endif
 		call forth_push_numhl
@@ -118,11 +103,7 @@
 		NEXTW
 .GT:
 	CWHEAD .EQUAL 28 ">" 1 WORD_FLAG_CODE
-;	db 28
-;	dw .EQUAL
-;	db 2
-;	db ">",0       
-; |> ( u1 u2 -- f ) True if u1 is greater than u2 | DONE
+; | > ( u1 u2 -- f ) True if u1 is greater than u2 | DONE
 	; TODO add floating point number detection
 		FORTH_DSP_VALUE
 		ld a,(hl)	; get type of value on TOS
@@ -165,10 +146,7 @@
 		pop hl
 
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, '>'
-			ld (debug_mark),a
-			pop af
+			DMARC ">  "
 			CALLMONITOR
 		endif
 		call forth_push_numhl
@@ -176,11 +154,7 @@
 		NEXTW
 .EQUAL:
 	CWHEAD .ENDLOGIC 29 "=" 1 WORD_FLAG_CODE
-;  db 29
-;	dw .SCALL
-;	db 2
-;	db "=",0          
-; |= ( u1 u2 -- f ) True if u1 equals u2 | DONE
+; | = ( u1 u2 -- f ) True if u1 equals u2 | DONE
 	; TODO add floating point number detection
 		FORTH_DSP_VALUE
 		ld a,(hl)	; get type of value on TOS
@@ -237,10 +211,7 @@
 		ld h, 0
 		ld l, c
 		if DEBUG_FORTH_WORDS
-			push af
-			ld a, '='
-			ld (debug_mark),a
-			pop af
+			DMARK "=  "
 			CALLMONITOR
 		endif
 		call forth_push_numhl

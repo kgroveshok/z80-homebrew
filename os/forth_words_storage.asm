@@ -2,11 +2,6 @@
 
 .DIR:
 	CWHEAD .SAVE 38 "DIR" 3 WORD_FLAG_CODE
-;
-;   db 38                     ;
-;	dw .SAVE
-;	db 4
-;	db "DIR",0               
 ; |DIR ( u -- lab id ... c t )   Using bank number u push directory entries from persistent storage as w with count u  | DONE
 
 		if DEBUG_FORTH_WORDS
@@ -101,10 +96,6 @@
 .dirdone:	
 		if DEBUG_FORTH_WORDS
 			DMARK "DI7"
-			;push af
-			;ld a, '-'
-			;ld (debug_mark),a
-			;pop af
 			CALLMONITOR
 		endif
 
@@ -122,11 +113,7 @@
  		ld hl, store_page+3
 
 		if DEBUG_FORTH_WORDS
-			;push af
 			DMARK "DI8"
-			;ld a, '='
-			;ld (debug_mark),a
-			;pop af
 			CALLMONITOR
 		endif
 		call forth_apushstrhl
@@ -137,46 +124,27 @@
 		NEXTW
 .SAVE:
 	CWHEAD .LOAD 39 "SAVE" 4 WORD_FLAG_CODE
-;   db 39
-;	dw .LOAD
-;	db 5
-;	db "SAVE",0              
-; |SAVE  ( w u -- )    Save user word memory to file name w on bank u
+; | SAVE  ( w u -- )    Save user word memory to file name w on bank u
 		NEXTW
 .LOAD:
 	CWHEAD .BSAVE 40 "LOAD" 4 WORD_FLAG_CODE
-;   db 40
-;	dw .DAT
-;	db 5
-;	db "LOAD",0               
-;| LOAD ( w u -- )    Load user word memory from file name w on bank u
+; | LOAD ( w u -- )    Load user word memory from file name w on bank u
 		NEXTW
 .BSAVE:  
 
 	CWHEAD .BLOAD 70 "BSAVE" 5 WORD_FLAG_CODE
-; db 70
-;	dw .BLOAD
-;	db 6
-;	db "BSAVE",0              ; |BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at address a for s bytes
+; | BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at address a for s bytes
 		NEXTW
 .BLOAD:
 	CWHEAD .SEO 71 "BLOAD" 5 WORD_FLAG_CODE
-;   db 71
-;	dw .V0
-;	db 6
-;	db "BLOAD",0               
-;| BLOAD ( w u a -- )    Load binary file from file name w on bank u into address u
+; | BLOAD ( w u a -- )    Load binary file from file name w on bank u into address u
 		NEXTW
 ;;;; counter gap
 
 
 .SEO:
 	CWHEAD .SEI 80 "SEO" 3 WORD_FLAG_CODE
-;   db 61
-;	dw .SPII
-;	db 5
-;	db "SPIO",0      
-;| SEO ( u1 u2 -- ) Send byte u1 to Serial EEPROM device at address u2 |  DONE
+; | SEO ( u1 u2 -- ) Send byte u1 to Serial EEPROM device at address u2 | DONE
 
 		; get port
 
@@ -216,11 +184,7 @@
 
 .SEI:
 	CWHEAD .SFREE 81 "SEI" 3 WORD_FLAG_CODE
-;   db 62
-;	dw .SCROLL
-;	db 5
-;	db "SPII",0      
-;| SEI ( u2 -- u1 ) Get a byte from Serial EEPROM device at address u2 |  DONE
+; | SEI ( u2 -- u1 ) Get a byte from Serial EEPROM device at address u2 | DONE
 
 		; get port
 
@@ -249,7 +213,7 @@
 
 .SFREE:
 	CWHEAD .SIZE 83 "FFREE" 5 WORD_FLAG_CODE
-;| FFREE ( -- n )  Gets number of free file blocks on current storage bank | DONE
+; | FFREE ( -- n )  Gets number of free file blocks on current storage bank | DONE
 
 		call storage_freeblocks
 
@@ -258,7 +222,7 @@
 	       NEXTW
 .SIZE:
 	CWHEAD .CREATE 83 "SIZE" 4 WORD_FLAG_CODE
-;| SIZE ( u -- n )  Gets number of blocks used by file id u and push to stack | DONE
+; | SIZE ( u -- n )  Gets number of blocks used by file id u and push to stack | DONE
 
 		FORTH_DSP_VALUEHL
 		push hl
@@ -273,7 +237,7 @@
 
 .CREATE:
 	CWHEAD .APPEND 84 "CREATE" 6 WORD_FLAG_CODE
-;| CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS | DONE
+; | CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS | DONE
 
 		
 ;		call storage_get_block_0
@@ -283,10 +247,7 @@
 		FORTH_DSP_VALUE
 
 	if DEBUG_STORESE
-;		push af
 		DMARK "CRT"
-;		ld (debug_mark),a
-;		pop af
 		CALLMONITOR
 	endif
 		push hl
@@ -299,10 +260,6 @@
 
 	if DEBUG_STORESE
 		DMARK "CT1"
-		;push af
-		;ld a, '='
-		;ld (debug_mark),a
-		;pop af
 		CALLMONITOR
 	endif
 		; push file id to stack
@@ -314,7 +271,7 @@
 
 .APPEND:
 	CWHEAD .SDEL 85 "APPEND" 6 WORD_FLAG_CODE
-;| APPEND ( u n --  )  Appends data u to file id on current storage bank | DONE
+; | APPEND ( u n --  )  Appends data u to file id on current storage bank | DONE
 
 		; TODO get id
 
@@ -323,10 +280,6 @@
 
 	if DEBUG_STORESE
 		DMARK "APP"
-		;push af
-		;ld a, '='
-		;ld (debug_mark),a
-		;pop af
 		CALLMONITOR
 	endif
 		FORTH_DSP_POP
@@ -336,10 +289,6 @@
 
 	if DEBUG_STORESE
 		DMARK "AP1"
-		;push af
-		;ld a, '='
-		;ld (debug_mark),a
-		;pop af
 		CALLMONITOR
 	endif
 		FORTH_DSP_POP
@@ -348,10 +297,6 @@
 		pop hl
 	if DEBUG_STORESE
 		DMARK "AP2"
-		;push af
-		;ld a, '='
-		;ld (debug_mark),a
-		;pop af
 		CALLMONITOR
 	endif
 		inc de ; skip var type indicator
@@ -363,7 +308,7 @@
 	       NEXTW
 .SDEL:
 	CWHEAD .OPEN 86 "ERA" 4 WORD_FLAG_CODE
-;| ERA ( n --  )  Deletes all data for file id n on current storage bank | DONE
+; | ERA ( n --  )  Deletes all data for file id n on current storage bank | DONE
 		; TODO get id
 		; TODO find id blocks
 		; TODO   set marker to zero
@@ -384,7 +329,7 @@
 
 .OPEN:
 	CWHEAD .READ 87 "OPEN" 4 WORD_FLAG_CODE
-;| OPEN ( n --  )  Sets file id to point to first data page for subsequent READs - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | DONE
+; | OPEN ( n --  )  Sets file id to point to first data page for subsequent READs - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | DONE
 
 		; TODO handle multiple file opens
 		FORTH_DSP_POP     ; for now just get rid of stream id
@@ -396,7 +341,7 @@
 	       NEXTW
 .READ:
 	CWHEAD .EOF 88 "READ" 4 WORD_FLAG_CODE
-;| READ ( n -- n  )  Reads next page of file id and push to stack | TESTING - Crashes on second read
+; | READ ( n -- n  )  Reads next page of file id and push to stack | TESTING - Crashes on second read
 
 		; TODO store_openext use it. If zero it is EOF
 
@@ -465,7 +410,7 @@
 	       NEXTW
 .EOF:
 	CWHEAD .FORMAT 89 "EOF" 3 WORD_FLAG_CODE
-;| EOF ( n -- u )  Returns EOF logical state of file id n - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | DONE
+; | EOF ( n -- u )  Returns EOF logical state of file id n - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | DONE
 		; TODO if current block id for stream is zero then push true else false
 
 
@@ -486,7 +431,7 @@
 
 .FORMAT:
 	CWHEAD .LABEL 89 "FORMAT" 6 WORD_FLAG_CODE
-;| FORMAT (  --  )  Formats the current bank selected (NO PROMPT!) | DONE
+; | FORMAT (  --  )  Formats the current bank selected (NO PROMPT!) | DONE
 		; TODO if current block id for stream is zero then push true else false
 	
 		; Wipes the bank check flags to cause a reformat on next block 0 read
@@ -502,7 +447,7 @@
 	       NEXTW
 .LABEL:
 	CWHEAD .LABELS 89 "LABEL" 5 WORD_FLAG_CODE
-;| LABEL ( u --  )  Sets the storage bank label to string on top of stack  | DONE
+; | LABEL ( u --  )  Sets the storage bank label to string on top of stack  | DONE
 		; TODO test to see if bank is selected
 	
 		FORTH_DSP_VALUE
@@ -518,7 +463,7 @@
 	       NEXTW
 .LABELS:
 	CWHEAD .ENDSTORAGE 89 "LABELS" 6 WORD_FLAG_CODE
-;| LABELS (  -- b n .... c  )  Pushes each storage bank labels (n) along with id (b) onto the stack giving count (c) of banks  | DONE
+; | LABELS (  -- b n .... c  )  Pushes each storage bank labels (n) along with id (b) onto the stack giving count (c) of banks  | DONE
 		; 
 
 		; save the current device selected to restore afterwards

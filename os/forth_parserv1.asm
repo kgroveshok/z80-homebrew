@@ -639,34 +639,28 @@ FORTH_DSP_VALUE: macro
 FORTH_DSP_POP: macro
 	; release malloc data
 
+	FORTH_CHK_DSP_UNDER
+
+
 	;ld hl,(cli_data_sp)
 if DEBUG_FORTH_DOT
 		
-		ld a, '1'
-		ld (debug_mark),a
+		DMARK "DPP"
 		call display_data_sp
-		ld a, '2'
-		ld (debug_mark),a
 		call next_page_prompt
 endif	
 	FORTH_DSP_VALUE
 if DEBUG_FORTH_DOT
 		
-		ld a, '3'
-		ld (debug_mark),a
+		DMARK "DP2"
 		call display_data_sp
-		ld a, '4'
-		ld (debug_mark),a
 		call next_page_prompt
 endif	
 	call free
 if DEBUG_FORTH_DOT
 		
-		ld a, '5'
-		ld (debug_mark),a
+		DMARK "DP5"
 		call display_data_sp
-		ld a, '6'
-		ld (debug_mark),a
 		call next_page_prompt
 endif	
 

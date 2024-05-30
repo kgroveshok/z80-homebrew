@@ -373,6 +373,9 @@ monitor:
 	cp 'Q'		; dump
 	ret z	
 
+	; TODO "S" to access symbol by name and not need the address
+	; TODO "F" to find a string in memory
+
 	jp monitor
 
 .monprompt: db ">", 0
@@ -430,6 +433,15 @@ monitor:
 
 	call next_page_prompt
 	jp monitor
+
+
+; TODO symbol access 
+
+.symbols:     ;; A list of symbols that can be called up 
+	dw display_fb0
+	db "fb0",0 
+     	dw store_page
+	db "store_page",0
 
 
 dump:	; see if we are cotinuing on from the last command by not uncluding any address

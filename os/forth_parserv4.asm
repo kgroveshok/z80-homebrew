@@ -1095,6 +1095,7 @@ macro_forth_dsp_pop:
 
 	if DEBUG_FORTH_STACK_GUARD
 		call check_stacks
+		FORTH_CHK_DSP_UNDER
 	endif
 	;ld hl,(cli_data_sp)
 if DEBUG_FORTH_DOT
@@ -1178,6 +1179,8 @@ FORTH_DSP_VALUEHL:  macro
 
 macro_dsp_valuehl:
 	FORTH_DSP_VALUE
+
+	FORTH_ERR_TOS_NOTNUM
 
 	inc hl   ; skip type id
 
@@ -1435,7 +1438,9 @@ FORTH_LOOP_POP: macro
 
 macro_forth_loop_pop:
 	if DEBUG_FORTH_STACK_GUARD
+		DMARK "LPP"
 		call check_stacks
+		FORTH_CHK_LOOP_UNDER
 	endif
 	push hl
 	ld hl,(cli_loop_sp)

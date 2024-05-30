@@ -16,6 +16,58 @@ FORTH_TRUE: equ 1
 FORTH_FALSE: equ 0
 
 
+
+FORTH_CHK_DSP_UNDER: macro
+	push hl
+	push de
+	ld hl,(cli_data_sp)
+	ld de, cli_data_stack
+	call cmp16
+	jp c, fault_dsp_under
+	pop de
+	pop hl
+	endm
+
+
+FORTH_CHK_RSP_UNDER: macro
+	push hl
+	push de
+	ld hl,(cli_ret_sp)
+	ld de, cli_ret_stack
+	call cmp16
+	jp c, fault_rsp_under
+	pop de
+	pop hl
+	endm
+
+FORTH_CHK_LOOP_UNDER: macro
+	push hl
+	push de
+	ld hl,(cli_loop_sp)
+	ld de, cli_loop_stack
+	call cmp16
+	jp c, fault_loop_under
+	pop de
+	pop hl
+	endm
+
+FORTH_ERR_TOS_NOTSTR: macro
+	; TOSO might need more for checks when used
+	push af
+	ld a,(hl)
+	cp DS_TYPE_STR
+	jp nz, type_faultn  
+	pop af
+	endm
+
+FORTH_ERR_TOS_NOTNUM: macro
+	push af
+	ld a,(hl)
+	cp DS_TYPE_INUM
+	jp nz, type_faultn  
+	pop af
+	endm
+
 user_word_eol: 
 	; hl contains the pointer to where to create a linked list item from the end
 	; of the user dict to continue on at the system word dict
@@ -146,7 +198,9 @@ FORTH_RSP_POP: macro
 
 macro_forth_rsp_pop:
 	if DEBUG_FORTH_STACK_GUARD
+		DMARK "RPP"
 		call check_stacks
+		FORTH_CHK_RSP_UNDER
 	endif
 	push hl
 	ld hl,(cli_ret_sp)
@@ -1221,4 +1275,101 @@ sfaultro:	db "RTS overflow/LS underflow", 0
 sfaultlo:	db "LS overflow/DTS underflow", 0
 sfaultdo:	db "DTS overflow", 0
 
+
+fault_dsp_under:
+	ld de, .dsp_under
+	jp .show_fault
+
+fault_rsp_under:
+	ld de, .rsp_under
+	jp .show_fault
+fault_loop_under:
+	ld de, .loop_under
+	jp .show_fault
+
+.dsp_under: db "DSP Underflow",0
+.rsp_under: db "RSP Underflow",0
+.loop_under: db "LOOP Underflow",0
+
+
+type_faultn: 	push de
+		push hl
+		call clear_display
+		   ld de, .typefaultn
+		ld a, display_row_1
+		call str_at_display
+		    ld de, debug_mark
+		ld a, display_row_1+17
+		call str_at_display
+		call update_display
+
+	; prompt before entering montior for investigating issue
+
+	ld a, display_row_4
+	ld de, endprog
+
+	call update_display		
+
+	call next_page_prompt
+
+		push hl
+		push de
+		call monitor
+		halt
+
+
+.typefaultn: db "NUM Type Expected TOS!",0
+
+type_faults: 	push de
+		push hl
+		call clear_display
+		   ld de, .typefaults
+		ld a, display_row_1
+		call str_at_display
+		    ld de, debug_mark
+		ld a, display_row_1+17
+		call str_at_display
+		call update_display
+
+	; prompt before entering montior for investigating issue
+
+	ld a, display_row_4
+	ld de, endprog
+
+	call update_display		
+
+	call next_page_prompt
+
+		pop hl
+		pop de
+		call monitor
+		halt
+
+
+.typefaults: db "STR Type Expected TOS!",0
+
+.show_fault: 	
+		push de
+		call clear_display
+		pop de
+		ld a, display_row_1
+		call str_at_display
+		    ld de, debug_mark
+		ld a, display_row_1+17
+		call str_at_display
+		call update_display
+
+	; prompt before entering montior for investigating issue
+
+	ld a, display_row_4
+	ld de, endprog
+
+	call update_display		
+
+	call next_page_prompt
+
+		pop hl
+		pop de
+		call monitor
+		halt
 ; eof

@@ -95,7 +95,7 @@
 		pop hl
 
 		if DEBUG_FORTH_WORDS
-			DMARC "<  "
+			DMARK "LT1"
 			CALLMONITOR
 		endif
 		call forth_push_numhl
@@ -146,7 +146,7 @@
 		pop hl
 
 		if DEBUG_FORTH_WORDS
-			DMARC ">  "
+			DMARK "GT1"
 			CALLMONITOR
 		endif
 		call forth_push_numhl
@@ -211,7 +211,7 @@
 		ld h, 0
 		ld l, c
 		if DEBUG_FORTH_WORDS
-			DMARK "=  "
+			DMARK "EQ1"
 			CALLMONITOR
 		endif
 		call forth_push_numhl

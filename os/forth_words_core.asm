@@ -355,14 +355,14 @@ endif
 		pop de       ; 2
 
 		call forth_push_numhl
-		ex hl, de
+		ex de, hl
 		call forth_push_numhl
 
 		
 		ex de, hl
 
 		call forth_push_numhl
-		ex hl, de
+		ex de, hl
 		call forth_push_numhl
 
 
@@ -693,7 +693,7 @@ endif
 ; | ( ( -- )  Start of comment | DONE
 
 
-		ld, ( os_tok_ptr)
+		ld hl, ( os_tok_ptr)
 	ld de, .closepar
 		
 		if DEBUG_FORTH_WORDS

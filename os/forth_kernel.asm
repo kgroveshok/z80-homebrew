@@ -207,6 +207,7 @@ macro_forth_rsp_pop:
 	pop hl
 	if DEBUG_FORTH_STACK_GUARD
 		call check_stacks
+		FORTH_CHK_RSP_UNDER
 	endif
 	ret
 

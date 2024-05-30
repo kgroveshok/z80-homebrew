@@ -954,48 +954,21 @@ macro_forth_dsp_pop:
 	endif
 	;ld hl,(cli_data_sp)
 if DEBUG_FORTH_DOT
-		
-			DMARK "DPP"
-;		ld a, '7'
-;		ld (debug_mark),a
-	;	call display_data_sp
-	;call break_point_state
-	;rst 030h
+	DMARK "DPP"
 	CALLMONITOR
-	;	ld a, '2'
-;		ld (debug_mark),a
-;		call next_page_prompt
 endif	
 	FORTH_DSP_VALUE
 if DEBUG_FORTH_DOT_KEY
-		
-			DMARK "DP1"
-;		ld a, '8'
-;		ld (debug_mark),a
-;		call display_data_sp
-	;call break_point_state
-	;rst 030h
+	DMARK "DP1"
 	CALLMONITOR
-	;	ld a, '4'
-;		ld (debug_mark),a
-;		call next_page_prompt
 endif	
 if FORTH_ENABLE_FREE
 	call free
 endif
 
 if DEBUG_FORTH_DOT_KEY
-		
-			DMARK "DP2"
-;		ld a, '5'
-;		ld (debug_mark),a
-;		call display_data_sp
-	;call break_point_state
-	;rst 030h
+	DMARK "DP2"
 	CALLMONITOR
-	;	ld a, '6'
-;		ld (debug_mark),a
-;		call next_page_prompt
 endif	
 
 	; move pointer down
@@ -1007,6 +980,7 @@ endif
 
 	if DEBUG_FORTH_STACK_GUARD
 		call check_stacks
+		FORTH_CHK_DSP_UNDER
 	endif
 	ret
 
@@ -1270,6 +1244,7 @@ macro_forth_loop_pop:
 	pop hl
 	if DEBUG_FORTH_STACK_GUARD
 		call check_stacks
+		FORTH_CHK_LOOP_UNDER
 	endif
 	ret
 

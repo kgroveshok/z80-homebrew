@@ -530,10 +530,6 @@ endif
 		ld b, l
 		if DEBUG_FORTH_WORDS
 			DMARK "PAU"
-			;push af
-			;ld a, 'P'
-			;ld (debug_mark),a
-			;pop af
 			CALLMONITOR
 		endif
 .pauses1:	push bc
@@ -541,10 +537,6 @@ endif
 		pop bc
 		if DEBUG_FORTH_WORDS
 			DMARK "PA1"
-			;push af
-			;ld a, 'p'
-			;ld (debug_mark),a
-			;pop af
 			CALLMONITOR
 		endif
 		djnz .pauses1

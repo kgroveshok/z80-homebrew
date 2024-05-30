@@ -180,10 +180,6 @@ macro_forth_rsp_tos:
 	ex de, hl
 		if DEBUG_FORTH_WORDS
 			DMARK "RST"
-			;push af
-			;ld a, 'R'
-			;ld (debug_mark),a
-			;pop af
 			CALLMONITOR
 		endif
 	pop de

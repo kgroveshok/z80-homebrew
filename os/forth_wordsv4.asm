@@ -186,10 +186,6 @@ user_exec:
 
 if DEBUG_FORTH_UWORD
 			DMARK "UEX"
-;	push af
-;	ld a, '-'
-;	ld (debug_mark),a
-;	pop af
 	CALLMONITOR
 endif
 

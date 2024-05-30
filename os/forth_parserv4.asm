@@ -34,30 +34,16 @@ NEXTW: macro
 macro_next:
 if DEBUG_FORTH_PARSE_KEY
 			DMARK "NXT"
-;	push af
-;	ld a, '>'
-;	ld (debug_mark),a
-;	pop af
 	;rst 030h
 	CALLMONITOR
-	;call break_point_state
-	;call display_reg_state
-	;call display_dump_at_hl
 endif	
 ;	inc hl  ; skip token null term 
 	ld bc,(cli_ptr)   ; move to next token to parse in the input stream
 	ld de,(cli_origptr)   ; move to next token to parse in the input stream
 	ld hl,(os_tok_ptr)   ; move to next token to parse in the input stream
 if DEBUG_FORTH_PARSE_KEY
-	push af
-	ld a, '}'
-	ld (debug_mark),a
-	pop af
-	;call break_point_state
-	;rst 030h
+	DMARK "}AA"
 	CALLMONITOR
-	;call display_reg_state
-	;call display_dump_at_hl
 endif	
 	jp execnext
 	;jp exec1
@@ -97,15 +83,7 @@ endif
 
 if DEBUG_FORTH_TOK
 			DMARK "TOK"
-;	push af
-;	ld a, 'Q'
-;	ld (debug_mark),a
-;	pop af
-	;call break_point_state
-	;rst 030h
 	CALLMONITOR
-	;call display_reg_state
-	;call display_dump_at_hl
 endif
 .ptoken2:    ld a,(hl)
 	inc hl
@@ -156,15 +134,7 @@ endif
 if DEBUG_FORTH_TOK
 	ld hl,(os_tok_ptr)
 			DMARK "TK1"
-;	push af
-;	ld a, 'W'
-;	ld (debug_mark),a
-;	pop af
-	;call break_point_state
-	;rst 030h
 	CALLMONITOR
-	;call display_reg_state
-	;call display_dump_at_hl
 endif
 
 	; malloc size + buffer pointer + if is loop flag
@@ -183,15 +153,7 @@ endif
 
 if DEBUG_FORTH_TOK
 			DMARK "TKE"
-;push af
-;ld a, 'E'
-;ld (debug_mark),a
-;pop af
-	;call break_point_state
-	;rst 030h
 	CALLMONITOR
-	;call display_reg_state
-	;call display_dump_at_hl
 endif
 
 	ld l,a
@@ -205,15 +167,7 @@ endif
 
 if DEBUG_FORTH_TOK
 			DMARK "TKR"
-;	push af
-;	ld a, 'R'
-;	ld (debug_mark),a
-;	pop af
-	;call break_point_state
-	;rst 030h
 	CALLMONITOR
-	;call display_reg_state
-	;call display_dump_at_hl
 endif
 
 	FORTH_RSP_NEXT
@@ -233,14 +187,7 @@ endif
 
 if DEBUG_FORTH_TOK
 			DMARK "TKT"
-;	push af
-;	ld a, 'T'
-;	ld (debug_mark),a
-;	pop af
-	;call break_point_state
-	;rst 030h
 	CALLMONITOR
-	;call display_reg_state
 endif
 
 	; do str cpy
@@ -252,14 +199,7 @@ endif
 if DEBUG_FORTH_TOK
 
 			DMARK "TKY"
-;	push af
-;	ld a, 'Y'
-;	ld (debug_mark),a
-;	pop af
-	;call break_point_state
-	;rst 030h
 	CALLMONITOR
-	;call display_reg_state
 endif
 	;ld a,0
 	;ld a,FORTH_END_BUFFER
@@ -289,15 +229,7 @@ endif
 	ld hl,(os_tok_malloc)
 if DEBUG_FORTH_PARSE_KEY
 			DMARK "TKU"
-;	push af
-;	ld a, 'U'
-;	ld (debug_mark),a
-;	pop af
-	;call break_point_state
-	;rst 030h
 	CALLMONITOR
-	;call display_reg_state
-	;call display_dump_at_hl
 endif
 
 	ret
@@ -333,15 +265,7 @@ exec1:
 
 if DEBUG_FORTH_PARSE_KEY
 			DMARK "KYQ"
-;	push af
-;	ld a, 'q'
-;	ld (debug_mark),a
-;	pop af
-	;call break_point_state
-	;rst 030h
 	CALLMONITOR
-	;call display_reg_state
-	;call display_dump_at_hl
 endif
 ;       while at start of word:
 ; get start of dict (in user area first)
@@ -386,10 +310,6 @@ if DEBUG_FORTH_PARSE_NEXTWORD
 	push bc
 	ld bc, (cli_nextword)
 			DMARK "NXW"
-;	push af
-;	ld a, '?'
-;	ld (debug_mark),a
-;	pop af
 	CALLMONITOR
 	pop bc
 endif
@@ -665,15 +585,7 @@ cpir
 
 if DEBUG_FORTH_PARSE_KEY
 			DMARK "KY!"
-;	push af
-;	ld a, '!'
-;	ld (debug_mark),a
-;	pop af
-	;call break_point_state
-	;rst 030h
 	CALLMONITOR
-	;call display_reg_state
-	;call display_dump_at_hl
 endif	
 ; TODO this might place hl on the null, so will need to forward on???
 ;inc hl   ; see if this gets onto the next item
@@ -736,15 +648,7 @@ forth_apush:
 
 if DEBUG_FORTH_PUSH
 			DMARK "PSH"
-;	push af
-;	ld a, 'A'
-;	ld (debug_mark),a
-;	pop af
-	;call break_point_state
-	;rst 030h
 	CALLMONITOR
-	;call display_reg_state
-	;call display_dump_at_hl
 endif	
 	; identify input type
 
@@ -778,15 +682,7 @@ endif
 
 if DEBUG_FORTH_PUSH
 			DMARK "PH1"
-;	push af
-;	ld a, 'S'
-;	ld (debug_mark),a
-;	pop af
-	;call break_point_state
-	;rst 030h
 	CALLMONITOR
-	;call display_reg_state
-	;call display_dump_at_hl
 endif	
 	;push af
 if DEBUG_FORTH_PUSH
@@ -830,28 +726,12 @@ endif
 	ld l,a
 if DEBUG_FORTH_PUSH
 			DMARK "PH2"
-;	push af
-;	ld a, 's'
-;	ld (debug_mark),a
-;	pop af
-	;call break_point_state
-	;rst 030h
 	CALLMONITOR
-	;call display_reg_state
-	;call display_dump_at_hl
 endif	
 	call malloc	; on ret hl now contains allocated memory
 if DEBUG_FORTH_PUSH
 			DMARK "PH3"
-;	push af
-;	ld a, 'd'
-;	ld (debug_mark),a
-;	pop af
-	;call break_point_state
-	;rst 030h
 	CALLMONITOR
-	;call display_reg_state
-	;call display_dump_at_hl
 endif	
 	if DEBUG_FORTH_MALLOC_GUARD
 		call z,malloc_error
@@ -860,15 +740,7 @@ endif
 	push hl
 if DEBUG_FORTH_PUSH
 			DMARK "PH4"
-;	push af
-;	ld a, 'D'
-;	ld (debug_mark),a
-;	pop af
-	;call break_point_state
-	;rst 030h
 	CALLMONITOR
-	;call display_reg_state
-	;call display_dump_at_hl
 endif	
 
 	; flag set as str
@@ -904,16 +776,7 @@ endif
 
 if DEBUG_FORTH_PUSH
 			DMARK "PH4"
-;	push af
-;;	ex de,hl
-;	ld a, 'F'
-;	ld (debug_mark),a
-;	pop af
-	;call break_point_state
-	;rst 030h
 	CALLMONITOR
-	;call display_reg_state
-	;call display_dump_at_hl
 ;	ex de,hl
 endif	
 	; in case of spaces, skip the ptr past the copied string
@@ -1016,15 +879,7 @@ endif
 
 if DEBUG_FORTH_PUSH
 			DMARK "PH5"
-;	push af
-;	ld a, 'c'
-;	ld (debug_mark),a
-;	pop af
-	;call break_point_state
-	;rst 030h
 	CALLMONITOR
-	;call display_reg_state
-	;call display_dump_at_hl
 endif	
 
 
@@ -1208,10 +1063,6 @@ findnexttok:
 
 		if DEBUG_FORTH
 			DMARK "NTK"
-			;push af
-			;ld a, 'f'
-			;ld (debug_mark),a
-			;pop af
 			CALLMONITOR
 		endif
 	push de
@@ -1225,10 +1076,6 @@ findnexttok:
 	call toUpper
 		if DEBUG_FORTH
 			DMARK "NT1"
-			;push af
-			;ld a, '1'
-			;ld (debug_mark),a
-			;pop af
 			CALLMONITOR
 		endif
 	cp c
@@ -1262,10 +1109,6 @@ findnexttok:
 
 		if DEBUG_FORTH
 			DMARK "NT2"
-			;push af
-			;ld a, '2'
-			;ld (debug_mark),a
-			;pop af
 			CALLMONITOR
 		endif
 	; c has the token to find char
@@ -1278,10 +1121,6 @@ findnexttok:
 
 		if DEBUG_FORTH
 			DMARK "NT3"
-;			push af
-;			ld a, '3'
-;			ld (debug_mark),a
-;			pop af
 			CALLMONITOR
 		endif
 	pop de	; reset de token to look for
@@ -1293,10 +1132,6 @@ findnexttok:
 	; is the same char a null which means we might have a full hit?
 		if DEBUG_FORTH
 			DMARK "NT4"
-;			push af
-;			ld a, '4'
-;			ld (debug_mark),a
-;			pop af
 			CALLMONITOR
 		endif
 
@@ -1307,10 +1142,6 @@ findnexttok:
 
 		if DEBUG_FORTH
 			DMARK "NT5"
-			;push af
-			;ld a, '5'
-			;ld (debug_mark),a
-			;pop af
 			CALLMONITOR
 		endif
 	ld a, 0
@@ -1320,10 +1151,6 @@ findnexttok:
 
 		if DEBUG_FORTH
 			DMARK "NT6"
-;			push af
-;			ld a, '6'
-;			ld (debug_mark),a
-;			pop af
 			CALLMONITOR
 		endif
 	; token to find is exhusted but no match to stream
@@ -1344,10 +1171,6 @@ findnexttok:
 
 		if DEBUG_FORTH
 			DMARK "NT9"
-			;push af
-			;ld a, '9'
-			;ld (debug_mark),a
-			;pop af
 			CALLMONITOR
 		endif
 
@@ -1396,10 +1219,6 @@ macro_forth_loop_next:
 	inc hl
 		if DEBUG_FORTH_WORDS
 			DMARK "LNX"
-			;push af
-			;ld a, 'L'
-			;ld (debug_mark),a
-			;pop af
 			CALLMONITOR
 		endif
 	ld (cli_loop_sp),hl

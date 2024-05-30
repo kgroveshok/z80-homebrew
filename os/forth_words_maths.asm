@@ -14,14 +14,7 @@
 
 		if DEBUG_FORTH_DOT
 			DMARK "ADD"
-			;push af
-			;ld a, 'C'
-			;ld (debug_mark),a
-			;pop af
-	;		call break_point_state
 	CALLMONITOR
-			;call display_reg_state
-			;call display_dump_at_hl
 		endif
 
 		;ld ix, hl
@@ -197,11 +190,6 @@
 
 		if DEBUG_FORTH_MATHS
 			DMARK "DIV"
-			;push af
-			;ld a, '/'
-			;ld (debug_mark),a
-			;pop af
-	;		call break_point_state
 	CALLMONITOR
 		endif
 		; one value on hl but move to a get other one back
@@ -215,12 +203,6 @@
 
 		if DEBUG_FORTH_MATHS
 			DMARK "DI1"
-			;push af
-			;ld a, '1'
-			;ld (debug_mark),a
-			;pop af
-	;		call break_point_state
-	;rst 030h
 	CALLMONITOR
 		endif
 

@@ -709,6 +709,9 @@ break_point_state:
 	ld l, a
 	ld h, 0
 	ld (os_view_af),hl
+
+		ld hl, display_fb0
+		ld (display_fb_active), hl
 	pop hl	
 
 	ld a, '1'
@@ -727,7 +730,7 @@ break_point_state:
 	ld de, (os_view_de)
 	ld bc, (os_view_bc)
 	call display_reg_state
-	jr .bpschk
+	jp .bpschk
 
 .bps2:  cp '2'
 	jr nz, .bps3
@@ -800,6 +803,11 @@ break_point_state:
 	jr .bpschk
 .bps8:  cp '0'
 	jr nz, .bpschk
+
+		ld hl, display_fb1
+		ld (display_fb_active), hl
+		call update_display
+
 	ld a, (os_view_af)
 	ld hl, (os_view_hl)
 	ld de, (os_view_de)

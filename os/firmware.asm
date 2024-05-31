@@ -135,10 +135,10 @@ key_shift: equ key_symbol - 1
 
 display_fb_len: equ display_rows*display_cols
 
-; primary frame buffer
-display_fb0: equ  key_shift-display_fb_len-display_fb_len
+; primary frame buffer   
+display_fb0: equ  key_shift-display_fb_len-display_fb_len          ; cli input
 ; working frame buffers
-display_fb1: equ  display_fb0-display_fb_len-display_fb_len
+display_fb1: equ  display_fb0-display_fb_len-display_fb_len          ; running program
 display_fb2: equ  display_fb1-display_fb_len
 ;
 ; pointer to active frame buffer
@@ -332,6 +332,18 @@ endm
 
 
 hardware_init:
+
+		; clear all the buffers
+
+		ld hl, display_fb1
+		ld (display_fb_active), hl
+
+		call clear_display
+
+		ld hl, display_fb2
+		ld (display_fb_active), hl
+
+		call clear_display
 
 		; init primary frame buffer area
 		ld hl, display_fb0

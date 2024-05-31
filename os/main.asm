@@ -187,44 +187,11 @@ cli:
 	inc hl
 	ld (hl), a
 
-	; look for monitor commands
+	; switch frame buffer to program 
 
-	ld a,(scratch)
-;	cp 'd'
-;	call z, dump			; d xxxx    dump 4 bytes. repeated pressing of enter dumps another row and scrolls
-;	cp 'g'
-;	jp z,jump			; j xxxx     jump and run code at xxxx
-;	cp 'e'
-;	jp z,enter                ; e xxxx     start entering of single bytes storing at address until empty string
-;	cp 't'
-;	jp z,testenter                ; e xxxx     start entering of single bytes storing at address until empty string
-;	cp 'j'
-;	jp z,testenter2                ; e xxxx     start entering of single bytes storing at address until empty string
-;if DEBUG_KEY_MATRIX
-;	cp 'm'
-;	jp z,matrix
-;endif
-;if DEBUG_STORESE
-;	; w aaaa string
-;	; aaaa - address to store string  (only first 64 can be used in this test) 
-;	; string to store
-;	; 
-;	; on return first page is loaded and os_current_ptr is set to start of buffer
-;	cp 'w'		; test store a byte string
-;	call z,storageput
-;	cp 'r'		; test read stroe a byte
-;	call z,storageread
-;endif
-;if DEBUG_STORECF 
-;	cp 'w'		; test store a byte
-;	call z,storageput
-;	cp 'r'		; test read stroe a byte
-;	call z,storageread
-;	cp 'p'		; test read stroe a byte
-;	jp nz, cli
-;	ld hl, store_page
-;	ld (os_cur_ptr),hl
-;endif
+		ld hl, display_fb1
+		ld (display_fb_active), hl
+
 ;	nop
 	; first time into the parser so pass over the current scratch pad
 	ld hl,scratch
@@ -241,6 +208,13 @@ cli:
 	call update_display		
 
 	call next_page_prompt
+
+	; switch frame buffer to cli
+
+		ld hl, display_fb0
+		ld (display_fb_active), hl
+
+
         call clear_display
 	call update_display		
 

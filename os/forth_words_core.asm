@@ -1,4 +1,75 @@
 
+.EXEC:
+	CWHEAD .DUP 6 "EXEC" 4 WORD_FLAG_CODE
+; | EXEC ( u -- )    Execs the string on TOS as a FORTH expression | TO TEST
+
+		if DEBUG_FORTH_WORDS
+			DMARK "EXE"
+			CALLMONITOR
+		endif
+
+	FORTH_DSP_VALUE
+
+; TODO do string type checks
+
+	inc hl   ; skip type
+
+	push hl  ; source code 
+		if DEBUG_FORTH_WORDS
+			DMARK "EX1"
+			CALLMONITOR
+		endif
+	ld a, 0
+	call strlent
+
+	inc hl
+	inc hl
+	inc hl
+
+	push hl    ; size
+
+		if DEBUG_FORTH_WORDS
+			DMARK "EX2"
+			CALLMONITOR
+		endif
+	call malloc
+
+	ex de, hl    ; de now contains malloc area
+	pop bc   	; get byte count
+	pop hl      ; get string to copy
+
+	push de     ; save malloc for free later
+
+		if DEBUG_FORTH_WORDS
+			DMARK "EX3"
+			CALLMONITOR
+		endif
+	ldir       ; duplicate string
+
+	FORTH_DSP_POP 
+
+	pop hl    
+	push hl    ; save malloc area
+
+		if DEBUG_FORTH_WORDS
+			DMARK "EX4"
+			CALLMONITOR
+		endif
+
+	call forthparse
+	call forthexec
+	call forthexec_cleanup
+	
+	pop hl
+		if DEBUG_FORTH_WORDS
+			DMARK "EX5"
+			CALLMONITOR
+		endif
+	call free
+	 
+
+	NEXTW
+
 .DUP:
 	CWHEAD .SWAP 6 "DUP" 3 WORD_FLAG_CODE
 ; | DUP ( u -- u u )     Duplicate whatever item is on TOS | DONE

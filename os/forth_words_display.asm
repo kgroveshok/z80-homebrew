@@ -5,9 +5,10 @@
 		; get value off TOS and display it
 
 
-		FORTH_DSP_VALUE 
+		FORTH_DSP_VALUEHL
 
 		ld a,l
+
 		; TODO write to display
 
 		ld (os_input), a

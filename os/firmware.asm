@@ -136,10 +136,10 @@ key_shift: equ key_symbol - 1
 display_fb_len: equ display_rows*display_cols
 
 ; primary frame buffer   
-display_fb0: equ  key_shift-display_fb_len-display_fb_len          ; cli input
+display_fb0: equ  key_shift-display_fb_len-display_fb_len-1          ; cli input
 ; working frame buffers
-display_fb1: equ  display_fb0-display_fb_len-display_fb_len          ; running program
-display_fb2: equ  display_fb1-display_fb_len
+display_fb1: equ  display_fb0-display_fb_len-display_fb_len-1          ; running program
+display_fb2: equ  display_fb1-display_fb_len - 1
 ;
 ; pointer to active frame buffer
 display_fb_active: equ display_fb2 - 2

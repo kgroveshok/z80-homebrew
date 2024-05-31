@@ -1,4 +1,32 @@
 
+.FB:
+	CWHEAD .EMIT 7 "FB" 2 WORD_FLAG_CODE
+; |  FB ( u -- )        Select frame buffer ID u (1-3)  |  DONE
+
+		FORTH_DSP_VALUEHL
+
+		ld a, l
+		cp 1
+		jr nz, .fbn1
+		ld hl, display_fb1
+		jr .fbset
+.fbn1:		cp 2
+		jr nz, .fbn2
+		ld hl, display_fb2
+		jr .fbset
+.fbn2:		cp 3
+		jr nz, .fbn3
+		ld hl, display_fb3
+		jr .fbset
+.fbn3:		 ; if invalid number select first
+		ld hl, display_fb1
+.fbset:		ld (display_fb_active), hl
+
+		FORTH_DSP_POP
+
+		NEXTW
+
+
 .EMIT:
 	CWHEAD .DOTH 7 "EMIT" 4 WORD_FLAG_CODE
 ; |  EMIT ( u -- )        Display ascii character  TOS   | DONE
@@ -305,6 +333,8 @@ endif
 	CWHEAD .AUTODSP 78 "AT?" 3 WORD_FLAG_CODE
 ; | AT? ( u1 u2 -- n )  Push to stack ASCII value at row u2 col u1 | DONE
 
+; TODO BUG not getting correct value back
+
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
 		; TODO save cursor row
@@ -331,7 +361,15 @@ endif
 		pop af
 		add l		; add col offset
 
-		; get char at location
+		; add current frame buffer address
+		ld hl, (display_fb_active)
+		call addatohl
+
+
+
+
+		; get char frame buffer location offset in hl
+
 		ld a,(hl)
 		ld h, 0
 		ld l, a
@@ -340,37 +378,6 @@ endif
 
 
 		NEXTW
-
-; get rid of below code
-
-	
-		FORTH_DSP_POP
-
-		pop hl
-
-		ld h, a		; how many rows
-		ld d, display_cols
-		call Mult8
-
-		push hl
-
-		FORTH_DSP_VALUEHL
-		push hl
-	
-		FORTH_DSP_POP
-
-		pop hl
-		pop de
-		add hl, de
-
-		ld a, (hl)
-
-		ld h,0
-		ld l, a
-		call forth_push_numhl
-
-
-	       NEXTW
 
 .AUTODSP:
 	CWHEAD .MENU 79 "ADSP" 4 WORD_FLAG_CODE

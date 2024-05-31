@@ -305,8 +305,44 @@ endif
 	CWHEAD .AUTODSP 78 "AT?" 3 WORD_FLAG_CODE
 ; | AT? ( u1 u2 -- n )  Push to stack ASCII value at row u2 col u1 | DONE
 
-		FORTH_DSP_VALUEHL
-		push hl
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		; TODO save cursor row
+		ld a,l
+		cp 2
+		jr nz, .crow3aq
+		ld a, display_row_2
+		jr .ccol1aq
+.crow3aq:		cp 3
+		jr nz, .crow4aq
+		ld a, display_row_3
+		jr .ccol1aq
+.crow4aq:		cp 4
+		jr nz, .crow1aq
+		ld a, display_row_4
+		jr .ccol1aq
+.crow1aq:		ld a,display_row_1
+.ccol1aq:		push af			; got row offset
+		ld l,a
+		ld h,0
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+		; TODO save cursor col
+		pop af
+		add l		; add col offset
+
+		; get char at location
+		ld a,(hl)
+		ld h, 0
+		ld l, a
+
+		call forth_push_numhl
+
+
+		NEXTW
+
+; get rid of below code
+
 	
 		FORTH_DSP_POP
 

@@ -42,11 +42,10 @@ SOUND_TONE: equ 0B
 sound_init:
 	ld a, SOUND_DATA | SOUND_CH0 | SOUND_VOL | 1111B
 	call note_send_byte
-
 	ld a, SOUND_DATA | SOUND_CH0 | SOUND_TONE | 0111B
 	call note_send_byte
 	call delay250ms
-	ld a, SOUND_DATA | SOUND_CH0 | SOUND_TONE | 0111B
+	ld a, SOUND_DATA | SOUND_CH0 | SOUND_TONE | 0101B
 	call note_send_byte
 	call delay250ms
 	ret
@@ -69,18 +68,24 @@ note_send_byte:
 
 	; we high
 	out (Device_B+1), a
+;	ld a, 1
+;	call aDelayInMS
 	nop 
 	nop 
 	nop 
 	nop 
 	; we low
 	out (Device_B), a
+;	ld a, 1
+;	call aDelayInMS
 	nop 
 	nop 
 	nop 
 	nop 
 	; we high
 	out (Device_B+1), a
+;	ld a, 1
+;	call aDelayInMS
 	nop 
 	nop 
 	nop 

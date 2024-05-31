@@ -419,7 +419,8 @@ malloc_error:
 	;call break_point_state
 	call cin_wait
 
-	ld a, '*'
+	ld a, ' '
+	ld (os_view_disable), a
 	CALLMONITOR
 
 	pop hl

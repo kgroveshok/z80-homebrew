@@ -625,7 +625,13 @@ endif
 .MONITOR:
 	CWHEAD .MALLOC 65 "MONITOR" 7 WORD_FLAG_CODE
 ; | MONITOR ( -- ) Display system breakpoint/monitor | DONE
-	call monitor
+
+		ld a, 0
+		ld (os_view_disable), a
+
+		CALLMONITOR
+
+;	call monitor
 
 		NEXTW
 

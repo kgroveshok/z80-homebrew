@@ -160,6 +160,12 @@ endif
 	ld h,0
 	call malloc
 	if DEBUG_FORTH_MALLOC_GUARD
+		push af
+		ld a, l
+		add h
+		cp 0
+		pop af
+		
 		call z,malloc_error
 	endif
 	ld (os_tok_malloc), hl	 ; save malloc ptr

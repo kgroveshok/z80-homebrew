@@ -2,8 +2,6 @@
 
 ; new parser. restructing to handle nested loops and better scanning of word tokens
 
-
-
 WORD_SYS_LOWPRIM: equ 2    ; Offset for low level prim words opcode
 WORD_SYS_BRANCH: equ 10    ; Offset for branching and loop words opcode
 WORD_SYS_UWORD: equ 1   ; Opcode for all user words
@@ -33,8 +31,7 @@ NEXTW: macro
 
 macro_next:
 if DEBUG_FORTH_PARSE_KEY
-			DMARK "NXT"
-	;rst 030h
+	DMARK "NXT"
 	CALLMONITOR
 endif	
 ;	inc hl  ; skip token null term 
@@ -123,10 +120,10 @@ endif
 	jr .ptokenstr2
 
 .ptmp2:	; we have a space so change to zero term for dict match later
-	dec hl
-	ld a,"-"	; TODO remove this when working
-	ld (hl), a
-	inc hl
+	;dec hl
+	;ld a,"-"	; TODO remove this when working
+	;ld (hl), a
+	;inc hl
 	jr .ptokenstr2
 
 .ptokendone2:
@@ -671,20 +668,68 @@ endif
 	; decimal is stored as a 16bit word
 
 	; by default everything is a string if type is not detected
-	ld a, 0    ; set null string term
-	jr .defstr
+	jp .defstr
 
 
 .fapstr:
 
+if DEBUG_FORTH_PUSH
+			DMARK "PSQ"
+	CALLMONITOR
+endif	
    
 	; get string length
 	inc hl ; skip past current double quote and look for the last one
-	ld a, '"'
-.defstr:	call strlent      
+	ld (cli_origptr), hl
+	push hl
+	push hl
+
+if DEBUG_FORTH_PUSH
+			DMARK "PQ1"
+	CALLMONITOR
+endif	
+	ld a, 0   ; find end of string
+	call strlent      
+if DEBUG_FORTH_PUSH
+			DMARK "PQ2"
+	CALLMONITOR
+endif	
+	ex de, hl
+	pop hl   ; get ptr to start of string
+if DEBUG_FORTH_PUSH
+			DMARK "PQ3"
+	CALLMONITOR
+endif	
+	add hl,de
+if DEBUG_FORTH_PUSH
+			DMARK "PQE"
+	CALLMONITOR
+endif	
+
+	dec hl    ; see if there is an optional trailing double quote
+	ld a,(hl)
+	cp '"'
+	jr nz, .strnoq
+	ld a, 0      ; get rid of double quote
+	ld (hl), a
+.strnoq: inc hl
+
+	ld a, 0
+	ld (hl), a     ; add null term and get rid of trailing double quote
+
+	pop hl
+.defstr:	
+if DEBUG_FORTH_PUSH
+			DMARK "PDF"
+	CALLMONITOR
+endif	
+	ld a, 0    ; set null string term
+	call strlent      
+
 	ld a,l
 
-	inc a ; add one due to the initial double quote skip	
+	inc a ; add one for the type string
+	inc a ; add one for null term???
 
 if DEBUG_FORTH_PUSH
 			DMARK "PH1"
@@ -727,7 +772,7 @@ endif
 
 	; TODO malloc + 1
 
-	add 5    ; to be safe for some reason - max of 255 char for string
+	;add 5    ; to be safe for some reason - max of 255 char for string
 	ld h,0
 	ld l,a
 if DEBUG_FORTH_PUSH

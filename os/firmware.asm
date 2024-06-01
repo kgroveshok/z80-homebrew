@@ -8,6 +8,8 @@ Device_B: equ 040h          ; Sound
 Device_C: equ 080h          ; Storage and ext cart devices
 Device_D: equ 0c0h             ; Keyboard and LCD
 
+; Odd specific debug points for testing hardware dev
+
 DEBUG_STK_FAULT: equ 0
 DEBUG_INPUT: equ 0     ; Debug input entry code
 DEBUG_KEYCINWAIT: equ 0
@@ -18,6 +20,9 @@ DEBUG_STORECF: equ 0
 DEBUG_STORESE: equ 1        ; TODO  w locks up, r returns. 
 DEBUG_SPI_HARD_CE0: equ 0    ; only handshake on CE0 on port A
 DEBUG_SPI: equ 0    ; low level spi tests
+
+; Enable break points
+
 DEBUG_FORTH_PARSE_EXEC: equ 1     ; 6
 DEBUG_FORTH_PARSE_EXEC_SLOW: equ 0     ; 6
 DEBUG_FORTH_PARSE_NEXTWORD: equ 0
@@ -25,9 +30,7 @@ DEBUG_FORTH_JP: equ 0
 DEBUG_FORTH_MALLOC: equ 0
 DEBUG_FORTH_DOT: equ 1
 DEBUG_FORTH_DOT_KEY: equ 0
-DEBUG_FORTH_MALLOC_GUARD: equ 1
 DEBUG_FORTH_MATHS: equ 1
-DEBUG_FORTH_STACK_GUARD: equ 1
 
 
 DEBUG_FORTH_PARSE_KEY: equ 1   ; 5
@@ -39,8 +42,13 @@ DEBUG_FORTH_PUSH: equ 1   ; 1
 DEBUG_FORTH_UWORD: equ 1   ; 1
 
 
+; House keeping and protections
+
+DEBUG_FORTH_STACK_GUARD: equ 1
+DEBUG_FORTH_MALLOC_GUARD: equ 1
 FORTH_ENABLE_FREE: equ 1
 FORTH_ENABLE_FLOATMATH: equ 0
+
 
 CALLMONITOR: macro
 	call break_point_state

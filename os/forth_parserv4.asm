@@ -386,9 +386,6 @@ if DEBUG_FORTH_PARSE_EXEC
 	if DEBUG_FORTH_PARSE_EXEC_SLOW
 	call delay250ms
 	endif
-;	call delay1s
-;	call delay1s
-;	call delay1s
 	pop hl
 .skip: 
 endif	
@@ -414,7 +411,6 @@ ld a,(hl)
 	ld a,display_row_4
 	call str_at_display
 	call update_display
-;	call delay250ms
 .skip2: 
 endif
 	ld hl,(cli_token)

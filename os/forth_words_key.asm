@@ -15,17 +15,25 @@
 	CWHEAD .ENDKEY 44 "ACCEPT" 6 WORD_FLAG_CODE
 ; | ACCEPT ( -- w )    Prompt for text input and push pointer to string | TEST
 		; TODO crashes on push
-		ld a,(f_cursor_ptr)
-		ld d, 100
-		ld hl, os_input
-		call input_str
-		; TODO perhaps do a type check and wrap in quotes if not a number
-		ld hl, input_str
-		if DEBUG_FORTH_WORDS
-			DMARK "INP"
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "ACC"
 			CALLMONITOR
 		endif
-		call forth_apush
+		ld hl, os_input
+		ld a, 0
+		ld (hl),a
+		ld a,(f_cursor_ptr)
+		ld d, 100
+		ld c, 0
+		ld e, 40
+		call input_str
+		; TODO perhaps do a type check and wrap in quotes if not a number
+		ld hl, os_input
+		if DEBUG_FORTH_WORDS
+			DMARK "AC1"
+			CALLMONITOR
+		endif
+		call forth_apushstrhl
 		NEXTW
 
 

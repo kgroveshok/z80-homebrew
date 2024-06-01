@@ -79,6 +79,7 @@ include "forth_words_maths.asm"
 include "forth_words_logic.asm"
 include "forth_words_display.asm"
 include "forth_words_str.asm"
+include "forth_words_key.asm"
 
 if STORAGE_SE
    	include "forth_words_storage.asm"

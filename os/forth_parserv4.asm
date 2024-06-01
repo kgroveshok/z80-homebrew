@@ -266,6 +266,18 @@ exec1:
 	cp FORTH_END_BUFFER
 	ret z
 
+	; skip any nulls
+
+	cp 0
+	jr nz, .execword
+	inc hl
+	jr exec1
+
+
+.execword:
+
+
+
 if DEBUG_FORTH_PARSE_KEY
 			DMARK "KYQ"
 	CALLMONITOR

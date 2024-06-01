@@ -31,7 +31,9 @@
 ; Shows that the clock needs to be enabled when required. Noticed that with the clock connected it interupted the bus
 ; Tried:
 ;
-; CE -> Both pins of NAND -> To one pin of second NAND and second pin to full clock -> CLK on chip
+; CE/OE -> Both pins of NAND -> To one pin of second NAND and second pin to full clock -> CLK on chip
+;
+; Connected WE to OR too
 ; 
 ; That enabled the clock when required
 ; However still random bus corruption. Need further investigation

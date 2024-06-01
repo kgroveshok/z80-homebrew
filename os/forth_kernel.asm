@@ -972,6 +972,15 @@ startcmds:
 ;	dw test2
 ;	dw test3
 ;	dw test4
+
+	dw game1
+	dw game1a
+	dw game1b
+	dw game1c
+	dw game1d
+	dw game1s
+	dw game1z
+
 	dw test5
 	dw test6
 	dw test7
@@ -1023,9 +1032,16 @@ start1:     	db ": bpon $0000 bp ;  ",0, 0, 0, FORTH_END_BUFFER
 start2:     	db ": bpoff $0001 bp ;  ",0, 0, 0, FORTH_END_BUFFER
 start3:         db ": dirlist dir cls drop $01 do $08 i at . $01 i at . $04 i at . loop ;  ",0, 0, 0, FORTH_END_BUFFER
 
+; a small guess the number game
+
 game1:          db ": g1setnum rnd8 v0! ;  ",0, 0, 0, FORTH_END_BUFFER
 game1a:          db ": g1say $00 $00 at Enter-a-number .- $00 $01 at between-1-and-255 .- ;  ",0, 0, 0, FORTH_END_BUFFER
-game1z:         db ": game1 repeat cls g1say $00 $02 at accept    until ;  ",0, 0, 0, FORTH_END_BUFFER
+
+game1b:          db ": g1chkb v1@ v0@ < if $00 $00 at Too-low! .- $01 then ;  ",0, 0, 0, FORTH_END_BUFFER
+game1c:          db ": g1chkc v1@ v0@ > if $00 $00 at Too-high! .- $01 then ;  ",0, 0, 0, FORTH_END_BUFFER
+game1d:          db ": g1chkd v1@ v0@ = if $00 then ;  ",0, 0, 0, FORTH_END_BUFFER
+game1s:          db ": g1chk g1chkb g1chkc g1chkd ;  ",0, 0, 0, FORTH_END_BUFFER
+game1z:         db ": game1 repeat cls g1say $00 $02 at accept str2num v1! cls g1chk until cls $02 $02 at "Yes!" . ;  ",0, 0, 0, FORTH_END_BUFFER
 
 
 sprompt1: db "Startup load...",0

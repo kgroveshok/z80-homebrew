@@ -1041,7 +1041,7 @@ game1b:          db ": g1chkb v1@ v0@ < if $00 $00 at Too-low! .- $01 then ;  ",
 game1c:          db ": g1chkc v1@ v0@ > if $00 $00 at Too-high! .- $01 then ;  ",0, 0, 0, FORTH_END_BUFFER
 game1d:          db ": g1chkd v1@ v0@ = if $00 then ;  ",0, 0, 0, FORTH_END_BUFFER
 game1s:          db ": g1chk g1chkb g1chkc g1chkd ;  ",0, 0, 0, FORTH_END_BUFFER
-game1z:         db ": game1 repeat cls g1say $00 $02 at accept str2num v1! cls g1chk until cls $02 $02 at "Yes!" . ;  ",0, 0, 0, FORTH_END_BUFFER
+game1z:         db ": game1 repeat cls g1say $00 $02 at accept str2num v1! cls g1chk until cls $02 $02 at Yes! . ;  ",0, 0, 0, FORTH_END_BUFFER
 
 
 sprompt1: db "Startup load...",0

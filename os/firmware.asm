@@ -216,7 +216,7 @@ cli_ptr: equ cli_nextword - 2           ; pointer to start of word to parse by f
 cli_origptr: equ cli_ptr - 2           ; pointer to start of word to parse which resets cli_ptr on each word test
 
 cli_autodisplay: equ cli_origptr - 1 ;     ; true will auto update the display (slow) otherwise need to use DRAW
-cli_var_array: equ cli_autodisplay - ( 10 * 2 ) ; word or string pointer variables using @0-@9
+cli_var_array: equ cli_autodisplay - ( 10 * 2 ) ; word or string pointer variables using V@0-V@9
 cli_ret_sp: equ cli_var_array - 2    ; ret stack pointer
 cli_loop_sp: equ cli_ret_sp - 2   ; data stack pointer
 cli_data_sp: equ cli_loop_sp - 2   ; data stack pointer

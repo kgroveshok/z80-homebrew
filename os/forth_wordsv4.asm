@@ -153,11 +153,34 @@ endif
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 	       NEXTW
 .V2Q:
-	CWHEAD .END 105 "V2@" 3 WORD_FLAG_CODE
+	CWHEAD .V3S 105 "V2@" 3 WORD_FLAG_CODE
 ;| V2@ ( --u )  Put value of v2 onto stack | DONE
 		ld hl, (cli_var_array+4)
 		call forth_push_numhl
 	       NEXTW
+.V3S:
+	CWHEAD .V3Q 104 "V3!" 3 WORD_FLAG_CODE
+;| V3! ( u1 -- )  Store value to v3 | DONE
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		ld de, cli_var_array+6
+	
+		ex de, hl
+		ld (hl), e
+		inc hl
+		ld (hl), d
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+	       NEXTW
+.V3Q:
+	CWHEAD .END 105 "V3@" 3 WORD_FLAG_CODE
+;| V3@ ( --u )  Put value of v3 onto stack | DONE
+		ld hl, (cli_var_array+6)
+		call forth_push_numhl
+	       NEXTW
+
 
 
 

@@ -1,4 +1,122 @@
 
+if DEBUG_FORTH_MALLOC_HIGH
+.mallocsize: db "Wants malloc >256",0
+.mallocasize: db "MALLOC gives >256",0
+.malloczero: db "MALLOC gives zero",0
+
+malloc_guard_zerolen:
+	push hl
+	push de
+	push af
+
+	ld de, 0
+        call cmp16
+	jr nz, .lowalloz
+
+	push hl
+	push de
+		ld hl, display_fb0
+		ld (display_fb_active), hl
+	call clear_display
+	ld a, 0
+	ld de, .malloczero
+	call str_at_display
+	call update_display
+	call delay1s
+	call delay1s
+	ld a, 0
+	ld (os_view_disable), a
+
+	pop de
+	pop hl
+
+	
+
+	CALLMONITOR
+.lowalloz:
+
+
+	pop af
+	pop de
+	pop hl
+ret
+malloc_guard_entry:
+	push hl
+	push de
+	push af
+
+ 	or a      ;clear carry flag
+	push hl
+	ld de, 255
+	sbc hl, de
+	jr c, .lowalloc
+
+	push de
+		ld hl, display_fb0
+		ld (display_fb_active), hl
+	call clear_display
+	ld a, 0
+	ld de, .mallocsize
+	call str_at_display
+	call update_display
+	call delay1s
+	call delay1s
+	ld a, 0
+	ld (os_view_disable), a
+
+	pop de
+	pop hl
+
+	
+
+	CALLMONITOR
+	jr .lowdone
+.lowalloc:
+
+
+	pop hl
+.lowdone:	pop af
+	pop de
+	pop hl
+ret
+
+malloc_guard_exit:
+	push hl
+	push de
+	push af
+
+ 	or a      ;clear carry flag
+	push hl
+	ld de, 255
+	sbc hl, de
+	jr c, .lowallocx
+
+	push de
+		ld hl, display_fb0
+		ld (display_fb_active), hl
+	call clear_display
+	ld a, 0
+	ld de, .mallocasize
+	call str_at_display
+	call update_display
+	call delay1s
+	call delay1s
+	ld a, 0
+	ld (os_view_disable), a
+	pop de
+	pop hl
+
+	CALLMONITOR
+	jr .lowdonex
+.lowallocx:
+
+	pop hl
+.lowdonex:	pop af
+	pop de
+	pop hl
+ret
+endif
+
 if MALLOC_2
 ; Z80 Malloc and Free Functions
 
@@ -9,6 +127,18 @@ if MALLOC_2
 ;   HL: Pointer to allocated memory block (NULL if allocation fails)
 
 malloc:
+	
+if DEBUG_FORTH_MALLOC_HIGH
+call malloc_guard_entry
+endif
+
+
+
+
+		if DEBUG_FORTH_MALLOC
+			DMARK "MAL"
+			CALLMONITOR
+		endif
     push af            ; Save AF register
     ld a, l            ; Load low byte of size into A
     or h               ; Check if size is zero
@@ -18,6 +148,10 @@ malloc:
     ld hl, (heap_start) ; Load start of heap into HL
     call malloc_internal ; Call internal malloc function
     pop af             ; Restore AF register
+if DEBUG_FORTH_MALLOC_HIGH
+call malloc_guard_exit
+call malloc_guard_zerolen
+endif
     ret                ; Return
 
 ; Free Function:
@@ -79,6 +213,10 @@ malloc_search_loop:
     add hl, bc         ; Add management overhead to start of data block
 
     ; Save pointer to allocated block in HL
+if DEBUG_FORTH_MALLOC_HIGH
+call malloc_guard_exit
+call malloc_guard_zerolen
+endif
     ret
 
 malloc_skip_block_check:
@@ -97,8 +235,16 @@ malloc_skip_block_check:
 
     ; If we reached here, allocation failed
     xor a              ; Set result to NULL
+if DEBUG_FORTH_MALLOC_HIGH
+call malloc_guard_exit
+call malloc_guard_zerolen
+endif
     ret
 malloc_exit:
+if DEBUG_FORTH_MALLOC_HIGH
+call malloc_guard_exit
+call malloc_guard_zerolen
+endif
     ret
 
 ; Internal Free Function:
@@ -303,15 +449,9 @@ malloc:
       push  BC
       push  DE
       push  IX
-
-	
-		if DEBUG_FORTH_MALLOC
-			push af
-			ld a, '^'
-			ld (debug_mark),a
-			pop af
-			CALLMONITOR
-		endif
+if DEBUG_FORTH_MALLOC_HIGH
+call malloc_guard_entry
+endif
 
       ld    A, H                    ; Exit if no space requested
       or    L
@@ -488,16 +628,17 @@ malloc_no_space:
 
 malloc_early_exit:
 		if DEBUG_FORTH_MALLOC
-			push af
-			ld a, '&'
-			ld (debug_mark),a
-			pop af
+			DMARK "MAx"
 			CALLMONITOR
 		endif
       pop   IX
       pop   DE
       pop   BC
 
+if DEBUG_FORTH_MALLOC_HIGH
+call malloc_guard_exit
+call malloc_guard_zerolen
+endif
       ret
 
 
@@ -761,3 +902,7 @@ free_early_exit:
 
 
 endif
+
+
+
+; eof

@@ -1023,6 +1023,10 @@ start1:     	db ": bpon $0000 bp ;  ",0, 0, 0, FORTH_END_BUFFER
 start2:     	db ": bpoff $0001 bp ;  ",0, 0, 0, FORTH_END_BUFFER
 start3:         db ": dirlist dir cls drop $01 do $08 i at . $01 i at . $04 i at . loop ;  ",0, 0, 0, FORTH_END_BUFFER
 
+game1:          db ": g1setnum rnd8 v0! ;  ",0, 0, 0, FORTH_END_BUFFER
+game1a:          db ": g1say $00 $00 at Enter-a-number .- $00 $01 at between-1-and-255 .- ;  ",0, 0, 0, FORTH_END_BUFFER
+game1z:         db ": game1 repeat cls g1say $00 $02 at accept    until ;  ",0, 0, 0, FORTH_END_BUFFER
+
 
 sprompt1: db "Startup load...",0
 sprompt2: db "Run? 1=No *=End #=All",0

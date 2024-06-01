@@ -27,7 +27,15 @@
 ; WE low then high
 ; 32 clock cycles / 8ns write time at 4mhz
 ;
+; https://github.com/jblang/SN76489
+; Shows that the clock needs to be enabled when required. Noticed that with the clock connected it interupted the bus
+; Tried:
 ;
+; CE -> Both pins of NAND -> To one pin of second NAND and second pin to full clock -> CLK on chip
+; 
+; That enabled the clock when required
+; However still random bus corruption. Need further investigation
+
 
 SOUND_LATCH: equ 10000000B
 SOUND_DATA: equ 0B
@@ -67,7 +75,7 @@ note_send_byte:
 	; byte in a
 
 	; we high
-	out (Device_B+1), a
+	out (Device_B), a
 ;	ld a, 1
 ;	call aDelayInMS
 	nop 
@@ -83,7 +91,7 @@ note_send_byte:
 	nop 
 	nop 
 	; we high
-	out (Device_B+1), a
+	out (Device_B), a
 ;	ld a, 1
 ;	call aDelayInMS
 	nop 

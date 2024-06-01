@@ -752,6 +752,11 @@ endif
 	CWHEAD .NOP 73 "FORGET" 6 WORD_FLAG_CODE
 ; | FORGET ( uword -- )    Forget the uword on TOS
 
+
+	; TODO find uword
+        ; TODO update start of word with "_"
+	; TODO replace uword with deleted flag
+
 		NEXTW
 .NOP:
 	CWHEAD .COMO 77 "NOP" 3 WORD_FLAG_CODE

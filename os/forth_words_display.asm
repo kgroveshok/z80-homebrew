@@ -62,8 +62,9 @@
 		NEXTW
 .DOTH:
 	CWHEAD .DOT 8 ".-" 2 WORD_FLAG_CODE
-        ; | .- ( u -- )    Display TOS replacing any dashes with space   | DONE
+        ; | .- ( u -- )    Display TOS replacing any dashes with spaces. Means you dont need to wrap strings in double quotes!   | DONE
 		; get value off TOS and display it
+ld c, 1	  ; flag for removal of '-' enabled
 	jp .dotgo
 	NEXTW
 
@@ -71,6 +72,9 @@
 	CWHEAD .CLS 8 "." 1 WORD_FLAG_CODE
         ; | . ( u -- )    Display TOS   | DONE
 		; get value off TOS and display it
+
+ld c, 0	  ; flag for removal of '-' disabled
+	
 
 .dotgo:
 
@@ -124,16 +128,56 @@ endif
 .dotflot:   nop
 ; TODO print floating point number
 
-.dotwrite:		ld a, (f_cursor_ptr)
-		call str_at_display
-ld a,(cli_autodisplay)
-cp 0
-jr z, .noupdate
-		call update_display
-.noupdate:
-if DEBUG_FORTH_DOT_KEY
-		call next_page_prompt
+.dotwrite:		
+
+		; if c is set then set all '-' to spaces
+
+		ld a, 0
+		cp c
+		jr z, .nodashswap
+
+		; DE has the string to write, working with HL
+
+		ld b, 255
+		push de
+		pop hl
+
+if DEBUG_FORTH_DOT
+	DMARK "DT-"
+	CALLMONITOR
 endif	
+.dashscan:	ld a, (hl)
+		cp 0
+		jr z, .nodashswap
+		cp '-'
+		jr nz, .dashskip
+		ld a, ' '
+		ld (hl), a
+.dashskip:	inc hl
+if DEBUG_FORTH_DOT
+	DMARK "D-2"
+	CALLMONITOR
+endif	
+		djnz .dashscan
+
+if DEBUG_FORTH_DOT
+	DMARK "D-1"
+	CALLMONITOR
+endif	
+
+.nodashswap:
+
+
+		ld a, (f_cursor_ptr)
+		call str_at_display
+		ld a,(cli_autodisplay)
+		cp 0
+		jr z, .noupdate
+				call update_display
+		.noupdate:
+		if DEBUG_FORTH_DOT_WAIT
+				call next_page_prompt
+		endif	
 ; TODO this pop off the stack causes a crash. i dont know why
 
 

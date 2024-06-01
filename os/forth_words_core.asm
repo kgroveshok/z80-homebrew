@@ -3,7 +3,7 @@
 	CWHEAD .DUP 6 "EXEC" 4 WORD_FLAG_CODE
 ; | EXEC ( u -- )    Execs the string on TOS as a FORTH expression | TO TEST
 
-		if DEBUG_FORTH_WORDS
+		if DEBUG_FORTH_WORDS_KEY
 			DMARK "EXE"
 			CALLMONITOR
 		endif

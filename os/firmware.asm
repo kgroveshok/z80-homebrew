@@ -21,7 +21,7 @@ DEBUG_STORESE: equ 1        ; TODO  w locks up, r returns.
 DEBUG_SPI_HARD_CE0: equ 0    ; only handshake on CE0 on port A
 DEBUG_SPI: equ 0    ; low level spi tests
 
-; Enable break points
+; Enable many break points
 
 DEBUG_FORTH_PARSE_EXEC: equ 1     ; 6
 DEBUG_FORTH_PARSE_EXEC_SLOW: equ 0     ; 6
@@ -29,17 +29,21 @@ DEBUG_FORTH_PARSE_NEXTWORD: equ 0
 DEBUG_FORTH_JP: equ 0
 DEBUG_FORTH_MALLOC: equ 0
 DEBUG_FORTH_DOT: equ 1
-DEBUG_FORTH_DOT_KEY: equ 0
+DEBUG_FORTH_DOT_WAIT: equ 0
 DEBUG_FORTH_MATHS: equ 1
-
-
-DEBUG_FORTH_PARSE_KEY: equ 1   ; 5
 DEBUG_FORTH_TOK: equ 1     ; 4
 DEBUG_FORTH_PARSE: equ 1    ; 3
 DEBUG_FORTH: equ 1  ;2
 DEBUG_FORTH_WORDS: equ 1   ; 1
 DEBUG_FORTH_PUSH: equ 1   ; 1
 DEBUG_FORTH_UWORD: equ 1   ; 1
+
+; Enable key point breakpoints
+
+DEBUG_FORTH_DOT_KEY: equ 0
+DEBUG_FORTH_PARSE_KEY: equ 1   ; 5
+DEBUG_FORTH_WORDS_KEY: equ 1   ; 1
+
 
 
 ; House keeping and protections

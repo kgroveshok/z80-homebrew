@@ -4,6 +4,9 @@ Words List
 ------------------
 
 
+ EXEC ( u -- )    Execs the string on TOS as a FORTH expression | TO TEST
+
+
  DUP ( u -- u u )     Duplicate whatever item is on TOS | DONE
 
 
@@ -118,7 +121,7 @@ Words List
   EMIT ( u -- )        Display ascii character  TOS   | DONE
 
 
- .- ( u -- )    Display TOS replacing any dashes with space   | DONE
+ .- ( u -- )    Display TOS replacing any dashes with spaces. Means you dont need to wrap strings in double quotes!   | DONE
 
 
  . ( u -- )    Display TOS   | DONE
@@ -235,7 +238,7 @@ Words List
  RND8 (  -- n ) Generate a random 8bit number and push to stack | DONE
 
 
-DIR ( u -- lab id ... c t )   Using bank number u push directory entries from persistent storage as w with count u  | DONE
+ DIR ( u -- lab id ... c t )   Using bank number u push directory entries from persistent storage as w with count u  | DONE
 
 
  SAVE  ( w u -- )    Save user word memory to file name w on bank u
@@ -388,7 +391,7 @@ Words ready to use
   EMIT ( u -- )        Display ascii character  TOS   | DONE
 
 
- .- ( u -- )    Display TOS replacing any dashes with space   | DONE
+ .- ( u -- )    Display TOS replacing any dashes with spaces. Means you dont need to wrap strings in double quotes!   | DONE
 
 
  . ( u -- )    Display TOS   | DONE
@@ -475,7 +478,7 @@ Words ready to use
  RND8 (  -- n ) Generate a random 8bit number and push to stack | DONE
 
 
-DIR ( u -- lab id ... c t )   Using bank number u push directory entries from persistent storage as w with count u  | DONE
+ DIR ( u -- lab id ... c t )   Using bank number u push directory entries from persistent storage as w with count u  | DONE
 
 
  SEO ( u1 u2 -- ) Send byte u1 to Serial EEPROM device at address u2 | DONE
@@ -521,6 +524,9 @@ Words still left to do
 
 
 ----------------------
+
+
+ EXEC ( u -- )    Execs the string on TOS as a FORTH expression | TO TEST
 
 
  2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items

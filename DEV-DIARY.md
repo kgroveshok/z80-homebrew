@@ -562,11 +562,17 @@ DONE May have issue with append. If prev file is deleted first zero will be befo
 
 Got more of the file control words in place. Up cursor should do last line recall
 
-TODO last line recall messing screen layout
-TODO need to add extra bank selection support
-TODO Design new keyboard layout PCB now I have key caps etc
+DONE last line recall messing screen layout
+DONE need to add extra bank selection support
+DONE Design new keyboard layout PCB now I have key caps etc
 
+2nd June
+--------
 
+Waiting for delivery of keyboard PCBs.
+TODO random malloc failure. Added a macro DEBUG_FORTH_MALLOC_HIGH but not quite right so disabled for now.
+TODO 4x40 char LCD partly working as a drop in but requires an extra E signal for the second half of the display. Finish coding changes.
+TODO Fix READ functions
 
 
 

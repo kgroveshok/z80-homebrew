@@ -1038,6 +1038,21 @@ storage_append:
 		DMARK "AP4"
 		CALLMONITOR
 	endif
+		; init the buffer with zeros so we can id if the buffer is full or not
+
+		push hl
+		push bc
+
+		ld hl, store_page
+		ld b, STORE_BLOCK_PHY
+		ld a, 0
+.zeroblock:	ld (hl), a
+		inc hl
+		djnz .zeroblock
+
+		pop bc
+		pop hl
+
 		; construct block
 
 		ld a, (store_tmpid)
@@ -1053,6 +1068,8 @@ storage_append:
 		DMARK "AP5"
 		CALLMONITOR
 	endif
+
+
 
 		; fill buffer with data until end of string or full block
 

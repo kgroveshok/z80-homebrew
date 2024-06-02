@@ -50,7 +50,7 @@ DEBUG_FORTH_WORDS_KEY: equ 1   ; 1
 
 DEBUG_FORTH_STACK_GUARD: equ 1
 DEBUG_FORTH_MALLOC_GUARD: equ 1
-DEBUG_FORTH_MALLOC_HIGH: equ 1     ; warn only if more than 255 chars being allocated. would be highly unusual!
+DEBUG_FORTH_MALLOC_HIGH: equ 0     ; warn only if more than 255 chars being allocated. would be highly unusual!
 FORTH_ENABLE_FREE: equ 1
 FORTH_ENABLE_FLOATMATH: equ 0
 

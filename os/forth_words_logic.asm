@@ -1,4 +1,9 @@
 
+
+.IS:
+	CWHEAD .LZERO 25 "IS" 2 WORD_FLAG_CODE
+; | IS ( s1 s2  -- f ) Push true if string s1 is the same as s2 | TODO
+		NEXTW
 .LZERO:
 	CWHEAD .TZERO 25 "0<" 2 WORD_FLAG_CODE
 ; | 0< ( u -- f ) Push true if u is less than o | CANT DO UNTIL FLOAT

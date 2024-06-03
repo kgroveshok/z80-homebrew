@@ -71,7 +71,7 @@
 		NEXTW
 .ELSE:
 	CWHEAD .DO 12 "ELSE" 2 WORD_FLAG_CODE
-; | ELSE ( -- )   Not supported - does nothing
+; | ELSE ( -- )   Not supported - does nothing | TODO
 
 
 

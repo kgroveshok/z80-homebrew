@@ -28,7 +28,7 @@ Words List
  2DROP ( w w -- )    Double drop | DONE
 
 
- 2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items
+ 2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items | TODO
 
 
  @ ( w -- ) Push onto TOS byte stored at address   | DONE
@@ -61,10 +61,10 @@ Words List
  ROT ( u1 u2 u3 -- u2 u3 u1 ) Rotate top three items on stack | DONE
 
 
- WORDS (  -- )   List the system and user word dict
+ WORDS (  -- )   List the system and user word dict | TODO
 
 
- UWORDS (  -- )   List user word dict
+ UWORDS (  -- )   List user word dict | TODO
 
 
  BP ( u1 -- ) Enable or disable break point monitoring | DONE
@@ -73,16 +73,16 @@ Words List
  MONITOR ( -- ) Display system breakpoint/monitor | DONE
 
 
- MALLOC ( u -- u ) Allocate u bytes of memory space and push the pointer TOS  | TEST
+ MALLOC ( u -- u ) Allocate u bytes of memory space and push the pointer TOS  | DONE
 
 
- FREE ( u --  ) Free memory block from malloc given u address  | TEST
+ FREE ( u --  ) Free memory block from malloc given u address  | DONE
 
 
- LIST ( uword -- )    List the code to the word on TOS
+ LIST ( uword -- )    List the code to the word on TOS | TODO
 
 
- FORGET ( uword -- )    Forget the uword on TOS
+ FORGET ( uword -- )    Forget the uword on TOS | TODO
 
 
  NOP (  --  ) Do nothing | DONE
@@ -169,7 +169,7 @@ Words List
  THEN ( -- )    Does nothing. It is a marker for the end of an IF block | DONE
 
 
- ELSE ( -- )   Not supported - does nothing
+ ELSE ( -- )   Not supported - does nothing | TODO
 
 
  DO ( u1 u2 -- )   Loop starting at u2 with a limit of u1 | DONE
@@ -190,13 +190,16 @@ Words List
  UNTIL ( u -- ) Exit REPEAT...UNTIL loop if TOS is false  | DONE
 
 
- KEY ( -- w f )      scan for keypress but do not wait true if next item on stack is key press
+ KEY ( -- w f )      scan for keypress but do not wait true if next item on stack is key press | TODO
 
 
  WAITK ( -- w )      wait for keypress TOS is key press | DONE
 
 
- ACCEPT ( -- w )    Prompt for text input and push pointer to string | TEST
+ ACCEPT ( -- w )    Prompt for text input and push pointer to string | DONE
+
+
+ IS ( s1 s2  -- f ) Push true if string s1 is the same as s2 | TODO
 
 
  0< ( u -- f ) Push true if u is less than o | CANT DO UNTIL FLOAT
@@ -238,19 +241,25 @@ Words List
  RND8 (  -- n ) Generate a random 8bit number and push to stack | DONE
 
 
+ BYID ( u -- s )   Get the name of the file in the current BANK using the file ID u | TODO
+
+
+ BYNAME ( s -- u )   Get the file ID in the current BANK of the file named s | TODO
+
+
  DIR ( u -- lab id ... c t )   Using bank number u push directory entries from persistent storage as w with count u  | DONE
 
 
- SAVE  ( w u -- )    Save user word memory to file name w on bank u
+ SAVE  ( w u -- )    Save user word memory to file name w on bank u | TODO
 
 
- LOAD ( w u -- )    Load user word memory from file name w on bank u
+ LOAD ( w u -- )    Load user word memory from file name w on bank u | TODO
 
 
- BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at address a for s bytes
+ BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at address a for s bytes | TODO
 
 
- BLOAD ( w u a -- )    Load binary file from file name w on bank u into address u
+ BLOAD ( w u a -- )    Load binary file from file name w on bank u into address u | TODO
 
 
  SEO ( u1 u2 -- ) Send byte u1 to Serial EEPROM device at address u2 | DONE
@@ -292,22 +301,43 @@ Words List
  LABELS (  -- b n .... c  )  Pushes each storage bank labels (n) along with id (b) onto the stack giving count (c) of banks  | DONE
 
 
- CONCAT ( s1 s2 -- s3 ) A string of u spaces is pushed onto the stack
+ TYPE ( u -- iu s ) Push type of value on TOS - 's' string, 'i' integer...   | DONE
 
 
- FIND (  -- )  
+ UPPER ( s -- s ) Upper case string s  | TODO
+
+
+ LOWER ( s -- s ) Lower case string s  | TODO
+
+
+ SUBSTR ( s u1 u2 -- s sb ) Push to TOS chars starting at position u1 and ending at u2 from string s  | TODO
+
+
+ LEFT ( s u -- s sb ) Push to TOS string u long starting from left of s  | TODO
+
+
+ RIGHT ( s u -- s sb ) Push to TOS string u long starting from right of s  | TODO
+
+
+ STR2NUM ( s -- n ) Convert a string on TOS to number | DONE
+
+
+ NUM2STR ( n -- s ) Convert a number on TOS to string | TODO
+
+
+ CONCAT ( s1 s2 -- s3 ) A string of u spaces is pushed onto the stack | TODO
+
+
+ FIND (  -- )  | TODO
 
 
  LEN (  u1 -- u2 ) Push the length of the string on TOS | DONE
 
 
- CHAR ( u -- n ) Get the ascii value of the first character of the string on the stack | TO TEST
+ CHAR ( u -- n ) Get the ascii value of the first character of the string on the stack | DONE
 
 
- STRLEN ( u1 -- Using given address u1 push then zero term length string to TOS )   |
-
-
- STRCPY ( u1 u2 -- Copy string u2 to u1 )   |
+ COPY ( u1 u2 -- Copy string u2 to u1 )   | TODO
 
 
 Words ready to use
@@ -370,6 +400,12 @@ Words ready to use
  MONITOR ( -- ) Display system breakpoint/monitor | DONE
 
 
+ MALLOC ( u -- u ) Allocate u bytes of memory space and push the pointer TOS  | DONE
+
+
+ FREE ( u --  ) Free memory block from malloc given u address  | DONE
+
+
  NOP (  --  ) Do nothing | DONE
 
 
@@ -451,6 +487,9 @@ Words ready to use
  WAITK ( -- w )      wait for keypress TOS is key press | DONE
 
 
+ ACCEPT ( -- w )    Prompt for text input and push pointer to string | DONE
+
+
  < ( u1 u2 -- f ) True if u1 is less than u2 | DONE
 
 
@@ -517,7 +556,16 @@ Words ready to use
  LABELS (  -- b n .... c  )  Pushes each storage bank labels (n) along with id (b) onto the stack giving count (c) of banks  | DONE
 
 
+ TYPE ( u -- iu s ) Push type of value on TOS - 's' string, 'i' integer...   | DONE
+
+
+ STR2NUM ( s -- n ) Convert a string on TOS to number | DONE
+
+
  LEN (  u1 -- u2 ) Push the length of the string on TOS | DONE
+
+
+ CHAR ( u -- n ) Get the ascii value of the first character of the string on the stack | DONE
 
 
 Words still left to do
@@ -529,28 +577,22 @@ Words still left to do
  EXEC ( u -- )    Execs the string on TOS as a FORTH expression | TO TEST
 
 
- 2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items
+ 2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items | TODO
 
 
  CALL ( w -- w  ) machine code call to address w  push the result of hl to stack | TO TEST
 
 
- WORDS (  -- )   List the system and user word dict
+ WORDS (  -- )   List the system and user word dict | TODO
 
 
- UWORDS (  -- )   List user word dict
+ UWORDS (  -- )   List user word dict | TODO
 
 
- MALLOC ( u -- u ) Allocate u bytes of memory space and push the pointer TOS  | TEST
+ LIST ( uword -- )    List the code to the word on TOS | TODO
 
 
- FREE ( u --  ) Free memory block from malloc given u address  | TEST
-
-
- LIST ( uword -- )    List the code to the word on TOS
-
-
- FORGET ( uword -- )    Forget the uword on TOS
+ FORGET ( uword -- )    Forget the uword on TOS | TODO
 
 
  NOTE ( ud uf --  )  Plays a note of frequency uf for the duration of ud millseconds |
@@ -577,13 +619,13 @@ Words still left to do
  MENU ( u1....ux n ut -- n ) Create a menu. Ut is the title, n is the number of menu items on stack. Push number selection to TOS |
 
 
- ELSE ( -- )   Not supported - does nothing
+ ELSE ( -- )   Not supported - does nothing | TODO
 
 
- KEY ( -- w f )      scan for keypress but do not wait true if next item on stack is key press
+ KEY ( -- w f )      scan for keypress but do not wait true if next item on stack is key press | TODO
 
 
- ACCEPT ( -- w )    Prompt for text input and push pointer to string | TEST
+ IS ( s1 s2  -- f ) Push true if string s1 is the same as s2 | TODO
 
 
  0< ( u -- f ) Push true if u is less than o | CANT DO UNTIL FLOAT
@@ -598,33 +640,51 @@ Words still left to do
  MAX (  u1 u2 -- u3 )  Whichever is the largest value is pushed back onto the stack | TEST NO DEBUG
 
 
- SAVE  ( w u -- )    Save user word memory to file name w on bank u
+ BYID ( u -- s )   Get the name of the file in the current BANK using the file ID u | TODO
 
 
- LOAD ( w u -- )    Load user word memory from file name w on bank u
+ BYNAME ( s -- u )   Get the file ID in the current BANK of the file named s | TODO
 
 
- BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at address a for s bytes
+ SAVE  ( w u -- )    Save user word memory to file name w on bank u | TODO
 
 
- BLOAD ( w u a -- )    Load binary file from file name w on bank u into address u
+ LOAD ( w u -- )    Load user word memory from file name w on bank u | TODO
+
+
+ BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at address a for s bytes | TODO
+
+
+ BLOAD ( w u a -- )    Load binary file from file name w on bank u into address u | TODO
 
 
  READ ( n -- n  )  Reads next page of file id and push to stack | TESTING - Crashes on second read
 
 
- CONCAT ( s1 s2 -- s3 ) A string of u spaces is pushed onto the stack
+ UPPER ( s -- s ) Upper case string s  | TODO
 
 
- FIND (  -- )  
+ LOWER ( s -- s ) Lower case string s  | TODO
 
 
- CHAR ( u -- n ) Get the ascii value of the first character of the string on the stack | TO TEST
+ SUBSTR ( s u1 u2 -- s sb ) Push to TOS chars starting at position u1 and ending at u2 from string s  | TODO
 
 
- STRLEN ( u1 -- Using given address u1 push then zero term length string to TOS )   |
+ LEFT ( s u -- s sb ) Push to TOS string u long starting from left of s  | TODO
 
 
- STRCPY ( u1 u2 -- Copy string u2 to u1 )   |
+ RIGHT ( s u -- s sb ) Push to TOS string u long starting from right of s  | TODO
+
+
+ NUM2STR ( n -- s ) Convert a number on TOS to string | TODO
+
+
+ CONCAT ( s1 s2 -- s3 ) A string of u spaces is pushed onto the stack | TODO
+
+
+ FIND (  -- )  | TODO
+
+
+ COPY ( u1 u2 -- Copy string u2 to u1 )   | TODO
 
 

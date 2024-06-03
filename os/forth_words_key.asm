@@ -1,7 +1,13 @@
 
 .KEY:
 	CWHEAD .WAITK 42 "KEY" 3 WORD_FLAG_CODE
-; | KEY ( -- w f )      scan for keypress but do not wait true if next item on stack is key press
+; | KEY ( -- w f )      scan for keypress but do not wait true if next item on stack is key press | TODO
+
+; TODO currently waits
+		call cin_wait
+		ld l, a
+		ld h, 0
+		call forth_push_numhl
 		NEXTW
 .WAITK:
 	CWHEAD .ACCEPT 43 "WAITK" 5 WORD_FLAG_CODE
@@ -13,7 +19,7 @@
 		NEXTW
 .ACCEPT:
 	CWHEAD .ENDKEY 44 "ACCEPT" 6 WORD_FLAG_CODE
-; | ACCEPT ( -- w )    Prompt for text input and push pointer to string | TEST
+; | ACCEPT ( -- w )    Prompt for text input and push pointer to string | DONE
 		; TODO crashes on push
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "ACC"

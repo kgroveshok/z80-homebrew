@@ -1,5 +1,15 @@
 
 
+
+.BYID:
+	CWHEAD .BYNAME 38 "BYID" 4 WORD_FLAG_CODE
+; | BYID ( u -- s )   Get the name of the file in the current BANK using the file ID u | TODO
+		NEXTW
+.BYNAME:
+	CWHEAD .DIR 38 "BYNAME" 6 WORD_FLAG_CODE
+; | BYNAME ( s -- u )   Get the file ID in the current BANK of the file named s | TODO
+		NEXTW
+
 .DIR:
 	CWHEAD .SAVE 38 "DIR" 3 WORD_FLAG_CODE
 ; | DIR ( u -- lab id ... c t )   Using bank number u push directory entries from persistent storage as w with count u  | DONE
@@ -124,20 +134,20 @@
 		NEXTW
 .SAVE:
 	CWHEAD .LOAD 39 "SAVE" 4 WORD_FLAG_CODE
-; | SAVE  ( w u -- )    Save user word memory to file name w on bank u
+; | SAVE  ( w u -- )    Save user word memory to file name w on bank u | TODO
 		NEXTW
 .LOAD:
 	CWHEAD .BSAVE 40 "LOAD" 4 WORD_FLAG_CODE
-; | LOAD ( w u -- )    Load user word memory from file name w on bank u
+; | LOAD ( w u -- )    Load user word memory from file name w on bank u | TODO
 		NEXTW
 .BSAVE:  
 
 	CWHEAD .BLOAD 70 "BSAVE" 5 WORD_FLAG_CODE
-; | BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at address a for s bytes
+; | BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at address a for s bytes | TODO
 		NEXTW
 .BLOAD:
 	CWHEAD .SEO 71 "BLOAD" 5 WORD_FLAG_CODE
-; | BLOAD ( w u a -- )    Load binary file from file name w on bank u into address u
+; | BLOAD ( w u a -- )    Load binary file from file name w on bank u into address u | TODO
 		NEXTW
 ;;;; counter gap
 

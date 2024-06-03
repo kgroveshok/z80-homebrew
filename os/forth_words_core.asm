@@ -446,7 +446,7 @@ endif
 		NEXTW
 .SWAP2:
 	CWHEAD .AT 20 "2SWAP" 5 WORD_FLAG_CODE
-; | 2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items
+; | 2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items | TODO
 		NEXTW
 .AT:
 	CWHEAD .CAT 21 "@" 1 WORD_FLAG_CODE
@@ -659,12 +659,12 @@ endif
 	       NEXTW
 .WORDS:
 	CWHEAD .UWORDS 59 "WORDS" 5 WORD_FLAG_CODE
-; | WORDS (  -- )   List the system and user word dict
+; | WORDS (  -- )   List the system and user word dict | TODO
 	       NEXTW
 
 .UWORDS:
 	CWHEAD .BP 60 "UWORDS" 6 WORD_FLAG_CODE
-; | UWORDS (  -- )   List user word dict
+; | UWORDS (  -- )   List user word dict | TODO
 	       NEXTW
 
 .BP:
@@ -709,7 +709,7 @@ endif
 
 .MALLOC:
 	CWHEAD .FREE 66 "MALLOC" 6 WORD_FLAG_CODE
-; | MALLOC ( u -- u ) Allocate u bytes of memory space and push the pointer TOS  | TEST
+; | MALLOC ( u -- u ) Allocate u bytes of memory space and push the pointer TOS  | DONE
 		; get byte count
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -722,13 +722,22 @@ endif
 
 		pop hl
 		call malloc
+	if DEBUG_FORTH_MALLOC_GUARD
+		push af
+		ld a, l
+		add h
+		cp 0
+		pop af
+		
+		call z,malloc_error
+	endif
 
 		call forth_push_numhl
 		NEXTW
 
 .FREE:
 	CWHEAD .LIST 67 "FREE" 4 WORD_FLAG_CODE
-; | FREE ( u --  ) Free memory block from malloc given u address  | TEST
+; | FREE ( u --  ) Free memory block from malloc given u address  | DONE
 		; get address
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -740,17 +749,18 @@ endif
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
 		pop hl
+if FORTH_ENABLE_FREE
 		call free
-
+endif
 		NEXTW
 .LIST:
 	CWHEAD .FORGET 72 "LIST" 4 WORD_FLAG_CODE
-; | LIST ( uword -- )    List the code to the word on TOS
+; | LIST ( uword -- )    List the code to the word on TOS | TODO
 		NEXTW
 
 .FORGET:
 	CWHEAD .NOP 73 "FORGET" 6 WORD_FLAG_CODE
-; | FORGET ( uword -- )    Forget the uword on TOS
+; | FORGET ( uword -- )    Forget the uword on TOS | TODO
 
 
 	; TODO find uword

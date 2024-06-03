@@ -81,9 +81,9 @@ lcd_init:
 		ld a, 0
 		ld (display_lcde1e2), a
             CALL fLCD_Init      ;Initialise LCD module
-;		ld a, 0
-;		ld (display_lcde1e2), a
-;            CALL fLCD_Init      ;Initialise LCD module
+		ld a, 1
+		ld (display_lcde1e2), a
+            CALL fLCD_Init      ;Initialise LCD module
 
 	ret
 
@@ -313,10 +313,13 @@ display_row_4: equ display_row_3 + display_cols
 
 
 ; Cursor position values for the start of each line
+
+; E
 kLCD_Line1: EQU 0x00 
-kLCD_Line2: EQU 0x40  
-kLCD_Line3: EQU kLCD_Line1+kLCDWidth
-kLCD_Line4: EQU kLCD_Line2+kLCDWidth 
+kLCD_Line2: EQU kLCD_Line1+kLCDWidth
+; E1
+kLCD_Line3: EQU kLCD_Line2+kLCDWidth
+kLCD_Line4: EQU kLCD_Line3+kLCDWidth 
 
 ; Instructions to send as A register to fLCD_Inst
 kLCD_Clear: EQU 00000001b     ;LCD clear
@@ -391,7 +394,7 @@ fLCD_Inst:  PUSH AF
 Wr4bits: 
 		push af
 		ld a, (display_lcde1e2)
-		cp 0     ; e1
+		cp 0     ; e
 		jr nz, .wea2	
 		pop af
 	    AND  0xF0           ;Mask so we only have D4 to D7
@@ -467,15 +470,32 @@ Wr4bitsa:
 fLCD_Pos:   PUSH AF
 		; at this point set the E1 or E2 flag depending on position
 
-		push af
-		sub 0x80    ; TODO may need to sub 80 from a to put in context of current frame  
-		jr z, .pe1
-		ld a, 0
-		jr .peset	        
-.pe1:           ld a, 0
-.peset:		ld (display_lcde1e2), a 	
-		pop af
+		push bc
+;		push af
+		ld b, 0
+		ld c, a
+		ld a, kLCD_Line3-1
+ 		or a      ;clear carry flag
+		sbc a,c    ; TODO may need to sub 80 from a to put in context of current frame  
+		jr c, .pe1
 
+		; E selection
+		res 0, b         ; bit 0 unset e
+;		pop af    ; before line 3 so recover orig pos
+;		ld c, a    ; save for poking back
+		jr .peset	        
+.pe1:          	; E2 selection
+		set 0, b         ; bit 0 set e1
+		ld a, c
+		sbc a, kLCD_Line3-1
+		ld c, a	         ; save caculated offset
+;		pop af     ; bin this original value now we have calculated form
+
+.peset:		; set bit
+		ld a, b
+		ld (display_lcde1e2), a 	
+		ld a, c
+		pop bc
 
             OR   kLCD_Pos       ;Prepare position cursor instruction
             CALL fLCD_Inst      ;Write instruction to LCD
@@ -569,6 +589,37 @@ LCDDelay:   PUSH DE
             RET
 
 
+testlcd:
+	ld a, kLCD_Line1
+	call fLCD_Pos
+	ld b, 40
+	ld de, .ttext1
+	call write_len_string
+
+	ld a, kLCD_Line2
+	call fLCD_Pos
+	ld b, 40
+	ld de, .ttext2
+	call write_len_string
+	ld a, kLCD_Line3
+	call fLCD_Pos
+	ld b, 40
+	ld de, .ttext3
+	call write_len_string
+	ld a, kLCD_Line4
+	call fLCD_Pos
+	ld b, 40
+	ld de, .ttext4
+	call write_len_string
+
+	halt
+
+
+.ttext1: db "A234567890123456789012345678901234567890",0
+.ttext2: db "B234567890123456789012345678901234567890",0
+.ttext3: db "C234567890123456789012345678901234567890",0
+.ttext4: db "D234567890123456789012345678901234567890",0
+ 
 
 
 ; eof

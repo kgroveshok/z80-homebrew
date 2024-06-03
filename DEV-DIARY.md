@@ -571,10 +571,11 @@ DONE Design new keyboard layout PCB now I have key caps etc
 
 Waiting for delivery of keyboard PCBs.
 TODO random malloc failure. Added a macro DEBUG_FORTH_MALLOC_HIGH but not quite right so disabled for now.
-TODO 4x40 char LCD partly working as a drop in but requires an extra E signal for the second half of the display. Finish coding changes.
+DONE 4x40 char LCD partly working as a drop in but requires an extra E signal for the second half of the display. Finish coding changes.
 TODO Fix READ functions
-
-
+TODO need words to report on hardware e.g. screen dims
+TODO need word to get file id by name
+TODO need word to get file name by id
 
 Stage 4.5 TODO
 --------------

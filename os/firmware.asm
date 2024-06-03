@@ -401,8 +401,11 @@ hardware_init:
 	call delay1s
 
 ; boot splash screen
-	
-            ld a, display_row_1
+if display_cols == 20	
+        ld a, display_row_1  
+else
+        ld a, display_row_1 +10 
+endif
 	ld de, bootmsg
 	call str_at_display
 	call update_display
@@ -410,7 +413,11 @@ hardware_init:
 
 	call delay1s
 	call delay1s
+if display_cols == 20	
             LD   A, display_row_3+2
+else
+            LD   A, display_row_3+12
+endif
 	ld de, bootmsg1
 	call str_at_display
 	call update_display

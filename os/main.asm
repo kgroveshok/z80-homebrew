@@ -91,6 +91,12 @@ main:
 	call clear_display
 	call update_display
 
+
+
+;	call testlcd
+
+
+
 	call forth_init
 
 

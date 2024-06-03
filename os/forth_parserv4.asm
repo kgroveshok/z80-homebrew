@@ -996,6 +996,30 @@ macro_forth_dsp_value:
 
 	ret
 
+; return hl to start of value to second item on stack
+
+FORTH_DSP_VALUEM1: macro
+	call macro_forth_dsp_value_m1
+	endm
+
+macro_forth_dsp_value_m1:
+
+	FORTH_DSP
+
+	dec hl
+	dec hl
+
+	push de
+
+	ld e, (hl)
+	inc hl
+	ld d, (hl)
+	ex de,hl 
+
+	pop de
+
+	ret
+
 	
 
 ; whatever the current top os stack points to, we are now done with it so return memory to malloc

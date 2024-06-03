@@ -52,6 +52,7 @@
 	CWHEAD .LEFT 52 "SUBSTR" 6 WORD_FLAG_CODE
 ; | SUBSTR ( s u1 u2 -- s sb ) Push to TOS chars starting at position u1 and with length u2 from string s  | DONE
 
+; TODO check string type
 		FORTH_DSP_VALUEHL
 
 		push hl      ; string length
@@ -166,6 +167,7 @@
 	CWHEAD .CONCAT 52 "NUM2STR" 7 WORD_FLAG_CODE
 ; | NUM2STR ( n -- s ) Convert a number on TOS to string | TODO
 
+; TODO check string type
 		FORTH_DSP_VALUEHL
 		ld a, l
 		call DispAToASCII  
@@ -176,18 +178,61 @@
 .CONCAT:
 	CWHEAD .FIND 52 "CONCAT" 6 WORD_FLAG_CODE
 ; | CONCAT ( s1 s2 -- s3 ) A string of u spaces is pushed onto the stack | TODO
+
+; TODO check string type
+; TODO create macro to get pointer for next item on stack. Handy for lots of things
+
+		; calculate total space to allocate
+
+		; s1
+
+		FORTH_DSP_VALUEM1    
+		inc hl
+
+		ld a, 0
+		call strlent
+
+ 		push hl     ; save length
+
+		; s2
+
+		FORTH_DSP_VALUE
+		inc hl
+
+		ld a, 0
+		call strlent
+		inc hl    ; include null
+
+		push hl     ; length
+
+		; add both string lengths togetgher
+
+		pop hl    ; s2
+		pop de    ; s1
+
+		add hl, de
+
+		call malloc
+		ex de, hl    ; de now has malloc destination
+
+; TODO copy s1 and s2
+
+
+
+
 	       NEXTW
 
 
 .FIND:
 	CWHEAD .LEN 55 "FIND" 4 WORD_FLAG_CODE
-; | FIND (  -- )  | TODO
+; | FIND ( s c -- s u ) Search the string s for the char c and push the position of the first occurance to TOS | TODO
 	       NEXTW
 
 .LEN:
 	CWHEAD .CHAR 56 "LEN" 3 WORD_FLAG_CODE
 ; | LEN (  u1 -- u2 ) Push the length of the string on TOS | DONE
 
+; TODO check string type
 		FORTH_DSP_VALUE
 
 		inc hl
@@ -224,7 +269,7 @@
 
 .STRLEN:
 	CWHEAD .ENDSTR 69 "COPY" 4 WORD_FLAG_CODE
-; | COPY ( u1 u2 -- Copy string u2 to u1 )   | TODO
+; | COPY ( u1 u2 -- Copy string u2 to u1 ) SHOULD THIS BE HANDLED WITH DUP?  | TODO
 
 		NEXTW
 

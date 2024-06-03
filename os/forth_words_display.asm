@@ -1,4 +1,10 @@
 
+.ATP:
+	CWHEAD .FB 78 "AT?" 3 WORD_FLAG_CODE
+; | AT? ( -- r c )  Push to stack the current position of the next print | TODO
+
+	NEXTW
+
 .FB:
 	CWHEAD .EMIT 7 "FB" 2 WORD_FLAG_CODE
 ; |  FB ( u -- )        Select frame buffer ID u (1-3)  |  DONE
@@ -374,10 +380,9 @@ endif
 
 
 .ATQ:
-	CWHEAD .AUTODSP 78 "AT?" 3 WORD_FLAG_CODE
-; | AT? ( u1 u2 -- n )  Push to stack ASCII value at row u2 col u1 | DONE
+	CWHEAD .AUTODSP 78 "AT@" 3 WORD_FLAG_CODE
+; | AT@ ( u1 u2 -- n )  Push to stack ASCII value at row u2 col u1 | DONE
 
-; TODO BUG not getting correct value back
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 

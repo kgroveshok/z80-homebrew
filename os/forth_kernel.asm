@@ -999,8 +999,8 @@ test1:		db ": aa 1 2 3 ;  ", 0, 0, 0, FORTH_END_BUFFER
 test2:     	db "111 aa 888 999  ",0, 0, 0, FORTH_END_BUFFER
 test3:     	db ": bb 77 ;  ",0, 0, 0, FORTH_END_BUFFER
 test4:     	db "$02 $01 do i . loop bb  ",0, 0, 0, FORTH_END_BUFFER
-test5:     	db ": hline $13 $00 do i $01 at 1 . i $04 at 1 . loop ;   ",0, 0, 0, FORTH_END_BUFFER
-test6:     	db ": vline $04 $01 do $00 i at 1 . $13 i at 1 . loop ;   ",0, 0, 0, FORTH_END_BUFFER
+test5:     	db ": hline $13 $00 do i $01 at ",'"*"'," . i $04 at ",'"*"'," . loop ;   ",0, 0, 0, FORTH_END_BUFFER
+test6:     	db ": vline $04 $01 do $00 i at ",'"*"'," . $13 i at ",'"*"'," . loop ;   ",0, 0, 0, FORTH_END_BUFFER
 test7:     	db ": box hline vline ;  ",0, 0, 0, FORTH_END_BUFFER
 test8:     	db ": world cls box $03 $03 at Hello-World! . ;  ",0, 0, 0, FORTH_END_BUFFER
 test9:     	db ": sw $01 adsp world ;  ",0, 0, 0, FORTH_END_BUFFER
@@ -1045,7 +1045,7 @@ game1d:          db ": gcd v2@ v1@ = if $00 $00 at Yes! .- $00 then ;  ",0, 0, 0
 game1s:          db ": gck gcb gcc gcd ;  ",0, 0, 0, FORTH_END_BUFFER
 game1t:          db ": sc v3@ $01 + v3! ;  ",0, 0, 0, FORTH_END_BUFFER
 game1f:          db ": fsc v3@ cls $01 $01 at You-Took .- $02 $03 at . ;  ",0, 0, 0, FORTH_END_BUFFER
-game1z:         db ": ga $00 v3! gsn repeat cls gs $00 $03 at accept str2num v2! cls gck $02 pause $10 $03 at v1@ . sc until fsc nop ;  ",0, 0, 0, FORTH_END_BUFFER
+game1z:         db ": ga $00 v3! gsn repeat cls gs $00 $03 at accept str2num v2! cls gck $02 pause sc until fsc nop ;  ",0, 0, 0, FORTH_END_BUFFER
 
 
 sprompt1: db "Startup load...",0

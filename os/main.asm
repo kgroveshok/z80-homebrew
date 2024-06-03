@@ -476,7 +476,12 @@ dumpcont:
 	push hl
 
 	; calc where to poke the ascii
+if display_cols == 20
 	ld a, 16
+else
+	ld a, 31
+endif
+
 	call addatohl
 	ld (os_word_scratch),hl  		; save pos for later
 
@@ -518,8 +523,11 @@ dumpcont:
 ;pop af
 ;	add 5
 
+if display_cols == 20
 	ld b, 4
-	
+else
+	ld b, 8
+endif	
 
 .dumpbyte:
 	push bc

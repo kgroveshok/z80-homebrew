@@ -50,7 +50,66 @@
 
 .SUBSTR:
 	CWHEAD .LEFT 52 "SUBSTR" 6 WORD_FLAG_CODE
-; | SUBSTR ( s u1 u2 -- s sb ) Push to TOS chars starting at position u1 and ending at u2 from string s  | TODO
+; | SUBSTR ( s u1 u2 -- s sb ) Push to TOS chars starting at position u1 and with length u2 from string s  | DONE
+
+		FORTH_DSP_VALUEHL
+
+		push hl      ; string length
+
+		FORTH_DSP_POP
+
+		FORTH_DSP_VALUEHL
+
+		push hl     ; start char
+
+		FORTH_DSP_POP
+
+
+		FORTH_DSP_VALUE
+
+		pop de    ; get start post offset
+
+		add hl, de    ; starting offset
+
+		pop bc
+		push bc      ; grab size of string
+
+		push hl    ; save string start 
+
+		ld h, 0
+		ld l, c
+		inc hl
+		inc hl
+
+		call malloc
+	if DEBUG_FORTH_MALLOC_GUARD
+		call z,malloc_error
+	endif
+
+		ex de, hl      ; save malloc area for string copy
+		pop hl    ; get back source
+		pop bc    ; get length of string back
+
+		push de    ; save malloc area for after we push
+		ldir     ; copy substr
+
+
+		ex de, hl
+		ld a, 0
+		ld (hl), a   ; term substr
+
+		
+		pop hl    ; get malloc so we can push it
+		push hl   ; save so we can free it afterwards
+
+		call forth_apushstrhl
+
+		pop hl
+		call free
+
+		
+		
+
 
 		NEXTW
 

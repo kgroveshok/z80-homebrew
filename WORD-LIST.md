@@ -310,7 +310,7 @@ Words List
  LOWER ( s -- s ) Lower case string s  | TODO
 
 
- SUBSTR ( s u1 u2 -- s sb ) Push to TOS chars starting at position u1 and ending at u2 from string s  | TODO
+ SUBSTR ( s u1 u2 -- s sb ) Push to TOS chars starting at position u1 and with length u2 from string s  | DONE
 
 
  LEFT ( s u -- s sb ) Push to TOS string u long starting from left of s  | TODO
@@ -559,6 +559,9 @@ Words ready to use
  TYPE ( u -- iu s ) Push type of value on TOS - 's' string, 'i' integer...   | DONE
 
 
+ SUBSTR ( s u1 u2 -- s sb ) Push to TOS chars starting at position u1 and with length u2 from string s  | DONE
+
+
  STR2NUM ( s -- n ) Convert a string on TOS to number | DONE
 
 
@@ -665,9 +668,6 @@ Words still left to do
 
 
  LOWER ( s -- s ) Lower case string s  | TODO
-
-
- SUBSTR ( s u1 u2 -- s sb ) Push to TOS chars starting at position u1 and ending at u2 from string s  | TODO
 
 
  LEFT ( s u -- s sb ) Push to TOS string u long starting from left of s  | TODO

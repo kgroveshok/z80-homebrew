@@ -59,10 +59,10 @@ CALLMONITOR: macro
 	call break_point_state
 	endm
 
-MALLOC_1: equ 1        ; consistent failure
+MALLOC_1: equ 0        ; consistent failure
 MALLOC_2: equ 0           ; broke
 MALLOC_3: equ 0           ; really broke
-MALLOC_4: equ 0              ; mine TODO
+MALLOC_4: equ 1              ; mine TODO         max of 250 chars
 
 
 tos:	equ 0fffdh

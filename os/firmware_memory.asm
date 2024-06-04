@@ -1566,22 +1566,20 @@ endif
 
 if MALLOC_4
 
+; allocate space under 250 chars
+
 heap_init:
 	; init start of heap as zero
 	; 
 
 	ld hl, heap_start
 	ld a, 0
-	ld (hl), a      ; dw empty block
-	; 
-	ld hl, heap_end     ; block free size
-	ld de, heap_start
-	sbc hl, de
-	ex de, hl
-	ld hl, heap_start+1
-	ld (hl), e
+	ld (hl), a      ; empty block
 	inc hl
-	ld (hl), d
+	ld a, 0
+	ld (hl), a      ; length of block
+
+	; 
 	 
 	ret
 
@@ -1589,7 +1587,7 @@ heap_init:
 malloc: 
 	; hl space in 
 	
-	push hl
+	ld c, l    ; hold space just in case
 
 	; start at heap
 
@@ -1604,33 +1602,43 @@ malloc:
 	jr z, .foundemptyblock
 
 	; if byte is not clear
-	;     get next word and jump that far ahead to next block
+	;     then byte is offset to next block
 
 	inc hl
-	ld a, (hl)
-	ld e, a
-	inc hl
-	ld a, (hl)
-	ld d, a
-
-	; size in de
-
-	add hl, de
+	ld a, (hl) ; get size
+	call addatohl
 
 	; TODO detect no more space
 
 
 	jr .findblock
 
-	
 
-	;    next word if space available
-	;    if space available + header
-	;        dec space available
-	;	 write 
-	;  
+.foundemptyblock:	
+
+	; 
+	ld a, c
+	inc a     ; space for length byte
+
+	ld (hl), a    ; save new space
+	
+	push hl     ; save where we are - 1 
+
+	; skip space to set down new marker
+
+	call addatohl
+
+	ld a, 0
+	ld (hl), a
+	inc hl
+	ld (hl), a
+
+	pop hl
+
 
 	ret
+
+
 
 
 free: 
@@ -1650,7 +1658,5 @@ free:
 
 
 endif
-
-
 
 ; eof

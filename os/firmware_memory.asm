@@ -552,7 +552,7 @@ malloc_find_space:
       sbc   HL, BC
       push  HL                      ; Store the result for later (new block size)
 
-      jr    Z, malloc_alloc_fit     ; Z means block size matches want - can allocate
+      jp   Z, malloc_alloc_fit     ; Z means block size matches want - can allocate
       jr    NC, malloc_alloc_split  ; NC means block is bigger than want - can allocate
 
       ; this_free block is not big enough, setup ptrs to test next free block
@@ -568,10 +568,18 @@ malloc_find_space:
       ld    (IX+2), L
       ld    (IX+3), H
 
+		if DEBUG_FORTH_MALLOC
+			DMARK "MA>"
+			CALLMONITOR
+		endif
       jr    malloc_find_space
 
       ; split a bigger block into two - requested size and remaining size
 malloc_alloc_split:
+		if DEBUG_FORTH_MALLOC
+			DMARK "MAs"
+			CALLMONITOR
+		endif
       ex    DE, HL                  ; Calculate address of new free block
       dec   HL
       dec   HL
@@ -622,6 +630,10 @@ malloc_alloc_split:
 malloc_alloc_fit:
       pop   HL                      ; Dont need new block size, want is exact fit
 
+		if DEBUG_FORTH_MALLOC
+			DMARK "MAf"
+			CALLMONITOR
+		endif
       ; Modify this_free block to be allocation
       ex    DE, HL
       dec   HL
@@ -658,6 +670,10 @@ malloc_update_links:
       inc   HL
       ld    (HL), D
 
+		if DEBUG_FORTH_MALLOC
+			DMARK "Mul"
+			CALLMONITOR
+		endif
       ; Clear the Z flag to indicate successful allocation
       ld    A, D
       or    E
@@ -1553,20 +1569,65 @@ if MALLOC_4
 heap_init:
 	; init start of heap as zero
 	; 
+
+	ld hl, heap_start
+	ld a, 0
+	ld (hl), a      ; dw empty block
+	; 
+	ld hl, heap_end     ; block free size
+	ld de, heap_start
+	sbc hl, de
+	ex de, hl
+	ld hl, heap_start+1
+	ld (hl), e
+	inc hl
+	ld (hl), d
+	 
 	ret
 
 
 malloc: 
 	; hl space in 
 	
+	push hl
+
 	; start at heap
-	; if byte is zero then clear
+
+	ld hl, heap_start
+
+.findblock:
+
+	ld a,(hl) 
+	; if byte is zero then clear to use
+
+	cp 0
+	jr z, .foundemptyblock
+
+	; if byte is not clear
+	;     get next word and jump that far ahead to next block
+
+	inc hl
+	ld a, (hl)
+	ld e, a
+	inc hl
+	ld a, (hl)
+	ld d, a
+
+	; size in de
+
+	add hl, de
+
+	; TODO detect no more space
+
+
+	jr .findblock
+
+	
+
 	;    next word if space available
 	;    if space available + header
 	;        dec space available
 	;	 write 
-	; if byte is not clear
-	;     get next word and jump that far ahead to next block
 	;  
 
 	ret

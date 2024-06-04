@@ -421,11 +421,11 @@ malloc_error:
 
 	ld a, ' '
 	ld (os_view_disable), a
-	CALLMONITOR
-
 	pop hl
 	pop af
 	pop de	
+	CALLMONITOR
+
 	
 
 	ret
@@ -1291,7 +1291,10 @@ check_stacks:
 
 	call next_page_prompt
 
+	pop de
+	pop hl
 		call monitor
+		jp 0
 		halt
 
 

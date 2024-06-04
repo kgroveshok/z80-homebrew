@@ -378,6 +378,10 @@
 		ld a, (store_openext)
 		ld l, a
 
+		cp 0
+		jr z, .readeof     ; dont read past eof
+
+
 		ld de, store_page
 	if DEBUG_STORESE
 		DMARK "RE1"

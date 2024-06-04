@@ -156,6 +156,10 @@ endif
 	ld l,a
 	ld h,0
 	call malloc
+if DEBUG_FORTH_TOK
+			DMARK "TKM"
+	CALLMONITOR
+endif
 	if DEBUG_FORTH_MALLOC_GUARD
 		push af
 		ld a, l

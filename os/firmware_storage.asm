@@ -144,9 +144,10 @@ storage_file_size:
 		endif
 	call storage_findnextid
 
-	ld a, l
-	add h
-	cp 0
+	call ishlzero
+;	ld a, l
+;	add h
+;	cp 0
 	ret z			; block not found so EOF
 
 	ld de, store_page
@@ -942,9 +943,10 @@ storage_read:
 	ld hl, STORE_BLOCK_PHY
 	call storage_findnextid
 
-	ld a, l
-	add h
-	cp 0
+	call ishlzero
+;	ld a, l
+;	add h
+;	cp 0
 	ret z			; block not found so EOF
 
 	; hl contains page number to load

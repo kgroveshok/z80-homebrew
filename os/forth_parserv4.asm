@@ -162,9 +162,10 @@ if DEBUG_FORTH_TOK
 endif
 	if DEBUG_FORTH_MALLOC_GUARD
 		push af
-		ld a, l
-		add h
-		cp 0
+		call ishlzero
+;		ld a, l
+;		add h
+;		cp 0
 		pop af
 		
 		call z,malloc_error

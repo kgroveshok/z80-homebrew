@@ -27,7 +27,7 @@ DEBUG_FORTH_PARSE_EXEC: equ 1     ; 6
 DEBUG_FORTH_PARSE_EXEC_SLOW: equ 0     ; 6
 DEBUG_FORTH_PARSE_NEXTWORD: equ 0
 DEBUG_FORTH_JP: equ 0
-DEBUG_FORTH_MALLOC: equ 0
+DEBUG_FORTH_MALLOC: equ 1
 DEBUG_FORTH_DOT: equ 1
 DEBUG_FORTH_DOT_WAIT: equ 0
 DEBUG_FORTH_MATHS: equ 1
@@ -59,8 +59,10 @@ CALLMONITOR: macro
 	call break_point_state
 	endm
 
-MALLOC_1: equ 1
-MALLOC_2: equ 0
+MALLOC_1: equ 1        ; consistent failure
+MALLOC_2: equ 0           ; broke
+MALLOC_3: equ 0           ; really broke
+MALLOC_4: equ 0              ; mine TODO
 
 
 tos:	equ 0fffdh
@@ -184,7 +186,7 @@ iErrorNum:  equ seed2-1         ;Error number
 iErrorReg:  equ iErrorNum -1              ;Error register
 iErrorVer:  equ iErrorReg - 1              ;Verify error flag
 
-store_bank_active: equ iErrorVer - (5 + 8 ) 		; indicator of which storage banks are available to use 5 on board and 8 in cart
+store_bank_active: equ iErrorVer - (5 + 8 ) 		; TODO not used.  indicator of which storage banks are available to use 5 on board and 8 in cart
 
 STORE_BLOCK_LOG:  equ   255      ; TODO remove.... Logical block size   
 
@@ -197,7 +199,7 @@ store_filecache: equ store_openext+(2*5)   ;  TODO (using just one for now)  fil
 store_tmppageid: equ store_filecache-2    ; phyical page id temp
 ;
 ; spi vars
-; 
+
 
 spi_cartdev: equ store_tmppageid - 1      ; holds bit mask to send to portb (ext spi) devices
 spi_portbyte: equ spi_cartdev - 1      ; holds bit mask to send to spi bus 
@@ -269,11 +271,18 @@ chk_word: equ os_view_bc - 2		 ; this is the word to init and then check against
 ; with data stack could see memory filled with junk. need some memory management 
 ; malloc and free entry points added
 
-free_list:  equ chk_word - 4     ; Block struct for start of free list (MUST be 4 bytes)
-heap_size: equ  (free_list-08100h)      ; Number of bytes available in heap   TODO make all of user ram
+;free_list:  equ chk_word - 4     ; Block struct for start of free list (MUST be 4 bytes)
+;heap_size: equ  (free_list-08100h)      ; Number of bytes available in heap   TODO make all of user ram
+;;heap_start: equ free_list - heap_size  ; Starting address of heap
+;heap_end: equ free_list-1  ; Starting address of heap
 ;heap_start: equ free_list - heap_size  ; Starting address of heap
-heap_end: equ free_list-1  ; Starting address of heap
-heap_start: equ free_list - heap_size  ; Starting address of heap
+
+;heap_start: equ free_list - heap_size  ; Starting address of heap
+heap_end: equ chk_word-1  ; Starting address of heap
+heap_start: equ 0A106h  ; Starting address of heap
+free_list:  equ 0A100h      ; Block struct for start of free list (MUST be 4 bytes)
+
+heap_size: equ  heap_end-heap_start      ; Number of bytes available in heap   TODO make all of user ram
 
 ;;;;
 

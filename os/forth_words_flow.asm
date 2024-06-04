@@ -451,11 +451,11 @@ endif
 
 	; test if true
 
-
-	ld a,l
-	add h
-
-	cp 0
+	call ishlzero
+;	ld a,l
+;	add h
+;
+;	cp 0
 
 	jr nz, .untilnotdone
 

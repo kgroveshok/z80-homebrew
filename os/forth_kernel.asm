@@ -1154,10 +1154,14 @@ forth_startup:
 	inc hl
 	ld d, (hl)
 	pop hl
+	; TODO replace 0 test
 
-	ld a,e
-	add d
-	cp 0    ; any left to do?
+	ex de, hl
+	call ishlzero
+;	ld a,e
+;	add d
+;	cp 0    ; any left to do?
+	ex de, hl
 	jp nz, .start1
 	jr .startupend
 

@@ -545,6 +545,17 @@ cmp16:
 	ret
 
 
+; test if hl contains zero   - A is destroyed
+
+ishlzero:   
+	or a     ; reset flags
+	ld a, h
+	or l        	
+
+	ret
+
+
+
 
 if FORTH_ENABLE_FLOATMATH
 include "float/bbcmath.z80"

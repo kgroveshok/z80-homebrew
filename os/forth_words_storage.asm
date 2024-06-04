@@ -55,10 +55,11 @@
 
 		; if found hl will be non zero
 
-		ld a, l
-		add h
-
-		cp 0
+		call ishlzero
+;		ld a, l
+;		add h
+;
+;		cp 0
 		jr z, .dirnotfound
 
 		; increase count
@@ -393,9 +394,10 @@
 		DMARK "RE2"
 		CALLMONITOR
 	endif
-	ld a, l
-	add h
-	cp 0
+	call ishlzero
+;	ld a, l
+;	add h
+;	cp 0
 	jr z, .readeof
 
 	; not eof so hl should point to data to push to stack

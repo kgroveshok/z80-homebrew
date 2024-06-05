@@ -702,7 +702,8 @@ break_point_state:
 	ret
 
 .bpsgo:
-
+	pop af
+	push af
 	ld (os_view_hl), hl
 	ld (os_view_de), de
 	ld (os_view_bc), bc
@@ -809,7 +810,7 @@ break_point_state:
 		ld (display_fb_active), hl
 		call update_display
 
-	ld a, (os_view_af)
+	;ld a, (os_view_af)
 	ld hl, (os_view_hl)
 	ld de, (os_view_de)
 	ld bc, (os_view_bc)
@@ -990,17 +991,17 @@ startcmds:
 	dw test9
 	dw test10
 	
-	dw start1
-	dw start2
-	dw start3
+;	dw start1
+;	dw start2
+;	dw start3
 	db 0, 0	
 
 test1:		db ": aa 1 2 3 ;  ", 0, 0, 0, FORTH_END_BUFFER
 test2:     	db "111 aa 888 999  ",0, 0, 0, FORTH_END_BUFFER
 test3:     	db ": bb 77 ;  ",0, 0, 0, FORTH_END_BUFFER
 test4:     	db "$02 $01 do i . loop bb  ",0, 0, 0, FORTH_END_BUFFER
-test5:     	db ": hline $13 $00 do i $01 at ",'"*"'," . i $04 at ",'"*"'," . loop ;   ",0, 0, 0, FORTH_END_BUFFER
-test6:     	db ": vline $04 $01 do $00 i at ",'"*"'," . $13 i at ",'"*"'," . loop ;   ",0, 0, 0, FORTH_END_BUFFER
+test5:     	db ": hline $13 $00 do i $01 at 1 . i $04 at 1 . loop ;   ",0, 0, 0, FORTH_END_BUFFER
+test6:     	db ": vline $04 $01 do $00 i at 1 . $13 i at 1 . loop ;   ",0, 0, 0, FORTH_END_BUFFER
 test7:     	db ": box hline vline ;  ",0, 0, 0, FORTH_END_BUFFER
 test8:     	db ": world cls box $03 $03 at Hello-World! . ;  ",0, 0, 0, FORTH_END_BUFFER
 test9:     	db ": sw $01 adsp world ;  ",0, 0, 0, FORTH_END_BUFFER

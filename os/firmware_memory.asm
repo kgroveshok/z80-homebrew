@@ -1579,21 +1579,79 @@ heap_init:
 	ld a, 0
 	ld (hl), a      ; length of block
 
+
+	; init some malloc vars
+
+	ld hl, 0
+	ld (free_list), hl       ; store last malloc location
+
+	ld hl, free_list+3      ; flag for 'free' being used and force a rescan for reuse of block 
+	ld a, 0
+	ld (hl), a
+
+
+	ld hl, heap_start
 	; 
 	 
 	ret
 
 
+;    free block marker
+;    size 
+;    ....
+;    next block marker
+
+
+; TODO add a flag that is reset on use of free. if flag is reset then start scan from start of heap otherwise use last location
+;
+
+
 malloc: 
-	; hl space in 
+	push de
+	push bc
+	push af
+
+	; hl space required
 	
-	ld c, l    ; hold space just in case
+	ld c, l    ; hold space   (TODO only a max of 255)
 
-	; start at heap
+;	inc c
+;	inc c
+;	inc c
+;	inc c
+;	inc c
+;	inc c
+;	inc c
 
+
+
+	; start at heap if a free has been issued so we can reclaim it otherwise continue from last time
+
+	ld a, (free_list+3)
+	cp 0
+	jr z, .contheap
+
+	ld hl, (free_list)     ; get last alloc
+		if DEBUG_FORTH_MALLOC_INT
+			DMARK "mrs"
+			CALLMONITOR
+		endif
+	jr .startalloc
+
+.contheap:
 	ld hl, heap_start
 
+.startalloc:
+
+		if DEBUG_FORTH_MALLOC_INT
+			DMARK "mym"
+			CALLMONITOR
+		endif
 .findblock:
+		if DEBUG_FORTH_MALLOC_INT
+			DMARK "mmf"
+			CALLMONITOR
+		endif
 
 	ld a,(hl) 
 	; if byte is zero then clear to use
@@ -1605,28 +1663,93 @@ malloc:
 	;     then byte is offset to next block
 
 	inc hl
-	ld a, (hl) ; get size
-	call addatohl
+.toobig:	ld a, (hl) ; get size
+.nextblock:	call addatohl
+	inc hl  ; move past the store space
 
 	; TODO detect no more space
 
+	push hl
+	ld de, heap_end
+	call cmp16
+	pop hl
+	jr nc, .nospace
 
 	jr .findblock
 
+.nospace: ld hl, 0
+	jp .exit
+
 
 .foundemptyblock:	
+		if DEBUG_FORTH_MALLOC_INT
+			DMARK "mme"
+			CALLMONITOR
+		endif
+
+; TODO has block enough space if reusing???
 
 	; 
-	ld a, c
-	inc a     ; space for length byte
 
+; see if this block has been previously used
+	inc hl
+	ld a, (hl)
+	dec hl
+	cp 0
+	jr z, .newblock
+
+		if DEBUG_FORTH_MALLOC_INT
+			DMARK "meR"
+			CALLMONITOR
+		endif
+
+; no reusing previously allocated block
+
+; is it smaller than previously used?
+	
+	inc hl    ; move to size
+	ld a, c
+	sub (hl)        ; we want c < (hl)
+        jr z, .toobig
+
+	; can't update the size to this request to preseve forward linked list
+
+	ld a, (hl)
+	ld c, a     ; over write the requested size with this block's previous allocation
+	
+        dec hl   ; move back to marker	
+
+.newblock:
+
+
+
+		if DEBUG_FORTH_MALLOC_INT
+			DMARK "meN"
+			CALLMONITOR
+		endif
+
+
+	ld a, c
+
+	ld (free_list+3), a	 ; flag resume from last malloc 
+	ld (free_list), hl    ; save out last location
+
+
+	;inc a     ; space for length byte
+	ld (hl), a     ; save block in use marker
+
+	inc hl   ; move to space marker
 	ld (hl), a    ; save new space
+
+	inc hl   ; move to start of allocated area
 	
 	push hl     ; save where we are - 1 
 
 	; skip space to set down new marker
 
 	call addatohl
+
+;	inc hl ; move past end of block
 
 	ld a, 0
 	ld (hl), a
@@ -1635,24 +1758,41 @@ malloc:
 
 	pop hl
 
+		if DEBUG_FORTH_MALLOC_INT
+			DMARK "mmr"
+			CALLMONITOR
+		endif
 
+.exit:
+	pop af
+	pop bc
+	pop de 
 	ret
 
 
 
 
 free: 
+	push hl
+	push af
 	; get address in hl
-	; go through linked list
-	; if node has address as start of area
-	;     mark node as unused
-        ;     save next pointr and this size
-	;     check next pointer
-	;     if next block is unused merge blocks
-	;          save next ptr
-	;          go back to previous node 
-	;          put saved pointer for next pointer
-	;          add both sizes
+
+		if DEBUG_FORTH_MALLOC_INT
+			DMARK "fre"
+			CALLMONITOR
+		endif
+	; data is at hl
+	dec hl
+	dec hl    ; move to block marker
+
+	ld a, 0     
+	ld (hl), a   ; mark as free
+
+	ld (free_list+3), a	 ; flag reuse of existing block on next malloc
+
+	pop af
+	pop hl
+
 	ret
 
 

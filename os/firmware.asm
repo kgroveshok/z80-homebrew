@@ -27,7 +27,8 @@ DEBUG_FORTH_PARSE_EXEC: equ 1     ; 6
 DEBUG_FORTH_PARSE_EXEC_SLOW: equ 0     ; 6
 DEBUG_FORTH_PARSE_NEXTWORD: equ 0
 DEBUG_FORTH_JP: equ 0
-DEBUG_FORTH_MALLOC: equ 1
+DEBUG_FORTH_MALLOC: equ 0
+DEBUG_FORTH_MALLOC_INT: equ 1
 DEBUG_FORTH_DOT: equ 1
 DEBUG_FORTH_DOT_WAIT: equ 0
 DEBUG_FORTH_MATHS: equ 1
@@ -49,9 +50,9 @@ DEBUG_FORTH_WORDS_KEY: equ 1   ; 1
 ; House keeping and protections
 
 DEBUG_FORTH_STACK_GUARD: equ 1
-DEBUG_FORTH_MALLOC_GUARD: equ 1
+DEBUG_FORTH_MALLOC_GUARD: equ 0
 DEBUG_FORTH_MALLOC_HIGH: equ 0     ; warn only if more than 255 chars being allocated. would be highly unusual!
-FORTH_ENABLE_FREE: equ 1
+FORTH_ENABLE_FREE: equ 0
 FORTH_ENABLE_FLOATMATH: equ 0
 
 
@@ -279,8 +280,8 @@ chk_word: equ os_view_bc - 2		 ; this is the word to init and then check against
 
 ;heap_start: equ free_list - heap_size  ; Starting address of heap
 heap_end: equ chk_word-1  ; Starting address of heap
-heap_start: equ 0A106h  ; Starting address of heap
-free_list:  equ 0A100h      ; Block struct for start of free list (MUST be 4 bytes)
+heap_start: equ 0800eh  ; Starting address of heap
+free_list:  equ 0800ah      ; Block struct for start of free list (MUST be 4 bytes)
 
 heap_size: equ  heap_end-heap_start      ; Number of bytes available in heap   TODO make all of user ram
 
@@ -383,6 +384,9 @@ hardware_init:
 	; setup malloc functions
 
 	if MALLOC_1
+		call  heap_init
+	endif
+	if MALLOC_4
 		call  heap_init
 	endif
 

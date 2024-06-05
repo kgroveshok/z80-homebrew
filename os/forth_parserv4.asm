@@ -155,6 +155,7 @@ endif
 
 	ld l,a
 	ld h,0
+;	push hl   ; save required space for the copy later
 	call malloc
 if DEBUG_FORTH_TOK
 			DMARK "TKM"
@@ -189,7 +190,8 @@ endif
 	
 	ex de,hl	; malloc is dest
 	ld hl, (os_tok_len)
-	ld c, l
+;	pop bc
+	ld c, l               
 	ld b,0
 	ld hl, (os_tok_ptr)
 
@@ -785,7 +787,7 @@ endif
 
 	; TODO malloc + 1
 
-	;add 5    ; to be safe for some reason - max of 255 char for string
+	add 5    ; to be safe for some reason - max of 255 char for string
 	ld h,0
 	ld l,a
 if DEBUG_FORTH_PUSH
@@ -909,9 +911,9 @@ endif
 	push hl		; once to save on to data stack
 	push hl		; once to save word into
 
-if DEBUG_FORTH_MALLOC
-	call display_data_malloc 
-endif
+;if DEBUG_FORTH_MALLOC
+;	call display_data_malloc 
+;endif
 	
 	; push malloc to data stack     macro????? 
 

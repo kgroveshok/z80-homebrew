@@ -569,13 +569,15 @@ DONE Design new keyboard layout PCB now I have key caps etc
 2nd June
 --------
 
-Waiting for delivery of keyboard PCBs.
-TODO random malloc failure. Added a macro DEBUG_FORTH_MALLOC_HIGH but not quite right so disabled for now.
+DONE Waiting for delivery of keyboard PCBs.
 DONE 4x40 char LCD partly working as a drop in but requires an extra E signal for the second half of the display. Finish coding changes.
 DONE Fix READ functions
+DONE disable breakpoints on start up unless a key is held down
+
+
+TODO random malloc failure. Added a macro DEBUG_FORTH_MALLOC_HIGH but not quite right so disabled for now.
 TODO need words to report on hardware e.g. screen dims
 TODO need word to get file id by name
-DONE disable breakpoints on start up unless a key is held down
 TODO need word to get file name by id
 TODO need word to report where cursor current at
 TODO have a flag to enable forward cursor from each . or .-
@@ -593,74 +595,6 @@ Power. Could I add battery support so it is portable? Recharge circuit I would n
 
 Or would normal battery packs work long enough to make it worth while? 
 
-
-Extra TODO notes
-----------------
-
-A - PIO? Spare???? -> Trigger for next batch of decoding???
-B - SIO
-C - Keyboard
-D - LCD
-
-Extending the address decoding to cover more devices would be good.
-* DART
-* Keyboard
-* Video
-* Sound
-* Network
-* RTC
-* I2C
-* Canbus???
-* As many spare as possible
-
-Memory Map
-----------
-First 32k - ROM
-Device ports
-Monitor
-Forth OS?
-
-Second 32k - RAM
-Program area
-Screen Memory? 20 x 40 chars
-Stack
-Intel monitor input buffer
-Vars
-
-Rig up the Z80 DART, SIO or PIO chip to add RS232 support and then program the the boot loader 
-with a monitor program and remote program load function. Perhaps too expose some I/O interface
-so I can have some future expansion/control features like a Pi.
-
-At this stage I will have serial terminal working and would therefore be a functional computer to
-some extent.
-
-Thinking about features for the boot loader/monitor that the PIC will bitbash into RAM:
-
-* Hex dump memory to check things have loaded OK
-* Change memory locations to manually load data or fix something if needed
-* Set program counter and run 
-* XModem/ASCII load of a hex file, or perhaps better still just raw binary load direct into memory
-* May be add the monitor to NMI to break into control should things be broken
-* Configure various properties of the system and have them saved to PIC flash??? Can't really though
-  as the pic pins are one way so essentially it can't be seen by the Z80. This was a design choice.
-* When SD or CF card support is added then have some control over loading/saving etc
-* Have decided that the monitor will actually function as the main 'OS' simliar to the BASIC's of old
-  and it will be a Forth implentation so I can have a good compact and simple language at hand for
-  programming and hardware control.
-
-
-
-Add some external interfaces to make it do other things would be useful. Perhaps even to drive a
-small LCD screen like those old Sharp handhend computers I remember. Would also need to add keypad
-support of somekind which then makes it a self contained computer. Would be cool if I can then 
-place in a suitable case and have battery support.
-
-I know not quite retro enough but a small Rpi that can grab bus and read from 
-a screen memory mapped area and sling out on HDMI? Obivously would be nice
-to replace with a proper composite out if I ever get that but that is
-stretching my skills and have no knowledge (yet) of that tech.
-
-
-
+More devices on the external cart
 
 

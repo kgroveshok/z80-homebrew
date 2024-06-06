@@ -92,26 +92,29 @@ key_init:
 
 ; mapping for the pcb layout
 
-; TODO q and right arrow not working
-
 .matrix_to_char:
 		db "1357890",KEY_BS,KEY_UP,KEY_DOWN,0
-		db "Aweryiop",KEY_LEFT,"X",0
+		db "qweryiop",KEY_LEFT,KEY_RIGHT,0
 		db KEY_SYMBOLSHIFT,"asdfghjk",KEY_CR,0
 		db KEY_SHIFT,"zxcvbnm ",KEY_SHIFT,0
 		db "246tu",KEY_F1,KEY_F2,KEY_F3,"l",KEY_F4,0
 .matrix_to_shift:
-		db KEY_SHIFT,"zxcv",KEY_UP,KEY_DOWN,"m",KEY_HOME, KEY_END,0
-		db KEY_SHIFT,"ZXCVBNM",KEY_BS,KEY_SYMBOLSHIFT,0
-		db "ASDFGHJKL",KEY_CR,0
-		db "QWERTYUIOP",0
-		 db "!",'"',"#$%^&*()",0
+
+		db "!#%&*()",KEY_BS,KEY_UP,KEY_DOWN,0
+		db "QWERYIOP",KEY_LEFT,KEY_RIGHT,0
+		db KEY_SYMBOLSHIFT,"ASDFGHJK",KEY_CR,0
+		db KEY_SHIFT,"ZXCVBNM|",KEY_SHIFT,0
+		db '"',"$^TU",KEY_F5,KEY_F6,KEY_F7,"L",KEY_F8,0
+
 .matrix_to_symbolshift:
-		db KEY_SHIFT,"zxcv",KEY_UP,KEY_DOWN,"m",KEY_LEFT, KEY_RIGHT,0
-		db KEY_SHIFT,"<>:;b,.",KEY_BS,KEY_SYMBOLSHIFT,0
-		db "_?*fghjk=",KEY_CR,0
-		db "-/+*[]{}@#",0
-		 db "1234567890",0
+
+		db "1357890",KEY_BS,KEY_UP,KEY_DOWN,0
+		db "-+/=_iop",KEY_LEFT,KEY_RIGHT,0
+		db KEY_SYMBOLSHIFT,"[]{}ghjk",KEY_CR,0
+		db KEY_SHIFT,"<>,.:;'\\",KEY_SHIFT,0
+		db "246tu",KEY_F9,KEY_F10,KEY_F11,"l",KEY_F12,0
+
+
 
 ; mapping for a simple straight through breadboard layout
 
@@ -137,88 +140,6 @@ key_init:
 ;.matrix_to_char: db "D#0*C987B654A321"
 
 
-; map the physical key to a char dependant on state
-
-;.key_map_fa: 
-;
-;		db 'D'
-;		db KEY_CR    ; cr
-;		db ' '
-;		db  KEY_SHIFTLOCK   ; TODO Shift lock
-;		db 'C'
-;		db 'y'
-;		db 'v'
-;		db 's'
-;		db 'B'
-;		db 'p'
-;		db 'm'
-;		db 'j'
-;		db 'A'
-;		db 'g'
-;		db 'd'
-;		db 'a'
-;
-;.key_map_fb:
-;
-;		db 'A'
-;		db '+' 
-;		db '<'
-;		db  "'"  
-;
-;		db 'A'
-;		db 'z'
-;		db 'w'
-;		db 't'
-;		db 'A'
-;		db 'q'
-;		db 'n'
-;		db 'k'
-;		db 'A'
-;		db 'h'
-;		db 'e'
- ;		db 'b'
-;
-;.key_map_fc: 
-;
-;
-;		db 'A'
-;		db '-' 
-;		db '>'
-;		db  '='   	
-;		db 'A'
-;		db '?'
-;		db 'x'
-;		db 'u'
-;		db 'A'
-;		db 'r'
-;		db 'o'
-;		db 'l'
-;		db 'A'
-;		db 'i'
-;		db 'f'
-;		db 'c'
-;
-;	
-;.key_map_fd:
-;
-;		db 'A'
-;		db '/' 
-;		db '%' 
-;		db KEY_BS  ; back space
-;		db 'A'
-;		db '!'
-;		db '@'
-;		db ';'
-;		db 'A'
-;		db ':'
-;		db '.'
-;		db ','
-;		db 'A'
-;		db '$'
-;		db '&'
-;	 	db '"'
-
-		
 	
 
 ; add cin and cin_wait
@@ -515,7 +436,8 @@ endif
 	; TODO set flags for modifer key presses 
 	; TODO do a search for modifer key...
 
-	ld hl,keyscan_table_row4
+	;ld hl,keyscan_table_row4
+	ld hl,keyscan_table_row2
 
 	ld a, (hl)
 	cp '#'
@@ -525,13 +447,22 @@ endif
 	jr .dokeymap
 	; TODO for now igonre
 .nextmodcheck:
-	ld hl,keyscan_table_row4+9
+	ld hl,keyscan_table_row3
+
+	ld a, (hl)
+	cp '#'
+	jr nz, .nextmodcheck2
+	set 1, c 
+	ld hl, .matrix_to_symbolshift
+	jr .dokeymap
+.nextmodcheck2:
+	ld hl,keyscan_table_row2+9    ; right shift
 
 	ld a, (hl)
 	cp '#'
 	jr nz, .donemodcheck
 	set 1, c 
-	ld hl, .matrix_to_symbolshift
+	ld hl, .matrix_to_shift
 	jr .dokeymap
 
 	; no modifer found so just map to normal keys

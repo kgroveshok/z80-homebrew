@@ -586,7 +586,7 @@ TODO BUG Using my malloc I is not working in loops. Why? Only when malloc free i
 TODO Dont think parser calls are releasing memory
 TODO BUG hline with my malloc is copying too much somewhere. Extending malloc by four bytes solves problem but allocating required is causing crashes. problem is not do loop or i use. at works too. very odd.  it is dot for strings that is crashing after a couple of goes. does it fail outside of loops? yes. second time. must be memory overwrite. Might also be a reason the other malloc is failing.
 
-
+TODO New case for Mega
 
 Stage 4.5 TODO
 --------------

@@ -92,6 +92,8 @@ key_init:
 
 ; mapping for the pcb layout
 
+; TODO q and right arrow not working
+
 .matrix_to_char:
 		db "1357890",KEY_BS,KEY_UP,KEY_DOWN,0
 		db "Aweryiop",KEY_LEFT,"X",0

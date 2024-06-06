@@ -340,14 +340,34 @@
 
 .OPEN:
 	CWHEAD .READ 87 "OPEN" 4 WORD_FLAG_CODE
-; | OPEN ( n --  )  Sets file id to point to first data page for subsequent READs - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | DONE
+; | OPEN ( n -- n )  Sets file id to point to first data page for subsequent READs. Pushes the max number of blocks for this file | DONE
 
 		; TODO handle multiple file opens
-		FORTH_DSP_POP     ; for now just get rid of stream id
 
 	       	ld a, 1
 		ld (store_openext), a
+
+		; get max extents for this file
+	
+					
+		FORTH_DSP_VALUEHL
+
+		ld h, l
+		ld a, 0
 			
+		ld de, store_page      ; get block zero of file
+		call storage_read
+
+		ld a, (store_page+1)    ; max extents for this file
+		ld  (store_openmaxext),a   ; get our limit
+
+		FORTH_DSP_POP     ; for now just get rid of stream id
+
+		ld  a, (store_openmaxext)   ; get our limit and push
+		ld l, a
+		ld h, 0
+		call forth_push_numhl
+
 
 	       NEXTW
 .READ:
@@ -408,11 +428,19 @@
 	endif
 	call forth_apushstrhl
 
-	; get next block 
+	; get next block  or mark as eof
+
+	ld a, (store_openmaxext)   ; get our limit
+	ld c, a	
+	inc c
 
 		ld a, (store_openext)
+	cp c
+	jr z, .readeof     ; at last extent
+
 		inc a
 		ld (store_openext), a
+
 
 
 	       NEXTW

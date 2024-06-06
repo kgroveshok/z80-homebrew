@@ -60,10 +60,10 @@ CALLMONITOR: macro
 	call break_point_state
 	endm
 
-MALLOC_1: equ 0        ; consistent failure
+MALLOC_1: equ 0        ; from dk88 
 MALLOC_2: equ 0           ; broke
 MALLOC_3: equ 0           ; really broke
-MALLOC_4: equ 1              ; mine TODO         max of 250 chars
+MALLOC_4: equ 1              ; mine pretty basic reuse and max of 250 chars
 
 
 tos:	equ 0fffdh
@@ -196,7 +196,8 @@ store_ffpage: equ store_page-STORE_BLOCK_LOG            ; page size for eeprom
 store_tmpid: equ store_ffpage - 1		; page temp id
 store_tmpext: equ store_tmpid - 1		; file extent temp
 store_openext: equ store_tmpext - 1		; file extent of current opened file for read
-store_filecache: equ store_openext+(2*5)   ;  TODO (using just one for now)  file id + extent count cache * 5
+store_openmaxext: equ store_openext - 1		; max extent of current opened file for read
+store_filecache: equ store_openmaxext+(2*5)   ;  TODO (using just one for now)  file id + extent count cache * 5
 store_tmppageid: equ store_filecache-2    ; phyical page id temp
 ;
 ; spi vars

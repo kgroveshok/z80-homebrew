@@ -1,4 +1,40 @@
 
+if MALLOC_4
+
+.HEAP:
+	CWHEAD .EXEC 6 "HEAP" 4 WORD_FLAG_CODE
+; | HEAP ( -- u1 u2 )   Pushes u1 the current number of bytes in the heap and u2 the remaining bytes - Only present if using my MALLOC | DONE
+
+; TODO add count of free blocks
+; TODO add count of used blocks
+
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "HEP"
+			CALLMONITOR
+		endif
+		ld hl, (free_list )     
+		ld de, heap_start
+
+		sbc hl, de 
+
+		call forth_push_numhl
+
+
+		ld de, (free_list )     
+		ld hl, heap_end
+
+		sbc hl, de
+
+		call forth_push_numhl
+		
+
+		
+
+
+
+		NEXTW
+endif
+
 .EXEC:
 	CWHEAD .DUP 6 "EXEC" 4 WORD_FLAG_CODE
 ; | EXEC ( u -- )    Execs the string on TOS as a FORTH expression | TO TEST

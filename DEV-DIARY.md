@@ -572,9 +572,10 @@ DONE Design new keyboard layout PCB now I have key caps etc
 Waiting for delivery of keyboard PCBs.
 TODO random malloc failure. Added a macro DEBUG_FORTH_MALLOC_HIGH but not quite right so disabled for now.
 DONE 4x40 char LCD partly working as a drop in but requires an extra E signal for the second half of the display. Finish coding changes.
-TODO Fix READ functions
+DONE Fix READ functions
 TODO need words to report on hardware e.g. screen dims
 TODO need word to get file id by name
+DONE disable breakpoints on start up unless a key is held down
 TODO need word to get file name by id
 TODO need word to report where cursor current at
 TODO have a flag to enable forward cursor from each . or .-
@@ -582,6 +583,8 @@ TODO have a word to set break point at a DMARKer
 TODO BUG Using my malloc I is not working in loops. Why? Only when malloc free is enabled. Bug there
 TODO Dont think parser calls are releasing memory
 TODO BUG hline with my malloc is copying too much somewhere. Extending malloc by four bytes solves problem but allocating required is causing crashes. problem is not do loop or i use. at works too. very odd.  it is dot for strings that is crashing after a couple of goes. does it fail outside of loops? yes. second time. must be memory overwrite. Might also be a reason the other malloc is failing.
+
+
 
 Stage 4.5 TODO
 --------------

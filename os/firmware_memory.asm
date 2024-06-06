@@ -1578,7 +1578,12 @@ heap_init:
 	inc hl
 	ld a, 0
 	ld (hl), a      ; length of block
-
+	; write end of list
+	inc hl
+	ld a,(hl)
+	inc hl
+	ld a,(hl)
+	
 
 	; init some malloc vars
 
@@ -1597,7 +1602,8 @@ heap_init:
 
 
 ;    free block marker
-;    size 
+;    requested size 
+;    pointer to next block
 ;    ....
 ;    next block marker
 
@@ -1615,7 +1621,7 @@ malloc:
 	
 	ld c, l    ; hold space   (TODO only a max of 255)
 
-;	inc c
+;	inc c     ; TODO BUG need to fix memory leak on push str
 ;	inc c
 ;	inc c
 ;	inc c
@@ -1663,9 +1669,14 @@ malloc:
 	;     then byte is offset to next block
 
 	inc hl
-.toobig:	ld a, (hl) ; get size
-.nextblock:	call addatohl
-	inc hl  ; move past the store space
+	ld a, (hl) ; get size
+.nextblock:	inc hl
+		ld e, (hl)
+		inc hl
+		ld d, (hl)
+		ex de, hl
+;	inc hl  ; move past the store space
+;	inc hl  ; move past zero index 
 
 	; TODO detect no more space
 
@@ -1710,18 +1721,15 @@ malloc:
 	inc hl    ; move to size
 	ld a, c
 	sub (hl)        ; we want c < (hl)
-        jr z, .toobig
+	dec hl    ; move back to marker
+        jr z, .findblock
 
-	; can't update the size to this request to preseve forward linked list
+	; update with the new size which should be lower
 
-	ld a, (hl)
-	ld c, a     ; over write the requested size with this block's previous allocation
-	
-        dec hl   ; move back to marker	
+        ;inc  hl   ; negate next move. move back to size 
 
 .newblock:
-
-
+	; need to be at marker here
 
 		if DEBUG_FORTH_MALLOC_INT
 			DMARK "meN"
@@ -1743,18 +1751,51 @@ malloc:
 
 	inc hl   ; move to start of allocated area
 	
-	push hl     ; save where we are - 1 
+;	push hl     ; save where we are - 1 
 
+;	inc hl  ; move past zero index 
 	; skip space to set down new marker
 
+	; provide some extra space for now
+
+	inc a    ; actual is one fewer than bytes requested. correct if zero index is taken into account
+	inc a
+	inc a
+
+	push hl   ; save where we are in the node block
+
 	call addatohl
+
+	; write linked list point
+
+	pop de     ; get our node position
+	ex de, hl
+
+	ld (hl), e
+	inc hl
+	ld (hl), d
+
+	inc hl
+
+	; now at start of allocated data so save pointer
+
+	push hl
+
+	; jump to position of next node and setup empty header in DE
+
+	ex de, hl
 
 ;	inc hl ; move past end of block
 
 	ld a, 0
-	ld (hl), a
+	ld (hl), a   ; empty marker
 	inc hl
-	ld (hl), a
+	ld (hl), a   ; size
+	inc hl 
+	ld (hl), a   ; ptr
+	inc hl
+	ld (hl), a   ; ptr
+
 
 	pop hl
 
@@ -1781,14 +1822,33 @@ free:
 			DMARK "fre"
 			CALLMONITOR
 		endif
-	; data is at hl
+	; data is at hl - move to block count
 	dec hl
+	dec hl    ; get past pointer
+	dec hl
+
+	ld a, (hl)    ; need this for a validation check
+
 	dec hl    ; move to block marker
+
+	; now check that the block count and block marker are the same 
+        ; this checks that we are on a malloc node and not random memory
+        ; OK a faint chance this could be a problem but rare - famous last words!
+
+	ld c, a
+	ld a, (hl)   
+
+	cp c
+	jr nz, .freeignore      ; not a valid malloc node in use so dont break anything
+
+	; yes good chance we are on a malloc node
 
 	ld a, 0     
 	ld (hl), a   ; mark as free
 
 	ld (free_list+3), a	 ; flag reuse of existing block on next malloc
+
+.freeignore: 
 
 	pop af
 	pop hl

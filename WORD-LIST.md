@@ -4,6 +4,9 @@ Words List
 ------------------
 
 
+ HEAP ( -- u1 u2 )   Pushes u1 the current number of bytes in the heap and u2 the remaining bytes - Only present if using my MALLOC | DONE
+
+
  EXEC ( u -- )    Execs the string on TOS as a FORTH expression | TO TEST
 
 
@@ -115,6 +118,9 @@ Words List
  CARTDEV ( u1 -- ) Select cart device 1-8 (Disables BANK). Set to zero to disable devices. |  DONE
 
 
+ AT? ( -- r c )  Push to stack the current position of the next print | TODO
+
+
   FB ( u -- )        Select frame buffer ID u (1-3)  |  DONE
 
 
@@ -154,7 +160,7 @@ Words List
  SCROLL ( u1 c1 -- ) Scroll u1 lines/chars in direction c1 | WIP
 
 
- AT? ( u1 u2 -- n )  Push to stack ASCII value at row u2 col u1 | DONE
+ AT@ ( u1 u2 -- n )  Push to stack ASCII value at row u2 col u1 | DONE
 
 
  ADSP ( u1 --  )  Enable/Disable Auto screen updates (SLOW). If off, use DRAW to refresh. Default is on. $0003 will enable direct screen writes (TODO) | DONE
@@ -283,7 +289,7 @@ Words List
  ERA ( n --  )  Deletes all data for file id n on current storage bank | DONE
 
 
- OPEN ( n --  )  Sets file id to point to first data page for subsequent READs - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | DONE
+ OPEN ( n -- n )  Sets file id to point to first data page for subsequent READs. Pushes the max number of blocks for this file | DONE
 
 
  READ ( n -- n  )  Reads next page of file id and push to stack | TESTING - Crashes on second read
@@ -328,7 +334,7 @@ Words List
  CONCAT ( s1 s2 -- s3 ) A string of u spaces is pushed onto the stack | TODO
 
 
- FIND (  -- )  | TODO
+ FIND ( s c -- s u ) Search the string s for the char c and push the position of the first occurance to TOS | TODO
 
 
  LEN (  u1 -- u2 ) Push the length of the string on TOS | DONE
@@ -337,13 +343,16 @@ Words List
  CHAR ( u -- n ) Get the ascii value of the first character of the string on the stack | DONE
 
 
- COPY ( u1 u2 -- Copy string u2 to u1 )   | TODO
+ COPY ( u1 u2 -- Copy string u2 to u1 ) SHOULD THIS BE HANDLED WITH DUP?  | TODO
 
 
 Words ready to use
 
 
 ------------------
+
+
+ HEAP ( -- u1 u2 )   Pushes u1 the current number of bytes in the heap and u2 the remaining bytes - Only present if using my MALLOC | DONE
 
 
  DUP ( u -- u u )     Duplicate whatever item is on TOS | DONE
@@ -454,7 +463,7 @@ Words ready to use
  SPACE (  -- c ) Push the value of space onto the stack as a string  | DONE
 
 
- AT? ( u1 u2 -- n )  Push to stack ASCII value at row u2 col u1 | DONE
+ AT@ ( u1 u2 -- n )  Push to stack ASCII value at row u2 col u1 | DONE
 
 
  ADSP ( u1 --  )  Enable/Disable Auto screen updates (SLOW). If off, use DRAW to refresh. Default is on. $0003 will enable direct screen writes (TODO) | DONE
@@ -541,7 +550,7 @@ Words ready to use
  ERA ( n --  )  Deletes all data for file id n on current storage bank | DONE
 
 
- OPEN ( n --  )  Sets file id to point to first data page for subsequent READs - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | DONE
+ OPEN ( n -- n )  Sets file id to point to first data page for subsequent READs. Pushes the max number of blocks for this file | DONE
 
 
  EOF ( n -- u )  Returns EOF logical state of file id n - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | DONE
@@ -613,6 +622,9 @@ Words still left to do
  SPII ( u1 -- ) Get a byte from SPI device u2 | WIP
 
 
+ AT? ( -- r c )  Push to stack the current position of the next print | TODO
+
+
  SPACES ( u -- str )  A string of u spaces is pushed onto the stack | TO TEST
 
 
@@ -682,9 +694,9 @@ Words still left to do
  CONCAT ( s1 s2 -- s3 ) A string of u spaces is pushed onto the stack | TODO
 
 
- FIND (  -- )  | TODO
+ FIND ( s c -- s u ) Search the string s for the char c and push the position of the first occurance to TOS | TODO
 
 
- COPY ( u1 u2 -- Copy string u2 to u1 )   | TODO
+ COPY ( u1 u2 -- Copy string u2 to u1 ) SHOULD THIS BE HANDLED WITH DUP?  | TODO
 
 

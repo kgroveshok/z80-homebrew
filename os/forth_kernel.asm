@@ -200,6 +200,29 @@ macro_forth_rsp_pop:
 	endif
 	push hl
 	ld hl,(cli_ret_sp)
+
+
+	if FORTH_ENABLE_FREE
+
+		; get pointer
+
+		push de
+		push hl
+
+		ld e, (hl)
+		inc hl
+		ld d, (hl)
+
+		ex de, hl
+		call free
+
+		pop hl
+		pop de
+
+
+	endif
+
+
 	dec hl
 	dec hl
 	ld (cli_ret_sp), hl
@@ -247,10 +270,6 @@ forth_init:
 	ld a, 1
 	ld (cli_autodisplay), a
 
-	; reenable breakpoint
-
-	ld a,0
-	ld (os_view_disable),a
 
 	; init stack pointers  - * these stacks go upwards * 
 	ld hl, cli_ret_stack
@@ -991,9 +1010,9 @@ startcmds:
 	dw test9
 	dw test10
 	
-;	dw start1
-;	dw start2
-;	dw start3
+	dw start1
+	dw start2
+	dw start3
 	db 0, 0	
 
 test1:		db ": aa 1 2 3 ;  ", 0, 0, 0, FORTH_END_BUFFER

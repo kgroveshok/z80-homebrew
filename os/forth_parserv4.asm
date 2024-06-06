@@ -821,6 +821,13 @@ endif
 	ld hl, (cli_origptr)
 	ld b,0
 	ld c, a
+
+; BUG memory over write of malloc structures. This dec resolves the issue - not a huge problem as 5 bytes are added to any string length above.
+; is it related to ldir doing zer0 inclusive and so the length of data should be less one?
+; Furthermore it appears the number push has this flaw. it is possible my counter sound be 0 index based
+; will make changes to malloc to handle this possiblity
+;dec bc
+
 	ldir
 
 
@@ -1047,11 +1054,15 @@ if DEBUG_FORTH_DOT
 	DMARK "DPP"
 	CALLMONITOR
 endif	
+
 	FORTH_DSP_VALUE
+
+
 if DEBUG_FORTH_DOT_KEY
 	DMARK "DP1"
 	CALLMONITOR
 endif	
+
 if FORTH_ENABLE_FREE
 	call free
 endif

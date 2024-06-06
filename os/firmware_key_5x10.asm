@@ -108,11 +108,11 @@ key_init:
 
 .matrix_to_symbolshift:
 
-		db "1357890",KEY_BS,KEY_UP,KEY_DOWN,0
-		db "-+/=_iop",KEY_LEFT,KEY_RIGHT,0
-		db KEY_SYMBOLSHIFT,"[]{}ghjk",KEY_CR,0
+		db 252,237,"57890",KEY_BS,KEY_UP,KEY_DOWN,0
+		db "-+/=_?~",176,KEY_LEFT,KEY_RIGHT,0
+		db KEY_SYMBOLSHIFT,"[]{}",165,124,219,255,KEY_CR,0
 		db KEY_SHIFT,"<>,.:;'\\",KEY_SHIFT,0
-		db "246tu",KEY_F9,KEY_F10,KEY_F11,"l",KEY_F12,0
+		db 247,246,235,125,126,KEY_F9,KEY_F10,KEY_F11,223,KEY_F12,0
 
 
 

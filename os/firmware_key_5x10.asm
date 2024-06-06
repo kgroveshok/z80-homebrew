@@ -90,13 +90,14 @@ key_init:
 
 ; character in from keyboard
 
-;.matrix_to_char: db "1234567890qwertyuiopasdfghjkl_+zxcvbnm,."
+; mapping for the pcb layout
+
 .matrix_to_char:
-		db KEY_SHIFT,"zxcv",KEY_UP,KEY_DOWN,"m",KEY_LEFT, KEY_RIGHT,0
-		db KEY_SHIFT,"zxcvbnm ",KEY_SYMBOLSHIFT,0
-		db "asdfghjkl",KEY_CR,0
-		db "qwertyuiop",0
-		 db "1234567890",0
+		db "1357890",KEY_BS,KEY_UP,KEY_DOWN,0
+		db "Aweryiop",KEY_LEFT,"X",0
+		db KEY_SYMBOLSHIFT,"asdfghjk",KEY_CR,0
+		db KEY_SHIFT,"zxcvbnm ",KEY_SHIFT,0
+		db "246tu",KEY_F1,KEY_F2,KEY_F3,"l",KEY_F4,0
 .matrix_to_shift:
 		db KEY_SHIFT,"zxcv",KEY_UP,KEY_DOWN,"m",KEY_HOME, KEY_END,0
 		db KEY_SHIFT,"ZXCVBNM",KEY_BS,KEY_SYMBOLSHIFT,0
@@ -109,6 +110,28 @@ key_init:
 		db "_?*fghjk=",KEY_CR,0
 		db "-/+*[]{}@#",0
 		 db "1234567890",0
+
+; mapping for a simple straight through breadboard layout
+
+;.matrix_to_char:
+;		db KEY_SHIFT,"zxcv",KEY_UP,KEY_DOWN,"m",KEY_LEFT, KEY_RIGHT,0
+;		db KEY_SHIFT,"zxcvbnm ",KEY_SYMBOLSHIFT,0
+;		db "asdfghjkl",KEY_CR,0
+;		db "qwertyuiop",0
+;		 db "1234567890",0
+;.matrix_to_shift:
+;		db KEY_SHIFT,"zxcv",KEY_UP,KEY_DOWN,"m",KEY_HOME, KEY_END,0
+;		db KEY_SHIFT,"ZXCVBNM",KEY_BS,KEY_SYMBOLSHIFT,0
+;		db "ASDFGHJKL",KEY_CR,0
+;		db "QWERTYUIOP",0
+;		 db "!",'"',"#$%^&*()",0
+;.matrix_to_symbolshift:
+;		db KEY_SHIFT,"zxcv",KEY_UP,KEY_DOWN,"m",KEY_LEFT, KEY_RIGHT,0
+;		db KEY_SHIFT,"<>:;b,.",KEY_BS,KEY_SYMBOLSHIFT,0
+;		db "_?*fghjk=",KEY_CR,0
+;		db "-/+*[]{}@#",0
+;		 db "1234567890",0
+
 ;.matrix_to_char: db "D#0*C987B654A321"
 
 

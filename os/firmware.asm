@@ -321,6 +321,11 @@ KEY_RIGHT: equ 17
 KEY_HOME: equ 18
 KEY_END: equ 19
 
+KEY_F1: equ 20
+KEY_F2: equ 21
+KEY_F3: equ 22
+KEY_F4: equ 23
+
 ;if DEBUG_KEY
 ;	KEY_MATRIX_NO_PRESS: equ '.'
 ;	KEY_SHIFT:   equ '.'

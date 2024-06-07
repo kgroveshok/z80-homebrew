@@ -247,6 +247,9 @@ Words List
  RND8 (  -- n ) Generate a random 8bit number and push to stack | DONE
 
 
+ RND ( u1 u2 -- u ) Generate a random number no lower than u1 and no higher than u2 and push to stack | DONE
+
+
  BYID ( u -- s )   Get the name of the file in the current BANK using the file ID u | TODO
 
 
@@ -524,6 +527,9 @@ Words ready to use
 
 
  RND8 (  -- n ) Generate a random 8bit number and push to stack | DONE
+
+
+ RND ( u1 u2 -- u ) Generate a random number no lower than u1 and no higher than u2 and push to stack | DONE
 
 
  DIR ( u -- lab id ... c t )   Using bank number u push directory entries from persistent storage as w with count u  | DONE

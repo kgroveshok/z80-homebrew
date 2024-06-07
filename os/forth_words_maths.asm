@@ -385,13 +385,52 @@
 		call forth_push_numhl
 	       NEXTW
 .RND8:
-	CWHEAD .ENDMATHS 76 "RND8" 4 WORD_FLAG_CODE
+	CWHEAD .RND 76 "RND8" 4 WORD_FLAG_CODE
 ; | RND8 (  -- n ) Generate a random 8bit number and push to stack | DONE
 		ld hl,(xrandc)
 		inc hl
 		call xrnd
 		ld l,a	
 		ld h,0
+		call forth_push_numhl
+	       NEXTW
+.RND:
+	CWHEAD .ENDMATHS 76 "RND" 3 WORD_FLAG_CODE
+; | RND ( u1 u2 -- u ) Generate a random number no lower than u1 and no higher than u2 and push to stack | DONE
+
+		if DEBUG_FORTH_WORDS
+			DMARK "RND"
+			CALLMONITOR
+		endif
+		
+		FORTH_DSP_VALUEHL    ; upper range
+
+		ld (LFSRSeed), hl	
+
+		FORTH_DSP_POP
+
+		FORTH_DSP_VALUEHL    ; low range
+
+		ld (LFSRSeed+2), hl
+
+		FORTH_DSP_POP
+
+
+.inrange:	call prng16 
+
+		ld de, (LFSRSeed)     ; check high level
+		call cmp16
+
+		jr nc, .inrange
+
+		ld de, (LFSRSeed+2)   ; check low range
+		call cmp16
+	
+		jr z, .inrange
+
+		
+
+
 		call forth_push_numhl
 	       NEXTW
 

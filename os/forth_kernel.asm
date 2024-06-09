@@ -992,6 +992,10 @@ startcmds:
 ;	dw test2
 ;	dw test3
 ;	dw test4
+;	dw game2r
+;	dw game2b1
+;	dw game2b2
+	dw game2b
 
 	dw game1
 	dw game1a
@@ -1068,9 +1072,13 @@ game1f:          db ": fsc v3@ cls $01 $01 at You-Took .- $02 $03 at . ;  ",0, 0
 game1z:         db ": ga $00 v3! gsn repeat cls gs $00 $03 at accept str2num v2! cls gck $02 pause sc until fsc nop ;  ",0, 0, 0, FORTH_END_BUFFER
 
 
-game2r:          db ": m1 rnd8 $0a / v1! ;  ",0, 0, 0, FORTH_END_BUFFER
-game2r:          db ": m1 rnd8 $0a / v1! ;  ",0, 0, 0, FORTH_END_BUFFER
+;game2r:          db ": m2r rnd8 v1! ;  ",0, 0, 0, FORTH_END_BUFFER
+;game2b1:          db ": m2b1 $1f $00 do i v2@ at rnd8 $30 < if A . then loop nop ;  ",0, 0, 0, FORTH_END_BUFFER
+;game2b2:          db ": m2b cls $04 $01 do i v2! m2b1 loop ;  ",0, 0, 0, FORTH_END_BUFFER
 
+; minesweeper/star war finding game
+
+game2b:          db ": mb cls $04 $01 do i v2! $10 $01 do i v2@ rnd8 $30 < if A . then loop loop ;  ",0, 0, 0, FORTH_END_BUFFER
 
 sprompt1: db "Startup load...",0
 sprompt2: db "Run? 1=No *=End #=All",0
@@ -1322,8 +1330,9 @@ check_stacks:
 	pop de
 	pop hl
 		call monitor
-		jp 0
-		halt
+		jp cli
+		;jp 0
+		;halt
 
 
 
@@ -1376,6 +1385,7 @@ type_faultn: 	push de
 		push hl
 		push de
 		call monitor
+		jp cli
 		halt
 
 
@@ -1404,6 +1414,7 @@ type_faults: 	push de
 		pop hl
 		pop de
 		call monitor
+		jp cli
 		halt
 
 
@@ -1432,5 +1443,6 @@ type_faults: 	push de
 		pop hl
 		pop de
 		call monitor
+		jp cli
 		halt
 ; eof

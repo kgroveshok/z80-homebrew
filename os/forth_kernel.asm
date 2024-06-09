@@ -1068,6 +1068,10 @@ game1f:          db ": fsc v3@ cls $01 $01 at You-Took .- $02 $03 at . ;  ",0, 0
 game1z:         db ": ga $00 v3! gsn repeat cls gs $00 $03 at accept str2num v2! cls gck $02 pause sc until fsc nop ;  ",0, 0, 0, FORTH_END_BUFFER
 
 
+game2r:          db ": m1 rnd8 $0a / v1! ;  ",0, 0, 0, FORTH_END_BUFFER
+game2r:          db ": m1 rnd8 $0a / v1! ;  ",0, 0, 0, FORTH_END_BUFFER
+
+
 sprompt1: db "Startup load...",0
 sprompt2: db "Run? 1=No *=End #=All",0
 

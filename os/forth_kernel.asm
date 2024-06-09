@@ -1052,7 +1052,7 @@ ifthtest3:     	db "$0002 $0003 - IF is-true . $0005 pause THEN next-word . $000
 
 start1:     	db ": bpon $0000 bp ;  ",0, 0, 0, FORTH_END_BUFFER
 start2:     	db ": bpoff $0001 bp ;  ",0, 0, 0, FORTH_END_BUFFER
-start3:         db ": dirlist dir cls drop dup 0 > if $01 do $08 i at . $01 i at . $04 i at . loop then nop ;  ",0, 0, 0, FORTH_END_BUFFER
+start3:         db ": dirlist dir cls drop dup $00 > if $01 do $08 i at . $01 i at . $04 i at . loop then nop ;  ",0, 0, 0, FORTH_END_BUFFER
 
 ; a small guess the number game
 

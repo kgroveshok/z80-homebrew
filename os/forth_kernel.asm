@@ -1078,7 +1078,7 @@ game1z:         db ": ga $00 v3! gsn repeat cls gs $00 $03 at accept str2num v2!
 
 ; minesweeper/star war finding game
 
-game2b:          db ": mb cls $04 $01 do i v2! $10 $01 do i v2@ rnd8 $30 < if A . then loop loop ;  ",0, 0, 0, FORTH_END_BUFFER
+game2b:          db ": mb cls $04 $01 do i v2! $10 $01 do i v2@ at rnd8 $30 < if A . then loop loop ;  ",0, 0, 0, FORTH_END_BUFFER
 
 sprompt1: db "Startup load...",0
 sprompt2: db "Run? 1=No *=End #=All",0

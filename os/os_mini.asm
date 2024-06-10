@@ -1,4 +1,10 @@
 ;
+; CPU clock
+;
+CPU_CLOCK_4MHZ: 1
+CPU_CLOCK_8MHZ: 0
+CPU_CLOCK_10MHZ: 0
+
 ; use microchip serial eeprom for storage
 
 STORAGE_SE: equ 1

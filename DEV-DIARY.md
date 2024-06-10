@@ -581,6 +581,8 @@ TODO Sort out the EXEC word so that I can create a simple save and load of UWORD
 TODO break out parser so it can be used by LIST, FORGET, WORDS, UWORDS and SAVE 
 TODO Due to bad performance of the parser (???) need to look at compiler
 TODO EDIT word which allows edit of item on tos
+TODO add more editing features 
+TODO fix editor bugs
 
 TODO random malloc failure. Added a macro DEBUG_FORTH_MALLOC_HIGH but not quite right so disabled for now.
 TODO need words to report on hardware e.g. screen dims

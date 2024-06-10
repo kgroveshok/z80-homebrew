@@ -14,6 +14,12 @@
 ; TODO scroll in a limited display area
 ; TODO scroll whole screen on page wrap
 
+
+; TODO handle KEY_PREVWORD
+; TODO handle KEY_NEXTWORD
+; TODO handle KEY_HOME
+; TODO handle KEY_END
+
 input_str:    	ld (input_at_pos),a      ; save display position to start
 		add c
 		ld (input_at_cursor),a	; save draw pos of cursor

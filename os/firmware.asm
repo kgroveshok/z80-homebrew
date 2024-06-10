@@ -305,36 +305,38 @@ portbdata:  equ Device_D+1    ; port b data
 portbctl:   equ Device_D+3    ; port b control
 
 
-
-KEY_CR:   equ 13
-KEY_TAB:  equ 9
-KEY_BS: equ 8
-KEY_SHIFTLOCK: equ 4
-
 ;KEY_SHIFT:   equ 5
 ;KEY_SYMBOLSHIFT:  equ 6
 
-KEY_UP: equ 7
+KEY_SHIFTLOCK: equ 4
+
+
+KEY_UP: equ 5
+KEY_NEXTWORD: equ 6
+KEY_PREVWORD: equ 7
+KEY_BS: equ 8
+KEY_TAB:  equ 9
 KEY_DOWN: equ 10
 KEY_LEFT: equ 11
 KEY_RIGHT: equ 12
-KEY_HOME: equ 13
-KEY_END: equ 14
+KEY_CR:   equ 13
+KEY_HOME: equ 14
+KEY_END: equ 15
 
-KEY_F1: equ 15
-KEY_F2: equ 16
-KEY_F3: equ 17
-KEY_F4: equ 18
+KEY_F1: equ 16
+KEY_F2: equ 17
+KEY_F3: equ 18
+KEY_F4: equ 19
 
-KEY_F5: equ 19
-KEY_F6: equ 20
-KEY_F7: equ 21
-KEY_F8: equ 22
+KEY_F5: equ 20
+KEY_F6: equ 21
+KEY_F7: equ 22
+KEY_F8: equ 23
 
-KEY_F9: equ 23
-KEY_F10: equ 24
-KEY_F11: equ 25
-KEY_F12: equ 26
+KEY_F9: equ 24
+KEY_F10: equ 25
+KEY_F11: equ 26
+KEY_F12: equ 27
 
 ;if DEBUG_KEY
 ;	KEY_MATRIX_NO_PRESS: equ '.'

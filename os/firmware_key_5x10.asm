@@ -101,7 +101,7 @@ key_init:
 .matrix_to_shift:
 
 		db "!#%&*()",KEY_BS,KEY_UP,KEY_DOWN,0
-		db "QWERYIOP",KEY_LEFT,KEY_RIGHT,0
+		db "QWERYIOP",KEY_PREVWORD,KEY_NEXTWORD,0
 		db KEY_SYMBOLSHIFT,"ASDFGHJK",KEY_CR,0
 		db KEY_SHIFT,"ZXCVBNM|",KEY_SHIFT,0
 		db '"',"$^TU",KEY_F5,KEY_F6,KEY_F7,"L",KEY_F8,0
@@ -109,7 +109,7 @@ key_init:
 .matrix_to_symbolshift:
 
 		db 252,237,"5789",247,KEY_BS,KEY_UP,KEY_DOWN,0
-		db "-+/=_?~",176,KEY_LEFT,KEY_RIGHT,0
+		db "-+/=_?~",176,KEY_HOME,KEY_END,0
 		db KEY_SYMBOLSHIFT,"[]{}",165,124,219,255,KEY_CR,0
 		db KEY_SHIFT,"<>,.:;'\\",KEY_SHIFT,0
 		db "@",246,235,125,126,KEY_F9,KEY_F10,KEY_F11,223,KEY_F12,0

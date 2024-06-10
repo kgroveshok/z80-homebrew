@@ -2,13 +2,36 @@
 
 if SOUND_ENABLE
 .NOTE:
-	CWHEAD .SIN 31 "NOTE" 4 WORD_FLAG_CODE
+	CWHEAD .AFTERSOUND 31 "NOTE" 4 WORD_FLAG_CODE
 ; | NOTE ( ud uf --  )  Plays a note of frequency uf for the duration of ud millseconds |
 
 	
 
 		NEXTW
+.AFTERSOUND
 endif
+
+.GP1:
+	CWHEAD .GP2 31 "IOIN" 4 WORD_FLAG_CODE
+; | IOIN ( u1 -- u )    Perform a GPIO read of pin u1 and push result  | 
+		NEXTW
+.GP2:
+	CWHEAD .GP3 31 "IOOUT" 5 WORD_FLAG_CODE
+; | IOIN ( u1 u2 --  )    Perform a GPIO write of pin u1 with pin set to 0 or 1 in u2  | 
+
+		NEXTW
+
+.GP3:
+	CWHEAD .GP4 31 "IOBYTE" 5 WORD_FLAG_CODE
+; | IOBYTE ( u1 --  )    Perform a GPIO write of byte u1  | 
+
+		NEXTW
+
+.GP4:
+	CWHEAD .SIN 31 "IOSET" 5 WORD_FLAG_CODE
+; | IOBYTE ( u1 --  )    Setup GPIO pins for I/O direction. Bit is set for write else read pin  | 
+
+		NEXTW
 .SIN:
 	CWHEAD .SOUT 31 "IN" 2 WORD_FLAG_CODE
 ; | IN ( u1-- u )    Perform z80 IN with u1 being the port number. Push result to TOS | TO TEST

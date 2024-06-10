@@ -46,7 +46,7 @@ endif
 
 	FORTH_DSP_VALUE
 
-; TODO do string type checks
+	; TODO do string type checks
 
 	inc hl   ; skip type
 
@@ -97,10 +97,10 @@ endif
 	call forthexec_cleanup
 	
 	pop hl
-		if DEBUG_FORTH_WORDS
-			DMARK "EX5"
-			CALLMONITOR
-		endif
+	if DEBUG_FORTH_WORDS
+		DMARK "EX5"
+		CALLMONITOR
+	endif
 	call free
 	 
 

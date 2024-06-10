@@ -1,6 +1,5 @@
 
 ; the core word dictionary v4
-
 ; https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Notation.html#Notation
 
 ; this is a linked list for each of the system words used
@@ -96,7 +95,7 @@ endif
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
 		ld de, cli_var_array
-	
+
 		ex de, hl
 		ld (hl), e
 		inc hl

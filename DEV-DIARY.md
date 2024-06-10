@@ -575,18 +575,32 @@ DONE Fix READ functions
 DONE disable breakpoints on start up unless a key is held down
 
 
+
+DONE words for GPIO access. Stubs created
+TODO Sort out the EXEC word so that I can create a simple save and load of UWORDS
+TODO break out parser so it can be used by LIST, FORGET, WORDS, UWORDS and SAVE 
+TODO Due to bad performance of the parser (???) need to look at compiler
+TODO EDIT word which allows edit of item on tos
+
 TODO random malloc failure. Added a macro DEBUG_FORTH_MALLOC_HIGH but not quite right so disabled for now.
 TODO need words to report on hardware e.g. screen dims
 TODO need word to get file id by name
 TODO need word to get file name by id
 TODO need word to report where cursor current at
 TODO have a flag to enable forward cursor from each . or .-
+TODO fix editor issues
 TODO have a word to set break point at a DMARKer
 TODO BUG Using my malloc I is not working in loops. Why? Only when malloc free is enabled. Bug there
 TODO Dont think parser calls are releasing memory
 TODO BUG hline with my malloc is copying too much somewhere. Extending malloc by four bytes solves problem but allocating required is causing crashes. problem is not do loop or i use. at works too. very odd.  it is dot for strings that is crashing after a couple of goes. does it fail outside of loops? yes. second time. must be memory overwrite. Might also be a reason the other malloc is failing.
 
 TODO New case for Mega
+TODO Tidy up README with sections and photos of progress.
+TODO Tidy up code base: Make sure functions in suitable files 
+TODO Tidy up code base: Reindent
+TODO Tidy up code base: Remove redundant code/comments
+TODO Add word documentation
+TODO Add full system documentation
 
 Stage 4.5 TODO
 --------------
@@ -595,6 +609,14 @@ Power. Could I add battery support so it is portable? Recharge circuit I would n
 
 Or would normal battery packs work long enough to make it worth while? 
 
-More devices on the external cart
+More devices on the external cart:
+
+* Basic networking across the SPI bus between other Z80 instances?
+* RTC
+* Sound
+* Relay board for GPIO use
+* Pico for Wifi networking to internet etc
+* Enchance the SPI for display/keyboard
+
 
 

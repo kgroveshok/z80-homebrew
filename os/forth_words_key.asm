@@ -44,8 +44,9 @@
 
 .EDIT:
 	CWHEAD .ENDKEY 44 "EDIT" 4 WORD_FLAG_CODE
-; | EDIT ( u -- u )    Takes string on TOS and allows editing of it. Pushes it back once done. | TO TEST
-		; TODO crashes on push
+; | EDIT ( u -- u )    Takes string on TOS and allows editing of it. Pushes it back once done. | TO TEST 
+
+		; TODO does not copy from stack
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "EDT"
 			CALLMONITOR
@@ -63,6 +64,10 @@
 
 		pop hl
 		ld de, os_input
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "EDc"
+			CALLMONITOR
+		endif
 		ldir
 
 

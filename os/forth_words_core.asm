@@ -37,7 +37,11 @@ endif
 
 .EXEC:
 	CWHEAD .DUP 6 "EXEC" 4 WORD_FLAG_CODE
-; | EXEC ( u -- )    Execs the string on TOS as a FORTH expression | TO TEST
+; | EXEC ( u -- )    Execs the string on TOS as a FORTH expression | CRASHES ON NEXTW
+
+	FORTH_RSP_NEXT
+
+
 
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "EXE"
@@ -94,7 +98,6 @@ endif
 
 	call forthparse
 	call forthexec
-	call forthexec_cleanup
 	
 	pop hl
 	if DEBUG_FORTH_WORDS
@@ -102,8 +105,18 @@ endif
 		CALLMONITOR
 	endif
 	call free
-	 
 
+	if DEBUG_FORTH_WORDS
+		DMARK "EX6"
+		CALLMONITOR
+	endif
+
+	FORTH_RSP_POP	 
+
+	if DEBUG_FORTH_WORDS
+		DMARK "EX7"
+		CALLMONITOR
+	endif
 	NEXTW
 
 .DUP:

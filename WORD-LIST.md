@@ -7,7 +7,7 @@ Words List
  HEAP ( -- u1 u2 )   Pushes u1 the current number of bytes in the heap and u2 the remaining bytes - Only present if using my MALLOC | DONE
 
 
- EXEC ( u -- )    Execs the string on TOS as a FORTH expression | TO TEST
+ EXEC ( u -- )    Execs the string on TOS as a FORTH expression | CRASHES ON NEXTW
 
 
  DUP ( u -- u u )     Duplicate whatever item is on TOS | DONE
@@ -98,6 +98,18 @@ Words List
 
 
  NOTE ( ud uf --  )  Plays a note of frequency uf for the duration of ud millseconds |
+
+
+ IOIN ( u1 -- u )    Perform a GPIO read of pin u1 and push result  | 
+
+
+ IOIN ( u1 u2 --  )    Perform a GPIO write of pin u1 with pin set to 0 or 1 in u2  | 
+
+
+ IOBYTE ( u1 --  )    Perform a GPIO write of byte u1  | 
+
+
+ IOBYTE ( u1 --  )    Setup GPIO pins for I/O direction. Bit is set for write else read pin  | 
 
 
  IN ( u1-- u )    Perform z80 IN with u1 being the port number. Push result to TOS | TO TEST
@@ -203,6 +215,9 @@ Words List
 
 
  ACCEPT ( -- w )    Prompt for text input and push pointer to string | DONE
+
+
+ EDIT ( u -- u )    Takes string on TOS and allows editing of it. Pushes it back once done. | TO TEST 
 
 
  IS ( s1 s2  -- f ) Push true if string s1 is the same as s2 | TODO
@@ -592,7 +607,7 @@ Words still left to do
 ----------------------
 
 
- EXEC ( u -- )    Execs the string on TOS as a FORTH expression | TO TEST
+ EXEC ( u -- )    Execs the string on TOS as a FORTH expression | CRASHES ON NEXTW
 
 
  2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items | TODO
@@ -614,6 +629,18 @@ Words still left to do
 
 
  NOTE ( ud uf --  )  Plays a note of frequency uf for the duration of ud millseconds |
+
+
+ IOIN ( u1 -- u )    Perform a GPIO read of pin u1 and push result  | 
+
+
+ IOIN ( u1 u2 --  )    Perform a GPIO write of pin u1 with pin set to 0 or 1 in u2  | 
+
+
+ IOBYTE ( u1 --  )    Perform a GPIO write of byte u1  | 
+
+
+ IOBYTE ( u1 --  )    Setup GPIO pins for I/O direction. Bit is set for write else read pin  | 
 
 
  IN ( u1-- u )    Perform z80 IN with u1 being the port number. Push result to TOS | TO TEST
@@ -644,6 +671,9 @@ Words still left to do
 
 
  KEY ( -- w f )      scan for keypress but do not wait true if next item on stack is key press | TODO
+
+
+ EDIT ( u -- u )    Takes string on TOS and allows editing of it. Pushes it back once done. | TO TEST 
 
 
  IS ( s1 s2  -- f ) Push true if string s1 is the same as s2 | TODO

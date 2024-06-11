@@ -18,17 +18,17 @@ msdelay:
 	dec b
 	jr nz,msdelay
 
-if defined CPU_CLOCK_8MHZ
-msdelay8:
-	push bc
-	
-
-	ld bc,041h
-	call delayloop
-	pop bc
-	dec b
-	jr nz,msdelay8
-endif
+;if CPU_CLOCK_8MHZ
+;msdelay8:
+;	push bc
+;	
+;
+;	ld bc,041h
+;	call delayloop
+;	pop bc
+;	dec b
+;	jr nz,msdelay8
+;endif
 
 
 	pop bc
@@ -48,8 +48,8 @@ delay1s:
    ; Clobbers A, d and e
     ld      bc,0      ; # 0ffffh = approx 1s
 delayloop:
-	push bc
-.dl:
+;	push bc
+;.dl:
     bit     0,a    	; 8
     bit     0,a    	; 8
     bit     0,a    	; 8
@@ -57,22 +57,22 @@ delayloop:
     dec     bc      	; 6
     ld      a,c     	; 4
     or      b     	; 4
-    jp      nz,.dl   	; 10, total = 55 states/iteration
+    jp      nz,delayloop   	; 10, total = 55 states/iteration
     ; 65536 iterations * 55 states = 3604480 states = 2.00248 seconds
 	;pop de
-pop bc
+;pop bc
 
-if defined CPU_CLOCK_8MHZ
-.dl8:
-    bit     0,a    	; 8
-    bit     0,a    	; 8
-    bit     0,a    	; 8
-    and     255  	; 7
-    dec     bc      	; 6
-    ld      a,c     	; 4
-    or      b     	; 4
-    jp      nz,.dl8   	; 10, total = 55 states/iteration
-endif
+;if CPU_CLOCK_8MHZ
+;.dl8:
+;    bit     0,a    	; 8
+;    bit     0,a    	; 8
+;    bit     0,a    	; 8
+;    and     255  	; 7
+;    dec     bc      	; 6
+;    ld      a,c     	; 4
+;    or      b     	; 4
+;    jp      nz,.dl8   	; 10, total = 55 states/iteration
+;endif
 
 	ret
 

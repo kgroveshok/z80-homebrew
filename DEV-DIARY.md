@@ -575,14 +575,22 @@ DONE Fix READ functions
 DONE disable breakpoints on start up unless a key is held down
 
 
+11th June
+---------
+
+Prototype case for Mega now done. Need to fine tune some issues and work out how to make it interlock and not rely on so much glue.
+
+Then back to the OS. In particular loading and saving of uwords and the parser break out. 
 
 DONE words for GPIO access. Stubs created
 TODO Sort out the EXEC word so that I can create a simple save and load of UWORDS
 TODO break out parser so it can be used by LIST, FORGET, WORDS, UWORDS and SAVE 
 TODO Due to bad performance of the parser (???) need to look at compiler
-TODO EDIT word which allows edit of item on tos
+TODO EDIT word which allows edit of item on tos - word added but does not copy from stack
 TODO add more editing features 
 TODO fix editor bugs
+TODO update schematics with 4x40 LCD and the location of the spare E link
+TODO update schematics with better design for the next version?
 
 TODO random malloc failure. Added a macro DEBUG_FORTH_MALLOC_HIGH but not quite right so disabled for now.
 TODO need words to report on hardware e.g. screen dims

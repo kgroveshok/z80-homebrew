@@ -19,6 +19,7 @@
 ; TODO handle KEY_NEXTWORD
 ; TODO handle KEY_HOME
 ; TODO handle KEY_END
+; TODO use LCD cursor?
 
 input_str:    	ld (input_at_pos),a      ; save display position to start
 		add c

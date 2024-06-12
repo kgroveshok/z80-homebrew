@@ -758,7 +758,7 @@ endif
 
 .UWORDS:
 	CWHEAD .BP 60 "UWORDS" 6 WORD_FLAG_CODE
-; | UWORDS (  -- )   List user word dict | TODO
+; | UWORDS (  -- )   List user word dict | DONE
 
 	if DEBUG_FORTH_WORDS
 		DMARK "UWR"
@@ -815,6 +815,10 @@ endif
 		push bc
 		pop hl
 
+	if DEBUG_FORTH_WORDS
+		DMARK "UWc"
+		CALLMONITOR
+	endif
 		call forth_push_numhl
 
 

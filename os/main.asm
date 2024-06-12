@@ -135,7 +135,11 @@ main:
 	call forth_init
 
 
+warmstart:
+	call forth_warmstart
+
 	; run startup word load
+        ; TODO prevent this running at warmstart after crash 
 
 	call forth_startup
 
@@ -167,7 +171,6 @@ main:
 
 
 	;call demo
-
 
 
 	; init scratch input area for cli commands

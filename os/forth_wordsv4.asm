@@ -186,7 +186,7 @@ endif
 
 ; end of dict marker
 
-.END:    db 0
+.END:    db WORD_SYS_END
 	dw 0
 	db 0
 

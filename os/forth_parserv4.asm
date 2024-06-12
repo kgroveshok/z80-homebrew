@@ -2,10 +2,12 @@
 
 ; new parser. restructing to handle nested loops and better scanning of word tokens
 
-WORD_SYS_LOWPRIM: equ 2    ; Offset for low level prim words opcode
-WORD_SYS_BRANCH: equ 10    ; Offset for branching and loop words opcode
+;WORD_SYS_LOWPRIM: equ 4    ; Offset for low level prim words opcode
+;WORD_SYS_BRANCH: equ 10    ; Offset for branching and loop words opcode
 WORD_SYS_UWORD: equ 1   ; Opcode for all user words
-WORD_SYS_DELETED: equ 2 ; Op code for a deleted UWORD
+WORD_SYS_DELETED: equ 3 ; Op code for a deleted UWORD
+WORD_SYS_ROOT: equ 0   ; Opcode for all user words
+WORD_SYS_END: equ 0   ; Opcode for all user words
 WORD_SYS_CORE: equ 20    ; Offset for dict core words opcode
 WORD_FLAG_CODE: equ 0	   ; opcodeflag to exec pure code for this word
 WORD_FLAG_JP: equ 1	   ; opcodeflag to list zero term jump table words
@@ -315,26 +317,29 @@ ld (cli_nextword),hl
 ;	ld (cli_ptr), hl
 
 	ld hl,(cli_nextword)
-	; TODO skip compiled symbol for now
 
-	inc hl
-
-	; save pointer to next word
-
-	; hl now points to the address of the next word pointer 
-	ld e, (hl)
-	inc hl
-	ld d, (hl)
-	inc l
-
-	ex de,hl
-if DEBUG_FORTH_PARSE_NEXTWORD
-	push bc
-	ld bc, (cli_nextword)
-			DMARK "NXW"
-	CALLMONITOR
-	pop bc
-endif
+	call forth_tok_next
+; tok next start here
+;	; TODO skip compiled symbol for now
+;	inc hl
+;
+;	; save pointer to next word
+;
+;	; hl now points to the address of the next word pointer 
+;	ld e, (hl)
+;	inc hl
+;	ld d, (hl)
+;	inc l
+;
+;	ex de,hl
+;if DEBUG_FORTH_PARSE_NEXTWORD
+;	push bc
+;	ld bc, (cli_nextword)
+;			DMARK "NXW"
+;	CALLMONITOR
+;	pop bc
+;endif
+; tok next end here
 	ld (cli_nextword), hl     ; save for next check if no match on this word
 	ex de, hl
 
@@ -520,7 +525,8 @@ endif
 	ld hl,(cli_nextword)
 
 	ld a,(hl)
-	cp 0
+	cp WORD_SYS_END
+;	cp 0
 	jr z, .execendofdict			 ; at end of words
 
 if DEBUG_FORTH_PARSE_EXEC
@@ -1348,5 +1354,46 @@ macro_forth_loop_pop:
 		FORTH_CHK_LOOP_UNDER
 	endif
 	ret
+
+
+; LIST needs to find a specific token  
+; FORGET needs to find a spefici token
+
+; SAVE needs to find all tokens by flag
+; WORDS just needs to scan through all  by flag
+; UWORDS needs to scan through all by flag
+
+
+; given hl as pointer to start of dict look up string
+; return hl as pointer to start of word block
+; or 0 if not found
+
+forth_find_tok:
+	ret
+
+; given hl as pointer to dict structure
+; move to the next dict block structure
+
+forth_tok_next:
+	; hl now points to the address of the next word pointer 
+	; TODO skip compiled symbol for now
+	inc hl
+	ld e, (hl)
+	inc hl
+	ld d, (hl)
+	inc l
+
+	ex de,hl
+if DEBUG_FORTH_PARSE_NEXTWORD
+	push bc
+	ld bc, (cli_nextword)
+			DMARK "NXW"
+	CALLMONITOR
+	pop bc
+endif
+	
+	ret
+
+
 
 ; eof

@@ -81,7 +81,7 @@ user_word_eol:
 	; db string + 0 term
 	; db exec code.... 
 
-	ld a, 0     ; root word
+	ld a, WORD_SYS_ROOT     ; root word
 	ld (hl), a		; word id
 	inc hl
 
@@ -243,33 +243,13 @@ forth_call_hl:
 	push hl
 	ret
 
-forth_init:
-;	call update_display
-;	call delay1s
-;	ld a,'.'
-;	call fill_display
-;	call update_display
-;	call delay1s
-;
-;            ld a, display_row_1
-;	ld de, .bootforth
-;	call str_at_display
-;	call update_display
-;
-;	call delay1s
-;	call delay1s
+; this is called to reset Forth system but keep existing uwords etc
 
+forth_warmstart:
 	; setup stack over/under flow checks
-
 	if DEBUG_FORTH_STACK_GUARD
 		call chk_stk_init
 	endif
-
-	; enable auto display updates (slow.....)
-
-	ld a, 1
-	ld (cli_autodisplay), a
-
 
 	; init stack pointers  - * these stacks go upwards * 
 	ld hl, cli_ret_stack
@@ -300,6 +280,39 @@ forth_init:
 
 	ld a, 0
 	ld (store_openext), a
+
+	ret
+
+
+; this is called to setup the whole Forth system
+
+forth_init:
+;	call update_display
+;	call delay1s
+;	ld a,'.'
+;	call fill_display
+;	call update_display
+;	call delay1s
+;
+;            ld a, display_row_1
+;	ld de, .bootforth
+;	call str_at_display
+;	call update_display
+;
+;	call delay1s
+;	call delay1s
+
+	; setup stack over/under flow checks
+
+;	if DEBUG_FORTH_STACK_GUARD
+;		call chk_stk_init
+;	endif
+
+	; enable auto display updates (slow.....)
+
+	ld a, 1
+	ld (cli_autodisplay), a
+
 
 
 	; show start up screen
@@ -1330,7 +1343,7 @@ check_stacks:
 	pop de
 	pop hl
 		call monitor
-		jp cli
+		jp warmstart
 		;jp 0
 		;halt
 
@@ -1385,7 +1398,7 @@ type_faultn: 	push de
 		push hl
 		push de
 		call monitor
-		jp cli
+		jp warmstart
 		halt
 
 
@@ -1414,8 +1427,7 @@ type_faults: 	push de
 		pop hl
 		pop de
 		call monitor
-		jp cli
-		halt
+		jp warmstart
 
 
 .typefaults: db "STR Type Expected TOS!",0
@@ -1443,6 +1455,6 @@ type_faults: 	push de
 		pop hl
 		pop de
 		call monitor
-		jp cli
+		jp warmstart
 		halt
 ; eof

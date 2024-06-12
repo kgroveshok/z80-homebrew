@@ -963,6 +963,8 @@ endif
 	        pop de   ; get back the dsp name
 		push de
 
+		push hl  ; to save the ptr
+
 		; skip opcode
 		inc hl 
 		; skip next ptr
@@ -1022,7 +1024,8 @@ endif
 
 		jr .ludone
 
-.lnuword:	call forth_tok_next
+.lnuword:	pop hl
+		call forth_tok_next
 		jp .ldouscan 
 
 .ludone:		 pop hl

@@ -83,6 +83,7 @@ Stage 4.x a useable machine now with many expandable features.
 
 Current Forth word list in WORD-LIST.md
 
+![](images/20240612_stage4a.jpg)
 
 Parts
 -----

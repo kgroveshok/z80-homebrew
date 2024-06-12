@@ -582,6 +582,17 @@ Prototype case for Mega now done. Need to fine tune some issues and work out how
 
 Then back to the OS. In particular loading and saving of uwords and the parser break out. 
 
+
+
+![](images/20240612_stage4a.jpg)
+![](images/20240612_stage4b.jpg)
+![](images/20240612_stage4c.jpg)
+![](images/20240612_stage4d.jpg)
+![](images/20240612_stage4e.jpg)
+
+
+
+
 DONE words for GPIO access. Stubs created
 TODO Sort out the EXEC word so that I can create a simple save and load of UWORDS
 TODO break out parser so it can be used by LIST, FORGET, WORDS, UWORDS and SAVE 

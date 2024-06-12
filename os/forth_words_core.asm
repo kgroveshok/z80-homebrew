@@ -39,14 +39,28 @@ endif
 	CWHEAD .DUP 6 "EXEC" 4 WORD_FLAG_CODE
 ; | EXEC ( u -- )    Execs the string on TOS as a FORTH expression | CRASHES ON NEXTW
 
-	FORTH_RSP_NEXT
-
-
-
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "EXE"
 			CALLMONITOR
 		endif
+
+;	FORTH_RSP_NEXT
+
+
+	ld bc,(cli_ptr)   ; move to next token to parse in the input stream
+	ld de,(cli_origptr)   ; move to next token to parse in the input stream
+	ld hl,(os_tok_ptr)   ; move to next token to parse in the input stream
+	push hl
+	push de
+	push bc
+
+
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "EXR"
+			CALLMONITOR
+		endif
+
+
 
 	FORTH_DSP_VALUE
 
@@ -62,6 +76,7 @@ endif
 	ld a, 0
 	call strlent
 
+	inc hl
 	inc hl
 	inc hl
 	inc hl
@@ -85,6 +100,23 @@ endif
 			CALLMONITOR
 		endif
 	ldir       ; duplicate string
+
+	; at the end of the string so go back the three extra spaces and fill in with extra terms
+	
+	; TODO fix the parse would be better than this... 
+	ex de, hl
+	dec hl
+	ld a, 0
+	ld (hl), a
+	dec hl
+	ld a, ' '
+	ld (hl), a
+	dec hl
+	ld (hl), a
+
+	dec hl
+	ld (hl), a
+
 
 	FORTH_DSP_POP 
 
@@ -111,7 +143,13 @@ endif
 		CALLMONITOR
 	endif
 
-	FORTH_RSP_POP	 
+	pop bc
+	pop de
+	pop hl
+;	FORTH_RSP_POP	 
+	ld (cli_ptr),bc   ; move to next token to parse in the input stream
+	ld (cli_origptr),de   ; move to next token to parse in the input stream
+	ld (os_tok_ptr),hl   ; move to next token to parse in the input stream
 
 	if DEBUG_FORTH_WORDS
 		DMARK "EX7"
@@ -709,11 +747,77 @@ endif
 .WORDS:
 	CWHEAD .UWORDS 59 "WORDS" 5 WORD_FLAG_CODE
 ; | WORDS (  -- )   List the system and user word dict | TODO
+
+		ld hl, baseusermem
+
+		
+
+
+
 	       NEXTW
 
 .UWORDS:
 	CWHEAD .BP 60 "UWORDS" 6 WORD_FLAG_CODE
 ; | UWORDS (  -- )   List user word dict | TODO
+
+	if DEBUG_FORTH_WORDS
+		DMARK "UWR"
+		CALLMONITOR
+	endif
+		ld hl, baseusermem
+		ld bc, 0    ; start a counter
+
+	; skip dict stub
+
+		call forth_tok_next
+
+
+; while we have words to look for
+
+.douscan:	ld a, (hl)     
+	if DEBUG_FORTH_WORDS
+		DMARK "UWs"
+		CALLMONITOR
+	endif
+		cp WORD_SYS_END
+		jr z, .udone
+		cp WORD_SYS_UWORD
+		jr nz, .nuword
+
+	if DEBUG_FORTH_WORDS
+		DMARK "UWu"
+		CALLMONITOR
+	endif
+		; we have a uword so push its name to the stack
+
+	   	push hl  ; save so we can move to next dict block
+
+		; skip opcode
+		inc hl 
+		; skip next ptr
+		inc hl 
+		inc hl
+		; skip len
+		inc hl
+	if DEBUG_FORTH_WORDS
+		DMARK "UWt"
+		CALLMONITOR
+	endif
+		call forth_apushstrhl
+
+		inc bc
+		pop hl 	
+
+.nuword:	call forth_tok_next
+		jr .douscan 
+
+.udone:		 ; push count of uwords found
+		push bc
+		pop hl
+
+		call forth_push_numhl
+
+
 	       NEXTW
 
 .BP:

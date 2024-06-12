@@ -916,7 +916,117 @@ endif
 		NEXTW
 .LIST:
 	CWHEAD .FORGET 72 "LIST" 4 WORD_FLAG_CODE
-; | LIST ( uword -- )    List the code to the word on TOS | TODO
+; | LIST ( uword -- u )    List the code to the word that is quoted (so as not to exec) on TOS | TO TEST
+
+	if DEBUG_FORTH_WORDS
+		DMARK "LST"
+		CALLMONITOR
+	endif
+
+		; Get ptr to the word we need to look up
+
+		FORTH_DSP_VALUE
+	; TODO type check
+		inc hl    ; Skip type check 
+		push hl
+;		ex de, hl    ; put into DE
+
+
+		ld hl, baseusermem
+
+		
+
+	; skip dict stub
+		call forth_tok_next
+
+
+; while we have words to look for
+
+.ldouscan:	ld a, (hl)     
+	if DEBUG_FORTH_WORDS
+		DMARK "LSs"
+		CALLMONITOR
+	endif
+		cp WORD_SYS_END
+		jp z, .ludone
+		cp WORD_SYS_UWORD
+		jp nz, .lnuword
+
+	if DEBUG_FORTH_WORDS
+		DMARK "LSu"
+		CALLMONITOR
+	endif
+
+		; found a uword but is it the one we want...
+
+
+	        pop de   ; get back the dsp name
+		push de
+
+		; skip opcode
+		inc hl 
+		; skip next ptr
+		inc hl 
+		inc hl
+		; skip len
+		inc hl
+
+	if DEBUG_FORTH_WORDS
+		DMARK "LSc"
+		CALLMONITOR
+	endif
+		call strcmp
+		jr nz, .lnuword
+	
+	if DEBUG_FORTH_WORDS
+		DMARK "LSm"
+		CALLMONITOR
+	endif
+
+
+
+		; we have a uword so push its name to the stack
+
+;	   	push hl  ; save so we can move to next dict block
+
+		; skip opcode
+		inc hl 
+		; skip next ptr
+		inc hl 
+		inc hl
+		; skip len
+		ld a, (hl)   ; save length to add
+		inc hl
+		; skip word string
+		call addatohl
+
+		; should now be at the start of the machine code to setup the eval of the uword
+		; now locate the ptr to the string defintion
+
+		; skip ld hl,
+		; then load the ptr
+
+		inc hl
+		ld e, (hl)
+		inc hl
+		ld d, (hl)
+		ex de, hl
+
+
+	if DEBUG_FORTH_WORDS
+		DMARK "LSt"
+		CALLMONITOR
+	endif
+
+		call forth_apushstrhl
+
+		jr .ludone
+
+.lnuword:	call forth_tok_next
+		jp .ldouscan 
+
+.ludone:		 pop hl
+
 		NEXTW
 
 .FORGET:

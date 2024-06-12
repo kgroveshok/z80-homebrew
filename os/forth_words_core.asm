@@ -803,9 +803,12 @@ endif
 		DMARK "UWt"
 		CALLMONITOR
 	endif
-		call forth_apushstrhl
-
 		inc bc
+
+		push bc
+		call forth_apushstrhl
+		pop bc
+
 		pop hl 	
 
 .nuword:	call forth_tok_next

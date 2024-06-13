@@ -195,6 +195,7 @@
 		DMARK "LOx"
 		CALLMONITOR
 	endif
+		inc a
 		cp l
 		jp z, .loadeof
 		push hl    ; save current extent
@@ -269,7 +270,8 @@
 		DMARK "LOF"
 		CALLMONITOR
 	endif
-		NEXTW
+		ret
+		;NEXTW
 .BSAVE:  
 
 	CWHEAD .BLOAD 70 "BSAVE" 5 WORD_FLAG_CODE

@@ -508,7 +508,7 @@
 	       NEXTW
 .READ:
 	CWHEAD .EOF 88 "READ" 4 WORD_FLAG_CODE
-; | READ ( n -- n  )  Reads next page of file id and push to stack | TESTING - Crashes on second read
+; | READ ( n -- n  )  Reads next page of file id and push to stack | TESTING
 
 		; TODO store_openext use it. If zero it is EOF
 
@@ -536,7 +536,7 @@
 		ld l, a
 		
 		cp 0
-		jr z, .readeof     ; dont read past eof
+		jr z, .ateof     ; dont read past eof
 
 
 		ld de, store_page
@@ -568,9 +568,8 @@
 
 	ld a, (store_openmaxext)   ; get our limit
 	ld c, a	
-	inc c
+	ld a, (store_openext)
 
-		ld a, (store_openext)
 	cp c
 	jr z, .readeof     ; at last extent
 
@@ -580,14 +579,22 @@
 
 
 	       NEXTW
+.ateof:
+		ld hl, .showeof
+		call forth_apushstrhl
 .readeof:	ld a, 0
 		ld (store_openext), a
 
+		
 	if DEBUG_STORESE
 		DMARK "REF"
 		CALLMONITOR
 	endif
 	       NEXTW
+
+.showeof:   db "eof", 0
+
+
 .EOF:
 	CWHEAD .FORMAT 89 "EOF" 3 WORD_FLAG_CODE
 ; | EOF ( n -- u )  Returns EOF logical state of file id n - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | DONE

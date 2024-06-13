@@ -139,7 +139,136 @@
 		NEXTW
 .LOAD:
 	CWHEAD .BSAVE 40 "LOAD" 4 WORD_FLAG_CODE
-; | LOAD ( w u -- )    Load user word memory from file name w on bank u | TODO
+; | LOAD ( u -- )    Load user word memory from file id on current bank | TO TEST
+
+		; TODO store_openext use it. If zero it is EOF
+
+		; TODO read block from current stream id
+		; TODO if the block does not contain zero term keep reading blocks until zero found
+		; TODO push the block to stack
+		; TODO save the block id to stream
+
+
+		FORTH_DSP_VALUEHL
+
+		push hl
+
+	if DEBUG_STORESE
+		DMARK "LOA"
+		CALLMONITOR
+	endif
+		FORTH_DSP_POP
+
+		pop hl
+
+		ld h, l
+		ld l, 0
+
+		push hl     ; stack holds current file id and extent to work with
+
+
+		ld de, store_page      ; get block zero of file
+	if DEBUG_STORESE
+		DMARK "LO0"
+		CALLMONITOR
+	endif
+		call storage_read
+
+		ld a, (store_page+2)    ; max extents for this file
+		ld  (store_openmaxext),a   ; get our limit
+
+	if DEBUG_STORESE
+		DMARK "LOE"
+		CALLMONITOR
+	endif
+
+; TODO dont know why max extents are not present
+;		cp 0
+;		jp z, .loadeof     ; dont read past eof
+
+;		ld a, 1   ; start from the head of the file
+
+.loadline:	pop hl
+		inc hl
+		ld  a, (store_openmaxext)   ; get our limit
+	if DEBUG_STORESE
+		DMARK "LOx"
+		CALLMONITOR
+	endif
+		cp l
+		jp z, .loadeof
+		push hl    ; save current extent
+
+		ld de, store_page
+
+	if DEBUG_STORESE
+		DMARK "LO1"
+		CALLMONITOR
+	endif
+		call storage_read
+
+	if DEBUG_STORESE
+		DMARK "LO2"
+		CALLMONITOR
+	endif
+	call ishlzero
+;	ld a, l
+;	add h
+;	cp 0
+	jr z, .loadeof
+
+	; not eof so hl should point to data to exec
+
+	; will need to add the FORTH_END_BUFFER flag
+ 
+	ld hl, store_page+2
+	ld bc, 255
+	ld a, 0
+	cpir
+	if DEBUG_STORESE
+		DMARK "LOt"
+		CALLMONITOR
+	endif
+	dec hl
+	ld a, ' '
+	ld (hl), a
+	inc hl
+	ld (hl), a
+	inc hl
+	ld (hl), a
+	inc hl
+	ld a, FORTH_END_BUFFER
+	ld (hl), a
+
+	; TODO handle more than a single block read
+
+
+	ld hl, store_page+2
+
+	if DEBUG_STORESE
+		DMARK "LO3"
+		CALLMONITOR
+	endif
+
+	call forthparse
+	call forthexec
+	call forthexec_cleanup
+
+	; go to next extent
+
+	; get next block  or mark as eof
+	jp .loadline
+
+
+
+	       NEXTW
+.loadeof:	ld a, 0
+		ld (store_openext), a
+
+	if DEBUG_STORESE
+		DMARK "LOF"
+		CALLMONITOR
+	endif
 		NEXTW
 .BSAVE:  
 
@@ -353,17 +482,24 @@
 		FORTH_DSP_VALUEHL
 
 		ld h, l
-		ld a, 0
+		ld l, 0
 			
 		ld de, store_page      ; get block zero of file
 		call storage_read
 
-		ld a, (store_page+1)    ; max extents for this file
-		ld  (store_openmaxext),a   ; get our limit
+		FORTH_DSP_POP     ; TODO for now just get rid of stream id
 
-		FORTH_DSP_POP     ; for now just get rid of stream id
+		ld a, (store_page+2)    ; max extents for this file
+		ld  (store_openmaxext), a   ; get our limit and push
+		
+		cp 0
+		jr nz, .skipopeneof
+		; have opened an empty file
+		
+		ld (store_openext), a
 
-		ld  a, (store_openmaxext)   ; get our limit and push
+.skipopeneof:
+
 		ld l, a
 		ld h, 0
 		call forth_push_numhl
@@ -398,7 +534,7 @@
 
 		ld a, (store_openext)
 		ld l, a
-
+		
 		cp 0
 		jr z, .readeof     ; dont read past eof
 
@@ -463,6 +599,9 @@
 		FORTH_DSP_POP     ; for now just get rid of stream id
 
 		ld l, 1
+		ld a, (store_openmaxext)
+		cp 0
+		jr  z, .eofdone   ; empty file
 		ld a, (store_openext)
 		cp 0
 		jr  z, .eofdone

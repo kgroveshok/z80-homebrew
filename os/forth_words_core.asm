@@ -1046,6 +1046,10 @@ pop hl
 		inc hl
 		inc hl          ; space for terms
 		inc hl
+
+		ld a, 20   ; TODO get actual length
+		call addatohl    ; include a random amount of room for the uword name
+
 		
 	if DEBUG_FORTH_WORDS
 		DMARK "Lt1"
@@ -1086,7 +1090,36 @@ pop hl
 		ld (hl), a
 		inc hl
 
-; detoken that string
+; add the uname word
+		push de   ; save our string for now
+		ex de, hl
+
+		FORTH_DSP_VALUE
+
+		inc hl   ; skip type but we know by now this is OK
+
+.luword:	ld a,(hl)
+		cp 0
+		jr z, .luword2
+		ld (de), a
+		inc de
+		inc hl
+		jr .luword
+
+.luword2:	ld a, ' '
+		ld (de), a
+;		inc hl
+;		inc de
+;		ld (de), a
+;		inc hl
+		inc de
+
+		ex de, hl
+		pop de
+		
+		
+
+; detoken that string and copy it
 
 	if DEBUG_FORTH_WORDS
 		DMARK "Lt2"

@@ -916,12 +916,15 @@ endif
 		NEXTW
 .LIST:
 	CWHEAD .FORGET 72 "LIST" 4 WORD_FLAG_CODE
-; | LIST ( uword -- u )    List the code to the word that is quoted (so as not to exec) on TOS | TO TEST
+; | LIST ( uword -- u )    List the code to the word that is quoted (so as not to exec) on TOS | DONE
 
 	if DEBUG_FORTH_WORDS
 		DMARK "LST"
 		CALLMONITOR
 	endif
+
+
+
 
 		; Get ptr to the word we need to look up
 
@@ -978,7 +981,7 @@ endif
 		CALLMONITOR
 	endif
 		call strcmp
-		jr nz, .lnuword
+		jp nz, .lnuword
 	
 	if DEBUG_FORTH_WORDS
 		DMARK "LSm"
@@ -990,6 +993,7 @@ endif
 		; we have a uword so push its name to the stack
 
 ;	   	push hl  ; save so we can move to next dict block
+pop hl
 
 		; skip opcode
 		inc hl 
@@ -998,10 +1002,20 @@ endif
 		inc hl
 		; skip len
 		ld a, (hl)   ; save length to add
+	if DEBUG_FORTH_WORDS
+		DMARK "LS2"
+		CALLMONITOR
+	endif
 		inc hl
 		; skip word string
 		call addatohl
 
+		inc hl
+
+	if DEBUG_FORTH_WORDS
+		DMARK "LS3"
+		CALLMONITOR
+	endif
 		; should now be at the start of the machine code to setup the eval of the uword
 		; now locate the ptr to the string defintion
 
@@ -1020,7 +1034,98 @@ endif
 		CALLMONITOR
 	endif
 
+; cant push right now due to tokenised strings 
+
+		push hl   ; save pointer to start of uword def string
+
+; look for FORTH_EOL_LINE
+		ld a, FORTH_END_BUFFER
+		call strlent
+
+		inc hl		 ; space for coln def
+		inc hl
+		inc hl          ; space for terms
+		inc hl
+		
+	if DEBUG_FORTH_WORDS
+		DMARK "Lt1"
+		CALLMONITOR
+	endif
+		
+
+; malloc space for the string because we cant change it
+
+		call malloc
+	if DEBUG_FORTH_MALLOC_GUARD
+		push af
+		call ishlzero
+		pop af
+		
+		call z,malloc_error
+	endif
+
+	if DEBUG_FORTH_WORDS
+		DMARK "Lt2"
+		CALLMONITOR
+	endif
+		pop de
+		push hl    ; push the malloc to release later
+		push hl   ;  push back a copy for the later stack push
+		
+; copy the string swapping out the zero terms for spaces
+
+		; de has our source
+		; hl has our dest
+
+; add the coln def
+
+		ld a, ':'
+		ld (hl), a
+		inc hl
+		ld a, ' '
+		ld (hl), a
+		inc hl
+
+; detoken that string
+
+	if DEBUG_FORTH_WORDS
+		DMARK "Lt2"
+		CALLMONITOR
+	endif
+.ldetok:	ld a, (de)
+		cp FORTH_END_BUFFER
+		jr z, .ldetokend
+		; swap out any zero term for space
+		cp 0
+		jr nz, .ldetoknext
+		ld a, ' '
+
+	if DEBUG_FORTH_WORDS
+		DMARK "LtS"
+		CALLMONITOR
+	endif
+.ldetoknext:	ld (hl), a
+		inc de
+		inc hl
+		jr .ldetok
+
+.ldetokend:	ld a, 0    ; replace forth eol with string term for pushing
+		ld (hl), a 
+
+; free that temp malloc
+
+		pop hl   
+
+	if DEBUG_FORTH_WORDS
+		DMARK "Lt4"
+		CALLMONITOR
+	endif
 		call forth_apushstrhl
+
+		; get rid of temp malloc area
+
+		pop hl
+		call free
 
 		jr .ludone
 
@@ -1034,13 +1139,109 @@ endif
 
 .FORGET:
 	CWHEAD .NOP 73 "FORGET" 6 WORD_FLAG_CODE
-; | FORGET ( uword -- )    Forget the uword on TOS | TODO
+; | FORGET ( uword -- )    Forget the uword on TOS | DONE
 
 
-	; TODO find uword
-        ; TODO update start of word with "_"
-	; TODO replace uword with deleted flag
+	; find uword
+        ; update start of word with "_"
+	; replace uword with deleted flag
 
+
+	if DEBUG_FORTH_WORDS
+		DMARK "FOG"
+		CALLMONITOR
+	endif
+
+
+		; Get ptr to the word we need to look up
+
+		FORTH_DSP_VALUE
+	; TODO type check
+		inc hl    ; Skip type check 
+		push hl
+;		ex de, hl    ; put into DE
+
+
+		ld hl, baseusermem
+
+	; skip dict stub
+		call forth_tok_next
+
+
+; while we have words to look for
+
+.fdouscan:	ld a, (hl)     
+	if DEBUG_FORTH_WORDS
+		DMARK "LSs"
+		CALLMONITOR
+	endif
+		cp WORD_SYS_END
+		jp z, .fudone
+		cp WORD_SYS_UWORD
+		jp nz, .fnuword
+
+	if DEBUG_FORTH_WORDS
+		DMARK "FGu"
+		CALLMONITOR
+	endif
+
+		; found a uword but is it the one we want...
+
+
+	        pop de   ; get back the dsp name
+		push de
+
+		push hl  ; to save the ptr
+
+		; skip opcode
+		inc hl 
+		; skip next ptr
+		inc hl 
+		inc hl
+		; skip len
+		inc hl
+
+	if DEBUG_FORTH_WORDS
+		DMARK "FGc"
+		CALLMONITOR
+	endif
+		call strcmp
+		jp nz, .fnuword
+	
+	if DEBUG_FORTH_WORDS
+		DMARK "FGm"
+		CALLMONITOR
+	endif
+
+
+
+		; we have a uword so push its name to the stack
+
+;	   	push hl  ; save so we can move to next dict block
+pop hl
+
+		; update opcode to deleted
+		ld a, WORD_SYS_DELETED
+		ld (hl), a
+
+		inc hl 
+		; skip next ptr
+		inc hl 
+		inc hl
+		; skip len
+		inc hl
+
+		; TODO change parser to skip deleted words but for now mark it out
+		ld a, "_"
+		ld  (hl),a
+
+		jr .fudone
+
+.fnuword:	pop hl
+		call forth_tok_next
+		jp .fdouscan 
+
+.fudone:		 pop hl
 		NEXTW
 .NOP:
 	CWHEAD .COMO 77 "NOP" 3 WORD_FLAG_CODE

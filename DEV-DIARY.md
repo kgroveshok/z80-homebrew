@@ -594,8 +594,9 @@ Then back to the OS. In particular loading and saving of uwords and the parser b
 
 
 DONE words for GPIO access. Stubs created
-TODO Sort out the EXEC word so that I can create a simple save and load of UWORDS
-TODO break out parser so it can be used by LIST, FORGET, WORDS, UWORDS and SAVE 
+DONE Sort out the EXEC word so that I can create a simple save and load of UWORDS
+PART DONE break out parser so it can be used by LIST, FORGET, WORDS, UWORDS and SAVE 
+TODO Add keyboard macro defs on function keys
 TODO Due to bad performance of the parser (???) need to look at compiler
 TODO EDIT word which allows edit of item on tos - word added but does not copy from stack
 TODO add more editing features 

@@ -1291,10 +1291,14 @@ strlent:
 
 ;IN    HL     Address of string1.
 ;      DE     Address of string2.
+
+; doc given but wrong???
 ;OUT   zero   Set if string1 = string2, reset if string1 != string2.
 ;      carry  Set if string1 > string2, reset if string1 <= string2.
+; tested
+;OUT   carry set  if string1 = string2, carry  reset if string1 != string2.
 
-strcmp:
+strcmp_old:
     PUSH   HL
     PUSH   DE
 
@@ -1329,43 +1333,98 @@ NoMatch:
     POP    HL
     RET
 
+;; test strmp
+;
+;ld de, .str1
+;ld hl, .str2
+;call strcmp
+;jr z, .z1
+;;this
+;	if DEBUG_FORTH_WORDS
+;		DMARK "NZ1"
+;		CALLMONITOR
+;	endif
+;.z1:
+;
+;	if DEBUG_FORTH_WORDS
+;		DMARK "ZZ1"
+;		CALLMONITOR
+;	endif
+;
+;ld de, .str1
+;ld hl, .str1
+;call strcmp
+;jr z, .z2
+;;this
+;	if DEBUG_FORTH_WORDS
+;		DMARK "NZ2"
+;		CALLMONITOR
+;	endif
+;.z2:
+;
+;	if DEBUG_FORTH_WORDS
+;		DMARK "ZZ2"
+;		CALLMONITOR
+;	endif
+;
+;ld de, .str1
+;ld hl, .str2
+;call strcmp
+;jr c, .c1
+;
+;	if DEBUG_FORTH_WORDS
+;		DMARK "Nc1"
+;		CALLMONITOR
+;	endif
+;.c1:
+;;this
+;	if DEBUG_FORTH_WORDS
+;		DMARK "cc1"
+;		CALLMONITOR
+;	endif
+;
+;ld de, .str1
+;ld hl, .str1
+;call strcmp
+;jr c, .c2
+;;this
+;	if DEBUG_FORTH_WORDS
+;		DMARK "Nc2"
+;		CALLMONITOR
+;	endif
+;.c2:
+;
+;	if DEBUG_FORTH_WORDS
+;		DMARK "cc2"
+;		CALLMONITOR
+;	endif
+;	NEXTW
+;.str1:   db "string1",0
+;.str2:   db "string2",0
 
-findchar:
-	; HL string to search in 
-	; A char to locate
-	; B max string length to search
+; only care about direct match or not
+; hl and de strings
+; zero set if the same
 
-	; returns hl pointer to char
-	; b contains position
-	; if b or a are zero then not found
-	push de
-	push bc
+strcmp:
+	ld a, (de)
+	cp (hl)
+	jr z, .ssame
+	or a
+	ret
 
-.fc1:	ld e,(hl)
-	cp e
-	jr z,.fc2
+.ssame: 
+	cp 0
+	ret z
+
 	inc hl
-	djnz .fc1
-
-	pop bc
-	pop de
-	ld a, 0
-	ld b, 0 
-	ret
-.fc2:
-	ld e,b
-	pop bc
-	push af
-	ld a,b
-	sub e
-	ld b, a
-	pop af
+	inc de
+	jr strcmp
 	
 	
 
 
-	pop de
-	ret
+
 
 ; eof
 

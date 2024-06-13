@@ -258,6 +258,7 @@ os_new_src_ptr: equ os_new_work_ptr + 2
 os_new_exec: equ os_new_src_ptr + 2
 os_new_exec_ptr: equ os_new_exec + 2
 
+; resume memory alloocations....
 
 os_view_disable: equ scratch - 1
 os_view_af: equ os_view_disable - 2

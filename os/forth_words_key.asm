@@ -1,7 +1,7 @@
 
 .KEY:
 	CWHEAD .WAITK 42 "KEY" 3 WORD_FLAG_CODE
-; | KEY ( -- w f )      scan for keypress but do not wait true if next item on stack is key press | TODO
+; | KEY ( -- w f ) Scan for keypress but do not wait true if next item on stack is key press | TODO
 
 ; TODO currently waits
 		call cin_wait
@@ -11,7 +11,7 @@
 		NEXTW
 .WAITK:
 	CWHEAD .ACCEPT 43 "WAITK" 5 WORD_FLAG_CODE
-; | WAITK ( -- w )      wait for keypress TOS is key press | DONE
+; | WAITK ( -- w ) Wait for keypress TOS is key press | DONE
 		call cin_wait
 		ld l, a
 		ld h, 0
@@ -19,7 +19,7 @@
 		NEXTW
 .ACCEPT:
 	CWHEAD .EDIT 44 "ACCEPT" 6 WORD_FLAG_CODE
-; | ACCEPT ( -- w )    Prompt for text input and push pointer to string | DONE
+; | ACCEPT ( -- w ) Prompt for text input and push pointer to string | DONE
 		; TODO crashes on push
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "ACC"
@@ -44,7 +44,7 @@
 
 .EDIT:
 	CWHEAD .ENDKEY 44 "EDIT" 4 WORD_FLAG_CODE
-; | EDIT ( u -- u )    Takes string on TOS and allows editing of it. Pushes it back once done. | TO TEST 
+; | EDIT ( u -- u ) Takes string on TOS and allows editing of it. Pushes it back once done. | TO TEST 
 
 		; TODO does not copy from stack
 		if DEBUG_FORTH_WORDS_KEY

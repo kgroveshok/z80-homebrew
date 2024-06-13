@@ -1,7 +1,7 @@
 
 .IF:
 	CWHEAD .THEN 10 "IF" 2 WORD_FLAG_CODE
-;  | IF ( w -- f )     If TOS is true exec code following up to THEN - Note: currently not supporting ELSE or nested IF | DONE
+; | IF ( w -- f ) If TOS is true exec code following up to THEN - Note: currently not supporting ELSE or nested IF | DONE
 ;
 ; eval TOS
 
@@ -67,18 +67,18 @@
 		NEXTW
 .THEN:
 	CWHEAD .ELSE 11 "THEN" 4 WORD_FLAG_CODE
-; | THEN ( -- )    Does nothing. It is a marker for the end of an IF block | DONE
+; | THEN ( -- ) Does nothing. It is a marker for the end of an IF block | DONE
 		NEXTW
 .ELSE:
 	CWHEAD .DO 12 "ELSE" 2 WORD_FLAG_CODE
-; | ELSE ( -- )   Not supported - does nothing | TODO
+; | ELSE ( -- ) Not supported - does nothing | TODO
 
 
 
 		NEXTW
 .DO:
 	CWHEAD .LOOP 13 "DO" 2 WORD_FLAG_CODE
-; | DO ( u1 u2 -- )   Loop starting at u2 with a limit of u1 | DONE
+; | DO ( u1 u2 -- ) Loop starting at u2 with a limit of u1 | DONE
 
 		if DEBUG_FORTH_WORDS
 			DMARK "DO1"
@@ -165,7 +165,7 @@
 		NEXTW
 .LOOP:
 	CWHEAD .I 14 "LOOP" 4 WORD_FLAG_CODE
-; | LOOP ( -- )     Increment and test loop counter  | DONE
+; | LOOP ( -- ) Increment and test loop counter  | DONE
 
 	; pop tos as current loop count to hl
 
@@ -288,7 +288,7 @@ endif
 .I: 
 
 	CWHEAD .DLOOP 74 "I" 1 WORD_FLAG_CODE
-;	db "I",0               ;| I ( -- ) Current loop counter | DONE
+; | I ( -- ) Current loop counter | DONE
 
 		ld hl,(os_current_i)
 		call forth_push_numhl
@@ -296,7 +296,7 @@ endif
 		NEXTW
 .DLOOP:
 	CWHEAD .REPEAT 75 "-LOOP" 5 WORD_FLAG_CODE
-; | -LOOP ( -- )    Decrement and test loop counter  | DONE
+; | -LOOP ( -- ) Decrement and test loop counter  | DONE
 	; pop tos as current loop count to hl
 
 	; if new tos (loop limit) is not same as hl, inc hl, push hl to tos, pop rsp and set pc to it

@@ -1,14 +1,14 @@
 #!/bin/sh
 
-echo "Words List"
-echo "------------------"
-cat forth_words_*.asm | grep "|"  | cut -f2- -d'|'
+echo "Forth Language Reference"
+echo "------------------------"
+cat forth_words_*.asm | grep "|"  | cut -f2- -d'|' 
 
-echo "Words ready to use"
+echo "Words Ready To Use"
 echo "------------------"
-cat forth_words_*.asm | grep "|" | cut -f2- -d'|' | grep DONE
+cat forth_words_*.asm | grep -v "; | | " | grep "|" | cut -f2- -d'|' | grep DONE
 
-echo "Words still left to do"
+echo "Words Still Left To Do"
 echo "----------------------"
-cat forth_words_*.asm | grep "|" | cut -f2- -d'|' | grep DONE -v
+cat forth_words_*.asm | grep -v "; | | " | grep "|" | cut -f2- -d'|' | grep DONE -v
 

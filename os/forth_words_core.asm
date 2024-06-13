@@ -4,9 +4,11 @@ if MALLOC_4
 .HEAP:
 	CWHEAD .EXEC 6 "HEAP" 4 WORD_FLAG_CODE
 ; | HEAP ( -- u1 u2 )   Pushes u1 the current number of bytes in the heap and u2 the remaining bytes - Only present if using my MALLOC | DONE
+; | | u1 - Current number of bytes in the heap
+; | | u2 - Remaining bytes left on the heap
+; | | 
+; | | The heap is used for storing user defined words as well as any values pushed to stack.
 
-; TODO add count of free blocks
-; TODO add count of used blocks
 
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "HEP"
@@ -38,7 +40,9 @@ endif
 .EXEC:
 	CWHEAD .DUP 6 "EXEC" 4 WORD_FLAG_CODE
 ; | EXEC ( u -- )    Execs the string on TOS as a FORTH expression | CRASHES ON NEXTW
-
+; | | u - A qutoed string which can consist of any valid Forth expression excluding : defintions (use LOAD instead)
+; | |
+; | |  
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "EXE"
 			CALLMONITOR
@@ -595,6 +599,7 @@ endif
 .SCALL:
 	CWHEAD .DEPTH 30 "CALL" 4 WORD_FLAG_CODE
 ; | CALL ( w -- w  ) machine code call to address w  push the result of hl to stack | TO TEST
+
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
 		push hl
@@ -746,8 +751,7 @@ endif
 	       NEXTW
 .WORDS:
 	CWHEAD .UWORDS 59 "WORDS" 5 WORD_FLAG_CODE
-; | WORDS (  -- )   List the system and user word dict | TODO
-
+; | WORDS (  -- s1 ... sx u )   List the system and user word dict | TODO
 		ld hl, baseusermem
 
 		
@@ -758,8 +762,15 @@ endif
 
 .UWORDS:
 	CWHEAD .BP 60 "UWORDS" 6 WORD_FLAG_CODE
-; | UWORDS (  -- )   List user word dict | DONE
-
+; | UWORDS (  -- s1 ... sn u )   List user word dict | DONE
+; | | After use the TOS will have a count of the number of user words that have been pushed to stack.
+; | | Following the count are the individual words.
+; | |
+; | | e.g. UWORDS
+; | | BOX DIRLIST 2
+; | | 
+; | | Can be used to save the words to storage via:
+; | | UWORDS $01 DO $01 APPEND LOOP
 	if DEBUG_FORTH_WORDS
 		DMARK "UWR"
 		CALLMONITOR
@@ -830,6 +841,13 @@ endif
 .BP:
 	CWHEAD .MONITOR 64 "BP" 2 WORD_FLAG_CODE
 ; | BP ( u1 -- ) Enable or disable break point monitoring | DONE
+; | | $00 Will enable the break points within specific code paths
+; | | $01 Will disable break points
+; | | 
+; | | By default break points are off. Either the above can be used to enable them
+; | | or if a key is held down during start up the spashscreen will appear to freeze
+; | | and on release of the pressed key a message will be disaplayed to notify
+; | | that break points are enabled. Pressing any key will then continue boot process.
 		; get byte count
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -856,7 +874,32 @@ endif
 .MONITOR:
 	CWHEAD .MALLOC 65 "MONITOR" 7 WORD_FLAG_CODE
 ; | MONITOR ( -- ) Display system breakpoint/monitor | DONE
-
+; | | At start the current various registers will be displayed with contents.
+; | | Top right corner will show the most recent debug marker seen.
+; | | The bottom of the screen will also show the values of the data stack pointer (DSP)
+; | | and the return stack pointer (RSP).
+; | | Pressing:
+; | |    1 - Initial screen
+; | |    2 - Display a data dump of HL
+; | |    3 - Display a data dump of DE
+; | |    4 - Display a data dump of BC
+; | |    5 - Display a data dump of HL
+; | |    6 - Display a data dump of DSP
+; | |    7 - Display a data dump of RSP
+; | |    8 - Display a data dump of what is at DSP
+; | |    9 - Display a data dump of what is at RSP
+; | |    0 - Exit monitor and continue running. This will also enable break points
+; | |    * - Disable break points
+; | |    # - Enter traditional monitor mode
+; | |
+; | | Monitor Mode
+; | | ------------
+; | | A prompt of '>' will be shown for various commands:
+; | |    D xxxx - Display a data dump starting from hex address xxxx
+; | |    C - Continue display a data dump from the last set address
+; | |    M xxxx - Set start of memory edit at address xx
+; | |    U xx - Poke the hex byte xx into the address set by M and increment the address to the next location
+; | |    Q - Return to previous
 		ld a, 0
 		ld (os_view_disable), a
 
@@ -917,7 +960,7 @@ endif
 .LIST:
 	CWHEAD .FORGET 72 "LIST" 4 WORD_FLAG_CODE
 ; | LIST ( uword -- u )    List the code to the word that is quoted (so as not to exec) on TOS | DONE
-
+; ; | The quoted most also be in upper case.
 	if DEBUG_FORTH_WORDS
 		DMARK "LST"
 		CALLMONITOR
@@ -1173,7 +1216,7 @@ pop hl
 .FORGET:
 	CWHEAD .NOP 73 "FORGET" 6 WORD_FLAG_CODE
 ; | FORGET ( uword -- )    Forget the uword on TOS | DONE
-
+; | | Will flag the word's op code to be deleted as well as replace the first char of the word with '_'.
 
 	; find uword
         ; update start of word with "_"

@@ -7,7 +7,10 @@
 
 .FB:
 	CWHEAD .EMIT 7 "FB" 2 WORD_FLAG_CODE
-; |  FB ( u -- )        Select frame buffer ID u (1-3)  |  DONE
+; | FB ( u -- ) Select frame buffer ID u (1-3)  |  DONE
+; | | Default frame buffer is 1. System uses 0 which can't be selected for system messages etc.
+; | | Selecting the frame buffer wont display unless automatic display is setup (default).
+; | | If automatic display is off then updates will not be shown until DRAW is used.
 
 		FORTH_DSP_VALUEHL
 
@@ -35,7 +38,7 @@
 
 .EMIT:
 	CWHEAD .DOTH 7 "EMIT" 4 WORD_FLAG_CODE
-; |  EMIT ( u -- )        Display ascii character  TOS   | DONE
+; |  EMIT ( u -- ) Display ascii character  TOS   | DONE
 		; get value off TOS and display it
 
 
@@ -67,16 +70,23 @@
 
 		NEXTW
 .DOTH:
-	CWHEAD .DOT 8 ".-" 2 WORD_FLAG_CODE
-        ; | .- ( u -- )    Display TOS replacing any dashes with spaces. Means you dont need to wrap strings in double quotes!   | DONE
+	CWHEAD .DOTF 8 ".-" 2 WORD_FLAG_CODE
+        ; | .- ( u -- ) Display TOS replacing any dashes with spaces. Means you dont need to wrap strings in double quotes!   | DONE
 		; get value off TOS and display it
-ld c, 1	  ; flag for removal of '-' enabled
+	ld c, 1	  ; flag for removal of '-' enabled
+	jp .dotgo
+	NEXTW
+.DOTF:
+	CWHEAD .DOT 8 ".>" 2 WORD_FLAG_CODE
+        ; | .> ( u -- ) Display TOS and move the next display point with display  | TODO
+		; get value off TOS and display it
+	ld c, 0	  ; flag for removal of '-' enabled
 	jp .dotgo
 	NEXTW
 
 .DOT:
 	CWHEAD .CLS 8 "." 1 WORD_FLAG_CODE
-        ; | . ( u -- )    Display TOS   | DONE
+        ; | . ( u -- ) Display TOS | DONE
 		; get value off TOS and display it
 
 ld c, 0	  ; flag for removal of '-' disabled
@@ -204,7 +214,7 @@ endif
 
 .CLS:
 	CWHEAD .DRAW 33 "CLS" 3 WORD_FLAG_CODE
-; | CLS ( -- ) clear frame buffer    | DONE
+; | CLS ( -- ) Clear current frame buffer and set next print position to top left corner  | DONE
 		call clear_display
 		jp .home		; and home cursor
 		NEXTW
@@ -217,7 +227,7 @@ endif
 
 .DUMP:
 	CWHEAD .CDUMP 35 "DUMP" 4 WORD_FLAG_CODE
-; | DUMP ( x --  ) With address x display dump   | DONE
+; | DUMP ( x -- ) With address x display dump   | DONE
 ; TODO pop address to use off of the stack
 		call clear_display
 
@@ -238,7 +248,7 @@ endif
 		NEXTW
 .CDUMP:
 	CWHEAD .DAT 36 "CDUMP" 5 WORD_FLAG_CODE
-; | CDUMP ( -- ) continue dump of memory from DUMP | DONE
+; | CDUMP ( -- ) Continue dump of memory from DUMP | DONE
 		call clear_display
 		call dumpcont	
 		ret			; TODO command causes end of remaining parsing so cant do: $0000 DUMP CDUMP $8000 DUMP
@@ -249,7 +259,7 @@ endif
 
 .DAT:
 	CWHEAD .HOME 41 "AT" 2 WORD_FLAG_CODE
-; | AT ( u1 u2 -- )  Set next output via . or emit at row u2 col u1 | DONE
+; | AT ( u1 u2 -- ) Set next output via . or emit at row u2 col u1 | DONE
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
 
@@ -286,23 +296,25 @@ endif
 
 .HOME:
 	CWHEAD .SPACE 45 "HOME" 4 WORD_FLAG_CODE
-; | HOME ( -- )    Reset the current cursor for output to home | DONE
+; | HOME ( -- ) Reset the current cursor for output to home | DONE
 .home:		ld a, 0		; and home cursor
 		ld (f_cursor_ptr), a
 		NEXTW
 
 
 .SPACE:
-	CWHEAD .SPACES 50 "SPACE" 5 WORD_FLAG_CODE
-; | SPACE (  -- c ) Push the value of space onto the stack as a string  | DONE
-		ld hl, ' '
-		call forth_push_numhl
+	CWHEAD .SPACES 50 "BL" 2 WORD_FLAG_CODE
+; | BL (  -- c ) Push the value of space onto the stack as a string  | DONE
+		ld hl, .blstr
+		call forth_apushstrhl
 		
 	       NEXTW
 
+.blstr: db " ", 0
+
 .SPACES:
 	CWHEAD .SCROLL 51 "SPACES" 6 WORD_FLAG_CODE
-; | SPACES ( u -- str )  A string of u spaces is pushed onto the stack | TO TEST
+; | SPACES ( u -- str ) A string of u spaces is pushed onto the stack | TO TEST
 
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -381,7 +393,7 @@ endif
 
 .ATQ:
 	CWHEAD .AUTODSP 78 "AT@" 3 WORD_FLAG_CODE
-; | AT@ ( u1 u2 -- n )  Push to stack ASCII value at row u2 col u1 | DONE
+; | AT@ ( u1 u2 -- n ) Push to stack ASCII value at row u2 col u1 | DONE
 
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -430,7 +442,8 @@ endif
 
 .AUTODSP:
 	CWHEAD .MENU 79 "ADSP" 4 WORD_FLAG_CODE
-; | ADSP ( u1 --  )  Enable/Disable Auto screen updates (SLOW). If off, use DRAW to refresh. Default is on. $0003 will enable direct screen writes (TODO) | DONE
+; | ADSP ( u1 --  ) Enable/Disable Auto screen updates (SLOW). | DONE
+; | | If off, use DRAW to refresh. Default is on. $0003 will enable direct screen writes (TODO) 
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 

@@ -3,16 +3,16 @@
 
 .BYID:
 	CWHEAD .BYNAME 38 "BYID" 4 WORD_FLAG_CODE
-; | BYID ( u -- s )   Get the name of the file in the current BANK using the file ID u | TODO
+; | BYID ( u -- s ) Get the name of the file in the current BANK using the file ID u | TODO
 		NEXTW
 .BYNAME:
 	CWHEAD .DIR 38 "BYNAME" 6 WORD_FLAG_CODE
-; | BYNAME ( s -- u )   Get the file ID in the current BANK of the file named s | TODO
+; | BYNAME ( s -- u ) Get the file ID in the current BANK of the file named s | TODO
 		NEXTW
 
 .DIR:
 	CWHEAD .SAVE 38 "DIR" 3 WORD_FLAG_CODE
-; | DIR ( u -- lab id ... c t )   Using bank number u push directory entries from persistent storage as w with count u  | DONE
+; | DIR ( u -- lab id ... c t ) Using bank number u push directory entries from persistent storage as w with count u  | DONE
 
 		if DEBUG_FORTH_WORDS
 			DMARK "DIR"
@@ -140,13 +140,15 @@
 .LOAD:
 	CWHEAD .BSAVE 40 "LOAD" 4 WORD_FLAG_CODE
 ; | LOAD ( u -- )    Load user word memory from file id on current bank | TO TEST
+; | | The indivdual records being loaded can be both uword word difintions or interactive commands.
+; | | The LOAD command can not be used in any user words or compound lines.
 
-		; TODO store_openext use it. If zero it is EOF
+		; store_openext use it. If zero it is EOF
 
-		; TODO read block from current stream id
-		; TODO if the block does not contain zero term keep reading blocks until zero found
-		; TODO push the block to stack
-		; TODO save the block id to stream
+		; read block from current stream id
+		; if the block does not contain zero term keep reading blocks until zero found
+		; push the block to stack
+		; save the block id to stream
 
 
 		FORTH_DSP_VALUEHL
@@ -380,7 +382,12 @@
 .CREATE:
 	CWHEAD .APPEND 84 "CREATE" 6 WORD_FLAG_CODE
 ; | CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS | DONE
-
+; | | e.g. 
+; | | TestProgram CREATE
+; | | Top of stack will then be the file ID which needs to be used in all file handling words
+; | | 
+; | | Max file IDs are 255.
+; | | 
 		
 ;		call storage_get_block_0
 
@@ -414,8 +421,11 @@
 .APPEND:
 	CWHEAD .SDEL 85 "APPEND" 6 WORD_FLAG_CODE
 ; | APPEND ( u n --  )  Appends data u to file id on current storage bank | DONE
-
-		; TODO get id
+; | | e.g.
+; | | Test CREATE      -> $01
+; | | "A string to add to file" $01 APPEND
+; | | 
+; | | The maximum file size currently using 32k serial EEPROMS using 64 byte blocks is 15k.
 
 		FORTH_DSP_VALUEHL
 		push hl 	; save file id
@@ -451,10 +461,6 @@
 .SDEL:
 	CWHEAD .OPEN 86 "ERA" 4 WORD_FLAG_CODE
 ; | ERA ( n --  )  Deletes all data for file id n on current storage bank | DONE
-		; TODO get id
-		; TODO find id blocks
-		; TODO   set marker to zero
-		; TODO   write buffer
 		FORTH_DSP_VALUEHL
 		push hl 	; save file id
 
@@ -472,6 +478,8 @@
 .OPEN:
 	CWHEAD .READ 87 "OPEN" 4 WORD_FLAG_CODE
 ; | OPEN ( n -- n )  Sets file id to point to first data page for subsequent READs. Pushes the max number of blocks for this file | DONE
+; | | e.g.
+; | | $01 OPEN $01 DO $01 READ . LOOP
 
 		; TODO handle multiple file opens
 
@@ -510,14 +518,16 @@
 	       NEXTW
 .READ:
 	CWHEAD .EOF 88 "READ" 4 WORD_FLAG_CODE
-; | READ ( n -- n  )  Reads next page of file id and push to stack | TESTING
+; | READ ( n -- n  )  Reads next page of file id and push to stack | DONE
+; | | e.g.
+; | | $01 OPEN $01 DO $01 READ . LOOP
 
-		; TODO store_openext use it. If zero it is EOF
+		; store_openext use it. If zero it is EOF
 
-		; TODO read block from current stream id
-		; TODO if the block does not contain zero term keep reading blocks until zero found
-		; TODO push the block to stack
-		; TODO save the block id to stream
+		; read block from current stream id
+		; if the block does not contain zero term keep reading blocks until zero found
+		; push the block to stack
+		; save the block id to stream
 
 
 		FORTH_DSP_VALUEHL
@@ -600,6 +610,8 @@
 .EOF:
 	CWHEAD .FORMAT 89 "EOF" 3 WORD_FLAG_CODE
 ; | EOF ( n -- u )  Returns EOF logical state of file id n - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | DONE
+; | | e.g.
+; | | $01 OPEN REPEAT $01 READ $01 EOF $00 IF LOOP
 		; TODO if current block id for stream is zero then push true else false
 
 

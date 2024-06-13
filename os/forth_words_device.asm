@@ -3,7 +3,7 @@
 if SOUND_ENABLE
 .NOTE:
 	CWHEAD .AFTERSOUND 31 "NOTE" 4 WORD_FLAG_CODE
-; | NOTE ( ud uf --  )  Plays a note of frequency uf for the duration of ud millseconds |
+; | NOTE ( ud uf --  )  Plays a note of frequency uf for the duration of ud millseconds | TODO
 
 	
 
@@ -17,7 +17,7 @@ endif
 		NEXTW
 .GP2:
 	CWHEAD .GP3 31 "IOOUT" 5 WORD_FLAG_CODE
-; | IOIN ( u1 u2 --  )    Perform a GPIO write of pin u1 with pin set to 0 or 1 in u2  | 
+; | IOOUT ( u1 u2 --  )    Perform a GPIO write of pin u1 with pin set to 0 or 1 in u2  | 
 
 		NEXTW
 
@@ -29,12 +29,12 @@ endif
 
 .GP4:
 	CWHEAD .SIN 31 "IOSET" 5 WORD_FLAG_CODE
-; | IOBYTE ( u1 --  )    Setup GPIO pins for I/O direction. Bit is set for write else read pin  | 
+; | IOSET ( u1 --  )    Setup GPIO pins for I/O direction. Bit is set for write else read pin  | 
 
 		NEXTW
 .SIN:
 	CWHEAD .SOUT 31 "IN" 2 WORD_FLAG_CODE
-; | IN ( u1-- u )    Perform z80 IN with u1 being the port number. Push result to TOS | TO TEST
+; | IN ( u1 -- u )    Perform Z80 IN with u1 being the port number. Push result to TOS | TO TEST
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
 		push hl
@@ -62,7 +62,7 @@ endif
 		NEXTW
 .SOUT:
 	CWHEAD .SPIO 32 "OUT" 3 WORD_FLAG_CODE
-;| OUT ( u1 u2 -- ) Perform Z80 OUT to port u2 sending byte u1 | TO TEST
+; | OUT ( u1 u2 -- ) Perform Z80 OUT to port u2 sending byte u1 | TO TEST
 
 		; get port
 

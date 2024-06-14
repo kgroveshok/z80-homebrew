@@ -598,7 +598,7 @@ DONE Sort out the EXEC word so that I can create a simple save and load of UWORD
 PART DONE break out parser so it can be used by LIST, FORGET, WORDS, UWORDS and SAVE 
 
 
-TODO Add a dot comment to forward the next print position use .>   
+TOTEST Add a dot comment to forward the next print position use .>   
 TODO Add loads of example Forth code
 TODO Add keyboard macro defs on function keys
 TODO Due to bad performance of the parser (???) need to look at compiler

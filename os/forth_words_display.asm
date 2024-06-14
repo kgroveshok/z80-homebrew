@@ -78,9 +78,9 @@
 	NEXTW
 .DOTF:
 	CWHEAD .DOT 8 ".>" 2 WORD_FLAG_CODE
-        ; | .> ( u -- ) Display TOS and move the next display point with display  | TODO
+        ; | .> ( u -- ) Display TOS and move the next display point with display  | TO TEST
 		; get value off TOS and display it
-	ld c, 0	  ; flag for removal of '-' enabled
+	ld c, 2	  ; flag for normal dot but increase print position
 	jp .dotgo
 	NEXTW
 
@@ -147,10 +147,11 @@ endif
 .dotwrite:		
 
 		; if c is set then set all '-' to spaces
+		; need to also take into account .> 
 
-		ld a, 0
+		ld a, 1
 		cp c
-		jr z, .nodashswap
+		jr nz, .nodashswap
 
 		; DE has the string to write, working with HL
 
@@ -183,6 +184,7 @@ endif
 
 .nodashswap:
 
+		push hl   ; save string start in case we need to advance print
 
 		ld a, (f_cursor_ptr)
 		call str_at_display
@@ -191,6 +193,26 @@ endif
 		jr z, .noupdate
 				call update_display
 		.noupdate:
+
+
+		; see if we need to advance the print position
+
+		pop hl   ; get back string
+
+		ld a, 2
+		cp c
+		jr nz, .noadv
+		; yes, lets advance the print position
+		ld a, 0
+		call strlent
+		ld a, (f_cursor_ptr)
+		call addatohl
+		ld a, l
+		ld (f_cursor_ptr), a   ; save new pos
+
+
+.noadv:	
+
 		if DEBUG_FORTH_DOT_WAIT
 				call next_page_prompt
 		endif	

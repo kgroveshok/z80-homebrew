@@ -602,7 +602,7 @@ TOTEST Add a dot comment to forward the next print position use .>
 TODO Add loads of example Forth code
 TODO Add keyboard macro defs on function keys
 TODO Due to bad performance of the parser (???) need to look at compiler
-TODO EDIT word which allows edit of item on tos - word added but does not copy from stack
+TO TEST EDIT word which allows edit of item on tos - word added but does not copy from stack
 TODO add more editing features 
 TODO fix editor bugs
 TODO update schematics with 4x40 LCD and the location of the spare E link

@@ -72,8 +72,8 @@
 
 
 		ld hl, os_input
-		ld a, 0
-		ld (hl),a
+		;ld a, 0
+		;ld (hl),a
 		ld a,(f_cursor_ptr)
 		ld d, 100
 		ld c, 0

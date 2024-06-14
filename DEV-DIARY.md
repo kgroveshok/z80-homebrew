@@ -628,6 +628,28 @@ TODO Tidy up code base: Remove redundant code/comments
 TODO Add word documentation
 TODO Add full system documentation
 
+
+Stage 4.1
+---------
+
+Networking extension
+
+Using SPI to connect with a Pico/ESP on the cart port...
+
+SPI protocol to be something like...
+
+Host sending
+
+Byte $01 $xx  - Connect to $xx in address book
+Byte $02 $xx  - Sending data ext
+
+Poll to read any incoming data
+
+
+Byte $03 $xxxx $xx  Save byte to 
+
+
+
 Stage 4.5 TODO
 --------------
 

@@ -1566,6 +1566,7 @@ endif
 
 if MALLOC_4
 
+; My memory allocation code. Very very simple....
 ; allocate space under 250 chars
 
 heap_init:

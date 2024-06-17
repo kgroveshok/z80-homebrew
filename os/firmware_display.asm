@@ -1,10 +1,7 @@
 ; display routines that use the physical hardware abstraction layer
 
 
-; TODO windowing
-; TODO frame buffer
-
-
+; TODO windowing?
 
 ; TODO scroll line up
 
@@ -21,8 +18,30 @@ scroll_up:
  	ld hl, display_row_4
 	ld bc, display_cols
 	ldir
+
+; TODO clear row 4
+
 	ret
 	
+scroll_down:
+	ld de, display_row_4
+ 	ld hl, display_row_3
+	ld bc, display_cols
+	ldir
+	ld de, display_row_3
+ 	ld hl, display_row_2
+	ld bc, display_cols
+	ldir
+	ld de, display_row_2
+ 	ld hl, display_row_1
+	ld bc, display_cols
+	ldir
+; TODO clear row 1
+	ret
+
+
+
+
 
 ; clear active frame buffer
 

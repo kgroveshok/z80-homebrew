@@ -599,29 +599,36 @@ PART DONE break out parser so it can be used by LIST, FORGET, WORDS, UWORDS and 
 
 
 TOTEST Add a dot comment to forward the next print position use .>   
-TODO Add loads of example Forth code
-TODO Add keyboard macro defs on function keys
-TODO Due to bad performance of the parser (???) need to look at compiler
+TODO have a flag to enable forward cursor from each . or .-
 TO TEST EDIT word which allows edit of item on tos - word added but does not copy from stack
+
 TODO add more editing features 
 TODO fix editor bugs
-TODO update schematics with 4x40 LCD and the location of the spare E link
-TODO update schematics with better design for the next version?
-
-TODO random malloc failure. Added a macro DEBUG_FORTH_MALLOC_HIGH but not quite right so disabled for now.
+TODO fix editor issues
 TODO need words to report on hardware e.g. screen dims
 TODO need word to get file id by name
 TODO need word to get file name by id
 TODO need word to report where cursor current at
-TODO have a flag to enable forward cursor from each . or .-
-TODO fix editor issues
+
 TODO have a word to set break point at a DMARKer
+
+
+TODO random malloc failure. Added a macro DEBUG_FORTH_MALLOC_HIGH but not quite right so disabled for now.
 TODO BUG Using my malloc I is not working in loops. Why? Only when malloc free is enabled. Bug there
 TODO Dont think parser calls are releasing memory
 TODO BUG hline with my malloc is copying too much somewhere. Extending malloc by four bytes solves problem but allocating required is causing crashes. problem is not do loop or i use. at works too. very odd.  it is dot for strings that is crashing after a couple of goes. does it fail outside of loops? yes. second time. must be memory overwrite. Might also be a reason the other malloc is failing.
 
+TODO Add keyboard macro defs on function keys
+TODO Due to bad performance of the parser (???) need to look at compiler
+
+Documentation Tasks
+-------------------
+
+TODO Add loads of example Forth code - added some examples in word markup generation
+TODO update schematics with 4x40 LCD and the location of the spare E link
+TODO update schematics with better design for the next version?
 TODO New case for Mega
-TODO Tidy up README with sections and photos of progress.
+DONE Tidy up README with sections and photos of progress.
 TODO Tidy up code base: Make sure functions in suitable files 
 TODO Tidy up code base: Reindent
 TODO Tidy up code base: Remove redundant code/comments
@@ -643,11 +650,10 @@ Host sending
 Byte $01 $xx  - Connect to $xx in address book
 Byte $02 $xx  - Sending data ext
 
-Poll to read any incoming data
-
-
 Byte $03 $xxxx $xx  Save byte to 
+Byte $04 $xx  Bank selection
 
+Poll to read any incoming data
 
 
 Stage 4.5 TODO

@@ -287,20 +287,6 @@ forth_warmstart:
 ; this is called to setup the whole Forth system
 
 forth_init:
-;	call update_display
-;	call delay1s
-;	ld a,'.'
-;	call fill_display
-;	call update_display
-;	call delay1s
-;
-;            ld a, display_row_1
-;	ld de, .bootforth
-;	call str_at_display
-;	call update_display
-;
-;	call delay1s
-;	call delay1s
 
 	; setup stack over/under flow checks
 

@@ -2,7 +2,6 @@
 
 
 ; TODO do cursor shape change for shift keys
-; TODO rows are round the wrong way for the pin sequence on the header. Reverse the row mappings
 ; TODO hard coded positions for the shift keys. Change to work like 4x4 and detect and then hide them
 
 
@@ -75,18 +74,6 @@ key_init:
 ;            CALL fLCD_Data     ;Write character in A at cursor
 
 ; keyboard scanning 
-
-
-; key_rows: equ 4
-; key_cols: equ 4
-; keyscan_table: edu ( tos-stacksize-(key_rows*key_cols))
-
-; key_scanr: equ key_row_bitmask
-; key_scanc: equ key_col_bitmask
-
-; key_char_map: equ key_map
-
-
 
 ; character in from keyboard
 

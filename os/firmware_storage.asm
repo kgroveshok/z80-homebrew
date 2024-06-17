@@ -2,19 +2,6 @@
 ; persisent storage hardware abstraction layer 
 
 
-; TODO get block
-; TODO save block
-; TODO load file
-; TODO save file
-; TODO get dir
-; TODO format/init storage 
-
-
-; TODO Redo and treat like a tape drive rather than having random access
-
-
-
-
 
 ; Block 0 on storage is a config state
 

@@ -659,7 +659,7 @@ forth_push_numhl:
 ; else a number
 ;    look for number format identifier
 ;    $xx hex
-;    bxxxxx bin
+;    %xxxxx bin
 ;    xxxxx decimal
 ;    convert number to 16bit word. 
 ;    malloc word + 1 with flag to identiy as num
@@ -681,6 +681,8 @@ endif
 	jr z, .fapstr
 	cp '$'
 	jp z, .faphex
+	cp '%'
+	jp z, .fapbin
 ;	cp 'b'
 ;	jp z, .fabin
 	; else decimal
@@ -863,6 +865,34 @@ endif
 	;ld (cli_origptr),hl
 
 	ret
+
+.fapbin:    ; push a binary string. 
+	ld de, 0   ; hold a 16bit value
+
+.fapbinshift:	inc hl 
+	ld a,(hl)
+	cp 0     ; done scanning 
+	jr z, .fapbdone  	; got it in HL so push 
+
+	; left shift de
+	ex de, hl	
+	add hl, hl
+
+	; is 1
+	cp '1'
+	jr nz, .binzero
+	bit 1, l
+.binzero:
+	ex de, hl	 ; save current de
+	jr .fapbinshift
+
+.fapbdone:
+	ex de, hl
+	jr .faprawhl
+
+
+
+
 
 .faphex:   ; hex is always stored as a 16bit word
 	; skip number prefix

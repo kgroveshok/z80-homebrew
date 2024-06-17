@@ -14,9 +14,10 @@ keyword has a byte OP code.
 Stack Values
 ============
 
-$xxxx  - 16bit Hex value
-$xx    -  8bit Hex Value
-"xxx"  - String pointer    (TODO)
+$xxxx  - 16bit Hex int value
+$xx    -  8bit Hex int value 
+"xxx"  - String (250 char max)
+%xxxxx  - 16bit binary value
 
 Words
 =====
@@ -29,7 +30,8 @@ Restrictions
 ============
 
 
-* So far IF THEN is working but can't do nested IFs. DO LOOP is working and likewise can't do nested loops.
+* So far IF THEN is working but can't do nested IFs on same line (sub-words are fine). 
+* DO LOOP is working and can do nested loops.
 * 16bit Int maths is working.
 * Frame buffer display is slowing things down so now have a word to disable refresh on every . and rely on DRAW to refresh on demand.
 

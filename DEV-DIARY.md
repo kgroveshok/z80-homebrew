@@ -598,9 +598,9 @@ DONE Sort out the EXEC word so that I can create a simple save and load of UWORD
 PART DONE break out parser so it can be used by LIST, FORGET, WORDS, UWORDS and SAVE 
 
 
-TOTEST Add a dot comment to forward the next print position use .>   
-TODO have a flag to enable forward cursor from each . or .-
-TO TEST EDIT word which allows edit of item on tos - word added but does not copy from stack
+DONE Add a dot comment to forward the next print position use .>   
+DONE have a flag to enable forward cursor from each . or .-
+DONT word which allows edit of item on tos - word added but does not copy from stack
 
 TODO add more editing features 
 TODO fix editor bugs

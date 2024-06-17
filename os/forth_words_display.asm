@@ -1,7 +1,32 @@
 
 .ATP:
 	CWHEAD .FB 78 "AT?" 3 WORD_FLAG_CODE
-; | AT? ( -- r c )  Push to stack the current position of the next print | TODO
+; | AT? ( -- c r )  Push to stack the current position of the next print | TO TEST
+		ld a, (f_cursor_ptr)
+
+if DEBUG_FORTH_WORDS
+	DMARK "AT?"
+	CALLMONITOR
+endif	
+		; count the number of rows
+
+		ld b, 0
+.atpr:		ld c, a    ; save in case we go below zero
+		sub display_cols
+		jp p, .atprunder
+		inc b
+		jr .atpr
+.atprunder:	
+if DEBUG_FORTH_WORDS
+	DMARK "A?2"
+	CALLMONITOR
+endif	
+		ld h, 0
+		ld l, c
+		call forth_push_numhl
+		ld l, b 
+		call forth_push_numhl
+
 
 	NEXTW
 

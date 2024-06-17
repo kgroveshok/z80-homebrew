@@ -74,13 +74,16 @@
         ; | .- ( u -- ) Display TOS replacing any dashes with spaces. Means you dont need to wrap strings in double quotes!   | DONE
 		; get value off TOS and display it
 	ld c, 1	  ; flag for removal of '-' enabled
+	ld a, 0
+	ld (cli_mvdot), a
 	jp .dotgo
 	NEXTW
 .DOTF:
 	CWHEAD .DOT 8 ".>" 2 WORD_FLAG_CODE
-        ; | .> ( u -- ) Display TOS and move the next display point with display  | TO TEST
+        ; | .> ( u -- ) Display TOS and move the next display point with display  | DONE
 		; get value off TOS and display it
-	ld c, 2	  ; flag for normal dot but increase print position
+	ld a, 1
+	ld (cli_mvdot), a
 	jp .dotgo
 	NEXTW
 
@@ -89,6 +92,8 @@
         ; | . ( u -- ) Display TOS | DONE
 		; get value off TOS and display it
 
+	ld a, 0
+	ld (cli_mvdot), a
 ld c, 0	  ; flag for removal of '-' disabled
 	
 
@@ -199,9 +204,14 @@ endif
 
 		pop hl   ; get back string
 
-		ld a, 2
-		cp c
-		jr nz, .noadv
+		ld a, (cli_mvdot)
+if DEBUG_FORTH_DOT
+		ld e,a
+	DMARK "D>1"
+	CALLMONITOR
+endif	
+		cp 0
+		jr z, .noadv
 		; yes, lets advance the print position
 		ld a, 0
 		call strlent
@@ -210,6 +220,10 @@ endif
 		ld a, l
 		ld (f_cursor_ptr), a   ; save new pos
 
+if DEBUG_FORTH_DOT
+	DMARK "D->"
+	CALLMONITOR
+endif	
 
 .noadv:	
 

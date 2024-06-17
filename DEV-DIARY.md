@@ -608,7 +608,7 @@ TODO fix editor issues
 TODO need words to report on hardware e.g. screen dims
 TODO need word to get file id by name
 TODO need word to get file name by id
-TODO need word to report where cursor current at
+TO TEST need word to report where cursor current at
 
 TODO have a word to set break point at a DMARKer
 

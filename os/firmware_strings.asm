@@ -217,7 +217,53 @@ ld hl, (input_ptr)
 ;		pop af
 ;		CALLMONITOR
 ;	endif
-		cp KEY_LEFT
+		cp KEY_HOME
+		jr nz, .iske
+
+		ld a, (input_at_pos)
+		ld (input_at_cursor),a
+		ld a, 0
+		ld (input_cursor), a
+		jp .is1
+		
+.iske:		cp KEY_END
+		jr nz, .isknw
+		jp .is1
+
+.isknw:		cp KEY_NEXTWORD
+		jr nz, .iskpw
+
+.isknwm:	ld hl, (input_ptr)
+		ld a,(hl)	
+		cp 0
+		jp z, .is1    ; end of string
+		cp ' '
+		jp z, .is1    ; end of word
+		inc hl
+		ld (input_ptr), hl
+		ld a, (input_at_cursor)
+		inc a
+		ld (input_at_cursor), a
+		jr .isknwm
+
+.iskpw:		cp KEY_PREVWORD
+		jr nz, .iskl
+.iskpwm:	
+		ld hl, (input_ptr)
+		ld a,(hl)	
+		cp 0 
+		jp z, .is1    ; end of string
+		cp ' '
+		jp z, .is1    ; end of word
+		dec hl
+		ld (input_ptr), hl
+		ld a, (input_at_cursor)
+		dec a
+		ld (input_at_cursor), a
+		jr .iskpwm
+
+
+.iskl:		cp KEY_LEFT
 		jr nz, .isk1
 
 		ld a, (input_cursor)

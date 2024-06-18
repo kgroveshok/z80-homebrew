@@ -659,7 +659,11 @@ Poll to read any incoming data
 Stage 4.5 TODO
 --------------
 
-Power. Could I add battery support so it is portable? Recharge circuit I would need to add though could pull that in from a Pi battery charger.
+DONE Power. Could I add battery support so it is portable? Recharge circuit I would need to add though could pull that in from a Pi battery charger. Easy. Using Rpi Lipo boards.
+
+Trying out:
+https://shop.pimoroni.com/products/lipo-amigo?variant=39779302539347
+
 
 Or would normal battery packs work long enough to make it worth while? 
 

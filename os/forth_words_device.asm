@@ -97,23 +97,16 @@ endif
 
 .SPIO:
 	CWHEAD .SPII 61 "SPIO" 4 WORD_FLAG_CODE
-; | SPIO ( u1 u2 -- ) Send byte u1 to SPI device u2 |  WIP
+; | SPIO ( u1 -- ) Send byte u1 to SPI  |  DONE
 
 		; get port
 
-		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
-
-		push hl    ; u2 - byte
-
-		; destroy value TOS
-
-		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
 		; get byte to send
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
-		push hl    ; u1 - addr
+		push hl    ; u1 
 
 		; destroy value TOS
 
@@ -121,15 +114,13 @@ endif
 
 		; one value on hl get other one back
 
-		pop de   ; u1 - byte
-
 		pop hl   ; u2 - addr
 
 		; TODO Send SPI byte
 
 
-		ld a, e
-		call se_writebyte
+		ld a, l
+		call spi_send_byte
 
 		
 
@@ -137,26 +128,11 @@ endif
 
 .SPII:
 	CWHEAD .SESEL 62 "SPII" 5 WORD_FLAG_CODE
-; | SPII ( u1 -- ) Get a byte from SPI device u2 | WIP
-
-		; get port
-
-		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
-
-		push hl
-
-		; destroy value TOS
-
-		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
-
-		; one value on hl get other one back
-
-		pop hl
-
+; | SPII ( -- u1 ) Get a byte from SPI  | DONE
 
 		; TODO Get SPI byte
 
-		call se_readbyte
+		call spi_read_byte
 
 		ld h, 0
 		ld l, a

@@ -96,6 +96,23 @@ endif
 
 
 .SPIO:
+
+	CWHEAD .SPICEH 61 "SPICEL" 6 WORD_FLAG_CODE
+; | SPICEL ( -- ) Set SPI CE low for the currently selected device |  DONE
+
+		call spi_ce_low
+    NEXTW
+
+.SPICEH:
+	CWHEAD .SPIOb 61 "SPICEH" 6 WORD_FLAG_CODE
+; | SPICEH ( -- ) Set SPI CE high for the currently selected device |  DONE
+
+		call spi_ce_high
+    NEXTW
+
+
+.SPIOb:
+
 	CWHEAD .SPII 61 "SPIO" 4 WORD_FLAG_CODE
 ; | SPIO ( u1 -- ) Send byte u1 to SPI  |  DONE
 
@@ -118,11 +135,8 @@ endif
 
 		; TODO Send SPI byte
 
-
 		ld a, l
 		call spi_send_byte
-
-		
 
 		NEXTW
 

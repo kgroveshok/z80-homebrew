@@ -8,7 +8,7 @@ if SOUND_ENABLE
 	
 
 		NEXTW
-.AFTERSOUND
+.AFTERSOUND:
 endif
 
 .GP1:

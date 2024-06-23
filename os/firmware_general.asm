@@ -48,6 +48,8 @@ delay1s:
    ; Clobbers A, d and e
     ld      bc,0      ; # 0ffffh = approx 1s
 delayloop:
+    push bc
+delayloopi:
 ;	push bc
 ;.dl:
     bit     0,a    	; 8
@@ -57,12 +59,14 @@ delayloop:
     dec     bc      	; 6
     ld      a,c     	; 4
     or      b     	; 4
-    jp      nz,delayloop   	; 10, total = 55 states/iteration
+    jp      nz,delayloopi   	; 10, total = 55 states/iteration
     ; 65536 iterations * 55 states = 3604480 states = 2.00248 seconds
 	;pop de
 ;pop bc
 
 ;if CPU_CLOCK_8MHZ
+;    pop bc
+;    push bc
 ;.dl8:
 ;    bit     0,a    	; 8
 ;    bit     0,a    	; 8
@@ -73,6 +77,21 @@ delayloop:
 ;    or      b     	; 4
 ;    jp      nz,.dl8   	; 10, total = 55 states/iteration
 ;endif
+
+;if CPU_CLOCK_10MHZ
+;    pop bc
+;    push bc
+;.dl8:
+;    bit     0,a    	; 8
+;    bit     0,a    	; 8
+;    bit     0,a    	; 8
+;    and     255  	; 7
+;    dec     bc      	; 6
+;    ld      a,c     	; 4
+;    or      b     	; 4
+;    jp      nz,.dl8   	; 10, total = 55 states/iteration
+;endif
+    pop bc
 
 	ret
 

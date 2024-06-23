@@ -1,9 +1,18 @@
 ; Device support for AY38910 sound chip
 
-
+; Set to use cart extension port instead of Z80 bus
+SOUND_CARTEXT: equ 1
 
 
 sound_init:
+
+
+; TODO not working switch to using the cartext
+; TODO BC1 pin?
+; TODO BDIR pin?
+; TODO reset pin?
+; TODO move data bus to shift reg
+
 
 ;# TODO needs the reset. Tie to Z80 reset line
 

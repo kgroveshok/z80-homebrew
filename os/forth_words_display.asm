@@ -105,8 +105,10 @@ endif
 	NEXTW
 .DOTF:
 	CWHEAD .DOT 8 ".>" 2 WORD_FLAG_CODE
-        ; | .> ( u -- ) Display TOS and move the next display point with display  | DONE
+        ; | .> ( u -- ) Display TOS and move the next display point with display  | WIP
 		; get value off TOS and display it
+        ; TODO BUG adds extra spaces
+        ; TODO BUG handle numerics?
 	ld a, 1
 	ld (cli_mvdot), a
 	jp .dotgo

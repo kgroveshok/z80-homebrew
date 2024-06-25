@@ -6,6 +6,25 @@ SOUND_CARTEXT: equ 1
 
 sound_init:
 
+    ; reset AY
+
+    ld a, 255
+    res AY_RESET,a
+
+    ld (spi_cartdev2), a     ; set all command bits for shift to high
+
+    call sound_ay_shift_cd
+
+    nop
+    nop
+    nop
+    nop
+
+    ld a, 255
+
+    ld (spi_cartdev2), a     ; set all command bits for shift to high
+
+    call sound_ay_shift_cd
 
 ; TODO not working switch to using the cartext
 ; TODO BC1 pin?
@@ -164,27 +183,149 @@ note:
 ;#
 
 
+; Pins for the double serial latch clocking
+
+CART_SER_PIN: equ 0
+CART_G_PIN: equ 1
+CART_RCK_PIN: equ 2
+CART_LATCH_PIN: equ 1
+; TODO dont need pin 3 - join with 2?
+
+CART_AY_CE: equ 4
+
+
+; spi_cartdev2 control lines for the AY
+
+AY_BC1: equ 0
+AY_BDIR: equ 1
+AY_RESET: equ 2
+
+
+; byte to send in a through shift reg
+
+sound_ay_send_byte:
+	; save byte to send for bit mask shift out
+        ld c,a
+	ld a,(spi_cartdev)
+	 
+	; clock out	each bit of the byte msb first
+
+	ld b, 8
+.ssb1:
+	; clear so bit 
+	res CART_SER_PIN, a
+	rl c
+	; if bit 7 is set then carry is set
+	jr nc, .ssb2
+	set CART_SER_PIN,a
+.ssb2:  ; output bit to ensure it is stable
+	out (SOUND_DEVICE),a
+	nop
+	; clock bit high
+	set CART_RCK_PIN,a
+	out (SOUND_DEVICE),a
+	nop
+	; then low
+	res CART_RCK_PIN,a
+	out (SOUND_DEVICE),a
+	nop
+	djnz .ssb1
+
+	ld (spi_cartdev),a
+	ret
+
+; Shift out the control byte for the AY and the data to the shift reg
+; a = data to clouck output
+sound_ay_shift_cd:
+    call sound_ay_ce_enable
+    push af    ; save the data to send
+
+    ld a, (spi_cartdev2)     ; first send the control lines to the shift reg
+    call sound_ay_send_byte
+
+    pop af     ; now send our data
+    call sound_ay_send_byte
+    
+    call sound_ay_shift_latch
+
+    nop
+    nop
+    nop
+
+    call sound_ay_ce_disable
+    ret
+
+
+
 sound_ay_inactive:
 ;	#    BC1_PIN.low()
 ;	#    BDIR_PIN.low()
 	
 ;	#ld a, 0
-	out (SOUND_DEVICE), a
+;	out (SOUND_DEVICE), a
+    ld a, (spi_cartdev2)
+    set AY_RESET,a
+    res AY_BC1, a
+    res AY_BDIR, a
+    ld (spi_cartdev2),a
+    ld a, 0
+    call sound_ay_shift_cd
 	ret
+
+sound_ay_shift_latch:
+	ld a, (spi_cartdev)
+    res CART_LATCH_PIN,a
+    out (SOUND_DEVICE),a
+    nop
+    nop
+    nop
+
+    set CART_LATCH_PIN,a
+    out (SOUND_DEVICE),a
+    ret
+    
+
+sound_ay_ce_enable:
+	ld a, (spi_cartdev)
+    
+    res CART_AY_CE,a
+    ld (spi_cartdev), a
+    out (SOUND_DEVICE),a
+    ret
+
+sound_ay_ce_disable:
+	ld a, (spi_cartdev)
+    
+    set CART_AY_CE,a
+    ld (spi_cartdev), a
+    out (SOUND_DEVICE),a
+    ret
 
 
 sound_ay_latch:
 ;#    BC1_PIN.high()
 ;#    BDIR_PIN.high()
 ;	#ld a, 0
-	out (SOUND_DEVICE+3), a
+    ld a, (spi_cartdev2)
+    set AY_RESET,a
+    set AY_BC1, a
+    set AY_BDIR, a
+    ld (spi_cartdev2),a
+    ld a, 0
+    call sound_ay_shift_cd
 	ret 
 
 sound_ay_write:
 ;#    BC1_PIN.low()
 ;#    BDIR_PIN.high()
 ;	#ld a, 0
-	out (SOUND_DEVICE+2), a
+    ld a, (spi_cartdev2)
+    set AY_RESET,a
+    res AY_BC1, a
+    set AY_BDIR, a
+    ld (spi_cartdev2),a
+    ld a, 0
+    call sound_ay_shift_cd
 	ret 
 
 ;# h = reg

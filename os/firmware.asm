@@ -204,7 +204,8 @@ store_tmppageid: equ store_filecache-2    ; phyical page id temp
 
 
 spi_cartdev: equ store_tmppageid - 1      ; holds bit mask to send to portb (ext spi) devices
-spi_portbyte: equ spi_cartdev - 1      ; holds bit mask to send to spi bus 
+spi_cartdev2: equ spi_cartdev - 1      ; holds bit mask to send to portb's shift reg devices
+spi_portbyte: equ spi_cartdev2 - 1      ; holds bit mask to send to spi bus 
 spi_device: equ spi_portbyte - 1    ; bit mask to send to porta (eeproms) devices
 
 ;;;;; forth cli params

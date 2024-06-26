@@ -1,5 +1,5 @@
 
-; | ## FIxed Storage Words
+; | ## Fixed Storage Words
 
 
 .BYID:

@@ -284,7 +284,7 @@
 
 .MIN:
 	CWHEAD .MAX 53 "MIN" 3 WORD_FLAG_CODE
-; | MIN (  u1 u2 -- u3 ) Whichever is the smallest value is pushed back onto the stack | TEST NO DEBUG
+; | MIN (  u1 u2 -- u3 ) Whichever is the smallest value is pushed back onto the stack | DONE
 		; get u2
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -333,7 +333,7 @@
 	       NEXTW
 .MAX:
 	CWHEAD .RND16 54 "MAX" 3 WORD_FLAG_CODE
-; | MAX (  u1 u2 -- u3 )  Whichever is the largest value is pushed back onto the stack | TEST NO DEBUG
+; | MAX (  u1 u2 -- u3 )  Whichever is the largest value is pushed back onto the stack | DONE
 		; get u2
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol

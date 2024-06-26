@@ -4,6 +4,9 @@
 
 
 
+## Core Words
+
+
 ### HEAP ( -- u1 u2 )   Pushes u1 the current number of bytes in the heap and u2 the remaining bytes - Only present if using my MALLOC | DONE
 
 
@@ -247,6 +250,9 @@
 ### ) ( -- )  End of comment |  DONE 
 
 
+## Device Words
+
+
 ### NOTE ( ud uf --  )  Plays a note of frequency uf for the duration of ud millseconds | TODO
 
 
@@ -284,6 +290,9 @@
 
 
 ### CARTDEV ( u1 -- ) Select cart device 1-8 (Disables BANK). Set to zero to disable devices. |  DONE
+
+
+## Display Words
 
 
 ### AT? ( -- c r )  Push to stack the current position of the next print | TO TEST
@@ -352,6 +361,9 @@
 ### MENU ( u1....ux n ut -- n ) Create a menu. Ut is the title, n is the number of menu items on stack. Push number selection to TOS |
 
 
+## Program Flow Words
+
+
 ### IF ( w -- f ) If TOS is true exec code following up to THEN - Note: currently not supporting ELSE or nested IF | DONE
 
 
@@ -379,6 +391,9 @@
 ### UNTIL ( u -- ) Exit REPEAT...UNTIL loop if TOS is false  | DONE
 
 
+## Keyboard Words
+
+
 ### KEY ( -- w f ) Scan for keypress but do not wait true if next item on stack is key press | TODO
 
 
@@ -389,6 +404,9 @@
 
 
 ### EDIT ( u -- u ) Takes string on TOS and allows editing of it. Pushes it back once done. | DONE
+
+
+## Logic Words
 
 
 ### IS ( s1 s2  -- f ) Push true if string s1 is the same as s2 | TODO
@@ -407,6 +425,9 @@
 
 
 ### = ( u1 u2 -- f ) True if u1 equals u2 | DONE
+
+
+## Maths Words
 
 
 ### + ( u u -- u )    Add two numbers and push result   | INT DONE
@@ -434,6 +455,9 @@
 
 
 ### RND ( u1 u2 -- u ) Generate a random number no lower than u1 and no higher than u2 and push to stack | DONE
+
+
+## FIxed Storage Words
 
 
 ### BYID ( u -- s ) Get the name of the file in the current BANK using the file ID u | TODO
@@ -551,6 +575,9 @@
 
 
 ### LABELS (  -- b n .... c  )  Pushes each storage bank labels (n) along with id (b) onto the stack giving count (c) of banks  | DONE
+
+
+## String Words
 
 
 ### TYPE ( u -- iu s ) Push type of value on TOS - 's' string, 'i' integer...   | DONE
@@ -862,6 +889,9 @@
 
 
 
+## Core Words
+
+
 ### EXEC ( u -- )    Execs the string on TOS as a FORTH expression | CRASHES ON NEXTW
 
 
@@ -886,6 +916,9 @@
 ### The quoted most also be in upper case.
 
 
+## Device Words
+
+
 ### NOTE ( ud uf --  )  Plays a note of frequency uf for the duration of ud millseconds | TODO
 
 
@@ -907,6 +940,9 @@
 ### OUT ( u1 u2 -- ) Perform Z80 OUT to port u2 sending byte u1 | TO TEST
 
 
+## Display Words
+
+
 ### AT? ( -- c r )  Push to stack the current position of the next print | TO TEST
 
 
@@ -922,10 +958,19 @@
 ### MENU ( u1....ux n ut -- n ) Create a menu. Ut is the title, n is the number of menu items on stack. Push number selection to TOS |
 
 
+## Program Flow Words
+
+
 ### ELSE ( -- ) Not supported - does nothing | TODO
 
 
+## Keyboard Words
+
+
 ### KEY ( -- w f ) Scan for keypress but do not wait true if next item on stack is key press | TODO
+
+
+## Logic Words
 
 
 ### IS ( s1 s2  -- f ) Push true if string s1 is the same as s2 | TODO
@@ -937,10 +982,16 @@
 ### 0= ( u -- f ) Push true if u equals 0 | TEST NO DEBUG
 
 
+## Maths Words
+
+
 ### MIN (  u1 u2 -- u3 ) Whichever is the smallest value is pushed back onto the stack | TEST NO DEBUG
 
 
 ### MAX (  u1 u2 -- u3 )  Whichever is the largest value is pushed back onto the stack | TEST NO DEBUG
+
+
+## FIxed Storage Words
 
 
 ### BYID ( u -- s ) Get the name of the file in the current BANK using the file ID u | TODO
@@ -959,6 +1010,9 @@
 
 
 ### BLOAD ( w u a -- )    Load binary file from file name w on bank u into address u | TODO
+
+
+## String Words
 
 
 ### UPPER ( s -- s ) Upper case string s  | TODO

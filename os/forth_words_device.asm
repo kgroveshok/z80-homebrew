@@ -1,5 +1,7 @@
 ; Device related words
 
+; | ## Device Words
+
 if SOUND_ENABLE
 .NOTE:
 	CWHEAD .AFTERSOUND 31 "NOTE" 4 WORD_FLAG_CODE

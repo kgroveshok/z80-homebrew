@@ -1,4 +1,6 @@
 
+; | ## Maths Words
+
 .PLUS:	
 	CWHEAD .NEG 1 "+" 1 WORD_FLAG_CODE
 ; | + ( u u -- u )    Add two numbers and push result   | INT DONE

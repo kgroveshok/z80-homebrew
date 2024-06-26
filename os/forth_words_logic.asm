@@ -1,4 +1,5 @@
 
+; | ## Logic Words
 
 .IS:
 	CWHEAD .LZERO 25 "IS" 2 WORD_FLAG_CODE

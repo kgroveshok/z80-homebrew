@@ -1,4 +1,5 @@
 
+; | ## String Words
 
 .TYPE:
 	CWHEAD .UPPER 52 "TYPE" 4 WORD_FLAG_CODE

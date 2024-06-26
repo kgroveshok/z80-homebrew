@@ -1,975 +1,987 @@
-Forth Language Reference
+# Forth Language Reference
 
 
-------------------------
 
 
- HEAP ( -- u1 u2 )   Pushes u1 the current number of bytes in the heap and u2 the remaining bytes - Only present if using my MALLOC | DONE
 
+* HEAP ( -- u1 u2 )   Pushes u1 the current number of bytes in the heap and u2 the remaining bytes - Only present if using my MALLOC | DONE
 
- | u1 - Current number of bytes in the heap
 
+ u1 - Current number of bytes in the heap
 
- | u2 - Remaining bytes left on the heap
 
+ u2 - Remaining bytes left on the heap
 
- | 
 
+ 
 
- | The heap is used for storing user defined words as well as any values pushed to stack.
 
+ The heap is used for storing user defined words as well as any values pushed to stack.
 
- EXEC ( u -- )    Execs the string on TOS as a FORTH expression | CRASHES ON NEXTW
 
+* EXEC ( u -- )    Execs the string on TOS as a FORTH expression | CRASHES ON NEXTW
 
- | u - A qutoed string which can consist of any valid Forth expression excluding : defintions (use LOAD instead)
 
+ u - A qutoed string which can consist of any valid Forth expression excluding : defintions (use LOAD instead)
 
- |
 
 
- |  
 
 
- DUP ( u -- u u )     Duplicate whatever item is on TOS | DONE
+  
 
 
- SWAP ( w1 w2 -- w2 w1 )    Swap top two items  on TOS | DONE
+* DUP ( u -- u u )     Duplicate whatever item is on TOS | DONE
 
 
- : ( -- )         Create new word | DONE
+* SWAP ( w1 w2 -- w2 w1 )    Swap top two items  on TOS | DONE
 
 
- ; ( -- )     Terminate new word and return exec to previous exec level | DONE
+* : ( -- )         Create new word | DONE
 
 
- DROP ( w -- )   drop the TOS item   | DONE
+* ; ( -- )     Terminate new word and return exec to previous exec level | DONE
 
 
- 2DUP ( w1 w2 -- w1 w2 w1 w2 ) Duplicate the top two items on TOS  | DONE
+* DROP ( w -- )   drop the TOS item   | DONE
 
 
- 2DROP ( w w -- )    Double drop | DONE
+* 2DUP ( w1 w2 -- w1 w2 w1 w2 ) Duplicate the top two items on TOS  | DONE
 
 
- 2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items | TODO
+* 2DROP ( w w -- )    Double drop | DONE
 
 
- @ ( w -- ) Push onto TOS byte stored at address   | DONE
+* 2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items | TODO
 
 
- C@  ( w -- ) Push onto TOS byte stored at address   | DONE
+* @ ( w -- ) Push onto TOS byte stored at address   | DONE
 
 
- ! ( x w -- ) Store x at address w      | DONE
+* C@  ( w -- ) Push onto TOS byte stored at address   | DONE
 
 
- C!  ( x w -- ) Store x at address w  | DONE
+* ! ( x w -- ) Store x at address w      | DONE
 
 
- CALL ( w -- w  ) machine code call to address w  push the result of hl to stack | TO TEST
+* C!  ( x w -- ) Store x at address w  | DONE
 
 
- DEPTH ( -- u ) Push count of stack | DONE
+* CALL ( w -- w  ) machine code call to address w  push the result of hl to stack | TO TEST
 
 
- OVER ( n1 n2 -- n1 n2 n1 )  Copy one below TOS onto TOS | DONE
+* DEPTH ( -- u ) Push count of stack | DONE
 
 
- PAUSEMS ( n -- )  Pause for n millisconds | DONE
+* OVER ( n1 n2 -- n1 n2 n1 )  Copy one below TOS onto TOS | DONE
 
 
- PAUSE ( n -- )  Pause for n seconds | DONE
+* PAUSEMS ( n -- )  Pause for n millisconds | DONE
 
 
- ROT ( u1 u2 u3 -- u2 u3 u1 ) Rotate top three items on stack | DONE
+* PAUSE ( n -- )  Pause for n seconds | DONE
 
 
- WORDS (  -- s1 ... sx u )   List the system and user word dict | TODO
+* ROT ( u1 u2 u3 -- u2 u3 u1 ) Rotate top three items on stack | DONE
 
 
- UWORDS (  -- s1 ... sn u )   List user word dict | DONE
+* WORDS (  -- s1 ... sx u )   List the system and user word dict | TODO
 
 
- | After use the TOS will have a count of the number of user words that have been pushed to stack.
+* UWORDS (  -- s1 ... sn u )   List user word dict | DONE
 
 
- | Following the count are the individual words.
+ After use the TOS will have a count of the number of user words that have been pushed to stack.
 
 
- |
+ Following the count are the individual words.
 
 
- | e.g. UWORDS
 
 
- | BOX DIRLIST 2
 
+ e.g. UWORDS
 
- | 
 
+ BOX DIRLIST 2
 
- | Can be used to save the words to storage via:
 
+ 
 
- | UWORDS $01 DO $01 APPEND LOOP
 
+ Can be used to save the words to storage via:
 
- BP ( u1 -- ) Enable or disable break point monitoring | DONE
 
+ UWORDS $01 DO $01 APPEND LOOP
 
- | $00 Will enable the break points within specific code paths
 
+* BP ( u1 -- ) Enable or disable break point monitoring | DONE
 
- | $01 Will disable break points
 
+ $00 Will enable the break points within specific code paths
 
- | 
 
+ $01 Will disable break points
 
- | By default break points are off. Either the above can be used to enable them
 
+ 
 
- | or if a key is held down during start up the spashscreen will appear to freeze
 
+ By default break points are off. Either the above can be used to enable them
 
- | and on release of the pressed key a message will be disaplayed to notify
 
+ or if a key is held down during start up the spashscreen will appear to freeze
 
- | that break points are enabled. Pressing any key will then continue boot process.
 
+ and on release of the pressed key a message will be disaplayed to notify
 
- MONITOR ( -- ) Display system breakpoint/monitor | DONE
 
+ that break points are enabled. Pressing any key will then continue boot process.
 
- | At start the current various registers will be displayed with contents.
 
+* MONITOR ( -- ) Display system breakpoint/monitor | DONE
 
- | Top right corner will show the most recent debug marker seen.
 
+ At start the current various registers will be displayed with contents.
 
- | The bottom of the screen will also show the values of the data stack pointer (DSP)
 
+ Top right corner will show the most recent debug marker seen.
 
- | and the return stack pointer (RSP).
 
+ The bottom of the screen will also show the values of the data stack pointer (DSP)
 
- | Pressing:
 
+ and the return stack pointer (RSP).
 
- |    1 - Initial screen
 
+ Pressing:
 
- |    2 - Display a data dump of HL
 
+    1 - Initial screen
 
- |    3 - Display a data dump of DE
 
+    2 - Display a data dump of HL
 
- |    4 - Display a data dump of BC
 
+    3 - Display a data dump of DE
 
- |    5 - Display a data dump of HL
 
+    4 - Display a data dump of BC
 
- |    6 - Display a data dump of DSP
 
+    5 - Display a data dump of HL
 
- |    7 - Display a data dump of RSP
 
+    6 - Display a data dump of DSP
 
- |    8 - Display a data dump of what is at DSP
 
+    7 - Display a data dump of RSP
 
- |    9 - Display a data dump of what is at RSP
 
+    8 - Display a data dump of what is at DSP
 
- |    0 - Exit monitor and continue running. This will also enable break points
 
+    9 - Display a data dump of what is at RSP
 
- |    * - Disable break points
 
+    0 - Exit monitor and continue running. This will also enable break points
 
- |    # - Enter traditional monitor mode
 
+    * - Disable break points
 
- |
 
+    # - Enter traditional monitor mode
 
- | Monitor Mode
 
 
- | ------------
 
 
- | A prompt of '>' will be shown for various commands:
+ Monitor Mode
 
 
- |    D xxxx - Display a data dump starting from hex address xxxx
+ ------------
 
 
- |    C - Continue display a data dump from the last set address
+ A prompt of '>' will be shown for various commands:
 
 
- |    M xxxx - Set start of memory edit at address xx
+    D xxxx - Display a data dump starting from hex address xxxx
 
 
- |    U xx - Poke the hex byte xx into the address set by M and increment the address to the next location
+    C - Continue display a data dump from the last set address
 
 
- |    Q - Return to previous
+    M xxxx - Set start of memory edit at address xx
 
 
- MALLOC ( u -- u ) Allocate u bytes of memory space and push the pointer TOS  | DONE
+    U xx - Poke the hex byte xx into the address set by M and increment the address to the next location
 
 
- FREE ( u --  ) Free memory block from malloc given u address  | DONE
+    Q - Return to previous
 
 
- LIST ( uword -- u )    List the code to the word that is quoted (so as not to exec) on TOS | DONE
+* MALLOC ( u -- u ) Allocate u bytes of memory space and push the pointer TOS  | DONE
 
 
- The quoted most also be in upper case.
+* FREE ( u --  ) Free memory block from malloc given u address  | DONE
 
 
- FORGET ( uword -- )    Forget the uword on TOS | DONE
+* LIST ( uword -- u )    List the code to the word that is quoted (so as not to exec) on TOS | DONE
 
 
- | Will flag the word's op code to be deleted as well as replace the first char of the word with '_'.
+* The quoted most also be in upper case.
 
 
- NOP (  --  ) Do nothing | DONE
+* FORGET ( uword -- )    Forget the uword on TOS | DONE
 
 
- ( ( -- )  Start of comment | DONE
+ Will flag the word's op code to be deleted as well as replace the first char of the word with '_'.
 
 
- ) ( -- )  End of comment |  DONE 
+* NOP (  --  ) Do nothing | DONE
 
 
- NOTE ( ud uf --  )  Plays a note of frequency uf for the duration of ud millseconds | TODO
+* ( ( -- )  Start of comment | DONE
 
 
- IOIN ( u1 -- u )    Perform a GPIO read of pin u1 and push result  | 
+* ) ( -- )  End of comment |  DONE 
 
 
- IOOUT ( u1 u2 --  )    Perform a GPIO write of pin u1 with pin set to 0 or 1 in u2  | 
+* NOTE ( ud uf --  )  Plays a note of frequency uf for the duration of ud millseconds | TODO
 
 
- IOBYTE ( u1 --  )    Perform a GPIO write of byte u1  | 
+* IOIN ( u1 -- u )    Perform a GPIO read of pin u1 and push result  | 
 
 
- IOSET ( u1 --  )    Setup GPIO pins for I/O direction. Bit is set for write else read pin  | 
+* IOOUT ( u1 u2 --  )    Perform a GPIO write of pin u1 with pin set to 0 or 1 in u2  | 
 
 
- IN ( u1 -- u )    Perform Z80 IN with u1 being the port number. Push result to TOS | TO TEST
+* IOBYTE ( u1 --  )    Perform a GPIO write of byte u1  | 
 
 
- OUT ( u1 u2 -- ) Perform Z80 OUT to port u2 sending byte u1 | TO TEST
+* IOSET ( u1 --  )    Setup GPIO pins for I/O direction. Bit is set for write else read pin  | 
 
 
- SPIO ( u1 u2 -- ) Send byte u1 to SPI device u2 |  WIP
+* IN ( u1 -- u )    Perform Z80 IN with u1 being the port number. Push result to TOS | TO TEST
 
 
- SPII ( u1 -- ) Get a byte from SPI device u2 | WIP
+* OUT ( u1 u2 -- ) Perform Z80 OUT to port u2 sending byte u1 | TO TEST
 
 
- BANK ( u1 -- ) Select Serial EEPROM Bank Device at bank address u1 1-5 (disables CARTDEV). Set to zero to disable storage. | DONE
+* SPICEL ( -- ) Set SPI CE low for the currently selected device |  DONE
 
 
- CARTDEV ( u1 -- ) Select cart device 1-8 (Disables BANK). Set to zero to disable devices. |  DONE
+* SPICEH ( -- ) Set SPI CE high for the currently selected device |  DONE
 
 
- AT? ( -- r c )  Push to stack the current position of the next print | TODO
+* SPIO ( u1 -- ) Send byte u1 to SPI  |  DONE
 
 
- FB ( u -- ) Select frame buffer ID u (1-3)  |  DONE
+* SPII ( -- u1 ) Get a byte from SPI  | DONE
 
 
- | Default frame buffer is 1. System uses 0 which can't be selected for system messages etc.
+* BANK ( u1 -- ) Select Serial EEPROM Bank Device at bank address u1 1-5 (disables CARTDEV). Set to zero to disable storage. | DONE
 
 
- | Selecting the frame buffer wont display unless automatic display is setup (default).
+* CARTDEV ( u1 -- ) Select cart device 1-8 (Disables BANK). Set to zero to disable devices. |  DONE
 
 
- | If automatic display is off then updates will not be shown until DRAW is used.
+* AT? ( -- c r )  Push to stack the current position of the next print | TO TEST
 
 
-  EMIT ( u -- ) Display ascii character  TOS   | DONE
+* FB ( u -- ) Select frame buffer ID u (1-3)  |  DONE
 
 
- .- ( u -- ) Display TOS replacing any dashes with spaces. Means you dont need to wrap strings in double quotes!   | DONE
+ Default frame buffer is 1. System uses 0 which can't be selected for system messages etc.
 
 
- .> ( u -- ) Display TOS and move the next display point with display  | TODO
+ Selecting the frame buffer wont display unless automatic display is setup (default).
 
 
- . ( u -- ) Display TOS | DONE
+ If automatic display is off then updates will not be shown until DRAW is used.
 
 
- CLS ( -- ) Clear current frame buffer and set next print position to top left corner  | DONE
+*  EMIT ( u -- ) Display ascii character  TOS   | DONE
 
 
- DRAW ( -- ) Draw contents of current frame buffer  | DONE
+* .- ( u -- ) Display TOS replacing any dashes with spaces. Means you dont need to wrap strings in double quotes!   | DONE
 
 
- DUMP ( x -- ) With address x display dump   | DONE
+* .> ( u -- ) Display TOS and move the next display point with display  | WIP
 
 
- CDUMP ( -- ) Continue dump of memory from DUMP | DONE
+* . ( u -- ) Display TOS | DONE
 
 
- AT ( u1 u2 -- ) Set next output via . or emit at row u2 col u1 | DONE
+* CLS ( -- ) Clear current frame buffer and set next print position to top left corner  | DONE
 
 
- HOME ( -- ) Reset the current cursor for output to home | DONE
+* DRAW ( -- ) Draw contents of current frame buffer  | DONE
 
 
- BL (  -- c ) Push the value of space onto the stack as a string  | DONE
+* DUMP ( x -- ) With address x display dump   | DONE
 
 
- SPACES ( u -- str ) A string of u spaces is pushed onto the stack | TO TEST
+* CDUMP ( -- ) Continue dump of memory from DUMP | DONE
 
 
- SCROLL ( u1 c1 -- ) Scroll u1 lines/chars in direction c1 | WIP
+* AT ( u1 u2 -- ) Set next output via . or emit at row u2 col u1 | DONE
 
 
- AT@ ( u1 u2 -- n ) Push to stack ASCII value at row u2 col u1 | DONE
+* HOME ( -- ) Reset the current cursor for output to home | DONE
 
 
- ADSP ( u1 --  ) Enable/Disable Auto screen updates (SLOW). | DONE
+* BL (  -- c ) Push the value of space onto the stack as a string  | DONE
 
 
- | If off, use DRAW to refresh. Default is on. $0003 will enable direct screen writes (TODO) 
+* SPACES ( u -- str ) A string of u spaces is pushed onto the stack | TO TEST
 
 
- MENU ( u1....ux n ut -- n ) Create a menu. Ut is the title, n is the number of menu items on stack. Push number selection to TOS |
+* SCROLL ( u1 c1 -- ) Scroll u1 lines/chars in direction c1 - 1=up 2=down | TO TEST
 
 
- IF ( w -- f ) If TOS is true exec code following up to THEN - Note: currently not supporting ELSE or nested IF | DONE
+* AT@ ( u1 u2 -- n ) Push to stack ASCII value at row u2 col u1 | DONE
 
 
- THEN ( -- ) Does nothing. It is a marker for the end of an IF block | DONE
+* ADSP ( u1 --  ) Enable/Disable Auto screen updates (SLOW). | DONE
 
 
- ELSE ( -- ) Not supported - does nothing | TODO
+ If off, use DRAW to refresh. Default is on. $0003 will enable direct screen writes (TODO) 
 
 
- DO ( u1 u2 -- ) Loop starting at u2 with a limit of u1 | DONE
+* MENU ( u1....ux n ut -- n ) Create a menu. Ut is the title, n is the number of menu items on stack. Push number selection to TOS |
 
 
- LOOP ( -- ) Increment and test loop counter  | DONE
+* IF ( w -- f ) If TOS is true exec code following up to THEN - Note: currently not supporting ELSE or nested IF | DONE
 
 
- I ( -- ) Current loop counter | DONE
+* THEN ( -- ) Does nothing. It is a marker for the end of an IF block | DONE
 
 
- -LOOP ( -- ) Decrement and test loop counter  | DONE
+* ELSE ( -- ) Not supported - does nothing | TODO
 
 
- REPEAT ( --  ) Start REPEAT...UNTIL loop  | DONE
+* DO ( u1 u2 -- ) Loop starting at u2 with a limit of u1 | DONE
 
 
- UNTIL ( u -- ) Exit REPEAT...UNTIL loop if TOS is false  | DONE
+* LOOP ( -- ) Increment and test loop counter  | DONE
 
 
- KEY ( -- w f ) Scan for keypress but do not wait true if next item on stack is key press | TODO
+* I ( -- ) Current loop counter | DONE
 
 
- WAITK ( -- w ) Wait for keypress TOS is key press | DONE
+* -LOOP ( -- ) Decrement and test loop counter  | DONE
 
 
- ACCEPT ( -- w ) Prompt for text input and push pointer to string | DONE
+* REPEAT ( --  ) Start REPEAT...UNTIL loop  | DONE
 
 
- EDIT ( u -- u ) Takes string on TOS and allows editing of it. Pushes it back once done. | TO TEST 
+* UNTIL ( u -- ) Exit REPEAT...UNTIL loop if TOS is false  | DONE
 
 
- IS ( s1 s2  -- f ) Push true if string s1 is the same as s2 | TODO
+* KEY ( -- w f ) Scan for keypress but do not wait true if next item on stack is key press | TODO
 
 
- 0< ( u -- f ) Push true if u is less than o | CANT DO UNTIL FLOAT
+* WAITK ( -- w ) Wait for keypress TOS is key press | DONE
 
 
- 0= ( u -- f ) Push true if u equals 0 | TEST NO DEBUG
+* ACCEPT ( -- w ) Prompt for text input and push pointer to string | DONE
 
 
- < ( u1 u2 -- f ) True if u1 is less than u2 | DONE
+* EDIT ( u -- u ) Takes string on TOS and allows editing of it. Pushes it back once done. | DONE
 
 
- > ( u1 u2 -- f ) True if u1 is greater than u2 | DONE
+* IS ( s1 s2  -- f ) Push true if string s1 is the same as s2 | TODO
 
 
- = ( u1 u2 -- f ) True if u1 equals u2 | DONE
+* 0< ( u -- f ) Push true if u is less than o | CANT DO UNTIL FLOAT
 
 
- + ( u u -- u )    Add two numbers and push result   | INT DONE
+* 0= ( u -- f ) Push true if u equals 0 | TEST NO DEBUG
 
 
- - ( u1 u2 -- u )    Subtract u2 from u1 and push result  | INT DONE
+* < ( u1 u2 -- f ) True if u1 is less than u2 | DONE
 
 
- / ( u1 u2 -- result remainder )     Divide u1 by u2 and push result | INT DONE
+* > ( u1 u2 -- f ) True if u1 is greater than u2 | DONE
 
 
- * ( u1 u2 -- u )     Multiply TOS and push result | INT DONE
+* = ( u1 u2 -- f ) True if u1 equals u2 | DONE
 
 
- MIN (  u1 u2 -- u3 ) Whichever is the smallest value is pushed back onto the stack | TEST NO DEBUG
+* + ( u u -- u )    Add two numbers and push result   | INT DONE
 
 
- MAX (  u1 u2 -- u3 )  Whichever is the largest value is pushed back onto the stack | TEST NO DEBUG
+* - ( u1 u2 -- u )    Subtract u2 from u1 and push result  | INT DONE
 
 
- RND16 (  -- n ) Generate a random 16bit number and push to stack | DONE
+* / ( u1 u2 -- result remainder )     Divide u1 by u2 and push result | INT DONE
 
 
- RND8 (  -- n ) Generate a random 8bit number and push to stack | DONE
+* * ( u1 u2 -- u )     Multiply TOS and push result | INT DONE
 
 
- RND ( u1 u2 -- u ) Generate a random number no lower than u1 and no higher than u2 and push to stack | DONE
+* MIN (  u1 u2 -- u3 ) Whichever is the smallest value is pushed back onto the stack | TEST NO DEBUG
 
 
- BYID ( u -- s ) Get the name of the file in the current BANK using the file ID u | TODO
+* MAX (  u1 u2 -- u3 )  Whichever is the largest value is pushed back onto the stack | TEST NO DEBUG
 
 
- BYNAME ( s -- u ) Get the file ID in the current BANK of the file named s | TODO
+* RND16 (  -- n ) Generate a random 16bit number and push to stack | DONE
 
 
- DIR ( u -- lab id ... c t ) Using bank number u push directory entries from persistent storage as w with count u  | DONE
+* RND8 (  -- n ) Generate a random 8bit number and push to stack | DONE
 
 
- SAVE  ( w u -- )    Save user word memory to file name w on bank u | TODO
+* RND ( u1 u2 -- u ) Generate a random number no lower than u1 and no higher than u2 and push to stack | DONE
 
 
- LOAD ( u -- )    Load user word memory from file id on current bank | TO TEST
+* BYID ( u -- s ) Get the name of the file in the current BANK using the file ID u | TODO
 
 
- | The indivdual records being loaded can be both uword word difintions or interactive commands.
+* BYNAME ( s -- u ) Get the file ID in the current BANK of the file named s | TODO
 
 
- | The LOAD command can not be used in any user words or compound lines.
+* DIR ( u -- lab id ... c t ) Using bank number u push directory entries from persistent storage as w with count u  | DONE
 
 
- BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at address a for s bytes | TODO
+* SAVE  ( w u -- )    Save user word memory to file name w on bank u | TODO
 
 
- BLOAD ( w u a -- )    Load binary file from file name w on bank u into address u | TODO
+* LOAD ( u -- )    Load user word memory from file id on current bank | TO TEST
 
 
- SEO ( u1 u2 -- ) Send byte u1 to Serial EEPROM device at address u2 | DONE
+ The indivdual records being loaded can be both uword word difintions or interactive commands.
 
 
- SEI ( u2 -- u1 ) Get a byte from Serial EEPROM device at address u2 | DONE
+ The LOAD command can not be used in any user words or compound lines.
 
 
- FFREE ( -- n )  Gets number of free file blocks on current storage bank | DONE
+* BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at address a for s bytes | TODO
 
 
- SIZE ( u -- n )  Gets number of blocks used by file id u and push to stack | DONE
+* BLOAD ( w u a -- )    Load binary file from file name w on bank u into address u | TODO
 
 
- CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS | DONE
+* SEO ( u1 u2 -- ) Send byte u1 to Serial EEPROM device at address u2 | DONE
 
 
- | e.g. 
+* SEI ( u2 -- u1 ) Get a byte from Serial EEPROM device at address u2 | DONE
 
 
- | TestProgram CREATE
+* FFREE ( -- n )  Gets number of free file blocks on current storage bank | DONE
 
 
- | Top of stack will then be the file ID which needs to be used in all file handling words
+* SIZE ( u -- n )  Gets number of blocks used by file id u and push to stack | DONE
 
 
- | 
+* CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS | DONE
 
 
- | Max file IDs are 255.
+ e.g. 
 
 
- | 
+ TestProgram CREATE
 
 
- APPEND ( u n --  )  Appends data u to file id on current storage bank | DONE
+ Top of stack will then be the file ID which needs to be used in all file handling words
 
 
- | e.g.
+ 
 
 
- | Test CREATE      -> $01
+ Max file IDs are 255.
 
 
- | "A string to add to file" $01 APPEND
+ 
 
 
- | 
+* APPEND ( u n --  )  Appends data u to file id on current storage bank | DONE
 
 
- | The maximum file size currently using 32k serial EEPROMS using 64 byte blocks is 15k.
+ e.g.
 
 
- ERA ( n --  )  Deletes all data for file id n on current storage bank | DONE
+ Test CREATE      -> $01
 
 
- OPEN ( n -- n )  Sets file id to point to first data page for subsequent READs. Pushes the max number of blocks for this file | DONE
+ "A string to add to file" $01 APPEND
 
 
- | e.g.
+ 
 
 
- | $01 OPEN $01 DO $01 READ . LOOP
+ The maximum file size currently using 32k serial EEPROMS using 64 byte blocks is 15k.
 
 
- READ ( n -- n  )  Reads next page of file id and push to stack | DONE
+* ERA ( n --  )  Deletes all data for file id n on current storage bank | DONE
 
 
- | e.g.
+* OPEN ( n -- n )  Sets file id to point to first data page for subsequent READs. Pushes the max number of blocks for this file | DONE
 
 
- | $01 OPEN $01 DO $01 READ . LOOP
+ e.g.
 
 
- EOF ( n -- u )  Returns EOF logical state of file id n - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | DONE
+ $01 OPEN $01 DO $01 READ . LOOP
 
 
- | e.g.
+* READ ( n -- n  )  Reads next page of file id and push to stack | DONE
 
 
- | $01 OPEN REPEAT $01 READ $01 EOF $00 IF LOOP
+ e.g.
 
 
- FORMAT (  --  )  Formats the current bank selected (NO PROMPT!) | DONE
+ $01 OPEN $01 DO $01 READ . LOOP
 
 
- LABEL ( u --  )  Sets the storage bank label to string on top of stack  | DONE
+* EOF ( n -- u )  Returns EOF logical state of file id n - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | DONE
 
 
- LABELS (  -- b n .... c  )  Pushes each storage bank labels (n) along with id (b) onto the stack giving count (c) of banks  | DONE
+ e.g.
 
 
- TYPE ( u -- iu s ) Push type of value on TOS - 's' string, 'i' integer...   | DONE
+ $01 OPEN REPEAT $01 READ $01 EOF $00 IF LOOP
 
 
- UPPER ( s -- s ) Upper case string s  | TODO
+* FORMAT (  --  )  Formats the current bank selected (NO PROMPT!) | DONE
 
 
- LOWER ( s -- s ) Lower case string s  | TODO
+* LABEL ( u --  )  Sets the storage bank label to string on top of stack  | DONE
 
 
- SUBSTR ( s u1 u2 -- s sb ) Push to TOS chars starting at position u1 and with length u2 from string s  | DONE
+* LABELS (  -- b n .... c  )  Pushes each storage bank labels (n) along with id (b) onto the stack giving count (c) of banks  | DONE
 
 
- LEFT ( s u -- s sb ) Push to TOS string u long starting from left of s  | TODO
+* TYPE ( u -- iu s ) Push type of value on TOS - 's' string, 'i' integer...   | DONE
 
 
- RIGHT ( s u -- s sb ) Push to TOS string u long starting from right of s  | TODO
+* UPPER ( s -- s ) Upper case string s  | TODO
 
 
- STR2NUM ( s -- n ) Convert a string on TOS to number | DONE
+* LOWER ( s -- s ) Lower case string s  | TODO
 
 
- NUM2STR ( n -- s ) Convert a number on TOS to string | TODO
+* SUBSTR ( s u1 u2 -- s sb ) Push to TOS chars starting at position u1 and with length u2 from string s  | DONE
 
 
- CONCAT ( s1 s2 -- s3 ) A string of u spaces is pushed onto the stack | TODO
+* LEFT ( s u -- s sb ) Push to TOS string u long starting from left of s  | TODO
 
 
- FIND ( s c -- s u ) Search the string s for the char c and push the position of the first occurance to TOS | TODO
+* RIGHT ( s u -- s sb ) Push to TOS string u long starting from right of s  | TODO
 
 
- LEN (  u1 -- u2 ) Push the length of the string on TOS | DONE
+* STR2NUM ( s -- n ) Convert a string on TOS to number | DONE
 
 
- CHAR ( u -- n ) Get the ascii value of the first character of the string on the stack | DONE
+* NUM2STR ( n -- s ) Convert a number on TOS to string | TODO
 
 
- COPY ( u1 u2 -- Copy string u2 to u1 ) SHOULD THIS BE HANDLED WITH DUP?  | TODO
+* CONCAT ( s1 s2 -- s3 ) A string of u spaces is pushed onto the stack | TODO
 
 
-Words Ready To Use
+* FIND ( s c -- s u ) Search the string s for the char c and push the position of the first occurance to TOS | TODO
 
 
-------------------
+* LEN (  u1 -- u2 ) Push the length of the string on TOS | DONE
 
 
- HEAP ( -- u1 u2 )   Pushes u1 the current number of bytes in the heap and u2 the remaining bytes - Only present if using my MALLOC | DONE
+* CHAR ( u -- n ) Get the ascii value of the first character of the string on the stack | DONE
 
 
- DUP ( u -- u u )     Duplicate whatever item is on TOS | DONE
+* COPY ( u1 u2 -- Copy string u2 to u1 ) SHOULD THIS BE HANDLED WITH DUP?  | TODO
 
 
- SWAP ( w1 w2 -- w2 w1 )    Swap top two items  on TOS | DONE
+# Words Ready To Use
 
 
- : ( -- )         Create new word | DONE
 
 
- ; ( -- )     Terminate new word and return exec to previous exec level | DONE
 
+* HEAP ( -- u1 u2 )   Pushes u1 the current number of bytes in the heap and u2 the remaining bytes - Only present if using my MALLOC | DONE
 
- DROP ( w -- )   drop the TOS item   | DONE
 
+* DUP ( u -- u u )     Duplicate whatever item is on TOS | DONE
 
- 2DUP ( w1 w2 -- w1 w2 w1 w2 ) Duplicate the top two items on TOS  | DONE
 
+* SWAP ( w1 w2 -- w2 w1 )    Swap top two items  on TOS | DONE
 
- 2DROP ( w w -- )    Double drop | DONE
 
+* : ( -- )         Create new word | DONE
 
- @ ( w -- ) Push onto TOS byte stored at address   | DONE
 
+* ; ( -- )     Terminate new word and return exec to previous exec level | DONE
 
- C@  ( w -- ) Push onto TOS byte stored at address   | DONE
 
+* DROP ( w -- )   drop the TOS item   | DONE
 
- ! ( x w -- ) Store x at address w      | DONE
 
+* 2DUP ( w1 w2 -- w1 w2 w1 w2 ) Duplicate the top two items on TOS  | DONE
 
- C!  ( x w -- ) Store x at address w  | DONE
 
+* 2DROP ( w w -- )    Double drop | DONE
 
- DEPTH ( -- u ) Push count of stack | DONE
 
+* @ ( w -- ) Push onto TOS byte stored at address   | DONE
 
- OVER ( n1 n2 -- n1 n2 n1 )  Copy one below TOS onto TOS | DONE
 
+* C@  ( w -- ) Push onto TOS byte stored at address   | DONE
 
- PAUSEMS ( n -- )  Pause for n millisconds | DONE
 
+* ! ( x w -- ) Store x at address w      | DONE
 
- PAUSE ( n -- )  Pause for n seconds | DONE
 
+* C!  ( x w -- ) Store x at address w  | DONE
 
- ROT ( u1 u2 u3 -- u2 u3 u1 ) Rotate top three items on stack | DONE
 
+* DEPTH ( -- u ) Push count of stack | DONE
 
- UWORDS (  -- s1 ... sn u )   List user word dict | DONE
 
+* OVER ( n1 n2 -- n1 n2 n1 )  Copy one below TOS onto TOS | DONE
 
- BP ( u1 -- ) Enable or disable break point monitoring | DONE
 
+* PAUSEMS ( n -- )  Pause for n millisconds | DONE
 
- MONITOR ( -- ) Display system breakpoint/monitor | DONE
 
+* PAUSE ( n -- )  Pause for n seconds | DONE
 
- MALLOC ( u -- u ) Allocate u bytes of memory space and push the pointer TOS  | DONE
 
+* ROT ( u1 u2 u3 -- u2 u3 u1 ) Rotate top three items on stack | DONE
 
- FREE ( u --  ) Free memory block from malloc given u address  | DONE
 
+* UWORDS (  -- s1 ... sn u )   List user word dict | DONE
 
- LIST ( uword -- u )    List the code to the word that is quoted (so as not to exec) on TOS | DONE
 
+* BP ( u1 -- ) Enable or disable break point monitoring | DONE
 
- FORGET ( uword -- )    Forget the uword on TOS | DONE
 
+* MONITOR ( -- ) Display system breakpoint/monitor | DONE
 
- NOP (  --  ) Do nothing | DONE
 
+* MALLOC ( u -- u ) Allocate u bytes of memory space and push the pointer TOS  | DONE
 
- ( ( -- )  Start of comment | DONE
 
+* FREE ( u --  ) Free memory block from malloc given u address  | DONE
 
- ) ( -- )  End of comment |  DONE 
 
+* LIST ( uword -- u )    List the code to the word that is quoted (so as not to exec) on TOS | DONE
 
- BANK ( u1 -- ) Select Serial EEPROM Bank Device at bank address u1 1-5 (disables CARTDEV). Set to zero to disable storage. | DONE
 
+* FORGET ( uword -- )    Forget the uword on TOS | DONE
 
- CARTDEV ( u1 -- ) Select cart device 1-8 (Disables BANK). Set to zero to disable devices. |  DONE
 
+* NOP (  --  ) Do nothing | DONE
 
- FB ( u -- ) Select frame buffer ID u (1-3)  |  DONE
 
+* ( ( -- )  Start of comment | DONE
 
-  EMIT ( u -- ) Display ascii character  TOS   | DONE
 
+* ) ( -- )  End of comment |  DONE 
 
- .- ( u -- ) Display TOS replacing any dashes with spaces. Means you dont need to wrap strings in double quotes!   | DONE
 
+* SPICEL ( -- ) Set SPI CE low for the currently selected device |  DONE
 
- . ( u -- ) Display TOS | DONE
 
+* SPICEH ( -- ) Set SPI CE high for the currently selected device |  DONE
 
- CLS ( -- ) Clear current frame buffer and set next print position to top left corner  | DONE
 
+* SPIO ( u1 -- ) Send byte u1 to SPI  |  DONE
 
- DRAW ( -- ) Draw contents of current frame buffer  | DONE
 
+* SPII ( -- u1 ) Get a byte from SPI  | DONE
 
- DUMP ( x -- ) With address x display dump   | DONE
 
+* BANK ( u1 -- ) Select Serial EEPROM Bank Device at bank address u1 1-5 (disables CARTDEV). Set to zero to disable storage. | DONE
 
- CDUMP ( -- ) Continue dump of memory from DUMP | DONE
 
+* CARTDEV ( u1 -- ) Select cart device 1-8 (Disables BANK). Set to zero to disable devices. |  DONE
 
- AT ( u1 u2 -- ) Set next output via . or emit at row u2 col u1 | DONE
 
+* FB ( u -- ) Select frame buffer ID u (1-3)  |  DONE
 
- HOME ( -- ) Reset the current cursor for output to home | DONE
 
+*  EMIT ( u -- ) Display ascii character  TOS   | DONE
 
- BL (  -- c ) Push the value of space onto the stack as a string  | DONE
 
+* .- ( u -- ) Display TOS replacing any dashes with spaces. Means you dont need to wrap strings in double quotes!   | DONE
 
- AT@ ( u1 u2 -- n ) Push to stack ASCII value at row u2 col u1 | DONE
 
+* . ( u -- ) Display TOS | DONE
 
- ADSP ( u1 --  ) Enable/Disable Auto screen updates (SLOW). | DONE
 
+* CLS ( -- ) Clear current frame buffer and set next print position to top left corner  | DONE
 
- IF ( w -- f ) If TOS is true exec code following up to THEN - Note: currently not supporting ELSE or nested IF | DONE
 
+* DRAW ( -- ) Draw contents of current frame buffer  | DONE
 
- THEN ( -- ) Does nothing. It is a marker for the end of an IF block | DONE
 
+* DUMP ( x -- ) With address x display dump   | DONE
 
- DO ( u1 u2 -- ) Loop starting at u2 with a limit of u1 | DONE
 
+* CDUMP ( -- ) Continue dump of memory from DUMP | DONE
 
- LOOP ( -- ) Increment and test loop counter  | DONE
 
+* AT ( u1 u2 -- ) Set next output via . or emit at row u2 col u1 | DONE
 
- I ( -- ) Current loop counter | DONE
 
+* HOME ( -- ) Reset the current cursor for output to home | DONE
 
- -LOOP ( -- ) Decrement and test loop counter  | DONE
 
+* BL (  -- c ) Push the value of space onto the stack as a string  | DONE
 
- REPEAT ( --  ) Start REPEAT...UNTIL loop  | DONE
 
+* AT@ ( u1 u2 -- n ) Push to stack ASCII value at row u2 col u1 | DONE
 
- UNTIL ( u -- ) Exit REPEAT...UNTIL loop if TOS is false  | DONE
 
+* ADSP ( u1 --  ) Enable/Disable Auto screen updates (SLOW). | DONE
 
- WAITK ( -- w ) Wait for keypress TOS is key press | DONE
 
+* IF ( w -- f ) If TOS is true exec code following up to THEN - Note: currently not supporting ELSE or nested IF | DONE
 
- ACCEPT ( -- w ) Prompt for text input and push pointer to string | DONE
 
+* THEN ( -- ) Does nothing. It is a marker for the end of an IF block | DONE
 
- < ( u1 u2 -- f ) True if u1 is less than u2 | DONE
 
+* DO ( u1 u2 -- ) Loop starting at u2 with a limit of u1 | DONE
 
- > ( u1 u2 -- f ) True if u1 is greater than u2 | DONE
 
+* LOOP ( -- ) Increment and test loop counter  | DONE
 
- = ( u1 u2 -- f ) True if u1 equals u2 | DONE
 
+* I ( -- ) Current loop counter | DONE
 
- + ( u u -- u )    Add two numbers and push result   | INT DONE
 
+* -LOOP ( -- ) Decrement and test loop counter  | DONE
 
- - ( u1 u2 -- u )    Subtract u2 from u1 and push result  | INT DONE
 
+* REPEAT ( --  ) Start REPEAT...UNTIL loop  | DONE
 
- / ( u1 u2 -- result remainder )     Divide u1 by u2 and push result | INT DONE
 
+* UNTIL ( u -- ) Exit REPEAT...UNTIL loop if TOS is false  | DONE
 
- * ( u1 u2 -- u )     Multiply TOS and push result | INT DONE
 
+* WAITK ( -- w ) Wait for keypress TOS is key press | DONE
 
- RND16 (  -- n ) Generate a random 16bit number and push to stack | DONE
 
+* ACCEPT ( -- w ) Prompt for text input and push pointer to string | DONE
 
- RND8 (  -- n ) Generate a random 8bit number and push to stack | DONE
 
+* EDIT ( u -- u ) Takes string on TOS and allows editing of it. Pushes it back once done. | DONE
 
- RND ( u1 u2 -- u ) Generate a random number no lower than u1 and no higher than u2 and push to stack | DONE
 
+* < ( u1 u2 -- f ) True if u1 is less than u2 | DONE
 
- DIR ( u -- lab id ... c t ) Using bank number u push directory entries from persistent storage as w with count u  | DONE
 
+* > ( u1 u2 -- f ) True if u1 is greater than u2 | DONE
 
- SEO ( u1 u2 -- ) Send byte u1 to Serial EEPROM device at address u2 | DONE
 
+* = ( u1 u2 -- f ) True if u1 equals u2 | DONE
 
- SEI ( u2 -- u1 ) Get a byte from Serial EEPROM device at address u2 | DONE
 
+* + ( u u -- u )    Add two numbers and push result   | INT DONE
 
- FFREE ( -- n )  Gets number of free file blocks on current storage bank | DONE
 
+* - ( u1 u2 -- u )    Subtract u2 from u1 and push result  | INT DONE
 
- SIZE ( u -- n )  Gets number of blocks used by file id u and push to stack | DONE
 
+* / ( u1 u2 -- result remainder )     Divide u1 by u2 and push result | INT DONE
 
- CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS | DONE
 
+* * ( u1 u2 -- u )     Multiply TOS and push result | INT DONE
 
- APPEND ( u n --  )  Appends data u to file id on current storage bank | DONE
 
+* RND16 (  -- n ) Generate a random 16bit number and push to stack | DONE
 
- ERA ( n --  )  Deletes all data for file id n on current storage bank | DONE
 
+* RND8 (  -- n ) Generate a random 8bit number and push to stack | DONE
 
- OPEN ( n -- n )  Sets file id to point to first data page for subsequent READs. Pushes the max number of blocks for this file | DONE
 
+* RND ( u1 u2 -- u ) Generate a random number no lower than u1 and no higher than u2 and push to stack | DONE
 
- READ ( n -- n  )  Reads next page of file id and push to stack | DONE
 
+* DIR ( u -- lab id ... c t ) Using bank number u push directory entries from persistent storage as w with count u  | DONE
 
- EOF ( n -- u )  Returns EOF logical state of file id n - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | DONE
 
+* SEO ( u1 u2 -- ) Send byte u1 to Serial EEPROM device at address u2 | DONE
 
- FORMAT (  --  )  Formats the current bank selected (NO PROMPT!) | DONE
 
+* SEI ( u2 -- u1 ) Get a byte from Serial EEPROM device at address u2 | DONE
 
- LABEL ( u --  )  Sets the storage bank label to string on top of stack  | DONE
 
+* FFREE ( -- n )  Gets number of free file blocks on current storage bank | DONE
 
- LABELS (  -- b n .... c  )  Pushes each storage bank labels (n) along with id (b) onto the stack giving count (c) of banks  | DONE
 
+* SIZE ( u -- n )  Gets number of blocks used by file id u and push to stack | DONE
 
- TYPE ( u -- iu s ) Push type of value on TOS - 's' string, 'i' integer...   | DONE
 
+* CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS | DONE
 
- SUBSTR ( s u1 u2 -- s sb ) Push to TOS chars starting at position u1 and with length u2 from string s  | DONE
 
+* APPEND ( u n --  )  Appends data u to file id on current storage bank | DONE
 
- STR2NUM ( s -- n ) Convert a string on TOS to number | DONE
 
+* ERA ( n --  )  Deletes all data for file id n on current storage bank | DONE
 
- LEN (  u1 -- u2 ) Push the length of the string on TOS | DONE
 
+* OPEN ( n -- n )  Sets file id to point to first data page for subsequent READs. Pushes the max number of blocks for this file | DONE
 
- CHAR ( u -- n ) Get the ascii value of the first character of the string on the stack | DONE
 
+* READ ( n -- n  )  Reads next page of file id and push to stack | DONE
 
-Words Still Left To Do
 
+* EOF ( n -- u )  Returns EOF logical state of file id n - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | DONE
 
-----------------------
 
+* FORMAT (  --  )  Formats the current bank selected (NO PROMPT!) | DONE
 
- EXEC ( u -- )    Execs the string on TOS as a FORTH expression | CRASHES ON NEXTW
 
+* LABEL ( u --  )  Sets the storage bank label to string on top of stack  | DONE
 
- |
 
+* LABELS (  -- b n .... c  )  Pushes each storage bank labels (n) along with id (b) onto the stack giving count (c) of banks  | DONE
 
- 2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items | TODO
 
+* TYPE ( u -- iu s ) Push type of value on TOS - 's' string, 'i' integer...   | DONE
 
- CALL ( w -- w  ) machine code call to address w  push the result of hl to stack | TO TEST
 
+* SUBSTR ( s u1 u2 -- s sb ) Push to TOS chars starting at position u1 and with length u2 from string s  | DONE
 
- WORDS (  -- s1 ... sx u )   List the system and user word dict | TODO
 
+* STR2NUM ( s -- n ) Convert a string on TOS to number | DONE
 
- |
 
+* LEN (  u1 -- u2 ) Push the length of the string on TOS | DONE
 
- |
 
+* CHAR ( u -- n ) Get the ascii value of the first character of the string on the stack | DONE
 
- The quoted most also be in upper case.
 
+# Words Still Left To Do
 
- NOTE ( ud uf --  )  Plays a note of frequency uf for the duration of ud millseconds | TODO
 
 
- IOIN ( u1 -- u )    Perform a GPIO read of pin u1 and push result  | 
 
 
- IOOUT ( u1 u2 --  )    Perform a GPIO write of pin u1 with pin set to 0 or 1 in u2  | 
+* EXEC ( u -- )    Execs the string on TOS as a FORTH expression | CRASHES ON NEXTW
 
 
- IOBYTE ( u1 --  )    Perform a GPIO write of byte u1  | 
 
 
- IOSET ( u1 --  )    Setup GPIO pins for I/O direction. Bit is set for write else read pin  | 
 
+* 2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items | TODO
 
- IN ( u1 -- u )    Perform Z80 IN with u1 being the port number. Push result to TOS | TO TEST
 
+* CALL ( w -- w  ) machine code call to address w  push the result of hl to stack | TO TEST
 
- OUT ( u1 u2 -- ) Perform Z80 OUT to port u2 sending byte u1 | TO TEST
 
+* WORDS (  -- s1 ... sx u )   List the system and user word dict | TODO
 
- SPIO ( u1 u2 -- ) Send byte u1 to SPI device u2 |  WIP
 
 
- SPII ( u1 -- ) Get a byte from SPI device u2 | WIP
 
 
- AT? ( -- r c )  Push to stack the current position of the next print | TODO
 
 
- .> ( u -- ) Display TOS and move the next display point with display  | TODO
 
+* The quoted most also be in upper case.
 
- SPACES ( u -- str ) A string of u spaces is pushed onto the stack | TO TEST
 
+* NOTE ( ud uf --  )  Plays a note of frequency uf for the duration of ud millseconds | TODO
 
- SCROLL ( u1 c1 -- ) Scroll u1 lines/chars in direction c1 | WIP
 
+* IOIN ( u1 -- u )    Perform a GPIO read of pin u1 and push result  | 
 
- MENU ( u1....ux n ut -- n ) Create a menu. Ut is the title, n is the number of menu items on stack. Push number selection to TOS |
 
+* IOOUT ( u1 u2 --  )    Perform a GPIO write of pin u1 with pin set to 0 or 1 in u2  | 
 
- ELSE ( -- ) Not supported - does nothing | TODO
 
+* IOBYTE ( u1 --  )    Perform a GPIO write of byte u1  | 
 
- KEY ( -- w f ) Scan for keypress but do not wait true if next item on stack is key press | TODO
 
+* IOSET ( u1 --  )    Setup GPIO pins for I/O direction. Bit is set for write else read pin  | 
 
- EDIT ( u -- u ) Takes string on TOS and allows editing of it. Pushes it back once done. | TO TEST 
 
+* IN ( u1 -- u )    Perform Z80 IN with u1 being the port number. Push result to TOS | TO TEST
 
- IS ( s1 s2  -- f ) Push true if string s1 is the same as s2 | TODO
 
+* OUT ( u1 u2 -- ) Perform Z80 OUT to port u2 sending byte u1 | TO TEST
 
- 0< ( u -- f ) Push true if u is less than o | CANT DO UNTIL FLOAT
 
+* AT? ( -- c r )  Push to stack the current position of the next print | TO TEST
 
- 0= ( u -- f ) Push true if u equals 0 | TEST NO DEBUG
 
+* .> ( u -- ) Display TOS and move the next display point with display  | WIP
 
- MIN (  u1 u2 -- u3 ) Whichever is the smallest value is pushed back onto the stack | TEST NO DEBUG
 
+* SPACES ( u -- str ) A string of u spaces is pushed onto the stack | TO TEST
 
- MAX (  u1 u2 -- u3 )  Whichever is the largest value is pushed back onto the stack | TEST NO DEBUG
 
+* SCROLL ( u1 c1 -- ) Scroll u1 lines/chars in direction c1 - 1=up 2=down | TO TEST
 
- BYID ( u -- s ) Get the name of the file in the current BANK using the file ID u | TODO
 
+* MENU ( u1....ux n ut -- n ) Create a menu. Ut is the title, n is the number of menu items on stack. Push number selection to TOS |
 
- BYNAME ( s -- u ) Get the file ID in the current BANK of the file named s | TODO
 
+* ELSE ( -- ) Not supported - does nothing | TODO
 
- SAVE  ( w u -- )    Save user word memory to file name w on bank u | TODO
 
+* KEY ( -- w f ) Scan for keypress but do not wait true if next item on stack is key press | TODO
 
- LOAD ( u -- )    Load user word memory from file id on current bank | TO TEST
 
+* IS ( s1 s2  -- f ) Push true if string s1 is the same as s2 | TODO
 
- BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at address a for s bytes | TODO
 
+* 0< ( u -- f ) Push true if u is less than o | CANT DO UNTIL FLOAT
 
- BLOAD ( w u a -- )    Load binary file from file name w on bank u into address u | TODO
 
+* 0= ( u -- f ) Push true if u equals 0 | TEST NO DEBUG
 
- UPPER ( s -- s ) Upper case string s  | TODO
 
+* MIN (  u1 u2 -- u3 ) Whichever is the smallest value is pushed back onto the stack | TEST NO DEBUG
 
- LOWER ( s -- s ) Lower case string s  | TODO
 
+* MAX (  u1 u2 -- u3 )  Whichever is the largest value is pushed back onto the stack | TEST NO DEBUG
 
- LEFT ( s u -- s sb ) Push to TOS string u long starting from left of s  | TODO
 
+* BYID ( u -- s ) Get the name of the file in the current BANK using the file ID u | TODO
 
- RIGHT ( s u -- s sb ) Push to TOS string u long starting from right of s  | TODO
 
+* BYNAME ( s -- u ) Get the file ID in the current BANK of the file named s | TODO
 
- NUM2STR ( n -- s ) Convert a number on TOS to string | TODO
 
+* SAVE  ( w u -- )    Save user word memory to file name w on bank u | TODO
 
- CONCAT ( s1 s2 -- s3 ) A string of u spaces is pushed onto the stack | TODO
 
+* LOAD ( u -- )    Load user word memory from file id on current bank | TO TEST
 
- FIND ( s c -- s u ) Search the string s for the char c and push the position of the first occurance to TOS | TODO
 
+* BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at address a for s bytes | TODO
 
- COPY ( u1 u2 -- Copy string u2 to u1 ) SHOULD THIS BE HANDLED WITH DUP?  | TODO
+
+* BLOAD ( w u a -- )    Load binary file from file name w on bank u into address u | TODO
+
+
+* UPPER ( s -- s ) Upper case string s  | TODO
+
+
+* LOWER ( s -- s ) Lower case string s  | TODO
+
+
+* LEFT ( s u -- s sb ) Push to TOS string u long starting from left of s  | TODO
+
+
+* RIGHT ( s u -- s sb ) Push to TOS string u long starting from right of s  | TODO
+
+
+* NUM2STR ( n -- s ) Convert a number on TOS to string | TODO
+
+
+* CONCAT ( s1 s2 -- s3 ) A string of u spaces is pushed onto the stack | TODO
+
+
+* FIND ( s c -- s u ) Search the string s for the char c and push the position of the first occurance to TOS | TODO
+
+
+* COPY ( u1 u2 -- Copy string u2 to u1 ) SHOULD THIS BE HANDLED WITH DUP?  | TODO
 
 

@@ -1,10 +1,28 @@
 ; Device support for AY38910 sound chip
 
 ; Set to use cart extension port instead of Z80 bus
-SOUND_CARTEXT: equ 1
+;SOUND_CARTEXT: equ 1
 
+
+	if DEBUG_SOUND
+.ay_init: db "Sound init",0
+.ay_shift_cd: db "sound_ay_shift_cd", 0
+endif
 
 sound_init:
+	if DEBUG_SOUND
+	call clear_display
+	ld a, display_row_1
+	ld de, .ay_init
+	call str_at_display
+	call update_display
+	endif
+
+    	
+if DEBUG_SOUND
+	DMARK "SIN"
+	CALLMONITOR
+endif
 
     ; reset AY
 
@@ -24,6 +42,10 @@ sound_init:
 
     ld (spi_cartdev2), a     ; set all command bits for shift to high
 
+if DEBUG_SOUND
+	DMARK "SI2"
+	CALLMONITOR
+endif
     call sound_ay_shift_cd
 
 ; TODO not working switch to using the cartext
@@ -48,6 +70,10 @@ sound_init:
 	ld l, %00001111
 	call sound_ay_register
 
+if DEBUG_SOUND
+	DMARK "SI3"
+	CALLMONITOR
+endif
 	ld b, 10
 .soundtst:
 ;#while True:
@@ -74,6 +100,10 @@ sound_init:
 ;#    write_register(1, 1)
 	ld h, 1
 	ld l, 1
+if DEBUG_SOUND
+	DMARK "SI4"
+	CALLMONITOR
+endif
 	call sound_ay_register
 ;#
 ;#    time.sleep(.5)
@@ -237,13 +267,26 @@ sound_ay_send_byte:
 ; Shift out the control byte for the AY and the data to the shift reg
 ; a = data to clouck output
 sound_ay_shift_cd:
+if DEBUG_SOUND
+    ld hl, (spi_cartdev2)     ; first send the control lines to the shift reg
+	DMARK "CD1"
+	CALLMONITOR
+endif
     call sound_ay_ce_enable
     push af    ; save the data to send
 
     ld a, (spi_cartdev2)     ; first send the control lines to the shift reg
+if DEBUG_SOUND
+	DMARK "CD2"
+	CALLMONITOR
+endif
     call sound_ay_send_byte
 
     pop af     ; now send our data
+if DEBUG_SOUND
+	DMARK "CD3"
+	CALLMONITOR
+endif
     call sound_ay_send_byte
     
     call sound_ay_shift_latch

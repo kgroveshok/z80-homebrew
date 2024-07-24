@@ -10,12 +10,26 @@
 
 	jp coldstart     ; rst 0 - cold boot
 
+        nop 
+        nop
 ;	org 05h		; null out bdos call
-;
+
+        nop 
+        nop 
+        nop
 ;	org 08h
 ;;
 ;	jp cin		; rst 8 - char in
 ;;
+
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
 ;	org 010h
 ;;
 ;	jp cout		; rest 010h  - char out
@@ -56,16 +70,17 @@ coldstart:
 	ld sp, tos
 ;	ei
 
-	; disable breakpoint by default
-
-	ld a,'*'
-	ld (os_view_disable),a
 
 	; init hardware
 
 	; init keyboard and screen hardware
 
 	call hardware_init
+
+	; disable breakpoint by default
+
+	ld a,'*'
+	ld (os_view_disable),a
 
 	; detect if any keys are held down to enable breakpoints at start up
 
@@ -736,7 +751,6 @@ next_page_prompt:
 ; forth parser
 
 include "forth_kernel.asm"
-
 
 ; eof
 

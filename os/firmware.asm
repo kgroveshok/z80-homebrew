@@ -10,6 +10,7 @@ Device_D: equ 0c0h             ; Keyboard and LCD
 
 ; Odd specific debug points for testing hardware dev
 
+DEBUG_SOUND: equ 1
 DEBUG_STK_FAULT: equ 0
 DEBUG_INPUT: equ 0     ; Debug input entry code
 DEBUG_KEYCINWAIT: equ 0

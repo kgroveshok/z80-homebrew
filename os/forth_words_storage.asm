@@ -249,6 +249,8 @@
 
 	ld hl, store_page+2
 
+	ld (os_tok_ptr), hl
+
 	if DEBUG_STORESE
 		DMARK "LO3"
 		CALLMONITOR

@@ -921,6 +921,8 @@ storage_create:
 storage_read:
 	push de
 
+; TODO BUG the above push is it popped before the RET Z?
+
 ; TODO how to handle multiple part blocks
 
 	; locate file extent to read
@@ -940,6 +942,11 @@ storage_read:
 	pop de   ; get storage
 	push de
 	call storage_read_block
+
+
+; TODO if block has no zeros then need to read next block 
+
+
 		
 	pop hl 		 ; return start of data to show as not EOF
 	inc hl   ; past file id

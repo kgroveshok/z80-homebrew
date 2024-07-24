@@ -592,7 +592,6 @@ Then back to the OS. In particular loading and saving of uwords and the parser b
 
 
 
-
 DONE words for GPIO access. Stubs created
 DONE Sort out the EXEC word so that I can create a simple save and load of UWORDS
 PART DONE break out parser so it can be used by LIST, FORGET, WORDS, UWORDS and SAVE 
@@ -600,11 +599,18 @@ PART DONE break out parser so it can be used by LIST, FORGET, WORDS, UWORDS and 
 
 DONE Add a dot comment to forward the next print position use .>   
 DONE have a flag to enable forward cursor from each . or .-
-DONT word which allows edit of item on tos - word added but does not copy from stack
-
-TODO add more editing features 
+DONE word which allows edit of item on tos - word added but does not copy from stack
 TODO fix editor bugs
 TODO fix editor issues
+
+TODO Create a disk UI in native asm for robustness and speed?
+TODO Add a simple assembler feature like BBC Basic
+TODO Extract all of the symbols in the symbol table to be available as words in FORTH, debug and asm above
+TODO fix saving more than a single block of file storage
+TODO fix loading more than a single block of file storage
+TODO ?DUP word to duplicate if the TOS value is non-zero
+TODO PICK word to pick a value at a given value on stack and move to TOS
+TODO add more editing features 
 TODO need words to report on hardware e.g. screen dims
 TODO need word to get file id by name
 TODO need word to get file name by id

@@ -79,6 +79,17 @@ hardware_diags:
 
 .diagedit:
 
+	ld hl, scratch
+;	ld bc, 250
+;	ldir
+	; TODO ldir is not working strcpy may not get all the terms on the input line????
+	ld a, 0
+	ld (hl), a
+	inc hl
+	ld (hl), a
+	inc hl
+	ld (hl), a
+
         call clear_display
 	call update_display
 	ld a, 1

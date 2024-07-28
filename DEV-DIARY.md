@@ -603,6 +603,13 @@ DONE word which allows edit of item on tos - word added but does not copy from s
 TODO fix editor bugs
 TODO fix editor issues
 
+TODO Editor issue insert mid string causes loss of zero term giving random data
+TODO Backspace mid string does not clean up shifted text
+TODO Jump to end of line does not work should set to the number in last debug display
+TODO If cursor at end of line, when go back it leaves custor displayed
+
+
+
 DONE At boot detect if key is held for debug, add another key for hardware diags like checking keyboard etc
 TODO Create a disk UI in native asm for robustness and speed?
 TODO Add a simple assembler feature like BBC Basic

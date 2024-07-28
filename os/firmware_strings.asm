@@ -135,6 +135,10 @@ ld hl, (input_ptr)
 ;		ld (input_at_cursor), a
 
 	if DEBUG_INPUT
+		ld a, (hardware_diag)
+		cp 0
+		jr z, .skip_input_diag
+
 		ld a,(input_at_pos)
 		ld hl, LFSRSeed
 		call hexout
@@ -162,6 +166,7 @@ ld hl, (input_ptr)
 		ld a, display_row_4
 		ld de, LFSRSeed
 		call str_at_display
+		.skip_input_diag:
 	endif
 
 		; decide on if we are showing the cursor this time round

@@ -57,6 +57,8 @@ Using '#' will launch a full featured monitor.
    U xx        Load byte into address and increment to next
 
 
+Holding down a key at boot will halt at the end of the splash screen. Releasing the key will display a hardware/system diags screen.
+
 
 
 

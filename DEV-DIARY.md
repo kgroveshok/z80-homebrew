@@ -603,6 +603,7 @@ DONE word which allows edit of item on tos - word added but does not copy from s
 TODO fix editor bugs
 TODO fix editor issues
 
+DONE At boot detect if key is held for debug, add another key for hardware diags like checking keyboard etc
 TODO Create a disk UI in native asm for robustness and speed?
 TODO Add a simple assembler feature like BBC Basic
 TODO Extract all of the symbols in the symbol table to be available as words in FORTH, debug and asm above

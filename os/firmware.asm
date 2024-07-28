@@ -12,7 +12,7 @@ Device_D: equ 0c0h             ; Keyboard and LCD
 
 DEBUG_SOUND: equ 1
 DEBUG_STK_FAULT: equ 0
-DEBUG_INPUT: equ 0     ; Debug input entry code
+DEBUG_INPUT: equ 1     ; Debug input entry code
 DEBUG_KEYCINWAIT: equ 0
 DEBUG_KEYCIN: equ 0
 DEBUG_KEY: equ 0
@@ -103,6 +103,10 @@ key_fc: equ key_fb -1 ;
 key_fd: equ key_fc -1 ;
 key_face_held: equ key_fd - 1 
 
+; flag for enabling/disabling various hardware diags 
+
+hardware_diag: equ key_face_held - 1
+
 ; hardware config switches
 ; TODO add bitmasks on includes for hardware
 ; high byte for expansion ids
@@ -120,7 +124,7 @@ key_face_held: equ key_fd - 1
 ;     0000 1100   spi/ext display
 ;     0001 0000   ide interface available
 
-hardware_word: equ key_face_held - 2
+hardware_word: equ hardware_diag - 2
 
 ; debug marker - optional display of debug point on the debug screens
 
@@ -379,6 +383,9 @@ endm
 
 hardware_init:
 
+		ld a, 0
+		ld (hardware_diag), a
+
 		; clear all the buffers
 
 		ld hl, display_fb1
@@ -541,7 +548,7 @@ if SOUND_ENABLE
 	include "firmware_sound.asm"
 endif
 
-
+include "firmware_diags.asm"
 
 
 

@@ -70,6 +70,10 @@ coldstart:
 	ld sp, tos
 ;	ei
 
+	; disable breakpoint by default
+
+	ld a,'*'
+	ld (os_view_disable),a
 
 	; init hardware
 
@@ -77,10 +81,6 @@ coldstart:
 
 	call hardware_init
 
-	; disable breakpoint by default
-
-	ld a,'*'
-	ld (os_view_disable),a
 
 	; detect if any keys are held down to enable breakpoints at start up
 
@@ -88,22 +88,24 @@ coldstart:
 	cp 0
 	jr z, .nokeys
 
-	ld de, .bpen
-	ld a, display_row_4
-	call str_at_display
-	call update_display
+	call hardware_diags
 
-	ld a,0
-	ld (os_view_disable),a
-
-.bpwait:
-	call cin
-	cp 0
-	jr z, .bpwait
-	jr .nokeys
-
-
-.bpen:  db "Break points enabled!",0
+;	ld de, .bpen
+;	ld a, display_row_4
+;	call str_at_display
+;	call update_display
+;
+;	ld a,0
+;	ld (os_view_disable),a
+;
+;.bpwait:
+;	call cin
+;	cp 0
+;	jr z, .bpwait
+;	jr .nokeys
+;
+;
+;.bpen:  db "Break points enabled!",0
 
 
 

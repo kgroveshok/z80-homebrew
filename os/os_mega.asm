@@ -1,4 +1,8 @@
 
+; Hardware Platform
+
+BASE_SC114: equ 0
+BASE_KEV: equ 1
 ;
 ;
 ; CPU clock

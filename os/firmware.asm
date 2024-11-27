@@ -66,9 +66,15 @@ MALLOC_2: equ 0           ; broke
 MALLOC_3: equ 0           ; really broke
 MALLOC_4: equ 1              ; mine pretty basic reuse and max of 250 chars
 
-
+if BASE_KEV 
 tos:	equ 0fffdh
 stacksize: equ 512*2
+endif
+if BASE_SC114
+tos:	equ 0fb00h
+stacksize: equ 512
+endif
+
 
 if STORAGE_SE == 0
 	STORE_BLOCK_PHY:   equ 64    ; physical block size on storage   64byte on 256k eeprom
@@ -299,7 +305,15 @@ heap_size: equ  heap_end-heap_start      ; Number of bytes available in heap   T
 
 ; change below to point to last memory alloc above
 topusermem:  equ   heap_start
+
+if BASE_KEV 
 baseusermem: equ 08000h
+endif
+if BASE_SC114
+baseusermem: equ end_of_code
+endif
+
+
 ; **********************************************************************
 ; **  Constants
 ; **********************************************************************
@@ -527,6 +541,12 @@ bootmsg1:	db "by Kevin Groves",0
 if STORAGE_SE
 	include "firmware_spi.asm"
 	include "firmware_seeprom.asm"
+else
+   ; create some stubs for the labels
+se_readbyte: ret
+se_writebyte: ret
+storage_init: ret
+
 endif
 
 ; use cf card for storage - throwing timeout errors. Hardware or software?????

@@ -5,8 +5,15 @@
 
 ; bios jump points via rst
 
+if BASE_SC114 = 1 
+
+	org 8000h
+endif
+
+if BASE_KEV = 1 
 
 	org 0h
+endif
 
 	jp coldstart     ; rst 0 - cold boot
 
@@ -752,7 +759,13 @@ next_page_prompt:
 
 ; forth parser
 
+; My forth kernel
 include "forth_kernel.asm"
+
+
+; find out where the code ends if loaded into RAM (for SC114)
+end_of_code: nop
+
 
 ; eof
 

@@ -591,6 +591,19 @@ Then back to the OS. In particular loading and saving of uwords and the parser b
 ![](images/20240612_stage4e.jpg)
 
 
+27th Nov 
+--------
+
+Still have memory issues and certainly performance issues I think due to the extensive memcpy and tokenisation of keywords.
+
+Have added support to target the code base for the wonderful SC114 Steven Cousins Z80 computer so I can turn around development cycle.
+
+The next step is to use v5 parser to be closer to how a proper FORTH system should function. For example I don't need to copy and tokenise the words as the space separator for a start will be a delimiter. That will reduce the number of mallocs.
+
+Will go from there.
+ 
+
+
 
 DONE words for GPIO access. Stubs created
 DONE Sort out the EXEC word so that I can create a simple save and load of UWORDS

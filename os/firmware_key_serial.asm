@@ -5,7 +5,7 @@ key_init:
 	ret
 
 
-cin:
+cin_wait:
 ;	ld a, 0
 ;	ret
 
@@ -17,8 +17,25 @@ cin:
 	pop bc
 	ret
 
-cin_wait:
-	call cin
+cin:
+
+
+	push bc
+
+	; any key waiting to process?
+	ld c, $03
+	rst $30
+	jr z, .cin_skip
+
+	; yep, get it
+
+	ld c, $01
+	rst $30
+	pop bc
+	ret
+.cin_skip:
+	ld a, 0
+	pop bc
 	ret
 
 

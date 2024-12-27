@@ -604,6 +604,15 @@ Will go from there.
  
 
 
+27th Dec 2024
+-------------
+
+Reviewing code. Objectives for this round of dev is to:
+1. Make sure existing code runs on the SC114 so I can easily test
+2. Remove mallocs which is slowing the code down
+3. Run a tokenisation of the keywords to single bytes which will also vastly speed up the runtime
+
+
 
 DONE words for GPIO access. Stubs created
 DONE Sort out the EXEC word so that I can create a simple save and load of UWORDS

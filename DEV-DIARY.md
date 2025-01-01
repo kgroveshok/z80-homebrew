@@ -630,7 +630,7 @@ DONE change data stack. Each push will be three bytes. First byte is type. If nu
 DONE Switched back to my malloc for now
 MAYBE TODO New malloc that only ever adds to memory with a simple forward pointer
 
-TODO BUG 'ga' word has an issue with detecting the random number. Is it the logic checks?
+DONE. Fault in STR2NUM word. BUG 'ga' word has an issue with detecting the random number. Is it the logic checks?
 
 
 

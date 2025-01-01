@@ -128,7 +128,10 @@ ld c, 0	  ; flag for removal of '-' disabled
 
 .dotgo:
 
-		FORTH_DSP_VALUE 
+; move up type to on stack for parserv5
+		FORTH_DSP
+	;FORTH_DSP_VALUE 
+
 if DEBUG_FORTH_DOT
 	DMARK "DOT"
 	CALLMONITOR
@@ -141,6 +144,7 @@ endif
 	jr nz, .dotnum1 
 
 ; display string
+	FORTH_DSP_VALUE 
 	ex de,hl
 	jr .dotwrite
 

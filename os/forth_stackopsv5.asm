@@ -349,7 +349,7 @@ endif
 
 	; TODO malloc + 1
 
-	add 5    ; to be safe for some reason - max of 255 char for string
+	add 1    ; to be safe for some reason - max of 255 char for string
 	ld h,0
 	ld l,a
 if DEBUG_FORTH_PUSH
@@ -371,11 +371,11 @@ if DEBUG_FORTH_PUSH
 	CALLMONITOR
 endif	
 
-	; flag set as str
+;	; flag set as str
 
 
-	ld (hl), DS_TYPE_STR
-	inc hl
+;	ld (hl), DS_TYPE_STR
+;	inc hl
 
 	; copy string to malloc area
 
@@ -395,7 +395,7 @@ endif
 
 	; push malloc to data stack     macro????? 
 
-	pop hl ; get malloc root
+;	pop hl ; get malloc root
 ;	ld (hl), e
 ;	inc hl
 ;	ld (hl), d		
@@ -408,9 +408,29 @@ endif
 ;	inc hl
 ;	ld (cli_data_sp), hl
 
+	; save value and type
+
+;	pop hl
+
+	ld hl, (cli_data_sp)
+
+	; save item type
+	ld a,  DS_TYPE_STR
+	ld (hl), a
+	inc hl
+
+	; get malloc word off stack
+	pop de
+	ld a,e
+	ld (hl), a
+	inc hl
+	ld a,d
+	ld (hl), a
+
+
 
 if DEBUG_FORTH_PUSH
-			DMARK "PH4"
+			DMARK "PHS"
 	CALLMONITOR
 ;	ex de,hl
 endif	
@@ -455,7 +475,7 @@ endif
 	call get_word_hl	; ret 16bit word in hl
 
 .faprawhl:		; entry point for pushing a value when already in hl used in function above
-	push hl
+	push hl    ; save value to push
 
 if DEBUG_FORTH_PUSH
 	; see if disabled
@@ -499,35 +519,41 @@ endif
 
 	; get malloc for the storage (a bit of an overhead but makes it compatible with string push
 
-	ld hl, 5
-	call malloc
-	if DEBUG_FORTH_MALLOC_GUARD
-		call z,malloc_error
-	endif
+;	ld hl, 5
+;	call malloc
+;	if DEBUG_FORTH_MALLOC_GUARD
+;		call z,malloc_error
+;	endif
 
-	push hl		; once to save on to data stack
-	push hl		; once to save word into
+;	push hl		; once to save on to data stack
+;	push hl		; once to save word into
 
-;if DEBUG_FORTH_MALLOC
-;	call display_data_malloc 
-;endif
-	
-	; push malloc to data stack     macro????? 
+;;if DEBUG_FORTH_MALLOC
+;;	call display_data_malloc 
+;;endif
+;	
+;	; push malloc to data stack     macro????? 
 
-	ld hl,(cli_data_sp)
-	inc hl
-	inc hl
-	ld (cli_data_sp),hl
+	FORTH_DSP_NEXT
 
-	pop de ; get malloc root
-	ld (hl), e
-	inc hl
-	ld (hl), d		
+;	ld hl,(cli_data_sp)
+;	inc hl
+;	inc hl
+;
+;	ld (cli_data_sp),hl
+;
+;	pop de ; get malloc root
+;	ld (hl), e
+;	inc hl
+;	ld (hl), d		
 
 	; save value and type
 
-	pop hl
+;	pop hl
 
+	ld hl, (cli_data_sp)
+
+	; save item type
 	ld a,  DS_TYPE_INUM
 	ld (hl), a
 	inc hl
@@ -541,6 +567,9 @@ endif
 	ld (hl), a
 
 if DEBUG_FORTH_PUSH
+	dec hl
+	dec hl
+	dec hl
 			DMARK "PH5"
 	CALLMONITOR
 endif	
@@ -648,16 +677,19 @@ if DEBUG_FORTH_DOT
 	CALLMONITOR
 endif	
 
-	FORTH_DSP_VALUE
 
 
-if DEBUG_FORTH_DOT_KEY
-	DMARK "DP1"
-	CALLMONITOR
-endif	
+if FORTH_ENABLE_POPFREE
+	FORTH_DSP
+	ld a, (hl)
+	cp DS_TYPE_STR
+	jr nz, .skippopfree
 
-if FORTH_ENABLE_FREE
+	FORTH_DSP_VALUEHL
 	call free
+.skippopfree:
+	
+
 endif
 
 if DEBUG_FORTH_DOT_KEY

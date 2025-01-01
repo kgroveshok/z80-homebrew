@@ -6,10 +6,15 @@
 ; | + ( u u -- u )    Add two numbers and push result   | INT DONE
 		; add top two values and push back result
 
-		FORTH_DSP_VALUE
+		;for v5 FORTH_DSP_VALUE
+		FORTH_DSP
 		ld a,(hl)	; get type of value on TOS
 		cp DS_TYPE_INUM 
 		jr z, .dot_inum
+
+		NEXTW
+
+; float maths
 
 	if FORTH_ENABLE_FLOATMATH
 			inc hl      ; now at start of numeric as string
@@ -106,10 +111,15 @@
 
 
 	; TODO add floating point number detection
-		FORTH_DSP_VALUE
+		; v5 FORTH_DSP_VALUE
+		FORTH_DSP
 		ld a,(hl)	; get type of value on TOS
 		cp DS_TYPE_INUM 
 		jr z, .neg_inum
+
+		NEXTW
+
+; float maths
 
 	if FORTH_ENABLE_FLOATMATH
 		jr .neg_done
@@ -160,7 +170,8 @@
 	CWHEAD .MUL 4 "/" 1 WORD_FLAG_CODE
 ; | / ( u1 u2 -- result remainder )     Divide u1 by u2 and push result | INT DONE
 	; TODO add floating point number detection
-		FORTH_DSP_VALUE
+		; v5 FORTH_DSP_VALUE
+		FORTH_DSP
 		ld a,(hl)	; get type of value on TOS
 		cp DS_TYPE_INUM 
 		jr z, .div_inum
@@ -169,6 +180,7 @@
 		jr .div_done
 
 	endif
+		NEXTW
 .div_inum:
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -227,7 +239,8 @@
 	CWHEAD .MIN 5 "*" 1 WORD_FLAG_CODE
 ; | * ( u1 u2 -- u )     Multiply TOS and push result | INT DONE
 	; TODO add floating point number detection
-		FORTH_DSP_VALUE
+		FORTH_DSP
+		; v5 FORTH_DSP_VALUE
 		ld a,(hl)	; get type of value on TOS
 		cp DS_TYPE_INUM 
 		jr z, .mul_inum
@@ -237,6 +250,7 @@
 
 	endif
 
+		NEXTW
 .mul_inum:	
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol

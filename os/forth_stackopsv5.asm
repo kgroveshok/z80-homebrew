@@ -742,14 +742,14 @@ macro_dsp_valuehl:
 
 	;inc hl   ; skip type id
 
-	push de
+;	push de
+;
+;	ld e, (hl)
+;	inc hl
+;	ld d, (hl)
+;	ex de,hl 
 
-	ld e, (hl)
-	inc hl
-	ld d, (hl)
-	ex de,hl 
-
-	pop de
+;	pop de
 
 	if DEBUG_FORTH_PUSH
 			DMARK "DVL"

@@ -54,7 +54,8 @@
 			CALLMONITOR
 		endif
 
-		FORTH_DSP_VALUE
+		FORTH_DSP
+		;v5 FORTH_DSP_VALUE
 		inc hl    ; TODO do type check
 
 		push hl

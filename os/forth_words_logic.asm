@@ -13,7 +13,8 @@
 	CWHEAD .LESS 26 "0=" 2 WORD_FLAG_CODE
 ; | 0= ( u -- f ) Push true if u equals 0 | TEST NO DEBUG
 	; TODO add floating point number detection
-		FORTH_DSP_VALUE
+		;v5 FORTH_DSP_VALUE
+		FORTH_DSP
 		ld a,(hl)	; get type of value on TOS
 		cp DS_TYPE_INUM 
 		jr z, .tz_inum
@@ -60,7 +61,8 @@
 	CWHEAD .GT 27 "<" 1 WORD_FLAG_CODE
 ; | < ( u1 u2 -- f ) True if u1 is less than u2 | DONE
 	; TODO add floating point number detection
-		FORTH_DSP_VALUE
+		FORTH_DSP
+		;v5 FORTH_DSP_VALUE
 		ld a,(hl)	; get type of value on TOS
 		cp DS_TYPE_INUM 
 		jr z, .less_inum
@@ -111,7 +113,8 @@
 	CWHEAD .EQUAL 28 ">" 1 WORD_FLAG_CODE
 ; | > ( u1 u2 -- f ) True if u1 is greater than u2 | DONE
 	; TODO add floating point number detection
-		FORTH_DSP_VALUE
+		FORTH_DSP
+		;FORTH_DSP_VALUE
 		ld a,(hl)	; get type of value on TOS
 		cp DS_TYPE_INUM 
 		jr z, .gt_inum
@@ -162,7 +165,8 @@
 	CWHEAD .ENDLOGIC 29 "=" 1 WORD_FLAG_CODE
 ; | = ( u1 u2 -- f ) True if u1 equals u2 | DONE
 	; TODO add floating point number detection
-		FORTH_DSP_VALUE
+		FORTH_DSP
+		;v5 FORTH_DSP_VALUE
 		ld a,(hl)	; get type of value on TOS
 		cp DS_TYPE_INUM 
 		jr z, .eq_inum

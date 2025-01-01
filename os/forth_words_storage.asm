@@ -396,7 +396,8 @@
 
 		; TODO pop hl
 
-		FORTH_DSP_VALUE
+		;v5 FORTH_DSP_VALUE
+		FORTH_DSP
 
 	if DEBUG_STORESE
 		DMARK "CRT"
@@ -439,7 +440,8 @@
 	endif
 		FORTH_DSP_POP
 
-		FORTH_DSP_VALUE
+		FORTH_DSP_VALUEHL
+		;v5 FORTH_DSP_VALUE
 		push hl 	; save ptr to string to save
 
 	if DEBUG_STORESE
@@ -657,13 +659,14 @@
 ; | LABEL ( u --  )  Sets the storage bank label to string on top of stack  | DONE
 		; TODO test to see if bank is selected
 	
-		FORTH_DSP_VALUE
+		FORTH_DSP_VALUEHL
+		;v5FORTH_DSP_VALUE
 		
 		push hl
 		FORTH_DSP_POP
 		pop hl
 
-		inc hl   ; move past the type marker
+;v5		inc hl   ; move past the type marker
 
 		call storage_label
 

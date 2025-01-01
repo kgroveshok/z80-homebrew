@@ -4,7 +4,8 @@
 .TYPE:
 	CWHEAD .UPPER 52 "TYPE" 4 WORD_FLAG_CODE
 ; | TYPE ( u -- iu s ) Push type of value on TOS - 's' string, 'i' integer...   | DONE
-		FORTH_DSP_VALUE
+		FORTH_DSP
+		;v5 FORTH_DSP_VALUE
 
 		ld a, (hl)
 
@@ -138,7 +139,8 @@
 			CALLMONITOR
 		endif
 
-		FORTH_DSP_VALUE
+		FORTH_DSP
+		;FORTH_DSP_VALUE
 		inc hl
 
 		ex de, hl
@@ -197,7 +199,8 @@
 
 		; s2
 
-		FORTH_DSP_VALUE
+		FORTH_DSP
+		;v5 FORTH_DSP_VALUE
 		inc hl
 
 		ld a, 0
@@ -234,7 +237,8 @@
 ; | LEN (  u1 -- u2 ) Push the length of the string on TOS | DONE
 
 ; TODO check string type
-		FORTH_DSP_VALUE
+		FORTH_DSP
+		;v5FORTH_DSP_VALUE
 
 		inc hl
 
@@ -249,7 +253,8 @@
 .CHAR:
 	CWHEAD .STRLEN 57 "CHAR" 4 WORD_FLAG_CODE
 ; | CHAR ( u -- n ) Get the ascii value of the first character of the string on the stack | DONE
-		FORTH_DSP_VALUE
+		FORTH_DSP
+		;v5 FORTH_DSP_VALUE
 		inc hl      ; now at start of numeric as string
 
 		push hl

@@ -68,11 +68,12 @@
 
 
 
-	FORTH_DSP_VALUE
+	;v5 FORTH_DSP_VALUE
+	FORTH_DSP_VALUEHL
 
 	; TODO do string type checks
 
-	inc hl   ; skip type
+;v5	inc hl   ; skip type
 
 	push hl  ; source code 
 		if DEBUG_FORTH_WORDS
@@ -975,9 +976,10 @@ endif
 
 		; Get ptr to the word we need to look up
 
-		FORTH_DSP_VALUE
+		FORTH_DSP_VALUEHL
+		;v5 FORTH_DSP_VALUE
 	; TODO type check
-		inc hl    ; Skip type check 
+;		inc hl    ; Skip type check 
 		push hl
 ;		ex de, hl    ; put into DE
 
@@ -1142,7 +1144,8 @@ pop hl
 		push de   ; save our string for now
 		ex de, hl
 
-		FORTH_DSP_VALUE
+		FORTH_DSP
+		;v5 FORTH_DSP_VALUE
 
 		inc hl   ; skip type but we know by now this is OK
 
@@ -1236,7 +1239,8 @@ pop hl
 
 		; Get ptr to the word we need to look up
 
-		FORTH_DSP_VALUE
+		FORTH_DSP
+		;v5 FORTH_DSP_VALUE
 	; TODO type check
 		inc hl    ; Skip type check 
 		push hl

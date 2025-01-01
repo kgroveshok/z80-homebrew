@@ -20,58 +20,13 @@ FORTH_END_BUFFER: equ 127
 FORTH_TRUE: equ 1
 FORTH_FALSE: equ 0
 
+if FORTH_PARSEV4
+include "forth_stackops.asm"
+endif
 
-
-FORTH_CHK_DSP_UNDER: macro
-	push hl
-	push de
-	ld hl,(cli_data_sp)
-	ld de, cli_data_stack
-	call cmp16
-	jp c, fault_dsp_under
-	pop de
-	pop hl
-	endm
-
-
-FORTH_CHK_RSP_UNDER: macro
-	push hl
-	push de
-	ld hl,(cli_ret_sp)
-	ld de, cli_ret_stack
-	call cmp16
-	jp c, fault_rsp_under
-	pop de
-	pop hl
-	endm
-
-FORTH_CHK_LOOP_UNDER: macro
-	push hl
-	push de
-	ld hl,(cli_loop_sp)
-	ld de, cli_loop_stack
-	call cmp16
-	jp c, fault_loop_under
-	pop de
-	pop hl
-	endm
-
-FORTH_ERR_TOS_NOTSTR: macro
-	; TOSO might need more for checks when used
-	push af
-	ld a,(hl)
-	cp DS_TYPE_STR
-	jp nz, type_faultn  
-	pop af
-	endm
-
-FORTH_ERR_TOS_NOTNUM: macro
-	push af
-	ld a,(hl)
-	cp DS_TYPE_INUM
-	jp nz, type_faultn  
-	pop af
-	endm
+if FORTH_PARSEV5
+include "forth_stackopsv5.asm"
+endif
 
 user_word_eol: 
 	; hl contains the pointer to where to create a linked list item from the end
@@ -115,129 +70,7 @@ user_word_eol:
 
 	ret
 
-; increase data stack pointer and save hl to it
 	
-FORTH_DSP_NEXT: macro
-	call macro_forth_dsp_next
-	endm
-
-
-macro_forth_dsp_next:
-	if DEBUG_FORTH_STACK_GUARD
-		call check_stacks
-	endif
-	push hl
-	push de
-	ex de,hl
-	ld hl,(cli_data_sp)
-	inc hl
-	inc hl
-	ld (cli_data_sp),hl
-	ld (hl), e
-	inc hl
-	ld (hl), d
-	pop de
-	pop hl
-	if DEBUG_FORTH_STACK_GUARD
-		call check_stacks
-	endif
-	ret
-	
-; increase ret stack pointer and save hl to it
-	
-FORTH_RSP_NEXT: macro
-	call macro_forth_rsp_next
-	endm
-
-macro_forth_rsp_next:
-	if DEBUG_FORTH_STACK_GUARD
-		call check_stacks
-	endif
-	push hl
-	push de
-	ex de,hl
-	ld hl,(cli_ret_sp)
-	inc hl
-	inc hl
-	ld (cli_ret_sp),hl
-	ld (hl), e
-	inc hl
-	ld (hl), d
-	pop de
-	pop hl
-	if DEBUG_FORTH_STACK_GUARD
-		call check_stacks
-	endif
-	ret
-
-; get current ret stack pointer and save to hl 
-	
-FORTH_RSP_TOS: macro
-	call macro_forth_rsp_tos
-	endm
-
-macro_forth_rsp_tos:
-	push de
-	ld hl,(cli_ret_sp)
-	ld e, (hl)
-	inc hl
-	ld d, (hl)
-	ex de, hl
-		if DEBUG_FORTH_WORDS
-			DMARK "RST"
-			CALLMONITOR
-		endif
-	pop de
-	ret
-
-; pop ret stack pointer
-	
-FORTH_RSP_POP: macro
-	call macro_forth_rsp_pop
-	endm
-
-
-macro_forth_rsp_pop:
-	if DEBUG_FORTH_STACK_GUARD
-		DMARK "RPP"
-		call check_stacks
-		FORTH_CHK_RSP_UNDER
-	endif
-	push hl
-	ld hl,(cli_ret_sp)
-
-
-	if FORTH_ENABLE_FREE
-
-		; get pointer
-
-		push de
-		push hl
-
-		ld e, (hl)
-		inc hl
-		ld d, (hl)
-
-		ex de, hl
-		call free
-
-		pop hl
-		pop de
-
-
-	endif
-
-
-	dec hl
-	dec hl
-	ld (cli_ret_sp), hl
-	; TODO do stack underflow checks
-	pop hl
-	if DEBUG_FORTH_STACK_GUARD
-		call check_stacks
-		FORTH_CHK_RSP_UNDER
-	endif
-	ret
 
 forthexec_cleanup:
 	FORTH_RSP_POP
@@ -289,7 +122,7 @@ forth_warmstart:
 	ret
 
 
-; this is called to setup the whole Forth system
+; Cold Start - this is called to setup the whole Forth system
 
 forth_init:
 

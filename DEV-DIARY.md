@@ -626,8 +626,12 @@ Do I want to do tokenisation of the keywords next to see if that speeds things u
 1st Jan 2025
 ------------
 
-TODO change data stack. Each push will be three bytes. First byte is type. If num then num in next two byts, if string then pointer. That will save on mallocs. Other data types will make use of the pointer
-TODO New malloc that only ever adds to memory with a simple forward pointer
+DONE change data stack. Each push will be three bytes. First byte is type. If num then num in next two byts, if string then pointer. That will save on mallocs. Other data types will make use of the pointer
+DONE Switched back to my malloc for now
+MAYBE TODO New malloc that only ever adds to memory with a simple forward pointer
+
+TODO BUG 'ga' word has an issue with detecting the random number. Is it the logic checks?
+
 
 
 

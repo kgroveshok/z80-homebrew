@@ -620,7 +620,6 @@ Reviewing code. Objectives for this round of dev is to:
 * Switched to the original malloc function which should be a lot better than mine as it has garbage collection.
 * Tested run with and without debug code and 'SW' runs 0.4s faster without debug code included.
 
-Do I want to do tokenisation of the keywords next to see if that speeds things up???
 
 
 1st Jan 2025
@@ -635,6 +634,7 @@ DONE. Fault in STR2NUM word. BUG 'ga' word has an issue with detecting the rando
 
 
 
+TODO Do I want to do tokenisation of the keywords next to see if that speeds things up???
 
 DONE words for GPIO access. Stubs created
 DONE Sort out the EXEC word so that I can create a simple save and load of UWORDS

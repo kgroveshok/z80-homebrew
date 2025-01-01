@@ -4,7 +4,7 @@
 ;if MALLOC_4
 
 .HEAP:
-	CWHEAD .EXEC 6 "HEAP" 4 WORD_FLAG_CODE
+	CWHEAD .EXEC OPCODE_HEAP "HEAP" 4 WORD_FLAG_CODE
 ; | HEAP ( -- u1 u2 )   Pushes u1 the current number of bytes in the heap and u2 the remaining bytes - Only present if using my MALLOC | DONE
 ; | | u1 - Current number of bytes in the heap
 ; | | u2 - Remaining bytes left on the heap
@@ -40,7 +40,7 @@
 ;endif
 
 .EXEC:
-	CWHEAD .DUP 6 "EXEC" 4 WORD_FLAG_CODE
+	CWHEAD .DUP OPCODE_EXEC "EXEC" 4 WORD_FLAG_CODE
 ; | EXEC ( u -- )    Execs the string on TOS as a FORTH expression | CRASHES ON NEXTW
 ; | | u - A qutoed string which can consist of any valid Forth expression excluding : defintions (use LOAD instead)
 ; | |
@@ -165,7 +165,7 @@
 	NEXTW
 
 .DUP:
-	CWHEAD .SWAP 6 "DUP" 3 WORD_FLAG_CODE
+	CWHEAD .SWAP OPCODE_DUP "DUP" 3 WORD_FLAG_CODE
 ; | DUP ( u -- u u )     Duplicate whatever item is on TOS | DONE
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -174,7 +174,7 @@
 		call forth_push_numhl
 		NEXTW
 .SWAP:
-	CWHEAD .COLN 9 "SWAP" 4 WORD_FLAG_CODE
+	CWHEAD .COLN OPCODE_SWAP "SWAP" 4 WORD_FLAG_CODE
 ; | SWAP ( w1 w2 -- w2 w1 )    Swap top two items  on TOS | DONE
 
 		FORTH_DSP_VALUEHL
@@ -184,7 +184,7 @@
 
 		NEXTW
 .COLN:
-	CWHEAD .SCOLN 15 ":" 1 WORD_FLAG_CODE
+	CWHEAD .SCOLN OPCODE_COLN ":" 1 WORD_FLAG_CODE
 ; | : ( -- )         Create new word | DONE
 
 	; get parser buffer length  of new word
@@ -480,7 +480,7 @@ ret    ; dont process any remaining parser tokens as they form new word
 ;		NEXT
 .SCOLN:
 ;	CWHEAD .DROP 17 '\;' 1 WORD_FLAG_CODE
-	db 17
+	db OPCODE_SCOLN
 	dw .DROP
 	db 2
 	db ";",0          
@@ -499,12 +499,12 @@ endif
 		NEXTW
 
 .DROP:
-	CWHEAD .DUP2 17 "DROP" 4 WORD_FLAG_CODE
+	CWHEAD .DUP2 OPCODE_DROP "DROP" 4 WORD_FLAG_CODE
 ; | DROP ( w -- )   drop the TOS item   | DONE
 		FORTH_DSP_POP
 		NEXTW
 .DUP2:
-	CWHEAD .DROP2 18 "2DUP" 4 WORD_FLAG_CODE
+	CWHEAD .DROP2 OPCODE_DUP2 "2DUP" 4 WORD_FLAG_CODE
 ; | 2DUP ( w1 w2 -- w1 w2 w1 w2 ) Duplicate the top two items on TOS  | DONE
 		FORTH_DSP_VALUEHL
 		push hl      ; 2
@@ -533,17 +533,17 @@ endif
 
 		NEXTW
 .DROP2:
-	CWHEAD .SWAP2 19 "2DROP" 5 WORD_FLAG_CODE
+	CWHEAD .SWAP2 OPCODE_DROP2 "2DROP" 5 WORD_FLAG_CODE
 ; | 2DROP ( w w -- )    Double drop | DONE
 		FORTH_DSP_POP
 		FORTH_DSP_POP
 		NEXTW
 .SWAP2:
-	CWHEAD .AT 20 "2SWAP" 5 WORD_FLAG_CODE
+	CWHEAD .AT OPCODE_SWAP2 "2SWAP" 5 WORD_FLAG_CODE
 ; | 2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items | TODO
 		NEXTW
 .AT:
-	CWHEAD .CAT 21 "@" 1 WORD_FLAG_CODE
+	CWHEAD .CAT OPCODE_AT "@" 1 WORD_FLAG_CODE
 ; | @ ( w -- ) Push onto TOS byte stored at address   | DONE
 
 .getbyteat:	
@@ -563,12 +563,12 @@ endif
 
 		NEXTW
 .CAT:
-	CWHEAD .BANG 22 "C@" 2 WORD_FLAG_CODE
+	CWHEAD .BANG OPCODE_CAT "C@" 2 WORD_FLAG_CODE
 ; | C@  ( w -- ) Push onto TOS byte stored at address   | DONE
 		jp .getbyteat
 		NEXTW
 .BANG:
-	CWHEAD .CBANG 23 "!" 1 WORD_FLAG_CODE
+	CWHEAD .CBANG OPCODE_BANG "!" 1 WORD_FLAG_CODE
 ; | ! ( x w -- ) Store x at address w      | DONE
 
 .storebyteat:		
@@ -595,12 +595,12 @@ endif
 
 		NEXTW
 .CBANG:
-	CWHEAD .SCALL 24 "C!" 2 WORD_FLAG_CODE
+	CWHEAD .SCALL OPCODE_CBANG "C!" 2 WORD_FLAG_CODE
 ; | C!  ( x w -- ) Store x at address w  | DONE
 		jp .storebyteat
 		NEXTW
 .SCALL:
-	CWHEAD .DEPTH 30 "CALL" 4 WORD_FLAG_CODE
+	CWHEAD .DEPTH OPCODE_SCALL "CALL" 4 WORD_FLAG_CODE
 ; | CALL ( w -- w  ) machine code call to address w  push the result of hl to stack | TO TEST
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -623,7 +623,7 @@ endif
 		call forth_push_numhl
 		NEXTW
 .DEPTH:
-	CWHEAD .OVER 37 "DEPTH" 5 WORD_FLAG_CODE
+	CWHEAD .OVER OPCODE_DEPTH "DEPTH" 5 WORD_FLAG_CODE
 ; | DEPTH ( -- u ) Push count of stack | DONE
 		; take current TOS and remove from base value div by two to get count
 

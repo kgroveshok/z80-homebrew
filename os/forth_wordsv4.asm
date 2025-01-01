@@ -70,7 +70,7 @@
 ; 255 - user define words
 
 sysdict:
-
+include "forth_opcodes.asm"
 
 include "forth_words_flow.asm"
 include "forth_words_core.asm"

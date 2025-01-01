@@ -628,22 +628,28 @@ Reviewing code. Objectives for this round of dev is to:
 DONE change data stack. Each push will be three bytes. First byte is type. If num then num in next two byts, if string then pointer. That will save on mallocs. Other data types will make use of the pointer
 DONE Switched back to my malloc for now
 MAYBE TODO New malloc that only ever adds to memory with a simple forward pointer
-
 DONE. Fault in STR2NUM word. BUG 'ga' word has an issue with detecting the random number. Is it the logic checks?
-
-
-
-
-TODO Do I want to do tokenisation of the keywords next to see if that speeds things up???
-
-DONE words for GPIO access. Stubs created
-DONE Sort out the EXEC word so that I can create a simple save and load of UWORDS
-PART DONE break out parser so it can be used by LIST, FORGET, WORDS, UWORDS and SAVE 
-
-
+DONE At boot detect if key is held for debug, add another key for hardware diags like checking keyboard etc
 DONE Add a dot comment to forward the next print position use .>   
 DONE have a flag to enable forward cursor from each . or .-
 DONE word which allows edit of item on tos - word added but does not copy from stack
+DONE words for GPIO access. Stubs created
+DONE Sort out the EXEC word so that I can create a simple save and load of UWORDS
+
+PART DONE break out parser so it can be used by LIST, FORGET, WORDS, UWORDS and SAVE 
+ACTIVE Do I want to do tokenisation of the keywords next to see if that speeds things up???
+
+TODO cleanup not being done. Is that a problem?
+TODO free not working?
+TODO Add keyboard macro defs on function keys
+
+TODO ?DUP word to duplicate if the TOS value is non-zero
+TODO PICK word to pick a value at a given value on stack and move to TOS
+
+
+
+
+
 TODO fix editor bugs
 TODO fix editor issues
 
@@ -654,14 +660,10 @@ TODO If cursor at end of line, when go back it leaves custor displayed
 
 
 
-DONE At boot detect if key is held for debug, add another key for hardware diags like checking keyboard etc
 TODO Create a disk UI in native asm for robustness and speed?
-TODO Add a simple assembler feature like BBC Basic
 TODO Extract all of the symbols in the symbol table to be available as words in FORTH, debug and asm above
 TODO fix saving more than a single block of file storage
 TODO fix loading more than a single block of file storage
-TODO ?DUP word to duplicate if the TOS value is non-zero
-TODO PICK word to pick a value at a given value on stack and move to TOS
 TODO add more editing features 
 TODO need words to report on hardware e.g. screen dims
 TODO need word to get file id by name
@@ -674,10 +676,10 @@ TODO have a word to set break point at a DMARKer
 TODO random malloc failure. Added a macro DEBUG_FORTH_MALLOC_HIGH but not quite right so disabled for now.
 TODO BUG Using my malloc I is not working in loops. Why? Only when malloc free is enabled. Bug there
 TODO Dont think parser calls are releasing memory
-TODO BUG hline with my malloc is copying too much somewhere. Extending malloc by four bytes solves problem but allocating required is causing crashes. problem is not do loop or i use. at works too. very odd.  it is dot for strings that is crashing after a couple of goes. does it fail outside of loops? yes. second time. must be memory overwrite. Might also be a reason the other malloc is failing.
+DONE BUG hline with my malloc is copying too much somewhere. Extending malloc by four bytes solves problem but allocating required is causing crashes. problem is not do loop or i use. at works too. very odd.  it is dot for strings that is crashing after a couple of goes. does it fail outside of loops? yes. second time. must be memory overwrite. Might also be a reason the other malloc is failing.
 
-TODO Add keyboard macro defs on function keys
 TODO Due to bad performance of the parser (???) need to look at compiler
+TODO Add a simple assembler feature like BBC Basic
 
 Documentation Tasks
 -------------------

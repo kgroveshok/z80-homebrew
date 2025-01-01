@@ -552,6 +552,23 @@ endif
 .MENU:
 	CWHEAD .ENDDISPLAY 92 "MENU" 4 WORD_FLAG_CODE
 ; | MENU ( u1....ux n ut -- n ) Create a menu. Ut is the title, n is the number of menu items on stack. Push number selection to TOS |
+
+		; get the title address and save it
+
+		FORTH_DSP_VALUEHL
+		push hl
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		; get number of items on the stack
+
+	
+		FORTH_DSP_VALUEHL
+		push hl
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+
+
+
 	       NEXTW
 
 

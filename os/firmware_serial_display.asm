@@ -137,7 +137,7 @@ endif
 
         ld (display_write_tmp), hl 	 
 	ld a, kLCD_Line1
-            CALL fLCD_Pos       ;Position cursor to location in A
+        ;    CALL fLCD_Pos       ;Position cursor to location in A
 	ld b, display_cols
 	ld de, (display_write_tmp)
 	call write_len_string
@@ -160,7 +160,7 @@ pop hl
 
 	
 	ld a, kLCD_Line2
-            CALL fLCD_Pos       ;Position cursor to location in A
+        ;    CALL fLCD_Pos       ;Position cursor to location in A
 	ld b, display_cols
 	ld de, (display_write_tmp)
 	call write_len_string
@@ -181,7 +181,7 @@ pop hl
 
 	
 	ld a, kLCD_Line3
-            CALL fLCD_Pos       ;Position cursor to location in A
+         ;   CALL fLCD_Pos       ;Position cursor to location in A
 	ld b, display_cols
 	ld de, (display_write_tmp)
 	call write_len_string
@@ -202,7 +202,7 @@ pop hl
 
 	
 	ld a, kLCD_Line4
-            CALL fLCD_Pos       ;Position cursor to location in A
+          ;  CALL fLCD_Pos       ;Position cursor to location in A
 	ld b, display_cols
 	ld de, (display_write_tmp)
 	call write_len_string

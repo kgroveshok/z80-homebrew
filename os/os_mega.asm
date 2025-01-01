@@ -3,6 +3,8 @@
 
 BASE_SC114: equ 0
 BASE_KEV: equ 1
+
+tos:	equ 0fffdh
 ;
 ;
 ; CPU clock
@@ -15,6 +17,12 @@ CPU_CLOCK_10MHZ: equ  0
 
 STORAGE_SE: equ 1
 SOUND_ENABLE: equ 1
+
+; Number of bytes available in heap   TODO make all of user ram
+baseram: equ 08000h
+endofcode: equ 08000h
+heap_start: equ 0800eh  ; Starting address of heap
+free_list:  equ 0800ah      ; Block struct for start of free list (MUST be 4 bytes)
 
 ; Full OS but with the 5x10 fullsized keyboard
 
@@ -30,3 +38,6 @@ include "firmware_lcd_4x40.asm"
 ;include "firmware_lcd_4x20.asm"
 include "firmware_key_5x10.asm"
 ;include "firmware_key_4x10.asm"
+
+heap_size:    equ heap_end - heap_start
+;eof

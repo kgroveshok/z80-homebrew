@@ -1,6 +1,7 @@
 ; z80 homebrew opperating system
 ;
 
+STARTUP_ENABLE: equ 1
 
 
 ; bios jump points via rst
@@ -66,6 +67,16 @@ endif
 
 
 include "firmware.asm"
+
+;; below moved from firmware.asm for strange zero calc of baseusermem label. Scope issue on multipass????
+;if BASE_KEV 
+;baseram: equ 08000h
+;endif
+
+;if BASE_SC114
+;baseram:     equ    endofcode
+;endif
+
 
 ; start system
 
@@ -165,7 +176,9 @@ warmstart:
 	; run startup word load
         ; TODO prevent this running at warmstart after crash 
 
-	call forth_startup
+	if STARTUP_ENABLE
+		call forth_startup
+	endif
 
 	; show free memory after boot
 	ld de, freeram
@@ -199,7 +212,7 @@ warmstart:
 
 	; init scratch input area for cli commands
 
-	ld hl, scratch	
+	ld hl, os_cli_cmd
 	ld a,0
 	ld (hl),a
 	inc hl
@@ -216,7 +229,7 @@ warmstart:
 	
 
 	;ld a, kLCD_Line2        ; TODO prompt using direct screen line address. Correct this to frame buffer
-	ld hl, scratch	
+	ld hl, os_cli_cmd
 
 	ld a, 0		 ; init cli input
 	ld (hl), a
@@ -236,13 +249,13 @@ cli:
 	ld d, 255    ; TODO fix input_str to actually take note of max string input length
 	ld e, 40
 
-	ld hl, scratch	
+	ld hl, os_cli_cmd
 	call input_str
 
 
 	; copy input to last command
 
-	ld de, scratch
+	ld de, os_cli_cmd
 	ld hl, os_last_cmd
 ;	ld bc, 250
 ;	ldir
@@ -262,10 +275,12 @@ cli:
 
 ;	nop
 	; first time into the parser so pass over the current scratch pad
-	ld hl,scratch
+	ld hl,os_cli_cmd
+	; tokenise the entered statement(s) in HL
 	call forthparse
+        ; exec forth statements in top of return stack
 	call forthexec
-	call forthexec_cleanup
+	;call forthexec_cleanup
 ;	call parsenext
 
 	; TODO on return from forth parsing should there be a prompt to return to system? but already in system.
@@ -286,7 +301,7 @@ cli:
         call clear_display
 	call update_display		
 
-	ld hl, scratch	
+	ld hl, os_cli_cmd
 
 	ld a, 0		 ; init cli input
 	ld (hl), a
@@ -404,16 +419,19 @@ monitor:
 
 	ld a, (os_input)
 	call toUpper
+        cp 'H'
+        jr z, .monhelp
 	cp 'D'		; dump
-	jr z, .mondump	
+	jp z, .mondump	
 	cp 'C'		; dump
-	jr z, .moncdump	
+	jp z, .moncdump	
 	cp 'M'		; dump
-	jr z, .moneditstart
+	jp z, .moneditstart
 	cp 'U'		; dump
 	jr z, .monedit	
 	cp 'Q'		; dump
 	ret z	
+
 
 	; TODO "S" to access symbol by name and not need the address
 	; TODO "F" to find a string in memory
@@ -452,6 +470,28 @@ monitor:
 
 	jp monitor
 
+
+.monhelptext1: 	db "D-Dump, C-Cont Dump",0
+.monhelptext2:  db "M-Edit Start, U-Update Byte",0
+.monhelptext3:  db "Q-Quit",0
+       
+.monhelp:
+	ld a, display_row_1
+        ld de, .monhelptext1
+
+	call str_at_display
+	ld a, display_row_2
+        ld de, .monhelptext2
+		
+	call str_at_display
+	ld a, display_row_3
+        ld de, .monhelptext3
+		
+	call str_at_display
+	call update_display		
+
+	call next_page_prompt
+	jp monitor
 
 .mondump:   
 	ld hl,os_input+2
@@ -761,10 +801,12 @@ next_page_prompt:
 
 ; My forth kernel
 include "forth_kernel.asm"
+;include "nascombasic.asm"
 
 
 ; find out where the code ends if loaded into RAM (for SC114)
-end_of_code: nop
+;endofcode: 
+;	nop
 
 
 ; eof

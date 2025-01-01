@@ -72,8 +72,8 @@
 sysdict:
 
 
-include "forth_words_core.asm"
 include "forth_words_flow.asm"
+include "forth_words_core.asm"
 include "forth_words_maths.asm"
 include "forth_words_logic.asm"
 include "forth_words_display.asm"

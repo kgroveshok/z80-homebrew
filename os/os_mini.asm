@@ -15,6 +15,14 @@ CPU_CLOCK_10MHZ: equ 0
 STORAGE_SE: equ 1
 SOUND_ENABLE: equ 0
 
+tos:	equ 0fffdh
+baseram: equ 08000h
+endofcode: equ 08000h
+heap_start: equ 0800eh  ; Starting address of heap
+free_list:  equ 0800ah      ; Block struct for start of free list (MUST be 4 bytes)
+heap_size: equ  heap_end-heap_start      ; Number of bytes available in heap   TODO make all of user ram
+
+
 ; Full OS but with the small 4x4 keypad
 
 display_rows: equ 4     ; move out to mini and mega files

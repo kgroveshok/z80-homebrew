@@ -28,7 +28,7 @@ DEBUG_FORTH_PARSE_EXEC: equ 1     ; 6
 DEBUG_FORTH_PARSE_EXEC_SLOW: equ 0     ; 6
 DEBUG_FORTH_PARSE_NEXTWORD: equ 0
 DEBUG_FORTH_JP: equ 0
-DEBUG_FORTH_MALLOC: equ 0
+DEBUG_FORTH_MALLOC: equ 1
 DEBUG_FORTH_MALLOC_INT: equ 1
 DEBUG_FORTH_DOT: equ 1
 DEBUG_FORTH_DOT_WAIT: equ 0
@@ -61,18 +61,24 @@ CALLMONITOR: macro
 	call break_point_state
 	endm
 
-MALLOC_1: equ 0        ; from dk88 
+MALLOC_1: equ 1        ; from dk88 
 MALLOC_2: equ 0           ; broke
 MALLOC_3: equ 0           ; really broke
-MALLOC_4: equ 1              ; mine pretty basic reuse and max of 250 chars
+MALLOC_4: equ 0              ; mine pretty basic reuse and max of 250 chars
 
 if BASE_KEV 
-tos:	equ 0fffdh
 stacksize: equ 512*2
+
+STACK_RET_SIZE: equ 128
+STACK_LOOP_SIZE: equ 512
+STACK_DATA_SIZE: equ 512
 endif
 if BASE_SC114
-tos:	equ 0fb00h
-stacksize: equ 512
+;tos:	equ 0f000h
+stacksize: equ 256
+STACK_RET_SIZE: equ 64
+STACK_LOOP_SIZE: equ 256
+STACK_DATA_SIZE: equ 256
 endif
 
 
@@ -240,17 +246,18 @@ cli_loop_sp: equ cli_ret_sp - 2   ; data stack pointer
 cli_data_sp: equ cli_loop_sp - 2   ; data stack pointer
 
 chk_ret_und: equ cli_data_sp-2           ; underflow check word
-cli_ret_stack: equ chk_ret_und - 128      ; TODO could I just use normal stack for this? - use linked list for looping
+cli_ret_stack: equ chk_ret_und - STACK_RET_SIZE      ; TODO could I just use normal stack for this? - use linked list for looping
 chk_ret_ovr: equ cli_ret_stack -2; overflow check word
-cli_loop_stack: equ chk_ret_ovr - 512      ; TODO could I just use normal stack for this? - use linked list for looping
+cli_loop_stack: equ chk_ret_ovr - STACK_LOOP_SIZE      ; TODO could I just use normal stack for this? - use linked list for looping
 chk_loop_ovr: equ cli_loop_stack -2; overflow check word
-cli_data_stack: equ chk_loop_ovr - 512		 ; 
+cli_data_stack: equ chk_loop_ovr - STACK_DATA_SIZE		 ; 
 chk_data_ovr: equ cli_data_stack -2; overflow check word
 
 ; os/forth token vars
 
 os_last_cmd: equ chk_data_ovr-255
-os_current_i: equ os_last_cmd-2
+os_cli_cmd: equ os_last_cmd-255              ; cli command entry line
+os_current_i: equ os_cli_cmd-2
 os_cur_ptr: equ os_current_i-2
 os_word_scratch: equ os_cur_ptr-30
 os_tok_len: equ os_word_scratch - 2
@@ -295,10 +302,19 @@ chk_word: equ os_view_bc - 2		 ; this is the word to init and then check against
 
 ;heap_start: equ free_list - heap_size  ; Starting address of heap
 heap_end: equ chk_word-1  ; Starting address of heap
-heap_start: equ 0800eh  ; Starting address of heap
-free_list:  equ 0800ah      ; Block struct for start of free list (MUST be 4 bytes)
 
-heap_size: equ  heap_end-heap_start      ; Number of bytes available in heap   TODO make all of user ram
+
+;if BASE_KEV 
+;heap_start: equ 0800eh  ; Starting address of heap
+;free_list:  equ 0800ah      ; Block struct for start of free list (MUST be 4 bytes)
+;heap_size: equ  heap_end-heap_start      ; Number of bytes available in heap   TODO make all of user ram
+;endif
+
+;if BASE_SC114
+;heap_start: equ baseram+15  ; Starting address of heap
+;free_list:  equ baseram+10      ; Block struct for start of free list (MUST be 4 bytes)
+;endif
+
 
 ;;;;
 
@@ -306,12 +322,15 @@ heap_size: equ  heap_end-heap_start      ; Number of bytes available in heap   T
 ; change below to point to last memory alloc above
 topusermem:  equ   heap_start
 
-if BASE_KEV 
-baseusermem: equ 08000h
-endif
-if BASE_SC114
-baseusermem: equ end_of_code
-endif
+;if BASE_KEV 
+;baseusermem: equ 08000h
+;endif
+
+;if BASE_SC114
+;;aseusermem:     equ    12
+;baseusermem:     equ    prompt
+;;baseusermem:     equ    endofcode
+;endif
 
 
 ; **********************************************************************

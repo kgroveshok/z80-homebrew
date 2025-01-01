@@ -4,6 +4,7 @@
 BASE_SC114: equ 1
 BASE_KEV: equ 0
 
+tos:	equ 0f000h
 ; Using SCM API instead
 ;SC114_SIO_1_OUT: equ 81
 ;SC114_SIO_1_IN: equ 80
@@ -29,6 +30,7 @@ display_cols: equ 40
 key_rows: equ 5     
 key_cols: equ 10   
 
+
 include "main.asm"
 ;include "firmware_lcd_4x40.asm"
 ;;include "firmware_lcd_4x20.asm"
@@ -36,3 +38,12 @@ include "firmware_serial_display.asm"
 ;include "firmware_key_5x10.asm"
 ;;include "firmware_key_4x10.asm"
 include "firmware_key_serial.asm"
+endofcode: 
+baseram: 
+	nop
+
+heap_start: equ baseram+15  ; Starting address of heap
+free_list:  equ baseram+10      ; Block struct for start of free list (MUST be 4 bytes)
+heap_size: equ  heap_end-heap_start      ; Number of bytes available in heap   TODO make all of user ram
+; eof
+

@@ -612,6 +612,24 @@ Reviewing code. Objectives for this round of dev is to:
 2. Remove mallocs which is slowing the code down
 3. Run a tokenisation of the keywords to single bytes which will also vastly speed up the runtime
 
+31st Dec 2024
+-------------
+
+* Now fully working on the SC114. 
+* Have removed initial level of malloc calls. 
+* Switched to the original malloc function which should be a lot better than mine as it has garbage collection.
+* Tested run with and without debug code and 'SW' runs 0.4s faster without debug code included.
+
+Do I want to do tokenisation of the keywords next to see if that speeds things up???
+
+
+1st Jan 2025
+------------
+
+TODO change data stack. Each push will be three bytes. First byte is type. If num then num in next two byts, if string then pointer. That will save on mallocs. Other data types will make use of the pointer
+TODO New malloc that only ever adds to memory with a simple forward pointer
+
+
 
 
 DONE words for GPIO access. Stubs created

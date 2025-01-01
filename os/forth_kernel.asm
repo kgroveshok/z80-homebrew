@@ -11,11 +11,11 @@ FORTH_PARSEV3: equ 0
 FORTH_PARSEV4: equ 0
 FORTH_PARSEV5: equ 1
 
-if FORTH_PARSEV5
-	FORTH_END_BUFFER: equ 0
-else
-	FORTH_END_BUFFER: equ 127
-endif
+;if FORTH_PARSEV5
+;	FORTH_END_BUFFER: equ 0
+;else
+FORTH_END_BUFFER: equ 127
+;endif
 
 FORTH_TRUE: equ 1
 FORTH_FALSE: equ 0
@@ -315,7 +315,7 @@ forth_init:
 
 	; set start of word list in start of ram - for use when creating user words
 
-	ld hl, baseusermem		
+	ld hl, baseram
 	ld (os_last_new_uword), hl
 	call user_word_eol
 	

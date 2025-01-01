@@ -1,7 +1,7 @@
 
 ; | ## Core Words
 
-if MALLOC_4
+;if MALLOC_4
 
 .HEAP:
 	CWHEAD .EXEC 6 "HEAP" 4 WORD_FLAG_CODE
@@ -37,7 +37,7 @@ if MALLOC_4
 
 
 		NEXTW
-endif
+;endif
 
 .EXEC:
 	CWHEAD .DUP 6 "EXEC" 4 WORD_FLAG_CODE
@@ -754,7 +754,8 @@ endif
 .WORDS:
 	CWHEAD .UWORDS 59 "WORDS" 5 WORD_FLAG_CODE
 ; | WORDS (  -- s1 ... sx u )   List the system and user word dict | TODO
-		ld hl, baseusermem
+		ld hl, baseram
+		;ld hl, baseusermem
 
 		
 
@@ -777,7 +778,8 @@ endif
 		DMARK "UWR"
 		CALLMONITOR
 	endif
-		ld hl, baseusermem
+		ld hl, baseram
+		;ld hl, baseusermem
 		ld bc, 0    ; start a counter
 
 	; skip dict stub
@@ -980,7 +982,8 @@ endif
 ;		ex de, hl    ; put into DE
 
 
-		ld hl, baseusermem
+		ld hl, baseram
+		;ld hl, baseusermem
 
 		
 
@@ -1240,7 +1243,8 @@ pop hl
 ;		ex de, hl    ; put into DE
 
 
-		ld hl, baseusermem
+		ld hl, baseram
+		;ld hl, baseusermem
 
 	; skip dict stub
 		call forth_tok_next

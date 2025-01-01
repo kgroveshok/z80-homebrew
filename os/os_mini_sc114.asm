@@ -8,6 +8,7 @@ BASE_KEV: equ 0
 ;SC114_SIO_1_IN: equ 80
 
 
+tos:	equ 0f000h
 ;
 ; CPU clock
 ;
@@ -33,3 +34,13 @@ include "main.asm"
 ;include "firmware_key_4x4.asm"
 include "firmware_serial_display.asm"
 include "firmware_key_serial.asm"
+
+baseram: 
+endofcode:
+	nop
+
+heap_start: equ baseram+15  ; Starting address of heap
+free_list:  equ baseram+10      ; Block struct for start of free list (MUST be 4 bytes)
+heap_size: equ  heap_end-heap_start      ; Number of bytes available in heap   TODO make all of user ram
+;
+

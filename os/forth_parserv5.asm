@@ -67,19 +67,19 @@ forthparse:
 
 ; hl to point to the line to tokenise
 
-	push hl
+;	push hl
 	ld (os_tok_ptr), hl  ; save ptr to string
 
-	ld a,0		; string term on input
-	call strlent
+;	ld a,0		; string term on input
+;	call strlent
 
-	ld (os_tok_len), hl	 ; save string length
+;	ld (os_tok_len), hl	 ; save string length
 
-if DEBUG_FORTH_TOK
-	ex de,hl		
-endif
+;if DEBUG_FORTH_TOK
+;	ex de,hl		
+;endif
 
-	pop hl 		; get back string pointer
+;	pop hl 		; get back string pointer
 
 if DEBUG_FORTH_TOK
 			DMARK "TOK"
@@ -130,122 +130,134 @@ endif
 	jr .ptokenstr2
 
 .ptokendone2:
+	;inc hl
+	ld a, FORTH_END_BUFFER
+	ld (hl),a
+	inc hl
+	ld a, '!'
+	ld (hl),a
 
-if DEBUG_FORTH_TOK
 	ld hl,(os_tok_ptr)
+        
+if DEBUG_FORTH_TOK
 			DMARK "TK1"
 	CALLMONITOR
 endif
 
-	; malloc size + buffer pointer + if is loop flag
-	ld hl,(os_tok_len) 		 ; get string length
-
-	ld a,l
-
-	cp 0			; we dont want to use a null string
-	ret z
-
-;	add 3    ; prefix malloc with buffer for current word ptr
-
-	add 5     ; TODO when certain not over writing memory remove
-
-		
-
-if DEBUG_FORTH_TOK
-			DMARK "TKE"
-	CALLMONITOR
-endif
-
-	ld l,a
-	ld h,0
-;	push hl   ; save required space for the copy later
-	call malloc
-if DEBUG_FORTH_TOK
-			DMARK "TKM"
-	CALLMONITOR
-endif
-	if DEBUG_FORTH_MALLOC_GUARD
-		push af
-		call ishlzero
-;		ld a, l
-;		add h
-;		cp 0
-		pop af
-		
-		call z,malloc_error
-	endif
-	ld (os_tok_malloc), hl	 ; save malloc ptr
-
-
-if DEBUG_FORTH_TOK
-			DMARK "TKR"
-	CALLMONITOR
-endif
-
+	; push exec string to top of return stack
 	FORTH_RSP_NEXT
-
-	;inc hl	 ; go past current buffer pointer
-	;inc hl
-	;inc hl   ; and past if loop flag
-		; TODO Need to set flag 
-
-	
-	
-	ex de,hl	; malloc is dest
-	ld hl, (os_tok_len)
-;	pop bc
-	ld c, l               
-	ld b,0
-	ld hl, (os_tok_ptr)
-
-if DEBUG_FORTH_TOK
-			DMARK "TKT"
-	CALLMONITOR
-endif
-
-	; do str cpy
-
-	ldir      ; copy byte in hl to de
-
-	; set end of buffer to high bit on zero term and use that for end of buffer scan
-
-if DEBUG_FORTH_TOK
-
-			DMARK "TKY"
-	CALLMONITOR
-endif
-	;ld a,0
-	;ld a,FORTH_END_BUFFER
-	ex de, hl
-	;dec hl			 ; go back over the space delim at the end of word
-	;ld (hl),a
-	;inc hl                    ;  TODO double check this. Going past the end of string to make sure end of processing buffer is marked
-	ld a,FORTH_END_BUFFER
-	ld (hl),a
-	inc hl
-	ld a,FORTH_END_BUFFER
-	ld (hl),a
-
-	; init the malloc area data
-	; set pc for in current area
-	;ld hl, (os_tok_malloc)
-	;inc hl
-	;inc hl
-	;inc hl
-	;ex de,hl
-	;ld hl, (os_tok_malloc)
-	;ld (hl),e
-	;inc hl
-	;ld (hl),d
-
-
-	ld hl,(os_tok_malloc)
-if DEBUG_FORTH_PARSE_KEY
-			DMARK "TKU"
-	CALLMONITOR
-endif
-
 	ret
+
+;
+;	; malloc size + buffer pointer + if is loop flag
+;	ld hl,(os_tok_len) 		 ; get string length
+;
+;	ld a,l
+;
+;	cp 0			; we dont want to use a null string
+;	ret z
+;
+;;	add 3    ; prefix malloc with buffer for current word ptr
+;
+;	add 5     ; TODO when certain not over writing memory remove
+;
+;		
+;
+;if DEBUG_FORTH_TOK
+;			DMARK "TKE"
+;	CALLMONITOR
+;endif
+;
+;	ld l,a
+;	ld h,0
+;;	push hl   ; save required space for the copy later
+;	call malloc
+;if DEBUG_FORTH_TOK
+;			DMARK "TKM"
+;	CALLMONITOR
+;endif
+;	if DEBUG_FORTH_MALLOC_GUARD
+;		push af
+;		call ishlzero
+;;		ld a, l
+;;		add h
+;;		cp 0
+;		pop af
+;		
+;		call z,malloc_error
+;	endif
+;	ld (os_tok_malloc), hl	 ; save malloc ptr
+;
+;
+;if DEBUG_FORTH_TOK
+;			DMARK "TKR"
+;	CALLMONITOR
+;endif
+;
+;	FORTH_RSP_NEXT
+;
+;	;inc hl	 ; go past current buffer pointer
+;	;inc hl
+;	;inc hl   ; and past if loop flag
+;		; TODO Need to set flag 
+;
+;	
+;	
+;	ex de,hl	; malloc is dest
+;	ld hl, (os_tok_len)
+;;	pop bc
+;	ld c, l               
+;	ld b,0
+;	ld hl, (os_tok_ptr)
+;
+;if DEBUG_FORTH_TOK
+;			DMARK "TKT"
+;	CALLMONITOR
+;endif
+;
+;	; do str cpy
+;
+;	ldir      ; copy byte in hl to de
+;
+;	; set end of buffer to high bit on zero term and use that for end of buffer scan
+;
+;if DEBUG_FORTH_TOK
+;
+;			DMARK "TKY"
+;	CALLMONITOR
+;endif
+;	;ld a,0
+;	;ld a,FORTH_END_BUFFER
+;	ex de, hl
+;	;dec hl			 ; go back over the space delim at the end of word
+;	;ld (hl),a
+;	;inc hl                    ;  TODO double check this. Going past the end of string to make sure end of processing buffer is marked
+;	ld a,FORTH_END_BUFFER
+;	ld (hl),a
+;	inc hl
+;	ld a,FORTH_END_BUFFER
+;	ld (hl),a
+;
+;	; init the malloc area data
+;	; set pc for in current area
+;	;ld hl, (os_tok_malloc)
+;	;inc hl
+;	;inc hl
+;	;inc hl
+;	;ex de,hl
+;	;ld hl, (os_tok_malloc)
+;	;ld (hl),e
+;	;inc hl
+;	;ld (hl),d
+;
+;
+;	ld hl,(os_tok_malloc)
+;if DEBUG_FORTH_PARSE_KEY
+;			DMARK "TKU"
+;	CALLMONITOR
+;endif
+;
+;	ret
 
 forthexec:
 
@@ -295,7 +307,7 @@ endif
 ;       while at start of word:
 ; get start of dict (in user area first)
 
-ld hl, baseusermem
+ld hl, baseram
 ;ld hl, sysdict
 ld (cli_nextword),hl
 ;           match word at pc
@@ -305,6 +317,10 @@ ld (cli_nextword),hl
 ;           if line term pop rsp and exit
 ;       
 
+if DEBUG_FORTH_PARSE_KEY
+			DMARK "KYq"
+	CALLMONITOR
+endif
 
 ;
 ; word comp

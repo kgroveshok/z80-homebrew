@@ -382,121 +382,7 @@ pop hl
 	ret
 ;endif
 
-
-startcmds:
-;	dw test11
-;	dw test12
-;	dw test13
-;	dw test14
-;	dw test15
-;	dw test16
-;	dw test17
-;	dw ifthtest1
-;	dw ifthtest2
-;	dw ifthtest3
-;	dw mmtest1
-;	dw mmtest2
-;	dw mmtest3
-;	dw mmtest4
-;	dw mmtest5
-;	dw mmtest6
-;	dw iftest1
-;	dw iftest2
-;	dw iftest3
-;	dw looptest1
-;	dw looptest2
-;	dw test1
-;	dw test2
-;	dw test3
-;	dw test4
-;	dw game2r
-;	dw game2b1
-;	dw game2b2
-	dw game2b
-
-	dw game1
-	dw game1a
-	dw game1b
-	dw game1c
-	dw game1d
-	dw game1s
-	dw game1t
-	dw game1f
-	dw game1z
-
-	dw test5
-	dw test6
-	dw test7
-	dw test8
-	dw test9
-	dw test10
-	
-	dw start1
-	dw start2
-	dw start3
-	db 0, 0	
-
-test1:		db ": aa 1 2 3 ;  ", 0, 0, 0, FORTH_END_BUFFER
-test2:     	db "111 aa 888 999  ",0, 0, 0, FORTH_END_BUFFER
-test3:     	db ": bb 77 ;  ",0, 0, 0, FORTH_END_BUFFER
-test4:     	db "$02 $01 do i . loop bb  ",0, 0, 0, FORTH_END_BUFFER
-test5:     	db ": hline $13 $00 do i $01 at 1 . i $04 at 1 . loop ;   ",0, 0, 0, FORTH_END_BUFFER
-test6:     	db ": vline $04 $01 do $00 i at 1 . $13 i at 1 . loop ;   ",0, 0, 0, FORTH_END_BUFFER
-test7:     	db ": box hline vline ;  ",0, 0, 0, FORTH_END_BUFFER
-test8:     	db ": world cls box $03 $03 at Hello-World! . ;  ",0, 0, 0, FORTH_END_BUFFER
-test9:     	db ": sw $01 adsp world ;  ",0, 0, 0, FORTH_END_BUFFER
-test10:     	db ": fw $00 adsp world draw $05 pause ;  ",0, 0, 0, FORTH_END_BUFFER
-test11:     	db "hello create . ",0, 0, 0, FORTH_END_BUFFER
-test12:     	db "hello2 create . ",0, 0, 0, FORTH_END_BUFFER
-test13:     	db "some-text-1 $01 append ",0, 0, 0, FORTH_END_BUFFER
-test14:     	db "some-text-2 $01 append ",0, 0, 0, FORTH_END_BUFFER
-test15:     	db "some-text-3 $01 append ",0, 0, 0, FORTH_END_BUFFER
-test16:     	db "some-text-4 $01 append ",0, 0, 0, FORTH_END_BUFFER
-test17:     	db "some-text-in2-1 $02 append ",0, 0, 0, FORTH_END_BUFFER
-
-mmtest1:     	db "cls $0001 $0008 MIN . $0002 pause  ",0, 0, 0, FORTH_END_BUFFER
-mmtest2:     	db "cls $0101 $0008 MIN . $0002 pause  ",0, 0, 0, FORTH_END_BUFFER
-mmtest3:     	db "cls $0001 $0008 MAX . $0002 pause  ",0, 0, 0, FORTH_END_BUFFER
-mmtest4:     	db "cls $0101 $0008 MAX . $0002 pause  ",0, 0, 0, FORTH_END_BUFFER
-mmtest5:     	db "cls $0001 $0001 MIN . $0002 pause  ",0, 0, 0, FORTH_END_BUFFER
-mmtest6:     	db "cls $0001 $0001 MAX . $0002 pause  ",0, 0, 0, FORTH_END_BUFFER
-
-iftest1:     	db "$0001 IF  ",0, 0, 0, FORTH_END_BUFFER
-iftest2:     	db "$0000 IF  ",0, 0, 0, FORTH_END_BUFFER
-iftest3:     	db "$0002 $0003 - IF  ",0, 0, 0, FORTH_END_BUFFER
-looptest1:     	db "$0003 $0001 do i . loop 8  ",0, 0, 0, FORTH_END_BUFFER
-looptest2:     	db "$0003 $0001 do i . $0001 pause loop 8  ",0, 0, 0, FORTH_END_BUFFER
-
-ifthtest1:     	db "$0001 IF is-true . $0005 pause THEN next-word . $0005 pause  ",0, 0, 0, FORTH_END_BUFFER
-ifthtest2:     	db "$0000 IF is-true . $0005 pause THEN next-word . $0005 pause  ",0, 0, 0, FORTH_END_BUFFER
-ifthtest3:     	db "$0002 $0003 - IF is-true . $0005 pause THEN next-word . $0005 pause  ",0, 0, 0, FORTH_END_BUFFER
-
-start1:     	db ": bpon $0000 bp ;  ",0, 0, 0, FORTH_END_BUFFER
-start2:     	db ": bpoff $0001 bp ;  ",0, 0, 0, FORTH_END_BUFFER
-;start3:         db ": dirlist dir cls drop dup $00 > if $01 do .> BL .> .> BL .> .> loop then nop ;  ",0, 0, 0, FORTH_END_BUFFER
-start3:         db ": dirlist dir cls drop dup $00 > if $01 do $08 i at . $01 i at . $04 i at . loop then nop ;  ",0, 0, 0, FORTH_END_BUFFER
-
-; a small guess the number game
-
-game1:          db ": gsn rnd8 v1! ;  ",0, 0, 0, FORTH_END_BUFFER
-game1a:          db ": gs $00 $00 at Enter-a-number .- $00 $02 at between-1-and-255 .- ;  ",0, 0, 0, FORTH_END_BUFFER
-
-game1b:          db ": gcb v2@ v1@ < if $00 $00 at Too-low! .- $01 then ;  ",0, 0, 0, FORTH_END_BUFFER
-game1c:          db ": gcc v2@ v1@ > if $00 $00 at Too-high! .- $01 then ;  ",0, 0, 0, FORTH_END_BUFFER
-game1d:          db ": gcd v2@ v1@ = if $00 $00 at Yes! .- $00 then ;  ",0, 0, 0, FORTH_END_BUFFER
-game1s:          db ": gck gcb gcc gcd ;  ",0, 0, 0, FORTH_END_BUFFER
-game1t:          db ": sc v3@ $01 + v3! ;  ",0, 0, 0, FORTH_END_BUFFER
-game1f:          db ": fsc v3@ cls $01 $01 at You-Took .- $02 $03 at . ;  ",0, 0, 0, FORTH_END_BUFFER
-game1z:         db ": ga $00 v3! gsn repeat cls gs $00 $03 at accept str2num v2! cls gck $02 pause sc until fsc nop ;  ",0, 0, 0, FORTH_END_BUFFER
-
-
-;game2r:          db ": m2r rnd8 v1! ;  ",0, 0, 0, FORTH_END_BUFFER
-;game2b1:          db ": m2b1 $1f $00 do i v2@ at rnd8 $30 < if A . then loop nop ;  ",0, 0, 0, FORTH_END_BUFFER
-;game2b2:          db ": m2b cls $04 $01 do i v2! m2b1 loop ;  ",0, 0, 0, FORTH_END_BUFFER
-
-; minesweeper/star war finding game
-
-game2b:          db ": mb cls $04 $01 do i v2! $10 $01 do i v2@ at rnd8 $30 < if A . then loop loop ;  ",0, 0, 0, FORTH_END_BUFFER
+include "forth_autostart.asm"
 
 sprompt1: db "Startup load...",0
 sprompt2: db "Run? 1=No *=End #=All",0
@@ -563,9 +449,10 @@ forth_startup:
 
 	push hl
 
-	ld a, FORTH_END_BUFFER
+	ld a, 0
+	;ld a, FORTH_END_BUFFER
 	call strlent
-
+	inc hl   ; include zero term to copy
 	ld b,0
 	ld c,l
 	pop hl

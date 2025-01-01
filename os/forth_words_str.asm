@@ -139,9 +139,9 @@
 			CALLMONITOR
 		endif
 
-		FORTH_DSP
-		;FORTH_DSP_VALUE
-		inc hl
+		;FORTH_DSP
+		FORTH_DSP_VALUE
+		;inc hl
 
 		ex de, hl
 		if DEBUG_FORTH_WORDS

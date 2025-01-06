@@ -639,9 +639,22 @@ DONE Sort out the EXEC word so that I can create a simple save and load of UWORD
 PART DONE break out parser so it can be used by LIST, FORGET, WORDS, UWORDS and SAVE 
 ACTIVE Do I want to do tokenisation of the keywords next to see if that speeds things up???
 
+
+6th Jan 2025
+------------
+
+On SC114 things are much more stable than the original hardware. I've not soldered the power caps. Could that be the reason? Or 
+perhaps some bad joints?
+
+Anyway finish off the remaining words and bugs seeing the SC114 platform is faster to turn around an image load rather
+than having to program an EEPROM. Of course can test hardware parts like storage. At the moment... 
+
+
+TODO wire up a temp interface to the serial EEPROMS so I can test storage on the SC114 as I have the PIO and digital IO cards installed
 TODO cleanup not being done. Is that a problem?
+TODO Dont think parser calls are releasing memory
 TODO free not working?
-TODO Add keyboard macro defs on function keys
+TODO Add keyboard macro defs on function keys - need them as tokens in the dictionary for easy recall
 
 TODO ?DUP word to duplicate if the TOS value is non-zero
 TODO PICK word to pick a value at a given value on stack and move to TOS
@@ -650,6 +663,8 @@ TODO PICK word to pick a value at a given value on stack and move to TOS
 
 
 
+TO TEST need word to report where cursor current at
+TODO add more editing features 
 TODO fix editor bugs
 TODO fix editor issues
 
@@ -664,19 +679,13 @@ TODO Create a disk UI in native asm for robustness and speed?
 TODO Extract all of the symbols in the symbol table to be available as words in FORTH, debug and asm above
 TODO fix saving more than a single block of file storage
 TODO fix loading more than a single block of file storage
-TODO add more editing features 
 TODO need words to report on hardware e.g. screen dims
 TODO need word to get file id by name
 TODO need word to get file name by id
-TO TEST need word to report where cursor current at
 
 TODO have a word to set break point at a DMARKer
 
 
-TODO random malloc failure. Added a macro DEBUG_FORTH_MALLOC_HIGH but not quite right so disabled for now.
-TODO BUG Using my malloc I is not working in loops. Why? Only when malloc free is enabled. Bug there
-TODO Dont think parser calls are releasing memory
-DONE BUG hline with my malloc is copying too much somewhere. Extending malloc by four bytes solves problem but allocating required is causing crashes. problem is not do loop or i use. at works too. very odd.  it is dot for strings that is crashing after a couple of goes. does it fail outside of loops? yes. second time. must be memory overwrite. Might also be a reason the other malloc is failing.
 
 TODO Due to bad performance of the parser (???) need to look at compiler
 TODO Add a simple assembler feature like BBC Basic
@@ -685,14 +694,21 @@ Documentation Tasks
 -------------------
 
 TODO Add loads of example Forth code - added some examples in word markup generation
+
 TODO update schematics with 4x40 LCD and the location of the spare E link
+
 TODO update schematics with better design for the next version?
+
 TODO New case for Mega
-DONE Tidy up README with sections and photos of progress.
+
 TODO Tidy up code base: Make sure functions in suitable files 
+
 TODO Tidy up code base: Reindent
+
 TODO Tidy up code base: Remove redundant code/comments
+
 TODO Add word documentation
+
 TODO Add full system documentation
 
 

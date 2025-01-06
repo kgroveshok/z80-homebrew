@@ -72,10 +72,11 @@
 sysdict:
 include "forth_opcodes.asm"
 
-include "forth_words_flow.asm"
 include "forth_words_core.asm"
-include "forth_words_maths.asm"
+include "forth_words_flow.asm"
+; TODO something wrong with the first word of the next word group. no matter which group applies. On device, sc114 is fine. bad memory?
 include "forth_words_logic.asm"
+include "forth_words_maths.asm"
 include "forth_words_display.asm"
 include "forth_words_str.asm"
 include "forth_words_key.asm"

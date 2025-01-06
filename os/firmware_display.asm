@@ -124,5 +124,9 @@ cursor_prev_line:
 	ret
 
 
+cout:
+	; A - char
+	ret
+
 ; eof
 

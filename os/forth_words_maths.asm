@@ -19,7 +19,7 @@
 	if FORTH_ENABLE_FLOATMATH
 			inc hl      ; now at start of numeric as string
 
-		if DEBUG_FORTH_DOT
+		if DEBUG_FORTH_MATHS
 			DMARK "ADD"
 	CALLMONITOR
 		endif
@@ -64,6 +64,10 @@
 .dot_inum:
 
 
+		if DEBUG_FORTH_DOT
+			DMARK "+IT"
+	CALLMONITOR
+		endif
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 

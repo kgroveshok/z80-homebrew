@@ -4,6 +4,8 @@
 BASE_SC114: equ 0
 BASE_KEV: equ 1
 
+ENABLE_BASIC: equ 0
+
 tos:	equ 0fffdh
 ;
 ;

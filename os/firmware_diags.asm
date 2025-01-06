@@ -3,6 +3,7 @@
 
 hd_menu1:   db "Diags:  1: Key Matrix   5: Sound",0
 hd_menu2:   db "        2: Editor",0  
+;hd_menu2:   db "        2: Editor       6: BASIC",0  
 hd_menu3:   db "        3: Storage",0
 hd_menu4:   db "0=quit  4: Debug",0
 hd_don:     db "ON",0
@@ -69,6 +70,11 @@ hardware_diags:
 
 	cp '2'
 	jp z, .diagedit
+
+;if ENABLE_BASIC
+;	cp '6'
+;	jp z, basic
+;endif
  
 	jp .diagmenu
 
@@ -536,5 +542,13 @@ display_dump_at_hl:
 	pop de
 	pop hl
 	ret
+
+;if ENABLE_BASIC
+;	include "nascombasic.asm"
+;	basic:
+;	include "forth/FORTH.ASM"
+;endif
+
 ; eof
+
 

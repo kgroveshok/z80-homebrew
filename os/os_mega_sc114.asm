@@ -4,6 +4,8 @@
 BASE_SC114: equ 1
 BASE_KEV: equ 0
 
+ENABLE_BASIC: equ 0
+
 tos:	equ 0f000h
 ; Using SCM API instead
 ;SC114_SIO_1_OUT: equ 81
@@ -45,5 +47,6 @@ baseram:
 heap_start: equ baseram+15  ; Starting address of heap
 free_list:  equ baseram+10      ; Block struct for start of free list (MUST be 4 bytes)
 heap_size: equ  heap_end-heap_start      ; Number of bytes available in heap   TODO make all of user ram
+;VDU:  EQU     endofcode           ; BASIC Work space
 ; eof
 

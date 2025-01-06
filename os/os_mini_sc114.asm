@@ -3,6 +3,7 @@
 BASE_SC114: equ 1
 BASE_KEV: equ 0
 
+ENABLE_BASIC: equ 0
 ; Using SCM API instead
 ;SC114_SIO_1_OUT: equ 81
 ;SC114_SIO_1_IN: equ 80

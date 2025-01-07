@@ -54,7 +54,7 @@ DEBUG_FORTH_STACK_GUARD: equ 1
 DEBUG_FORTH_MALLOC_GUARD: equ 0
 DEBUG_FORTH_MALLOC_HIGH: equ 0     ; warn only if more than 255 chars being allocated. would be highly unusual!
 FORTH_ENABLE_FREE: equ 0
-FORTH_ENABLE_POPFREE: equ 0
+FORTH_ENABLE_DSPPOPFREE: equ 1    ; TODO BUG Seems to be OK in some situations but with SW it crashes straight away
 FORTH_ENABLE_FLOATMATH: equ 0
 
 
@@ -62,10 +62,10 @@ CALLMONITOR: macro
 	call break_point_state
 	endm
 
-MALLOC_1: equ 0        ; from dk88 
+MALLOC_1: equ 1        ; from dk88 
 MALLOC_2: equ 0           ; broke
 MALLOC_3: equ 0           ; really broke
-MALLOC_4: equ 1              ; mine pretty basic reuse and max of 250 chars
+MALLOC_4: equ 0              ; mine pretty basic reuse and max of 250 chars
 
 if BASE_KEV 
 stacksize: equ 512*2

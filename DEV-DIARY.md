@@ -650,16 +650,21 @@ Anyway finish off the remaining words and bugs seeing the SC114 platform is fast
 than having to program an EEPROM. Of course can test hardware parts like storage. At the moment... 
 
 
-TODO wire up a temp interface to the serial EEPROMS so I can test storage on the SC114 as I have the PIO and digital IO cards installed
-TODO cleanup not being done. Is that a problem?
-TODO Dont think parser calls are releasing memory
-TODO free not working?
-TODO Add keyboard macro defs on function keys - need them as tokens in the dictionary for easy recall
+DONE Add keyboard macro defs on function keys - need them as tokens in the dictionary for easy recall - add as user defs?
+DONE  cleanup/free not being done. Is that a problem? Use DSPPOPFREE. Seems to be OK in some situations but with SW it crashes straight away that is using my malloc. Switched back to DK88 and free is working so use this one for now and note bug.
 
+TODO write a simple screen saver demo to test for runtime crashes
+
+TODO wire up a temp interface to the serial EEPROMS so I can test storage on the SC114 as I have the PIO and digital IO cards installed
+TODO with the second PIO port hook up and debug the sound card
 TODO ?DUP word to duplicate if the TOS value is non-zero
 TODO PICK word to pick a value at a given value on stack and move to TOS
 
 
+
+
+
+TODO my malloc is failing on free
 
 
 

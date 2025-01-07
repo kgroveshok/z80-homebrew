@@ -427,28 +427,70 @@
 
 		ld (LFSRSeed), hl	
 
+		if DEBUG_FORTH_WORDS
+			DMARK "RN1"
+			CALLMONITOR
+		endif
 		FORTH_DSP_POP
 
 		FORTH_DSP_VALUEHL    ; low range
 
+		if DEBUG_FORTH_WORDS
+			DMARK "RN2"
+			CALLMONITOR
+		endif
 		ld (LFSRSeed+2), hl
 
 		FORTH_DSP_POP
 
+		push hl
 
-.inrange:	call prng16 
+.inrange:	pop hl
+		call prng16 
+		if DEBUG_FORTH_WORDS
+			DMARK "RN3"
+			CALLMONITOR
+		endif
+		
+		; if the range is 8bit knock out the high byte
 
 		ld de, (LFSRSeed)     ; check high level
-		call cmp16
 
-		jr nc, .inrange
+		ld a, 0
+		cp d 
+		jr nz, .hirange
+		ld h, 0   ; knock it down to 8bit
 
+		if DEBUG_FORTH_WORDS
+			DMARK "RNk"
+			CALLMONITOR
+		endif
+.hirange:  
+		push hl 
+		or a 
+                sbc hl, de
+
+		;call cmp16
+
+		jr nc, .inrange      ; if hl >= de, carry flag is cleared
+		pop hl
+
+		if DEBUG_FORTH_WORDS
+			DMARK "RN4"
+			CALLMONITOR
+		endif
 		ld de, (LFSRSeed+2)   ; check low range
-		call cmp16
+		;call cmp16
 	
-		jr z, .inrange
+		or a 
+                sbc hl, de
+		jr c, .inrange
 
 		
+		if DEBUG_FORTH_WORDS
+			DMARK "RNd"
+			CALLMONITOR
+		endif
 
 
 		call forth_push_numhl

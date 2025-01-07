@@ -655,6 +655,8 @@ DONE  cleanup/free not being done. Is that a problem? Use DSPPOPFREE. Seems to b
 
 TODO write a simple screen saver demo to test for runtime crashes
 
+TODO The word THEN appears to be having issues and is being pushed to stack GA is failing too
+
 TODO wire up a temp interface to the serial EEPROMS so I can test storage on the SC114 as I have the PIO and digital IO cards installed
 TODO with the second PIO port hook up and debug the sound card
 TODO ?DUP word to duplicate if the TOS value is non-zero

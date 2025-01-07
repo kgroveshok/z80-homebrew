@@ -134,7 +134,8 @@ game1z:         db ": ga $00 v3! gsn repeat cls gs cls gck $02 pause sc until fs
 
 ; simple screen saver to test code memory reuse to destruction
 
-ssv2:            db ": ssvchr $2a $2d rnd dup $2c = if drop $20 then nop ;",0
+ssv2:            db ": ssvchr $2a $2d rnd  ;",0
+;ssv2:            db ": ssvchr $2a $2d rnd dup $2c = if drop $20 then nop ;",0
 ;ssv2:            db ": ssvchr v0! v1! at? ;",0
 ssv3:            db ": ssvposx $01 $27 rnd v0! ;",0
 ssv4:            db ": ssvposy $01 $03 rnd v1! ;",0

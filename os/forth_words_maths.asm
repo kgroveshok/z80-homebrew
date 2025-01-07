@@ -474,6 +474,7 @@
 
 		jr nc, .inrange      ; if hl >= de, carry flag is cleared
 		pop hl
+		push hl
 
 		if DEBUG_FORTH_WORDS
 			DMARK "RN4"
@@ -486,6 +487,7 @@
                 sbc hl, de
 		jr c, .inrange
 
+		pop hl
 		
 		if DEBUG_FORTH_WORDS
 			DMARK "RNd"

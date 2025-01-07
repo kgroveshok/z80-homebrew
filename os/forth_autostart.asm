@@ -51,6 +51,32 @@ startcmds:
 	dw start1
 	dw start2
 	dw start3
+        dw ssv5
+        dw ssv4
+        dw ssv3
+        dw ssv2
+        dw ssv1
+	dw keyup
+	dw keydown
+	dw keyleft
+	dw keyright
+	dw 	keyf1
+	dw keyf2
+	dw keyf3
+	dw keyf4
+	dw keyf5
+	dw keyf6
+	dw keyf7
+	dw keyf8
+	dw keyf9
+	dw keyf10
+	dw keyf11
+	dw keyf12
+	dw keytab
+	dw keycr
+	dw keyhome
+	dw keyend
+	dw keybs
 	db 0, 0	
 
 test1:		db ": aa 1 2 3 ;", 0
@@ -106,9 +132,51 @@ game1z:         db ": ga $00 v3! gsn repeat cls gs cls gck $02 pause sc until fs
 ;game2b1:          db ": m2b1 $1f $00 do i v2@ at rnd8 $30 < if A . then loop nop ;  ",0, 0, 0, FORTH_END_BUFFER
 ;game2b2:          db ": m2b cls $04 $01 do i v2! m2b1 loop ;  ",0, 0, 0, FORTH_END_BUFFER
 
+; simple screen saver to test code memory reuse to destruction
+
+ssv2:            db ": ssvchr $2a $2d rnd dup $2c = if drop $20 then nop ;",0
+;ssv2:            db ": ssvchr v0! v1! at? ;",0
+ssv3:            db ": ssvposx $01 $27 rnd v0! ;",0
+ssv4:            db ": ssvposy $01 $03 rnd v1! ;",0
+;ssv5:            db ": ssvt ssvposx ssvposy v0@ .> v1@ .> ;",0
+ssv5:            db ": ssvt ssvposx ssvposy ;",0
+;ssv1:            db ": ssv repeat ssvpos rnd8 $10 if               $01 until nop ;",0
+ssv1:          db ": ssv cls repeat ssvt v0@ v1@ at ssvchr emit $01 until nop ;",0
+;ssv1:          db ": ssv ssvposx ssvposy at ssvchr ;",0
+
+
+
 ; minesweeper/star war finding game
 
 game2b:          db ": mb cls $04 $01 do i v2! $10 $01 do i v2@ at rnd8 $30 < if A . then loop loop ;",0
+
+; key board defs
+
+keyup:       db ": keyup $05 ;",0
+keydown:       db ": keydown $0a ;",0
+keyleft:       db ": keyleft $0b ;",0
+keyright:       db ": keyright $0c ;",0
+keyf1:       db ": keyf1 $10 ;",0
+keyf2:       db ": keyf2 $11 ;",0
+keyf3:       db ": keyf3 $12 ;",0
+keyf4:       db ": keyf4 $13 ;",0
+keyf5:       db ": keyf5 $14 ;",0
+keyf6:       db ": keyf6 $15 ;",0
+keyf7:       db ": keyf7 $16 ;",0
+keyf8:       db ": keyf8 $17 ;",0
+keyf9:       db ": keyf9 $18 ;",0
+keyf10:       db ": keyf10 $19 ;",0
+keyf11:       db ": keyf11 $1a ;",0
+keyf12:       db ": keyf12 $1b ;",0
+
+keytab:       db ": keytab $09 ;",0
+keycr:       db ": keycr $0d ;",0
+keyhome:       db ": keyhome $0e ;",0
+keyend:       db ": keyend $0f ;",0
+keybs:       db ": keybs $08 ;",0
+
+  
+
 
 
 ; eof

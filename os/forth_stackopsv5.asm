@@ -664,53 +664,6 @@ FORTH_DSP_POP: macro
 	call macro_forth_dsp_pop
 	endm
 
-macro_forth_dsp_pop:
-	; release malloc data
-
-	if DEBUG_FORTH_STACK_GUARD
-		call check_stacks
-		FORTH_CHK_DSP_UNDER
-	endif
-	;ld hl,(cli_data_sp)
-if DEBUG_FORTH_DOT
-	DMARK "DPP"
-	CALLMONITOR
-endif	
-
-
-
-if FORTH_ENABLE_POPFREE
-	FORTH_DSP
-	ld a, (hl)
-	cp DS_TYPE_STR
-	jr nz, .skippopfree
-
-	FORTH_DSP_VALUEHL
-	call free
-.skippopfree:
-	
-
-endif
-
-if DEBUG_FORTH_DOT_KEY
-	DMARK "DP2"
-	CALLMONITOR
-endif	
-
-	; move pointer down
-
-	ld hl,(cli_data_sp)
-	dec hl
-	dec hl
-; PARSEV5
-	dec hl
-	ld (cli_data_sp), hl
-
-	if DEBUG_FORTH_STACK_GUARD
-		call check_stacks
-		FORTH_CHK_DSP_UNDER
-	endif
-	ret
 
 ; get the tos data type
 
@@ -845,5 +798,59 @@ macro_forth_loop_pop:
 	endif
 	ret
 
+macro_forth_dsp_pop:
+	; release malloc data
+
+	if DEBUG_FORTH_STACK_GUARD
+		call check_stacks
+		FORTH_CHK_DSP_UNDER
+	endif
+	;ld hl,(cli_data_sp)
+if DEBUG_FORTH_DOT
+	DMARK "DPP"
+	CALLMONITOR
+endif	
+
+
+if FORTH_ENABLE_DSPPOPFREE
+
+
+	FORTH_DSP
+
+	ld a, (hl)
+	cp DS_TYPE_STR
+	jr nz, .skippopfree
+
+	FORTH_DSP_VALUEHL
+	nop
+if DEBUG_FORTH_DOT
+	DMARK "DPf"
+	CALLMONITOR
+endif	
+	call free
+.skippopfree:
+	
+
+endif
+
+if DEBUG_FORTH_DOT_KEY
+	DMARK "DP2"
+	CALLMONITOR
+endif	
+
+	; move pointer down
+
+	ld hl,(cli_data_sp)
+	dec hl
+	dec hl
+; PARSEV5
+	dec hl
+	ld (cli_data_sp), hl
+
+	if DEBUG_FORTH_STACK_GUARD
+		call check_stacks
+		FORTH_CHK_DSP_UNDER
+	endif
+	ret
 ; eof
 

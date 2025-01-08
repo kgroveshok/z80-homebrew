@@ -133,5 +133,6 @@
 	OPCODE_V3S: equ 130
 	OPCODE_V3Q: equ 131
 	OPCODE_END: equ 132
+	OPCODE_ZDUP: equ 133
 
 ; eof

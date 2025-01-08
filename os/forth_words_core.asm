@@ -165,12 +165,41 @@
 	NEXTW
 
 .DUP:
-	CWHEAD .SWAP OPCODE_DUP "DUP" 3 WORD_FLAG_CODE
+	CWHEAD .ZDUP OPCODE_DUP "DUP" 3 WORD_FLAG_CODE
 ; | DUP ( u -- u u )     Duplicate whatever item is on TOS | DONE
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
 	; TODO add floating point number detection
+		call forth_push_numhl
+		NEXTW
+.ZDUP:
+	CWHEAD .SWAP OPCODE_ZDUP "?DUP" 4 WORD_FLAG_CODE
+; | ?DUP ( u -- u u )     Duplicate item on TOS if the item is non-zero | TO TEST
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+		push hl
+
+		; is it a zero?
+
+		ld a, 0
+		add h
+		add l
+
+		pop hl
+
+		cp 0
+		jr z, .dup2orig
+
+
+		call forth_push_numhl
+
+
+	; TODO add floating point number detection
+
+.dup2orig:
+
 		call forth_push_numhl
 		NEXTW
 .SWAP:

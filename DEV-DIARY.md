@@ -654,20 +654,14 @@ DONE Add keyboard macro defs on function keys - need them as tokens in the dicti
 DONE  cleanup/free not being done. Is that a problem? Use DSPPOPFREE. Seems to be OK in some situations but with SW it crashes straight away that is using my malloc. Switched back to DK88 and free is working so use this one for now and note bug.
 DONE ???? TODO The word THEN appears to be having issues and is being pushed to stack GA is failing too. Suddenly working. Maybe a mem glitch
 DONE write a simple screen saver demo to test for runtime crashes
-
+DONE ?DUP word to duplicate if the TOS value is non-zero
 
 TODO wire up a temp interface to the serial EEPROMS so I can test storage on the SC114 as I have the PIO and digital IO cards installed
 TODO with the second PIO port hook up and debug the sound card
-TODO ?DUP word to duplicate if the TOS value is non-zero
 TODO PICK word to pick a value at a given value on stack and move to TOS
-
-
-
-
+TODO Fix scroll words
 
 TODO my malloc is failing on free
-
-
 
 TO TEST need word to report where cursor current at
 TODO add more editing features 

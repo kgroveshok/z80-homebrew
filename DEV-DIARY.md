@@ -687,13 +687,13 @@ TODO have a word to set break point at a DMARKer
 
 
 
-TODO Due to bad performance of the parser (???) need to look at compiler
+TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs
 TODO Add a simple assembler feature like BBC Basic
 
 Documentation Tasks
 -------------------
 
-TODO Add loads of example Forth code - added some examples in word markup generation
+TODO Add loads of example Forth code - added some examples in word markup generation - extract auto start code
 
 TODO update schematics with 4x40 LCD and the location of the spare E link
 

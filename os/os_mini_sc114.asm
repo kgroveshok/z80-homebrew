@@ -22,6 +22,7 @@ CPU_CLOCK_10MHZ: equ 0
 STORAGE_SE: equ 0
 SOUND_ENABLE: equ 0
 
+SC103_PIO: equ 068h
 ; Full OS but with the small 4x4 keypad
 
 display_rows: equ 4     ; move out to mini and mega files

@@ -20,8 +20,12 @@ CPU_CLOCK_10MHZ: equ  0
 
 ; use microchip serial eeprom for storage
 
-STORAGE_SE: equ 0
+STORAGE_SE: equ 1
 SOUND_ENABLE: equ 0
+
+; the port where the PIO using the SC103 card is located
+
+SC103_PIO: equ 068h
 
 ; Full OS but with the 5x10 fullsized keyboard
 

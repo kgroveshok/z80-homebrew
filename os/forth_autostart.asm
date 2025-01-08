@@ -134,16 +134,17 @@ game1z:         db ": ga $00 v3! gsn repeat cls gs cls gck $02 pause sc until fs
 
 ; simple screen saver to test code memory reuse to destruction
 
-ssv2:            db ": ssvchr $2a $2d rnd  ;",0
-;ssv2:            db ": ssvchr $2a $2d rnd dup $2c = if drop $20 then nop ;",0
-;ssv2:            db ": ssvchr v0! v1! at? ;",0
+ssv2:            db ": ssvchr $2a $2d rnd dup $2c = if drop $20 then nop ;",0
 ssv3:            db ": ssvposx $01 $27 rnd v0! ;",0
-ssv4:            db ": ssvposy $01 $03 rnd v1! ;",0
-;ssv5:            db ": ssvt ssvposx ssvposy v0@ .> v1@ .> ;",0
+ssv4:            db ": ssvposy $01 $05 rnd v1! ;",0
 ssv5:            db ": ssvt ssvposx ssvposy ;",0
-;ssv1:            db ": ssv repeat ssvpos rnd8 $10 if               $01 until nop ;",0
-ssv1:          db ": ssv cls repeat ssvt v0@ v1@ at ssvchr emit $01 until nop ;",0
+ssv1:          db ": ssv cls repeat ssvposx ssvposy v0@ v1@ at ssvchr emit $01 until nop ;",0
+;ssv1:          db ": ssv cls repeat ssvt v0@ v1@ at ssvchr emit $01 until nop ;",0
 ;ssv1:          db ": ssv ssvposx ssvposy at ssvchr ;",0
+;ssv1:            db ": ssv repeat ssvpos rnd8 $10 if               $01 until nop ;",0
+;ssv2:            db ": ssvchr v0! v1! at? ;",0
+;ssv5:            db ": ssvt ssvposx ssvposy v0@ .> v1@ .> ;",0
+;ssv2:            db ": ssvchr $2a $2d rnd  ;",0
 
 
 

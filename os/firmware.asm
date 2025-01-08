@@ -5,7 +5,15 @@
 
 Device_A: equ 0h
 Device_B: equ 040h          ; Sound
+
+if BASE_KEV
 Device_C: equ 080h          ; Storage and ext cart devices
+endif
+
+if BASE_SC114
+Device_C: equ  SC103_PIO          ; Storage and ext cart devices
+endif
+
 Device_D: equ 0c0h             ; Keyboard and LCD
 
 ; Odd specific debug points for testing hardware dev
@@ -519,7 +527,7 @@ ld (debug_mark+3),a
 		ret
 
 
-bootmsg:	db "z80-homebrew OS v1.0",0
+bootmsg:	db "z80-homebrew OS v1.5",0
 bootmsg1:	db "by Kevin Groves",0
 ;bootmsg2:	db "Firmware v0.1",0
 

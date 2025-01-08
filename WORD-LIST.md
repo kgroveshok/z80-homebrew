@@ -37,6 +37,9 @@
 ### DUP ( u -- u u )     Duplicate whatever item is on TOS | DONE
 
 
+### ?DUP ( u -- u u )     Duplicate item on TOS if the item is non-zero | TO TEST
+
+
 ### SWAP ( w1 w2 -- w2 w1 )    Swap top two items  on TOS | DONE
 
 
@@ -442,10 +445,10 @@
 ### * ( u1 u2 -- u )     Multiply TOS and push result | INT DONE
 
 
-### MIN (  u1 u2 -- u3 ) Whichever is the smallest value is pushed back onto the stack | TEST NO DEBUG
+### MIN (  u1 u2 -- u3 ) Whichever is the smallest value is pushed back onto the stack | DONE
 
 
-### MAX (  u1 u2 -- u3 )  Whichever is the largest value is pushed back onto the stack | TEST NO DEBUG
+### MAX (  u1 u2 -- u3 )  Whichever is the largest value is pushed back onto the stack | DONE
 
 
 ### RND16 (  -- n ) Generate a random 16bit number and push to stack | DONE
@@ -457,7 +460,7 @@
 ### RND ( u1 u2 -- u ) Generate a random number no lower than u1 and no higher than u2 and push to stack | DONE
 
 
-## FIxed Storage Words
+## Fixed Storage Words
 
 
 ### BYID ( u -- s ) Get the name of the file in the current BANK using the file ID u | TODO
@@ -580,13 +583,16 @@
 ## String Words
 
 
-### TYPE ( u -- iu s ) Push type of value on TOS - 's' string, 'i' integer...   | DONE
+### TYPE ( u -- u type ) Push type of value on TOS - 's' string, 'i' integer...   | DONE
 
 
 ### UPPER ( s -- s ) Upper case string s  | TODO
 
 
 ### LOWER ( s -- s ) Lower case string s  | TODO
+
+
+### TCASE ( s -- s ) Title case string s  | TODO
 
 
 ### SUBSTR ( s u1 u2 -- s sb ) Push to TOS chars starting at position u1 and with length u2 from string s  | DONE
@@ -817,6 +823,12 @@
 ### * ( u1 u2 -- u )     Multiply TOS and push result | INT DONE
 
 
+### MIN (  u1 u2 -- u3 ) Whichever is the smallest value is pushed back onto the stack | DONE
+
+
+### MAX (  u1 u2 -- u3 )  Whichever is the largest value is pushed back onto the stack | DONE
+
+
 ### RND16 (  -- n ) Generate a random 16bit number and push to stack | DONE
 
 
@@ -868,7 +880,7 @@
 ### LABELS (  -- b n .... c  )  Pushes each storage bank labels (n) along with id (b) onto the stack giving count (c) of banks  | DONE
 
 
-### TYPE ( u -- iu s ) Push type of value on TOS - 's' string, 'i' integer...   | DONE
+### TYPE ( u -- u type ) Push type of value on TOS - 's' string, 'i' integer...   | DONE
 
 
 ### SUBSTR ( s u1 u2 -- s sb ) Push to TOS chars starting at position u1 and with length u2 from string s  | DONE
@@ -896,6 +908,9 @@
 
 
 
+
+
+### ?DUP ( u -- u u )     Duplicate item on TOS if the item is non-zero | TO TEST
 
 
 ### 2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items | TODO
@@ -985,13 +1000,7 @@
 ## Maths Words
 
 
-### MIN (  u1 u2 -- u3 ) Whichever is the smallest value is pushed back onto the stack | TEST NO DEBUG
-
-
-### MAX (  u1 u2 -- u3 )  Whichever is the largest value is pushed back onto the stack | TEST NO DEBUG
-
-
-## FIxed Storage Words
+## Fixed Storage Words
 
 
 ### BYID ( u -- s ) Get the name of the file in the current BANK using the file ID u | TODO
@@ -1019,6 +1028,9 @@
 
 
 ### LOWER ( s -- s ) Lower case string s  | TODO
+
+
+### TCASE ( s -- s ) Title case string s  | TODO
 
 
 ### LEFT ( s u -- s sb ) Push to TOS string u long starting from left of s  | TODO

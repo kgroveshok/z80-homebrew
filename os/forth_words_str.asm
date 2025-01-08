@@ -3,7 +3,7 @@
 
 .TYPE:
 	CWHEAD .UPPER 52 "TYPE" 4 WORD_FLAG_CODE
-; | TYPE ( u -- iu s ) Push type of value on TOS - 's' string, 'i' integer...   | DONE
+; | TYPE ( u -- u type ) Push type of value on TOS - 's' string, 'i' integer...   | DONE
 		FORTH_DSP
 		;v5 FORTH_DSP_VALUE
 
@@ -11,7 +11,7 @@
 
 		push af
 
-		FORTH_DSP_POP
+; Dont destroy TOS		FORTH_DSP_POP
 
 		pop af
 
@@ -43,11 +43,33 @@
 	CWHEAD .LOWER 52 "UPPER" 5 WORD_FLAG_CODE
 ; | UPPER ( s -- s ) Upper case string s  | TODO
 
+		FORTH_DSP
+		
+
+		FORTH_DSP_VALUEHL
+; check is string type
+; get pointer to string
+; for each char convert to upper
+		
+
+
+
 		NEXTW
 .LOWER:
-	CWHEAD .SUBSTR 52 "LOWER" 5 WORD_FLAG_CODE
+	CWHEAD .TCASE 52 "LOWER" 5 WORD_FLAG_CODE
 ; | LOWER ( s -- s ) Lower case string s  | TODO
 
+; check is string type
+; get pointer to string
+; for each char convert to upper
+		NEXTW
+.TCASE:
+	CWHEAD .SUBSTR 52 "TCASE" 5 WORD_FLAG_CODE
+; | TCASE ( s -- s ) Title case string s  | TODO
+
+; check is string type
+; get pointer to string
+; for each char convert to upper
 		NEXTW
 
 .SUBSTR:

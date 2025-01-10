@@ -598,19 +598,19 @@
 ### SUBSTR ( s u1 u2 -- s sb ) Push to TOS chars starting at position u1 and with length u2 from string s  | DONE
 
 
-### LEFT ( s u -- s sb ) Push to TOS string u long starting from left of s  | TODO
+### LEFT ( s u -- s sub ) Push to TOS string u long starting from left of s  | TODO
 
 
-### RIGHT ( s u -- s sb ) Push to TOS string u long starting from right of s  | TODO
+### RIGHT ( s u -- s sub ) Push to TOS string u long starting from right of s  | TODO
 
 
 ### STR2NUM ( s -- n ) Convert a string on TOS to number | DONE
 
 
-### NUM2STR ( n -- s ) Convert a number on TOS to string | TODO
+### NUM2STR ( n -- s ) Convert a number on TOS to string | NOT DOING
 
 
-### CONCAT ( s1 s2 -- s3 ) A string of u spaces is pushed onto the stack | TODO
+### CONCAT ( s1 s2 -- s3 ) A s1 + s2 is pushed onto the stack | DONE
 
 
 ### FIND ( s c -- s u ) Search the string s for the char c and push the position of the first occurance to TOS | TODO
@@ -898,6 +898,9 @@
 ### STR2NUM ( s -- n ) Convert a string on TOS to number | DONE
 
 
+### CONCAT ( s1 s2 -- s3 ) A s1 + s2 is pushed onto the stack | DONE
+
+
 ### LEN (  u1 -- u2 ) Push the length of the string on TOS | DONE
 
 
@@ -1033,16 +1036,13 @@
 ## String Words
 
 
-### LEFT ( s u -- s sb ) Push to TOS string u long starting from left of s  | TODO
+### LEFT ( s u -- s sub ) Push to TOS string u long starting from left of s  | TODO
 
 
-### RIGHT ( s u -- s sb ) Push to TOS string u long starting from right of s  | TODO
+### RIGHT ( s u -- s sub ) Push to TOS string u long starting from right of s  | TODO
 
 
-### NUM2STR ( n -- s ) Convert a number on TOS to string | TODO
-
-
-### CONCAT ( s1 s2 -- s3 ) A string of u spaces is pushed onto the stack | TODO
+### NUM2STR ( n -- s ) Convert a number on TOS to string | NOT DOING
 
 
 ### FIND ( s c -- s u ) Search the string s for the char c and push the position of the first occurance to TOS | TODO

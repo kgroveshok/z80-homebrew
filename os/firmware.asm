@@ -20,7 +20,7 @@ Device_D: equ 0c0h             ; Keyboard and LCD
 
 DEBUG_SOUND: equ 1
 DEBUG_STK_FAULT: equ 0
-DEBUG_INPUT: equ 1     ; Debug input entry code
+DEBUG_INPUT: equ 0     ; Debug input entry code
 DEBUG_KEYCINWAIT: equ 0
 DEBUG_KEYCIN: equ 0
 DEBUG_KEY: equ 0
@@ -41,7 +41,7 @@ DEBUG_FORTH_MALLOC_INT: equ 1
 DEBUG_FORTH_DOT: equ 1
 DEBUG_FORTH_DOT_WAIT: equ 0
 DEBUG_FORTH_MATHS: equ 0
-DEBUG_FORTH_TOK: equ 1     ; 4
+DEBUG_FORTH_TOK: equ 1    ; 4
 DEBUG_FORTH_PARSE: equ 1    ; 3
 DEBUG_FORTH: equ 1  ;2
 DEBUG_FORTH_WORDS: equ 1   ; 1

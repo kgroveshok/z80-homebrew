@@ -256,12 +256,12 @@
 
 .LEFT:
 	CWHEAD .RIGHT 52 "LEFT" 4 WORD_FLAG_CODE
-; | LEFT ( s u -- s sb ) Push to TOS string u long starting from left of s  | TODO
+; | LEFT ( s u -- s sub ) Push to TOS string u long starting from left of s  | TODO
 
 		NEXTW
 .RIGHT:
 	CWHEAD .STR2NUM 52 "RIGHT" 5 WORD_FLAG_CODE
-; | RIGHT ( s u -- s sb ) Push to TOS string u long starting from right of s  | TODO
+; | RIGHT ( s u -- s sub ) Push to TOS string u long starting from right of s  | TODO
 
 		NEXTW
 
@@ -306,61 +306,97 @@
 	       NEXTW
 .NUM2STR:
 	CWHEAD .CONCAT 52 "NUM2STR" 7 WORD_FLAG_CODE
-; | NUM2STR ( n -- s ) Convert a number on TOS to string | TODO
+; | NUM2STR ( n -- s ) Convert a number on TOS to string | NOT DOING
 
-; TODO check string type
-		FORTH_DSP_VALUEHL
-		ld a, l
-		call DispAToASCII  
-;TODO need to chage above call to dump into string
+;		; malloc a string to target
+;		ld hl, 10     ; TODO max string size should be fine
+;		call malloc
+;		push hl    ; save malloc location
+;
+;
+;; TODO check int type
+;		FORTH_DSP_VALUEHL
+;		ld a, l
+;		call DispAToASCII  
+;;TODO need to chage above call to dump into string
+;
+;		call forth_apushstrhl
+;
 
 	       NEXTW
 
 .CONCAT:
 	CWHEAD .FIND 52 "CONCAT" 6 WORD_FLAG_CODE
-; | CONCAT ( s1 s2 -- s3 ) A string of u spaces is pushed onto the stack | TODO
+; | CONCAT ( s1 s2 -- s3 ) A s1 + s2 is pushed onto the stack | DONE
 
 ; TODO check string type
 ; TODO create macro to get pointer for next item on stack. Handy for lots of things
 
-		; calculate total space to allocate
+		if DEBUG_FORTH_WORDS
+			DMARK "CON"
+			CALLMONITOR
+		endif
 
-		; s1
 
-		FORTH_DSP_VALUEM1    
-		inc hl
+		FORTH_DSP_VALUE
+		push hl   ; s2
 
-		ld a, 0
-		call strlent
+		FORTH_DSP_POP
 
- 		push hl     ; save length
+		FORTH_DSP_VALUE
 
-		; s2
+		push hl   ; s1
 
-		FORTH_DSP
-		;v5 FORTH_DSP_VALUE
-		inc hl
-
-		ld a, 0
-		call strlent
-		inc hl    ; include null
-
-		push hl     ; length
-
-		; add both string lengths togetgher
-
-		pop hl    ; s2
-		pop de    ; s1
-
-		add hl, de
-
-		call malloc
-		ex de, hl    ; de now has malloc destination
-
+		FORTH_DSP_POP
 		
 
-; TODO copy s1 and s2
+		; copy s1
 
+	
+		; save ptr
+		pop hl 
+		push hl
+		ld a, 0
+		call strlent
+		;inc hl    ; zer0
+		ld b, 0
+		ld c, l
+		pop hl		
+		ld de, scratch	
+		if DEBUG_FORTH_WORDS
+			DMARK "CO1"
+			CALLMONITOR
+		endif
+		ldir
+
+		pop hl
+		push hl
+		push de
+
+
+		ld a, 0
+		call strlent
+		inc hl    ; zer0
+		inc hl
+		ld b, 0
+		ld c, l
+		pop de
+		pop hl		
+		if DEBUG_FORTH_WORDS
+			DMARK "CO2"
+			CALLMONITOR
+		endif
+		ldir
+
+
+
+		ld hl, scratch
+		if DEBUG_FORTH_WORDS
+			DMARK "CO5"
+			CALLMONITOR
+		endif
+
+		call forth_apushstrhl
 
 
 

@@ -10,15 +10,15 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 DONE Fix UPPER
 DONE Fix LOWER
 DONE Fix TCASE
+DONE Fix CONCAT
 
 TODO wire up a temp interface to the serial EEPROMS so I can test storage on the SC114 as I have the PIO and digital IO cards installed
 TODO with the second PIO port hook up and debug the sound card
 TODO PICK word to pick a value at a given value on stack and move to TOS
 TODO Fix scroll words
+TODO Fix NUM2STR. 
 TODO Fix LEFT
 TODO Fix RIGHT
-TODO Fix NUM2STR
-TODO Fix CONCAT
 TODO Fix FIND
 TODO Fix COPY
 TODO Fix 2SWAP

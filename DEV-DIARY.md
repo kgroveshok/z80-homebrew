@@ -5,102 +5,571 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 
 
 
-Stage 1.0 DONE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+Documentation Tasks
+-------------------
+
+TODO Add loads of example Forth code - added some examples in word markup generation - extract auto start code
+
+TODO update schematics with 4x40 LCD and the location of the spare E link
+
+TODO update schematics with better design for the next version?
+
+TODO New case for Mega
+
+TODO Tidy up code base: Make sure functions in suitable files 
+
+TODO Tidy up code base: Reindent
+
+TODO Tidy up code base: Remove redundant code/comments
+
+TODO Add word documentation
+
+TODO Add full system documentation
+
+
+Stage 4.1
+---------
+
+Networking extension
+
+Using SPI to connect with a Pico/ESP on the cart port...
+
+SPI protocol to be something like...
+
+Host sending
+
+Byte $01 $xx  - Connect to $xx in address book
+Byte $02 $xx  - Sending data ext
+
+Byte $03 $xxxx $xx  Save byte to 
+Byte $04 $xx  Bank selection
+
+Poll to read any incoming data
+
+
+Stage 4.5 TODO
 --------------
 
-Create a basic breadboard circuit with CPU, clock (for now 555 so I can watch it do things) and RAM.
+DONE Power. Could I add battery support so it is portable? Recharge circuit I would need to add though could pull that in from a Pi battery charger. Easy. Using Rpi Lipo boards.
 
-The CPU is executing whatever random code is in the RAM at start up. Looks pretty with the flashing lights.
-
-See this stage at [![(Stage 1)](https://youtu.be/8DWXKSt4nWc)]
-
-![](images/20220321_072123-stage1.jpg)
+Trying out:
+https://shop.pimoroni.com/products/lipo-amigo?variant=39779302539347
 
 
-Stage 1.5 DONE
---------------
+Or would normal battery packs work long enough to make it worth while? 
 
-Resolve the issue I have in manual bit bashing machine code into RAM.
+More devices on the external cart:
 
-Now fixed in [![Stage 1.5](https://youtu.be/Ls7xwXhakNc)]
-
-![](images/20220322_210657-bitbashfixed.jpg)
-
-Stage 2.0 DONE
---------------
-
-Now I have the sequence to program RAM by hand, speed it. Because I don't have an (E)EPROM 
-and programmer I will put a PIC to act as a bootstrap loader at Z80 startup and bit bash a simple 
-monitor program into RAM which I can then use to load further code.
-
-First part will be to load the same simple program as used in the the Stage 1.5 test. Once that
-electronics is working I can then write larger programs to boot strap which will be where Stage 3.0 
-comes in...
+* Basic networking across the SPI bus between other Z80 instances?
+* RTC
+* Sound
+* Relay board for GPIO use
+* Pico for Wifi networking to internet etc
+* Enchance the SPI for display/keyboard
 
 
-Testing shift register... [![Video](https://youtu.be/uMFlNMZjTEM)]
+6th Jan 2025
+------------
+
+On SC114 things are much more stable than the original hardware. I've not soldered the power caps. Could that be the reason? Or 
+perhaps some bad joints?
+
+Anyway finish off the remaining words and bugs seeing the SC114 platform is faster to turn around an image load rather
+than having to program an EEPROM. Of course can test hardware parts like storage. At the moment... 
 
 
-![](images/20220324_191246.jpg)
+DONE Add keyboard macro defs on function keys - need them as tokens in the dictionary for easy recall - add as user defs?
+DONE  cleanup/free not being done. Is that a problem? Use DSPPOPFREE. Seems to be OK in some situations but with SW it crashes straight away that is using my malloc. Switched back to DK88 and free is working so use this one for now and note bug.
+DONE ???? TODO The word THEN appears to be having issues and is being pushed to stack GA is failing too. Suddenly working. Maybe a mem glitch
+DONE write a simple screen saver demo to test for runtime crashes
+DONE ?DUP word to duplicate if the TOS value is non-zero
+DONE Fix UPPER
+DONE Fix LOWER
+DONE Fix TCASE
+
+TODO wire up a temp interface to the serial EEPROMS so I can test storage on the SC114 as I have the PIO and digital IO cards installed
+TODO with the second PIO port hook up and debug the sound card
+TODO PICK word to pick a value at a given value on stack and move to TOS
+TODO Fix scroll words
+TODO Fix LEFT
+TODO Fix RIGHT
+TODO Fix NUM2STR
+TODO Fix CONCAT
+TODO Fix FIND
+TODO Fix COPY
+TODO Fix 2SWAP
+TODO Test CALL
+TODO Remove the need for WORDS as only UWORDS is really useful
+TODO Change NOTE to PLAY and use a stream of items on stack
+TODO Add support for ELSE and ENDIF. IF THEN ELSE ENDIF   or IF THEN ENDIF
+TODO Fix KEY
+TODO Fix IS 
+
+TODO my malloc is failing on free
+
+TO TEST need word to report where cursor current at
+TODO add more editing features 
+TODO fix editor bugs
+TODO fix editor issues
+
+TODO Editor issue insert mid string causes loss of zero term giving random data
+TODO Backspace mid string does not clean up shifted text
+TODO Jump to end of line does not work should set to the number in last debug display
+TODO If cursor at end of line, when go back it leaves custor displayed
 
 
-Testing shift reg sequence [![Video](https://youtu.be/3TNWDdLDNPk)]
 
-Ready to boot strap! [![Video](https://youtu.be/jSUHhDZqcws)]
+TODO Create a disk UI in native asm for robustness and speed?
+TODO Extract all of the symbols in the symbol table to be available as words in FORTH, debug and asm above
+TODO fix saving more than a single block of file storage
+TODO fix loading more than a single block of file storage
+TODO need words to report on hardware e.g. screen dims
+TODO need word to get file id by name
+TODO need word to get file name by id
 
-Another go which does'nt quite work... [![Video](https://youtu.be/zBmXrHQtJYk)]... Turns out 
-that powering down mid shift register loading fixes it. Will do a better fix with the 
-coding on the PIC :-)
-
-
-Stage 2.5 (DONE)
----------------
-
-The breadboard is becoming quite full, and with the next stage focusing on RS232 where timing is 
-important, I think it might be a good idea to finish off the low speed parts first, then
-moving as much as I can off of the breadboard to strip board for the space and more stable 
-circuit at speed.
-
-In this stage then I want to perhaps add a second 32k RAM chip as the high address bit wire is
-currently unconnected. That will then provide a full 64k RAM, as well as the prospect that I
-could swap out either RAM and replace with a ROM further down the line. 
-
-I will also obviously add a couple of NAND gates to switch between them. I may also future
-proof the setup and consider tapping another address line and splitting the top half into 
-smaller sections so that I can slip in external device memory maps. That will depend on the
-requirements for the DART, SIO, PIO chips next. Of course moving to strip board using the
-stacking method I'm considering means that if I need to change page addressing, I will only
-need to swap out the card(s) affected and not the whole board. Bonus!
-
-To do this I *REALLY* need to document the board! :-) I will be using maybe Eagle or easyEDA for 
-the main schematic and then ancient VeeCAD for the strip board layout.
+TODO have a word to set break point at a DMARKer
 
 
-Here we go, first draft. Not pretty as a number of things I need to clean up and be consistent
-about. But you should get the gist of it I hope. Also as far as the address decoder I don't have
-the chip that I found would make life easier so I may just sling in a PIC (yeah I know over kill)
-which can be adjusted in light of any requirements for the next stage. In the end I will of
-course replace with a fixed device when I know what is going on. This is a work in progress
-after all and not a finished project!
+
+TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs
+TODO Add a simple assembler feature like BBC Basic
+
+1st Jan 2025
+------------
+
+DONE change data stack. Each push will be three bytes. First byte is type. If num then num in next two byts, if string then pointer. That will save on mallocs. Other data types will make use of the pointer
+DONE Switched back to my malloc for now
+MAYBE TODO New malloc that only ever adds to memory with a simple forward pointer
+DONE. Fault in STR2NUM word. BUG 'ga' word has an issue with detecting the random number. Is it the logic checks?
+DONE At boot detect if key is held for debug, add another key for hardware diags like checking keyboard etc
+DONE Add a dot comment to forward the next print position use .>   
+DONE have a flag to enable forward cursor from each . or .-
+DONE word which allows edit of item on tos - word added but does not copy from stack
+DONE words for GPIO access. Stubs created
+DONE Sort out the EXEC word so that I can create a simple save and load of UWORDS
+
+PART DONE break out parser so it can be used by LIST, FORGET, WORDS, UWORDS and SAVE 
+ACTIVE Do I want to do tokenisation of the keywords next to see if that speeds things up???
 
 
-![](stage2.0/CPU-Layer.png)
 
 
-![](stage2.0/Front-Panel-Layer.png)
+
+31st Dec 2024
+-------------
+
+* Now fully working on the SC114. 
+* Have removed initial level of malloc calls. 
+* Switched to the original malloc function which should be a lot better than mine as it has garbage collection.
+* Tested run with and without debug code and 'SW' runs 0.4s faster without debug code included.
 
 
-![](stage2.0/Memory-Layer.png)
+
+27th Dec 2024
+-------------
+
+Reviewing code. Objectives for this round of dev is to:
+1. Make sure existing code runs on the SC114 so I can easily test
+2. Remove mallocs which is slowing the code down
+3. Run a tokenisation of the keywords to single bytes which will also vastly speed up the runtime
 
 
-![](stage2.0/PIC-Loader-Layer.png)
+
+27th Nov 
+--------
+
+Still have memory issues and certainly performance issues I think due to the extensive memcpy and tokenisation of keywords.
+
+Have added support to target the code base for the wonderful SC114 Steven Cousins Z80 computer so I can turn around development cycle.
+
+The next step is to use v5 parser to be closer to how a proper FORTH system should function. For example I don't need to copy and tokenise the words as the space separator for a start will be a delimiter. That will reduce the number of mallocs.
+
+Will go from there.
+
+11th June
+---------
+
+Prototype case for Mega now done. Need to fine tune some issues and work out how to make it interlock and not rely on so much glue.
+
+Then back to the OS. In particular loading and saving of uwords and the parser break out. 
 
 
-![](stage2.0/Power-Layer.png)
+
+![](images/20240612_stage4a.jpg)
+![](images/20240612_stage4b.jpg)
+![](images/20240612_stage4c.jpg)
+![](images/20240612_stage4d.jpg)
+![](images/20240612_stage4e.jpg)
 
 
-PDF versions can be found in the stage2.0 directory too.
+2nd June
+--------
 
+DONE Waiting for delivery of keyboard PCBs.
+DONE 4x40 char LCD partly working as a drop in but requires an extra E signal for the second half of the display. Finish coding changes.
+DONE Fix READ functions
+DONE disable breakpoints on start up unless a key is held down
+
+
+25th May
+--------
+
+Got more of the file control words in place. Up cursor should do last line recall
+
+DONE last line recall messing screen layout
+DONE need to add extra bank selection support
+DONE Design new keyboard layout PCB now I have key caps etc
+
+17th May 2024
+-------------
+
+Can format, create and get a directory on the SPI storage.
+Have added some more looping words and using loop stack so DO loops can access the stack
+
+DONE fix a spurious return stack issue on REPEAT...UNTIL
+DONE add two char detection for hex numbers
+DONE do the append and read spi functions
+DONE BUT STILL NEEDS MORE WORK sort out the input box to not do direct screen writes as well as provide better editing
+DONE add cursor key support on the keyboard
+
+DONE May have issue with append. If prev file is deleted first zero will be before header rec. Need a new file system. CP/M?
+
+12 May 2024
+-----------
+
+Now have keyboard working. Need to tidy up wiring and possibly move it to strip board for some stability. The keyboard
+cable needs looking at as currenly a load of link wires masking taped together. 
+
+Next to look at SPI storage...
+
+Stage 4.1
+----------
+
+New full sized keyboard to work on:
+
+
+![](stage4.0/4x10matrix.jpg)
+
+9th May
+-------
+
+Reached v1.0 of the firmware. Now have working (a few odd bugs still) Forth system. Limited features as half of the advanced words have
+yet to be finished, but enough works for simple logic, looping, 16bit int maths and user word creation - See word list.
+
+With a minimal working OS next is to return to hardware and create a larger keyboard for easier typing and get the SPI or CF persistent
+storage working.
+
+Added a rough build of a case (many slight faults) and FreeCad, STLs and gcode can be found in the case subdirectory. Enhancements as they come.
+
+
+![](stage4.0/firmv1hello1.jpg)
+![](stage4.0/firmv1hello2.jpg)
+![](stage4.0/firmv1inside.jpg)
+![](stage4.0/firmv1startup.jpg)
+
+![](https://youtu.be/GDhO9y0qguw)
+
+
+May 2024
+--------
+
+Now have uword creation however the decision to have a PC stored for each exec line so i can handle loops is 
+proving to be a problem as the exec of the uword is needing it and it isnt setup right.
+I think I need to do another version of the parser and remove this. keep things a bit simple after looking
+at other versions of the forth parser. If I use a single pc then see if i can do a compile version and handle
+the loops and jumps better.
+
+I have also fixed the version of the assembler for macro support by upgrading. That will help a lot
+
+New approach will be as follows:
+
+1.0 On entry to a word, tos will hold value or ptr (still be macros to maniuplate the tos ) to make things quick
+2.0 exec will function differently:
+2.1     Op code will flag if the data following is code or jump table to primitives
+2.2     Extra op codes to add to deal with very low level things in particular branch and loops  
+2.3     Compile to op codes to speed up process (how to deal with saves??? Perhaps dont compile?)
+2.4     Keep a running loop/branch word to allow for quick branch/loop jumps
+2.5     Single central PC covering all malloc 
+3.0 Parser remains much the same. Break each word to a zero term string.
+4.0 Data and return stacks remain the same.
+
+Stage 4.0 (DONE)
+-----------------
+
+Code a basic core part of an OS which uses the screen, keyboard and storage. A super monitor program. From there could then add
+Forth which could provide the drivers for add on hardware.
+
+If the OS has a 'boot' buffer say in the first 'block' of the storage that could bring up the rest of the hardware etc.
+Would make adding more hardware easy rather than coding in asm.
+
+Redesigned PCB with LCD, keyboard and storage onboard, add edge connectors etc and produce a 3d printed case.
+
+Good to go then.
+
+![](stage4.0/Gerber_PCB_z80-system-3-sbc.zip)
+![](stage4.0/Schematic_z80-system-4-sbc-2024-03-02.pdf)
+![](stage4.0/Schematic_z80-system-4-sbc-2024-03-02.png)
+
+
+...
+
+Working the OS see language defintion etc in ![FORTH.md](FORTH.md)
+
+New board now soldered and powered up. Need to debug OS/Language...
+
+...
+
+April 2024
+
+Keyboard layout:
+
+
+    1       2       3       A
+    abc"    def&    ghi$    
+
+    4       5       6       B
+    jkl,    mno.    pqr:
+
+    7       8       9      C
+    stu;    vwx@    yz?!
+
+    *       0       #      D
+    shift   space   Enter
+    ' =   < >     + - /
+     bs   
+
+
+Unit testing/debugging
+
+Version 3 of the parser now tokenises the string
+TODO need to save the current pointer of next word in the malloc area
+TODO dont parse an empty input string
+TODO trim space from end of parse string
+TODO add the breakpoint to words
+TODO pop rsp at end of exec
+TODO for string, skip the copy of the double quotes
+TODO add data stack underflow guards
+TODO change default push type as float as that has no prefix
+TODO add a type id word for TOS
+TODO add monitor word for full memory and reg dump
+TODO add round div word
+TODO add .$ to print number as hex word format and not numeric
+TODO add case change words
+TODO add type conversion words
+TODO add a start up feature to bulk run one set of words after another. can use for testing and then use it for auto start up of some builtins + storage boot lists
+
+TODO add dialog word
+TODO add menu word
+TODO add info page word
+TODO add other UI type words that could be useful
+TODO add a means to add binary based words and/or an assemlber
+
+
+TODO uwords are not exec. need to add the pc ptr for the exec to the start of the exec body area. update preample to reload the pc
+
+
+
+Stage 3.2 (DONE)
+----------------
+
+
+Firmware and utility functions: Keyboard, Screen and Storage
+
+Need a video memory area for reading and writing video updates to save on having to keep reading and writing the screen. Or do I? I have a spare line on port A
+I could use for read enable of the LCD??? Would that require some strange control stuff? Otherwise easier to use a screen frame buffer to write out.
+
+Also need screen functions for:
+
+* TODO Scroll up and down
+* TODO Scroll left and right
+* Clear screen
+* Position cursor
+* Write string
+* Read char at pos (using frame buffer so direct memory access)
+* Draw cursor
+* TODO Can I use control chars to set attributes such as inverse? Might need double byte buffer or certain bits to generate from frame bufffer
+* Multiple framebuffers for window layers and function to switch active frame buffer
+
+Keyboard functions:
+
+* Scan keyboard in raw
+* Key scan to char conversion
+* Abstract away the keyboard configuration to enable different keyboard layouts (e.g. mobile phone style vs full ascii keyboard)
+* Key debounce
+* Repeat key timer (No repeat)
+* Control key functions
+* Prompt box with keyboard state indicators
+
+    1       2       3       A
+    abc     def     ghi     bs
+    ![]     “-      £+	
+
+    4       5       6       B
+    jkl	    mno     pqr     break
+    $=\     %{}     @#^	
+
+    7       8       9      C
+    stu     vwx     yz	
+     &:;    *,/     ().?	
+
+    *       0       #      D
+    symbol  space   shift  enter
+
+
+... 
+
+Wired up CF card using schemtics from the wonderful work my Steven Cousins, however card timeouts. Not sure if card, electrical or software releated. Will bake that circuit to the new
+PCB anyway and hope for the best
+
+What I have got working at least in prototype using a Pico is SPI read and write to a Microchip Serial EEPROM. If I use the smaller 64k versions I can keep the code simple enough
+to provide 320Kb onboard storage and 512Kb cartridge on the PIO port B interface. That works for me and is easier to scale up to using the larger chips just by changing the code
+to clock out the additional address data.
+
+Also I have a SPI interface I can use for other stuff too. Could use for a larger screen perhaps? That is possible I suppose. Nice.
+If I use say page 0 of the storage array for BIOS data I could have bit switches to enable and disable hardware such as which keyboard to use and if using different
+display features etc.
+
+Will now port the Pico python code over to Z80 asm and make sure the SPI is working with some test commands on the CLI. If that works then can update the schemetics and 
+fabricate a new PCB for version 4. 
+
+Serial EEPROM code is partly working writing now on the Z80. Dropping some bytes so may be a timing issue. Can work on that.
+
+Still intermittently dropping writes, pretty certain it isn't anything serious. The fact it is
+writing proves the handshake is fine. Added read code and that does read the bytes back correctly as
+to what is on there. Happy with that.
+
+All that is left to do before committing a new version 4 PCB is go over loose ends such as the
+keyboard failing to multi-key press and some odd bits left in my todo list. Will update drawings when off to fab.
+
+And here we are before final bits...
+
+
+![Video](https://youtu.be/laKhGaO3JYU)
+
+Copied off the firmware code to a new dir for further development of the final OS...
+
+
+Stage 3.1 (DONE)
+----------------
+
+Feb 2024
+
+LCD and keyboard matrix...
+
+Taking the design from the wonderful Stephen Cousins website ![here](https://smallcomputercentral.com/example-alphanumeric-lcd/) I was able to hack
+his code about to fit my assembler and some of my support code to produce a result. That validates the code and new PIO circuit and gives me something
+to adjust for my own needs that I know works. LCD now working. Keyboard next.
+
+![](stage3.1/lcd1.jpg)
+![](stage3.1/lcd2.jpg)
+
+Basic keyboard via port B mapping of the two nibbles on the port to a 4 x 4 matrix keyboard is working. Have a slight problem with column axis if more than
+one button is pressed at once which is odd as the rows are individually emergised. Might be a short or a coding issue. Had to tie the columns to a resistor 
+to ground to prevent floating phantom inputs. (Diagram to follow)
+
+At least single key presses work and should be enough to get a basic keyboard working although cumbersome to use. 
+
+Next will be to focus on a set of firmware with utility functinos to support keyboard and screen. After that can then look at external storage.
+
+
+![](stage3.1/keyboarddemo.jpg)
+![Video](https://youtu.be/FRKDuX9m0I0)
+
+Stage 3.0 (DONE)
+----------------
+
+Jan 2024
+
+Been many months since I last looked at this mainly because of issues with bit bashing the RAM, and I have since located an EEPROM device. July 2023 I created the circuit and PCB in the stage3.0 dir and Jan 2024 got around to testing it (28/Jan/2024).
+
+After discovering a few soldering issues I'm not up to the point of the Mega being able to test the CPU stepping through and using simulated RAM/ROM as well as checking that the address decocoder can select the various devices and memory banks:
+
+	Device A - out (001h), a
+	Device B SIO - out (040h), a
+	Device C - out (080h), a
+	Device D - out (0C0h), a
+
+Next step is to attach RAM, ROM, and SIO and write some code to control the SIO with real clock speeds (will need to attach the scope to monitor 
+
+
+...
+
+
+Found PulseView and https://github.com/dotcypress/ula via the Rasp Pico can give me 16bit bus. Also has op code decoding of the data bus which is handy. Though had to compile from code due to a bug in USB devices that surfaces after 5.11 kernel. Odd but it eventually worked and saved me upgrading my four probe Saleae to 16, or getting more than one as I could just throw another Pico at it and get them to trigger from the same pin.
+
+Did show that while RD and M1 and some address pins are broadcasting data, nothing is appearing on the data bus. 
+
+Checked solder of pins on the ROM. Happy that the signals are leaving the CPU as they appear on the bus connector. Do they reach the ROM? Yes all pins between sockets and the bus I'm tapping into reach
+
+Check continutity of address and data pins between Z80 and ROM socket. Yes, ditto.
+
+But.... Caps appear to not supply power which is odd considering they are the same as the CPU. Bypassing them and I now see signals on the data bus. How odd.
+
+
+While I work out why the caps are a problem I now need to make sure the CPU is actually executing the ROM correctly...
+
+...
+
+Don't think I can trust the scope reading the data bus. So I wrote a bit of code that reads and writes to the high memory bank and with lots of NOP and a slow clock it is possible to watch it run and flash the high bank LED during those operations. To make sure it is not random code then added a count down loop followed by a HALT. The code on multiple runs functions the same way each time. I would count that as a success and proves the CPU is running code realisbly.
+
+![](stage3.0/stage3nodata.png)
+
+And here is the code ![](stage3.0/adrblinker.asm) running ![](https://www.youtube.com/watch?v=FRKDuX9m0I0)
+
+We have a functioning CPU, ROM and RAM.
+
+That I think then marks the end of testing the PCB functions other than getting the SIO working, which I know at this CPU clock cycle of approx 14HZ won't be fast enough for serial comms to work. 
+
+I will instead look at adding an LCD screen to get some kind of proof more extensive code works, then maybe add a keyboard matix for scanning. Then go from there.
+
+Let's draw a line under this stage of proof.
+
+Happy now!
+
+
+#2023-07-11# 
+
+Been a while since I've touched this. Had to tear most of it apart to try and remember what is broken. Turns out clock and CPU board are possibly OK.
+Memory board may have some address line dry joints. Have been looking at using real RAM but with lack of an EEPROM programmer for ROM I've looked
+around for Ardiuno Mega programmers. Mixed results for some reason. Intermittent data loss or error writing and reading. Then I've had a try with
+battery backed RAM to help and that seems to hold charge OK. 
+
+Found another Z80 simple system using the SIO so had a look along with a Mega simulated RAM/ROM, hacked that about a bit to do extra stuff and happy
+that what I'm doing is viable. Though Mega clock speed is well below the min clock speed for the SIO testing to remote terminal so need to get
+the RAM loaded with a monitor code that may or may not work and try it at full speed. 
+
+Lacking so many bits for this....
 
 Stage 2.5 (DONE)
 ----------------
@@ -233,540 +702,103 @@ test circuit is being constructed to the left of the Z80 stack.
 
 Once I finished the PIC loader I will be in a position to move to stage 3.0....
 
+Stage 2.5 (DONE)
+---------------
 
-#2023-07-11# 
+The breadboard is becoming quite full, and with the next stage focusing on RS232 where timing is 
+important, I think it might be a good idea to finish off the low speed parts first, then
+moving as much as I can off of the breadboard to strip board for the space and more stable 
+circuit at speed.
 
-Been a while since I've touched this. Had to tear most of it apart to try and remember what is broken. Turns out clock and CPU board are possibly OK.
-Memory board may have some address line dry joints. Have been looking at using real RAM but with lack of an EEPROM programmer for ROM I've looked
-around for Ardiuno Mega programmers. Mixed results for some reason. Intermittent data loss or error writing and reading. Then I've had a try with
-battery backed RAM to help and that seems to hold charge OK. 
+In this stage then I want to perhaps add a second 32k RAM chip as the high address bit wire is
+currently unconnected. That will then provide a full 64k RAM, as well as the prospect that I
+could swap out either RAM and replace with a ROM further down the line. 
 
-Found another Z80 simple system using the SIO so had a look along with a Mega simulated RAM/ROM, hacked that about a bit to do extra stuff and happy
-that what I'm doing is viable. Though Mega clock speed is well below the min clock speed for the SIO testing to remote terminal so need to get
-the RAM loaded with a monitor code that may or may not work and try it at full speed. 
+I will also obviously add a couple of NAND gates to switch between them. I may also future
+proof the setup and consider tapping another address line and splitting the top half into 
+smaller sections so that I can slip in external device memory maps. That will depend on the
+requirements for the DART, SIO, PIO chips next. Of course moving to strip board using the
+stacking method I'm considering means that if I need to change page addressing, I will only
+need to swap out the card(s) affected and not the whole board. Bonus!
 
-Lacking so many bits for this....
+To do this I *REALLY* need to document the board! :-) I will be using maybe Eagle or easyEDA for 
+the main schematic and then ancient VeeCAD for the strip board layout.
 
 
+Here we go, first draft. Not pretty as a number of things I need to clean up and be consistent
+about. But you should get the gist of it I hope. Also as far as the address decoder I don't have
+the chip that I found would make life easier so I may just sling in a PIC (yeah I know over kill)
+which can be adjusted in light of any requirements for the next stage. In the end I will of
+course replace with a fixed device when I know what is going on. This is a work in progress
+after all and not a finished project!
 
-Stage 3.0 (DONE)
-----------------
 
-Jan 2024
+![](stage2.0/CPU-Layer.png)
 
-Been many months since I last looked at this mainly because of issues with bit bashing the RAM, and I have since located an EEPROM device. July 2023 I created the circuit and PCB in the stage3.0 dir and Jan 2024 got around to testing it (28/Jan/2024).
 
-After discovering a few soldering issues I'm not up to the point of the Mega being able to test the CPU stepping through and using simulated RAM/ROM as well as checking that the address decocoder can select the various devices and memory banks:
+![](stage2.0/Front-Panel-Layer.png)
 
-	Device A - out (001h), a
-	Device B SIO - out (040h), a
-	Device C - out (080h), a
-	Device D - out (0C0h), a
 
-Next step is to attach RAM, ROM, and SIO and write some code to control the SIO with real clock speeds (will need to attach the scope to monitor 
+![](stage2.0/Memory-Layer.png)
 
 
-...
+![](stage2.0/PIC-Loader-Layer.png)
 
 
-Found PulseView and https://github.com/dotcypress/ula via the Rasp Pico can give me 16bit bus. Also has op code decoding of the data bus which is handy. Though had to compile from code due to a bug in USB devices that surfaces after 5.11 kernel. Odd but it eventually worked and saved me upgrading my four probe Saleae to 16, or getting more than one as I could just throw another Pico at it and get them to trigger from the same pin.
+![](stage2.0/Power-Layer.png)
 
-Did show that while RD and M1 and some address pins are broadcasting data, nothing is appearing on the data bus. 
 
-Checked solder of pins on the ROM. Happy that the signals are leaving the CPU as they appear on the bus connector. Do they reach the ROM? Yes all pins between sockets and the bus I'm tapping into reach
+PDF versions can be found in the stage2.0 directory too.
 
-Check continutity of address and data pins between Z80 and ROM socket. Yes, ditto.
 
-But.... Caps appear to not supply power which is odd considering they are the same as the CPU. Bypassing them and I now see signals on the data bus. How odd.
 
-
-While I work out why the caps are a problem I now need to make sure the CPU is actually executing the ROM correctly...
-
-...
-
-Don't think I can trust the scope reading the data bus. So I wrote a bit of code that reads and writes to the high memory bank and with lots of NOP and a slow clock it is possible to watch it run and flash the high bank LED during those operations. To make sure it is not random code then added a count down loop followed by a HALT. The code on multiple runs functions the same way each time. I would count that as a success and proves the CPU is running code realisbly.
-
-![](stage3.0/stage3nodata.png)
-
-And here is the code ![](stage3.0/adrblinker.asm) running ![](https://www.youtube.com/watch?v=FRKDuX9m0I0)
-
-We have a functioning CPU, ROM and RAM.
-
-That I think then marks the end of testing the PCB functions other than getting the SIO working, which I know at this CPU clock cycle of approx 14HZ won't be fast enough for serial comms to work. 
-
-I will instead look at adding an LCD screen to get some kind of proof more extensive code works, then maybe add a keyboard matix for scanning. Then go from there.
-
-Let's draw a line under this stage of proof.
-
-Happy now!
-
-
-Stage 3.1 (DONE)
-----------------
-
-Feb 2024
-
-LCD and keyboard matrix...
-
-Taking the design from the wonderful Stephen Cousins website ![here](https://smallcomputercentral.com/example-alphanumeric-lcd/) I was able to hack
-his code about to fit my assembler and some of my support code to produce a result. That validates the code and new PIO circuit and gives me something
-to adjust for my own needs that I know works. LCD now working. Keyboard next.
-
-![](stage3.1/lcd1.jpg)
-![](stage3.1/lcd2.jpg)
-
-Basic keyboard via port B mapping of the two nibbles on the port to a 4 x 4 matrix keyboard is working. Have a slight problem with column axis if more than
-one button is pressed at once which is odd as the rows are individually emergised. Might be a short or a coding issue. Had to tie the columns to a resistor 
-to ground to prevent floating phantom inputs. (Diagram to follow)
-
-At least single key presses work and should be enough to get a basic keyboard working although cumbersome to use. 
-
-Next will be to focus on a set of firmware with utility functinos to support keyboard and screen. After that can then look at external storage.
-
-
-![](stage3.1/keyboarddemo.jpg)
-![Video](https://youtu.be/FRKDuX9m0I0)
-
-
-Stage 3.2 (DONE)
-----------------
-
-
-Firmware and utility functions: Keyboard, Screen and Storage
-
-Need a video memory area for reading and writing video updates to save on having to keep reading and writing the screen. Or do I? I have a spare line on port A
-I could use for read enable of the LCD??? Would that require some strange control stuff? Otherwise easier to use a screen frame buffer to write out.
-
-Also need screen functions for:
-
-* TODO Scroll up and down
-* TODO Scroll left and right
-* Clear screen
-* Position cursor
-* Write string
-* Read char at pos (using frame buffer so direct memory access)
-* Draw cursor
-* TODO Can I use control chars to set attributes such as inverse? Might need double byte buffer or certain bits to generate from frame bufffer
-* Multiple framebuffers for window layers and function to switch active frame buffer
-
-Keyboard functions:
-
-* Scan keyboard in raw
-* Key scan to char conversion
-* Abstract away the keyboard configuration to enable different keyboard layouts (e.g. mobile phone style vs full ascii keyboard)
-* Key debounce
-* Repeat key timer (No repeat)
-* Control key functions
-* Prompt box with keyboard state indicators
-
-    1       2       3       A
-    abc     def     ghi     bs
-    ![]     “-      £+	
-
-    4       5       6       B
-    jkl	    mno     pqr     break
-    $=\     %{}     @#^	
-
-    7       8       9      C
-    stu     vwx     yz	
-     &:;    *,/     ().?	
-
-    *       0       #      D
-    symbol  space   shift  enter
-
-
-... 
-
-Wired up CF card using schemtics from the wonderful work my Steven Cousins, however card timeouts. Not sure if card, electrical or software releated. Will bake that circuit to the new
-PCB anyway and hope for the best
-
-What I have got working at least in prototype using a Pico is SPI read and write to a Microchip Serial EEPROM. If I use the smaller 64k versions I can keep the code simple enough
-to provide 320Kb onboard storage and 512Kb cartridge on the PIO port B interface. That works for me and is easier to scale up to using the larger chips just by changing the code
-to clock out the additional address data.
-
-Also I have a SPI interface I can use for other stuff too. Could use for a larger screen perhaps? That is possible I suppose. Nice.
-If I use say page 0 of the storage array for BIOS data I could have bit switches to enable and disable hardware such as which keyboard to use and if using different
-display features etc.
-
-Will now port the Pico python code over to Z80 asm and make sure the SPI is working with some test commands on the CLI. If that works then can update the schemetics and 
-fabricate a new PCB for version 4. 
-
-Serial EEPROM code is partly working writing now on the Z80. Dropping some bytes so may be a timing issue. Can work on that.
-
-Still intermittently dropping writes, pretty certain it isn't anything serious. The fact it is
-writing proves the handshake is fine. Added read code and that does read the bytes back correctly as
-to what is on there. Happy with that.
-
-All that is left to do before committing a new version 4 PCB is go over loose ends such as the
-keyboard failing to multi-key press and some odd bits left in my todo list. Will update drawings when off to fab.
-
-And here we are before final bits...
-
-
-![Video](https://youtu.be/laKhGaO3JYU)
-
-Copied off the firmware code to a new dir for further development of the final OS...
-
-Stage 4.0 (DONE)
------------------
-
-Code a basic core part of an OS which uses the screen, keyboard and storage. A super monitor program. From there could then add
-Forth which could provide the drivers for add on hardware.
-
-If the OS has a 'boot' buffer say in the first 'block' of the storage that could bring up the rest of the hardware etc.
-Would make adding more hardware easy rather than coding in asm.
-
-Redesigned PCB with LCD, keyboard and storage onboard, add edge connectors etc and produce a 3d printed case.
-
-Good to go then.
-
-![](stage4.0/Gerber_PCB_z80-system-3-sbc.zip)
-![](stage4.0/Schematic_z80-system-4-sbc-2024-03-02.pdf)
-![](stage4.0/Schematic_z80-system-4-sbc-2024-03-02.png)
-
-
-...
-
-Working the OS see language defintion etc in ![FORTH.md](FORTH.md)
-
-New board now soldered and powered up. Need to debug OS/Language...
-
-...
-
-April 2024
-
-Keyboard layout:
-
-
-    1       2       3       A
-    abc"    def&    ghi$    
-
-    4       5       6       B
-    jkl,    mno.    pqr:
-
-    7       8       9      C
-    stu;    vwx@    yz?!
-
-    *       0       #      D
-    shift   space   Enter
-    ' =   < >     + - /
-     bs   
-
-
-Unit testing/debugging
-
-Version 3 of the parser now tokenises the string
-TODO need to save the current pointer of next word in the malloc area
-TODO dont parse an empty input string
-TODO trim space from end of parse string
-TODO add the breakpoint to words
-TODO pop rsp at end of exec
-TODO for string, skip the copy of the double quotes
-TODO add data stack underflow guards
-TODO change default push type as float as that has no prefix
-TODO add a type id word for TOS
-TODO add monitor word for full memory and reg dump
-TODO add round div word
-TODO add .$ to print number as hex word format and not numeric
-TODO add case change words
-TODO add type conversion words
-TODO add a start up feature to bulk run one set of words after another. can use for testing and then use it for auto start up of some builtins + storage boot lists
-
-TODO add dialog word
-TODO add menu word
-TODO add info page word
-TODO add other UI type words that could be useful
-TODO add a means to add binary based words and/or an assemlber
-
-
-TODO uwords are not exec. need to add the pc ptr for the exec to the start of the exec body area. update preample to reload the pc
-
-
-May 2024
---------
-
-Now have uword creation however the decision to have a PC stored for each exec line so i can handle loops is 
-proving to be a problem as the exec of the uword is needing it and it isnt setup right.
-I think I need to do another version of the parser and remove this. keep things a bit simple after looking
-at other versions of the forth parser. If I use a single pc then see if i can do a compile version and handle
-the loops and jumps better.
-
-I have also fixed the version of the assembler for macro support by upgrading. That will help a lot
-
-New approach will be as follows:
-
-1.0 On entry to a word, tos will hold value or ptr (still be macros to maniuplate the tos ) to make things quick
-2.0 exec will function differently:
-2.1     Op code will flag if the data following is code or jump table to primitives
-2.2     Extra op codes to add to deal with very low level things in particular branch and loops  
-2.3     Compile to op codes to speed up process (how to deal with saves??? Perhaps dont compile?)
-2.4     Keep a running loop/branch word to allow for quick branch/loop jumps
-2.5     Single central PC covering all malloc 
-3.0 Parser remains much the same. Break each word to a zero term string.
-4.0 Data and return stacks remain the same.
-
-
-9th May
--------
-
-Reached v1.0 of the firmware. Now have working (a few odd bugs still) Forth system. Limited features as half of the advanced words have
-yet to be finished, but enough works for simple logic, looping, 16bit int maths and user word creation - See word list.
-
-With a minimal working OS next is to return to hardware and create a larger keyboard for easier typing and get the SPI or CF persistent
-storage working.
-
-Added a rough build of a case (many slight faults) and FreeCad, STLs and gcode can be found in the case subdirectory. Enhancements as they come.
-
-
-![](stage4.0/firmv1hello1.jpg)
-![](stage4.0/firmv1hello2.jpg)
-![](stage4.0/firmv1inside.jpg)
-![](stage4.0/firmv1startup.jpg)
-
-![](https://youtu.be/GDhO9y0qguw)
-
-
-Stage 4.1 NOW
--------------
-
-New full sized keyboard to work on:
-
-
-![](stage4.0/4x10matrix.jpg)
-
-12 May
-------
-
-Now have keyboard working. Need to tidy up wiring and possibly move it to strip board for some stability. The keyboard
-cable needs looking at as currenly a load of link wires masking taped together. 
-
-Next to look at SPI storage...
-
-
-17th May
---------
-
-Can format, create and get a directory on the SPI storage.
-Have added some more looping words and using loop stack so DO loops can access the stack
-
-DONE fix a spurious return stack issue on REPEAT...UNTIL
-DONE add two char detection for hex numbers
-DONE do the append and read spi functions
-DONE BUT STILL NEEDS MORE WORK sort out the input box to not do direct screen writes as well as provide better editing
-DONE add cursor key support on the keyboard
-
-DONE May have issue with append. If prev file is deleted first zero will be before header rec. Need a new file system. CP/M?
-
-25th May
---------
-
-Got more of the file control words in place. Up cursor should do last line recall
-
-DONE last line recall messing screen layout
-DONE need to add extra bank selection support
-DONE Design new keyboard layout PCB now I have key caps etc
-
-2nd June
---------
-
-DONE Waiting for delivery of keyboard PCBs.
-DONE 4x40 char LCD partly working as a drop in but requires an extra E signal for the second half of the display. Finish coding changes.
-DONE Fix READ functions
-DONE disable breakpoints on start up unless a key is held down
-
-
-11th June
----------
-
-Prototype case for Mega now done. Need to fine tune some issues and work out how to make it interlock and not rely on so much glue.
-
-Then back to the OS. In particular loading and saving of uwords and the parser break out. 
-
-
-
-![](images/20240612_stage4a.jpg)
-![](images/20240612_stage4b.jpg)
-![](images/20240612_stage4c.jpg)
-![](images/20240612_stage4d.jpg)
-![](images/20240612_stage4e.jpg)
-
-
-27th Nov 
---------
-
-Still have memory issues and certainly performance issues I think due to the extensive memcpy and tokenisation of keywords.
-
-Have added support to target the code base for the wonderful SC114 Steven Cousins Z80 computer so I can turn around development cycle.
-
-The next step is to use v5 parser to be closer to how a proper FORTH system should function. For example I don't need to copy and tokenise the words as the space separator for a start will be a delimiter. That will reduce the number of mallocs.
-
-Will go from there.
- 
-
-
-27th Dec 2024
--------------
-
-Reviewing code. Objectives for this round of dev is to:
-1. Make sure existing code runs on the SC114 so I can easily test
-2. Remove mallocs which is slowing the code down
-3. Run a tokenisation of the keywords to single bytes which will also vastly speed up the runtime
-
-31st Dec 2024
--------------
-
-* Now fully working on the SC114. 
-* Have removed initial level of malloc calls. 
-* Switched to the original malloc function which should be a lot better than mine as it has garbage collection.
-* Tested run with and without debug code and 'SW' runs 0.4s faster without debug code included.
-
-
-
-1st Jan 2025
-------------
-
-DONE change data stack. Each push will be three bytes. First byte is type. If num then num in next two byts, if string then pointer. That will save on mallocs. Other data types will make use of the pointer
-DONE Switched back to my malloc for now
-MAYBE TODO New malloc that only ever adds to memory with a simple forward pointer
-DONE. Fault in STR2NUM word. BUG 'ga' word has an issue with detecting the random number. Is it the logic checks?
-DONE At boot detect if key is held for debug, add another key for hardware diags like checking keyboard etc
-DONE Add a dot comment to forward the next print position use .>   
-DONE have a flag to enable forward cursor from each . or .-
-DONE word which allows edit of item on tos - word added but does not copy from stack
-DONE words for GPIO access. Stubs created
-DONE Sort out the EXEC word so that I can create a simple save and load of UWORDS
-
-PART DONE break out parser so it can be used by LIST, FORGET, WORDS, UWORDS and SAVE 
-ACTIVE Do I want to do tokenisation of the keywords next to see if that speeds things up???
-
-
-6th Jan 2025
-------------
-
-On SC114 things are much more stable than the original hardware. I've not soldered the power caps. Could that be the reason? Or 
-perhaps some bad joints?
-
-Anyway finish off the remaining words and bugs seeing the SC114 platform is faster to turn around an image load rather
-than having to program an EEPROM. Of course can test hardware parts like storage. At the moment... 
-
-
-DONE Add keyboard macro defs on function keys - need them as tokens in the dictionary for easy recall - add as user defs?
-DONE  cleanup/free not being done. Is that a problem? Use DSPPOPFREE. Seems to be OK in some situations but with SW it crashes straight away that is using my malloc. Switched back to DK88 and free is working so use this one for now and note bug.
-DONE ???? TODO The word THEN appears to be having issues and is being pushed to stack GA is failing too. Suddenly working. Maybe a mem glitch
-DONE write a simple screen saver demo to test for runtime crashes
-DONE ?DUP word to duplicate if the TOS value is non-zero
-DONE Fix UPPER
-DONE Fix LOWER
-DONE Fix TCASE
-
-TODO wire up a temp interface to the serial EEPROMS so I can test storage on the SC114 as I have the PIO and digital IO cards installed
-TODO with the second PIO port hook up and debug the sound card
-TODO PICK word to pick a value at a given value on stack and move to TOS
-TODO Fix scroll words
-TODO Fix LEFT
-TODO Fix RIGHT
-TODO Fix NUM2STR
-TODO Fix CONCAT
-TODO Fix FIND
-TODO Fix COPY
-TODO Fix 2SWAP
-TODO Test CALL
-TODO Remove the need for WORDS as only UWORDS is really useful
-TODO Change NOTE to PLAY and use a stream of items on stack
-TODO Add support for ELSE and ENDIF. IF THEN ELSE ENDIF   or IF THEN ENDIF
-TODO Fix KEY
-TODO Fix IS 
-
-TODO my malloc is failing on free
-
-TO TEST need word to report where cursor current at
-TODO add more editing features 
-TODO fix editor bugs
-TODO fix editor issues
-
-TODO Editor issue insert mid string causes loss of zero term giving random data
-TODO Backspace mid string does not clean up shifted text
-TODO Jump to end of line does not work should set to the number in last debug display
-TODO If cursor at end of line, when go back it leaves custor displayed
-
-
-
-TODO Create a disk UI in native asm for robustness and speed?
-TODO Extract all of the symbols in the symbol table to be available as words in FORTH, debug and asm above
-TODO fix saving more than a single block of file storage
-TODO fix loading more than a single block of file storage
-TODO need words to report on hardware e.g. screen dims
-TODO need word to get file id by name
-TODO need word to get file name by id
-
-TODO have a word to set break point at a DMARKer
-
-
-
-TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs
-TODO Add a simple assembler feature like BBC Basic
-
-Documentation Tasks
--------------------
-
-TODO Add loads of example Forth code - added some examples in word markup generation - extract auto start code
-
-TODO update schematics with 4x40 LCD and the location of the spare E link
-
-TODO update schematics with better design for the next version?
-
-TODO New case for Mega
-
-TODO Tidy up code base: Make sure functions in suitable files 
-
-TODO Tidy up code base: Reindent
-
-TODO Tidy up code base: Remove redundant code/comments
-
-TODO Add word documentation
-
-TODO Add full system documentation
-
-
-Stage 4.1
----------
-
-Networking extension
-
-Using SPI to connect with a Pico/ESP on the cart port...
-
-SPI protocol to be something like...
-
-Host sending
-
-Byte $01 $xx  - Connect to $xx in address book
-Byte $02 $xx  - Sending data ext
-
-Byte $03 $xxxx $xx  Save byte to 
-Byte $04 $xx  Bank selection
-
-Poll to read any incoming data
-
-
-Stage 4.5 TODO
+Stage 2.0 DONE
 --------------
 
-DONE Power. Could I add battery support so it is portable? Recharge circuit I would need to add though could pull that in from a Pi battery charger. Easy. Using Rpi Lipo boards.
+Now I have the sequence to program RAM by hand, speed it. Because I don't have an (E)EPROM 
+and programmer I will put a PIC to act as a bootstrap loader at Z80 startup and bit bash a simple 
+monitor program into RAM which I can then use to load further code.
 
-Trying out:
-https://shop.pimoroni.com/products/lipo-amigo?variant=39779302539347
+First part will be to load the same simple program as used in the the Stage 1.5 test. Once that
+electronics is working I can then write larger programs to boot strap which will be where Stage 3.0 
+comes in...
 
 
-Or would normal battery packs work long enough to make it worth while? 
+Testing shift register... [![Video](https://youtu.be/uMFlNMZjTEM)]
 
-More devices on the external cart:
 
-* Basic networking across the SPI bus between other Z80 instances?
-* RTC
-* Sound
-* Relay board for GPIO use
-* Pico for Wifi networking to internet etc
-* Enchance the SPI for display/keyboard
+![](images/20220324_191246.jpg)
 
+
+Testing shift reg sequence [![Video](https://youtu.be/3TNWDdLDNPk)]
+
+Ready to boot strap! [![Video](https://youtu.be/jSUHhDZqcws)]
+
+Another go which does'nt quite work... [![Video](https://youtu.be/zBmXrHQtJYk)]... Turns out 
+that powering down mid shift register loading fixes it. Will do a better fix with the 
+coding on the PIC :-)
+
+
+
+Stage 1.5 DONE
+--------------
+
+Resolve the issue I have in manual bit bashing machine code into RAM.
+
+Now fixed in [![Stage 1.5](https://youtu.be/Ls7xwXhakNc)]
+
+![](images/20220322_210657-bitbashfixed.jpg)
+
+
+Stage 1.0 DONE
+--------------
+
+Create a basic breadboard circuit with CPU, clock (for now 555 so I can watch it do things) and RAM.
+
+The CPU is executing whatever random code is in the RAM at start up. Looks pretty with the flashing lights.
+
+See this stage at [![(Stage 1)](https://youtu.be/8DWXKSt4nWc)]
+
+![](images/20220321_072123-stage1.jpg)
 
 

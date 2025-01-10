@@ -4,101 +4,6 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
-
-
-
-
-
-
-
-Documentation Tasks
--------------------
-
-TODO Add loads of example Forth code - added some examples in word markup generation - extract auto start code
-
-TODO update schematics with 4x40 LCD and the location of the spare E link
-
-TODO update schematics with better design for the next version?
-
-TODO New case for Mega
-
-TODO Tidy up code base: Make sure functions in suitable files 
-
-TODO Tidy up code base: Reindent
-
-TODO Tidy up code base: Remove redundant code/comments
-
-TODO Add word documentation
-
-TODO Add full system documentation
-
-
-Stage 4.1
----------
-
-Networking extension
-
-Using SPI to connect with a Pico/ESP on the cart port...
-
-SPI protocol to be something like...
-
-Host sending
-
-Byte $01 $xx  - Connect to $xx in address book
-Byte $02 $xx  - Sending data ext
-
-Byte $03 $xxxx $xx  Save byte to 
-Byte $04 $xx  Bank selection
-
-Poll to read any incoming data
-
-
-Stage 4.5 TODO
---------------
-
-DONE Power. Could I add battery support so it is portable? Recharge circuit I would need to add though could pull that in from a Pi battery charger. Easy. Using Rpi Lipo boards.
-
-Trying out:
-https://shop.pimoroni.com/products/lipo-amigo?variant=39779302539347
-
-
-Or would normal battery packs work long enough to make it worth while? 
-
-More devices on the external cart:
-
-* Basic networking across the SPI bus between other Z80 instances?
-* RTC
-* Sound
-* Relay board for GPIO use
-* Pico for Wifi networking to internet etc
-* Enchance the SPI for display/keyboard
-
-
 6th Jan 2025
 ------------
 
@@ -800,5 +705,69 @@ The CPU is executing whatever random code is in the RAM at start up. Looks prett
 See this stage at [![(Stage 1)](https://youtu.be/8DWXKSt4nWc)]
 
 ![](images/20220321_072123-stage1.jpg)
+
+
+
+
+
+
+Documentation Tasks
+-------------------
+
+TODO Add loads of example Forth code - added some examples in word markup generation - extract auto start code
+
+TODO update schematics with 4x40 LCD and the location of the spare E link
+
+TODO update schematics with better design for the next version?
+
+TODO New case for Mega
+
+TODO Tidy up code base: Make sure functions in suitable files 
+
+TODO Tidy up code base: Reindent
+
+TODO Tidy up code base: Remove redundant code/comments
+
+TODO Add word documentation
+
+TODO Add full system documentation
+
+Future Directions
+-----------------
+
+Networking extension
+
+Using SPI to connect with a Pico/ESP on the cart port...
+
+SPI protocol to be something like...
+
+Host sending
+
+Byte $01 $xx  - Connect to $xx in address book
+Byte $02 $xx  - Sending data ext
+
+Byte $03 $xxxx $xx  Save byte to 
+Byte $04 $xx  Bank selection
+
+Poll to read any incoming data
+
+
+
+DONE Power. Could I add battery support so it is portable? Recharge circuit I would need to add though could pull that in from a Pi battery charger. Easy. Using Rpi Lipo boards.
+
+Trying out:
+https://shop.pimoroni.com/products/lipo-amigo?variant=39779302539347
+
+
+Or would normal battery packs work long enough to make it worth while? 
+
+More devices on the external cart:
+
+* Basic networking across the SPI bus between other Z80 instances?
+* RTC
+* Sound
+* Relay board for GPIO use
+* Pico for Wifi networking to internet etc
+* Enchance the SPI for display/keyboard
 
 

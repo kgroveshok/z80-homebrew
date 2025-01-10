@@ -3,22 +3,10 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 ------------------------------------------------
 
 
-
-6th Jan 2025
-------------
-
-On SC114 things are much more stable than the original hardware. I've not soldered the power caps. Could that be the reason? Or 
-perhaps some bad joints?
-
-Anyway finish off the remaining words and bugs seeing the SC114 platform is faster to turn around an image load rather
-than having to program an EEPROM. Of course can test hardware parts like storage. At the moment... 
+10th Jan 2025
+-------------
 
 
-DONE Add keyboard macro defs on function keys - need them as tokens in the dictionary for easy recall - add as user defs?
-DONE  cleanup/free not being done. Is that a problem? Use DSPPOPFREE. Seems to be OK in some situations but with SW it crashes straight away that is using my malloc. Switched back to DK88 and free is working so use this one for now and note bug.
-DONE ???? TODO The word THEN appears to be having issues and is being pushed to stack GA is failing too. Suddenly working. Maybe a mem glitch
-DONE write a simple screen saver demo to test for runtime crashes
-DONE ?DUP word to duplicate if the TOS value is non-zero
 DONE Fix UPPER
 DONE Fix LOWER
 DONE Fix TCASE
@@ -69,6 +57,23 @@ TODO have a word to set break point at a DMARKer
 
 TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs
 TODO Add a simple assembler feature like BBC Basic
+
+
+6th Jan 2025
+------------
+
+On SC114 things are much more stable than the original hardware. I've not soldered the power caps. Could that be the reason? Or 
+perhaps some bad joints?
+
+Anyway finish off the remaining words and bugs seeing the SC114 platform is faster to turn around an image load rather
+than having to program an EEPROM. Of course can test hardware parts like storage. At the moment... 
+
+
+DONE Add keyboard macro defs on function keys - need them as tokens in the dictionary for easy recall - add as user defs?
+DONE  cleanup/free not being done. Is that a problem? Use DSPPOPFREE. Seems to be OK in some situations but with SW it crashes straight away that is using my malloc. Switched back to DK88 and free is working so use this one for now and note bug.
+DONE ???? TODO The word THEN appears to be having issues and is being pushed to stack GA is failing too. Suddenly working. Maybe a mem glitch
+DONE write a simple screen saver demo to test for runtime crashes
+DONE ?DUP word to duplicate if the TOS value is non-zero
 
 1st Jan 2025
 ------------

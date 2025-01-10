@@ -870,6 +870,25 @@ to_upper:        cp      'a'             ; Nothing to do if not lower case
                 ret     nc              ; Nothing to do, either
                 and     $5f             ; Convert to upper case
                 ret
+
+
+to_lower:
+
+   ; if char is in [A-Z] make it lower case
+
+   ; enter : a = char
+   ; exit  : a = lower case char
+   ; uses  : af
+
+   cp 'A'
+   ret c
+   
+   cp 'Z'+1
+   ret nc
+   
+   or $20
+   ret
+
 ;
 ; Expects a hexadecimal digit (upper case!) in A and returns the
 ; corresponding value in A.

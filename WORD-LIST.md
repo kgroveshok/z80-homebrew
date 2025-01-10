@@ -586,13 +586,13 @@
 ### TYPE ( u -- u type ) Push type of value on TOS - 's' string, 'i' integer...   | DONE
 
 
-### UPPER ( s -- s ) Upper case string s  | TODO
+### UPPER ( s -- s ) Upper case string s  | DONE
 
 
-### LOWER ( s -- s ) Lower case string s  | TODO
+### LOWER ( s -- s ) Lower case string s  | DONE
 
 
-### TCASE ( s -- s ) Title case string s  | TODO
+### TCASE ( s -- s ) Title case string s  | DONE
 
 
 ### SUBSTR ( s u1 u2 -- s sb ) Push to TOS chars starting at position u1 and with length u2 from string s  | DONE
@@ -883,6 +883,15 @@
 ### TYPE ( u -- u type ) Push type of value on TOS - 's' string, 'i' integer...   | DONE
 
 
+### UPPER ( s -- s ) Upper case string s  | DONE
+
+
+### LOWER ( s -- s ) Lower case string s  | DONE
+
+
+### TCASE ( s -- s ) Title case string s  | DONE
+
+
 ### SUBSTR ( s u1 u2 -- s sb ) Push to TOS chars starting at position u1 and with length u2 from string s  | DONE
 
 
@@ -1022,15 +1031,6 @@
 
 
 ## String Words
-
-
-### UPPER ( s -- s ) Upper case string s  | TODO
-
-
-### LOWER ( s -- s ) Lower case string s  | TODO
-
-
-### TCASE ( s -- s ) Title case string s  | TODO
 
 
 ### LEFT ( s u -- s sb ) Push to TOS string u long starting from left of s  | TODO

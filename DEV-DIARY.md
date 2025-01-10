@@ -655,14 +655,14 @@ DONE  cleanup/free not being done. Is that a problem? Use DSPPOPFREE. Seems to b
 DONE ???? TODO The word THEN appears to be having issues and is being pushed to stack GA is failing too. Suddenly working. Maybe a mem glitch
 DONE write a simple screen saver demo to test for runtime crashes
 DONE ?DUP word to duplicate if the TOS value is non-zero
+DONE Fix UPPER
+DONE Fix LOWER
+DONE Fix TCASE
 
 TODO wire up a temp interface to the serial EEPROMS so I can test storage on the SC114 as I have the PIO and digital IO cards installed
 TODO with the second PIO port hook up and debug the sound card
 TODO PICK word to pick a value at a given value on stack and move to TOS
 TODO Fix scroll words
-TODO Fix UPPER
-TODO Fix LOWER
-TODO Fix TCASE
 TODO Fix LEFT
 TODO Fix RIGHT
 TODO Fix NUM2STR

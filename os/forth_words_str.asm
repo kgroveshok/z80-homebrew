@@ -41,35 +41,151 @@
 
 .UPPER:
 	CWHEAD .LOWER 52 "UPPER" 5 WORD_FLAG_CODE
-; | UPPER ( s -- s ) Upper case string s  | TODO
+; | UPPER ( s -- s ) Upper case string s  | DONE
 
 		FORTH_DSP
 		
+; TODO check is string type
 
 		FORTH_DSP_VALUEHL
-; check is string type
-; get pointer to string
-; for each char convert to upper
+; get pointer to string in hl
+
+.toup:		ld a, (hl)
+		cp 0
+		jr z, .toupdone
+
+		call to_upper
+
+		ld (hl), a
+		inc hl
+		jr .toup
+
 		
 
+
+; for each char convert to upper
+		
+.toupdone:
 
 
 		NEXTW
 .LOWER:
 	CWHEAD .TCASE 52 "LOWER" 5 WORD_FLAG_CODE
-; | LOWER ( s -- s ) Lower case string s  | TODO
+; | LOWER ( s -- s ) Lower case string s  | DONE
 
-; check is string type
-; get pointer to string
-; for each char convert to upper
+		FORTH_DSP
+		
+; TODO check is string type
+
+		FORTH_DSP_VALUEHL
+; get pointer to string in hl
+
+.tolow:		ld a, (hl)
+		cp 0
+		jr z, .tolowdone
+
+		call to_lower
+
+		ld (hl), a
+		inc hl
+		jr .tolow
+
+		
+
+
+; for each char convert to low
+		
+.tolowdone:
 		NEXTW
 .TCASE:
 	CWHEAD .SUBSTR 52 "TCASE" 5 WORD_FLAG_CODE
-; | TCASE ( s -- s ) Title case string s  | TODO
+; | TCASE ( s -- s ) Title case string s  | DONE
 
-; check is string type
-; get pointer to string
-; for each char convert to upper
+		FORTH_DSP
+		
+; TODO check is string type
+
+		FORTH_DSP_VALUEHL
+; get pointer to string in hl
+
+		if DEBUG_FORTH_WORDS
+			DMARK "TC1"
+			CALLMONITOR
+		endif
+
+		; first time in turn to upper case first char
+
+		ld a, (hl)
+		jp .totsiptou
+
+
+.tot:		ld a, (hl)
+		cp 0
+		jp z, .totdone
+
+		if DEBUG_FORTH_WORDS
+			DMARK "TC2"
+			CALLMONITOR
+		endif
+		; check to see if current char is a space
+
+		cp ' '
+		jr z, .totsp
+		call to_lower
+		if DEBUG_FORTH_WORDS
+			DMARK "TC3"
+			CALLMONITOR
+		endif
+		jr .totnxt
+
+.totsp:         ; on a space, find next char which should be upper
+
+		if DEBUG_FORTH_WORDS
+			DMARK "TC4"
+			CALLMONITOR
+		endif
+		;;
+
+		cp ' '
+		jr nz, .totsiptou
+		inc hl
+		ld a, (hl)
+		if DEBUG_FORTH_WORDS
+			DMARK "TC5"
+			CALLMONITOR
+		endif
+		jr .totsp
+.totsiptou:    cp 0
+		jr z, .totdone
+		; not space and not zero term so upper case it
+		call to_upper
+
+		if DEBUG_FORTH_WORDS
+			DMARK "TC6"
+			CALLMONITOR
+		endif
+
+
+.totnxt:
+
+		ld (hl), a
+		inc hl
+		if DEBUG_FORTH_WORDS
+			DMARK "TC7"
+			CALLMONITOR
+		endif
+		jp .tot
+
+		
+
+
+; for each char convert to low
+		
+.totdone:
+		if DEBUG_FORTH_WORDS
+			DMARK "TCd"
+			CALLMONITOR
+		endif
 		NEXTW
 
 .SUBSTR:
@@ -241,7 +357,10 @@
 		call malloc
 		ex de, hl    ; de now has malloc destination
 
+		
+
 ; TODO copy s1 and s2
+
 
 
 

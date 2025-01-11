@@ -613,7 +613,7 @@
 ### CONCAT ( s1 s2 -- s3 ) A s1 + s2 is pushed onto the stack | DONE
 
 
-### FIND ( s c -- s u ) Search the string s for the char c and push the position of the first occurance to TOS | TODO
+### FIND ( s c -- s u ) Search the string s for the char c and push the position of the first occurance to TOS | DONE
 
 
 ### LEN (  u1 -- u2 ) Push the length of the string on TOS | DONE
@@ -901,6 +901,9 @@
 ### CONCAT ( s1 s2 -- s3 ) A s1 + s2 is pushed onto the stack | DONE
 
 
+### FIND ( s c -- s u ) Search the string s for the char c and push the position of the first occurance to TOS | DONE
+
+
 ### LEN (  u1 -- u2 ) Push the length of the string on TOS | DONE
 
 
@@ -1043,9 +1046,6 @@
 
 
 ### NUM2STR ( n -- s ) Convert a number on TOS to string | NOT DOING
-
-
-### FIND ( s c -- s u ) Search the string s for the char c and push the position of the first occurance to TOS | TODO
 
 
 ### COPY ( u1 u2 -- Copy string u2 to u1 ) SHOULD THIS BE HANDLED WITH DUP?  | TODO

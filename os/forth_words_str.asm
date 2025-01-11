@@ -406,7 +406,74 @@
 
 .FIND:
 	CWHEAD .LEN 55 "FIND" 4 WORD_FLAG_CODE
-; | FIND ( s c -- s u ) Search the string s for the char c and push the position of the first occurance to TOS | TODO
+; | FIND ( s c -- s u ) Search the string s for the char c and push the position of the first occurance to TOS | DONE
+
+		if DEBUG_FORTH_WORDS
+			DMARK "FND"
+			CALLMONITOR
+		endif
+
+; TODO check string type
+		FORTH_DSP_VALUE
+
+		push hl   
+		ld a,(hl)    ; char to find  
+; TODO change char to substr
+
+		push af
+		
+
+
+		if DEBUG_FORTH_WORDS
+			DMARK "FN1"
+			CALLMONITOR
+		endif
+
+		FORTH_DSP_POP
+
+		; string to search
+
+		FORTH_DSP_VALUE
+
+		pop de  ; d is char to find 
+
+		if DEBUG_FORTH_WORDS
+			DMARK "FN2"
+			CALLMONITOR
+		endif
+		
+		ld bc, 0
+.findchar:      ld a,(hl)
+		cp 0   		
+		jr z, .finddone    
+		cp d
+		jr z, .foundchar
+		inc bc
+		inc hl
+		if DEBUG_FORTH_WORDS
+			DMARK "FN3"
+			CALLMONITOR
+		endif
+		jr .findchar
+
+
+.foundchar:	push bc
+		pop hl
+		jr .findexit
+
+
+				
+
+.finddone:     ; got to end of string with no find
+		ld hl, 0
+.findexit:
+
+		if DEBUG_FORTH_WORDS
+			DMARK "FNd"
+			CALLMONITOR
+		endif
+	call forth_push_numhl
+
 	       NEXTW
 
 .LEN:

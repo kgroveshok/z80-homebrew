@@ -1,5 +1,5 @@
 ; op codes for forth keywords
-
+; free to use code 0 
 	OPCODE_HEAP: equ  1
 	OPCODE_EXEC: equ 2
 	OPCODE_DUP: equ 3
@@ -20,7 +20,7 @@
 	OPCODE_PAUSE: equ 18
 	OPCODE_PAUSES: equ 19
 	OPCODE_ROT: equ 20
-	OPCODE_WORDS: equ 21
+;free to reuse	OPCODE_WORDS: equ 21
 	OPCODE_UWORDS: equ 22
 	OPCODE_BP: equ 23
 	OPCODE_MONITOR: equ 24 
@@ -31,7 +31,7 @@
 	OPCODE_NOP: equ 29
 	OPCODE_COMO: equ 30
 	OPCODE_COMC: equ 31
-	OPCODE_ENDCORE: equ 32
+;free to reuse	OPCODE_ENDCORE: equ 32
 	OPCODE_AFTERSOUND: equ 33
 	OPCODE_GP2: equ 34
 	OPCODE_GP3: equ 35
@@ -44,7 +44,7 @@
 	OPCODE_SPII: equ 42
 	OPCODE_SESEL: equ 43
 	OPCODE_CARTDEV: equ 44
-	OPCODE_ENDDEVICE: equ 45
+; free to reuse	OPCODE_ENDDEVICE: equ 45
 	OPCODE_FB: equ 46
 	OPCODE_EMIT: equ 47
 	OPCODE_DOTH: equ 48
@@ -62,7 +62,7 @@
 	OPCODE_ATQ: equ 60
 	OPCODE_AUTODSP: equ 61
 	OPCODE_MENU: equ 62
-	OPCODE_ENDDISPLAY: equ 63 
+; free to reuse	OPCODE_ENDDISPLAY: equ 63 
 	OPCODE_THEN: equ 64
 	OPCODE_ELSE: equ 65
 	OPCODE_DO: equ 66
@@ -75,13 +75,13 @@
 	OPCODE_WAITK: equ 73
 	OPCODE_ACCEPT: equ 74
 	OPCODE_EDIT: equ 75
-	OPCODE_ENDKEY: equ 76
+;free to reuse	OPCODE_ENDKEY: equ 76
 	OPCODE_LZERO: equ 77
 	OPCODE_TZERO: equ 78
 	OPCODE_LESS: equ 79
 	OPCODE_GT: equ 80
 	OPCODE_EQUAL: equ 81 
-	OPCODE_ENDLOGIC: equ 82
+;free to reuse	OPCODE_ENDLOGIC: equ 82
 	OPCODE_NEG: equ 83
 	OPCODE_DIV: equ 84
 	OPCODE_MUL: equ 85
@@ -90,7 +90,7 @@
 	OPCODE_RND16: equ 88
 	OPCODE_RND8: equ 89
 	OPCODE_RND: equ 90
-	OPCODE_ENDMATHS: equ 91 
+;free to reuse	OPCODE_ENDMATHS: equ 91 
 	OPCODE_BYNAME: equ 92
 	OPCODE_DIR: equ 93
 	OPCODE_SAVE: equ 94
@@ -110,7 +110,7 @@
 	OPCODE_FORMAT: equ 107
 	OPCODE_LABEL: equ 108
 	OPCODE_LABELS: equ 109
-	OPCODE_ENDSTORAGE: equ 110 
+;free to reuse	OPCODE_ENDSTORAGE: equ 110 
 	OPCODE_UPPER: equ 111
 	OPCODE_LOWER: equ 112
 	OPCODE_SUBSTR: equ 113
@@ -123,7 +123,7 @@
 	OPCODE_LEN: equ 120
 	OPCODE_CHAR: equ 121
 	OPCODE_STRLEN: equ 122
-	OPCODE_ENDSTR: equ 123
+; free to reuse	OPCODE_ENDSTR: equ 123
 	OPCODE_V0S: equ 124
 	OPCODE_V0Q: equ 125
 	OPCODE_V1S: equ 126
@@ -132,7 +132,7 @@
 	OPCODE_V2Q: equ 129
 	OPCODE_V3S: equ 130
 	OPCODE_V3Q: equ 131
-	OPCODE_END: equ 132
+;free to reuse	OPCODE_END: equ 132
 	OPCODE_ZDUP: equ 133
 
 ; eof

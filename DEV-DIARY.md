@@ -12,11 +12,12 @@ DONE Fix LOWER
 DONE Fix TCASE
 DONE Fix CONCAT
 DONE Fix FIND
+DONE Remove the need for WORDS as only UWORDS is really useful
 
 TODO wire up a temp interface to the serial EEPROMS so I can test storage on the SC114 as I have the PIO and digital IO cards installed
 TODO with the second PIO port hook up and debug the sound card
 TODO PICK word to pick a value at a given value on stack and move to TOS
-TODO CLI input on SC114 is running high refresh. Not using key wait?
+TODO CLI input on SC114 is running high refresh. Not using key wait? Because on hardware it handles cursor flash
 TODO Fix scroll words
 TODO Fix NUM2STR. 
 TODO Fix LEFT
@@ -24,7 +25,6 @@ TODO Fix RIGHT
 TODO Fix COPY
 TODO Fix 2SWAP
 TODO Test CALL
-TODO Remove the need for WORDS as only UWORDS is really useful
 TODO Change NOTE to PLAY and use a stream of items on stack
 TODO Add support for ELSE and ENDIF. IF THEN ELSE ENDIF   or IF THEN ENDIF
 TODO Fix KEY

@@ -738,7 +738,7 @@ endif
 
 	       NEXTW
 .ROT:
-	CWHEAD .WORDS 49 "ROT" 3 WORD_FLAG_CODE
+	CWHEAD .UWORDS 49 "ROT" 3 WORD_FLAG_CODE
 ; | ROT ( u1 u2 u3 -- u2 u3 u1 ) Rotate top three items on stack | DONE
 
 		FORTH_DSP_VALUEHL
@@ -777,17 +777,6 @@ endif
 		
 
 
-
-
-
-	       NEXTW
-.WORDS:
-	CWHEAD .UWORDS 59 "WORDS" 5 WORD_FLAG_CODE
-; | WORDS (  -- s1 ... sx u )   List the system and user word dict | TODO
-		ld hl, baseram
-		;ld hl, baseusermem
-
-		
 
 
 

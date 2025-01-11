@@ -6,6 +6,38 @@
 ; TODO scroll line up
 
 scroll_up:
+
+	push hl
+	push de
+	push bc
+
+	; get frame buffer 
+
+	ld hl, (display_fb_active)
+	push hl    ; future de destination
+
+	ld  de, display_cols
+	add hl, de
+
+	pop de
+
+	ex de, hl
+	ld bc, display_cols*display_rows
+if DEBUG_FORTH_WORDS
+	DMARK "SCL"
+	CALLMONITOR
+endif	
+	ldir
+	pop hl
+
+	pop bc
+	pop de
+	pop hl
+
+	ret
+
+
+scroll_upo:
 	ld de, display_row_1
  	ld hl, display_row_2
 	ld bc, display_cols

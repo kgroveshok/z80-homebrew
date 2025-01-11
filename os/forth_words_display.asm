@@ -427,6 +427,13 @@ endif
 	CWHEAD .ATQ 63 "SCROLL" 6 WORD_FLAG_CODE
 ; | SCROLL ( u1 c1 -- ) Scroll u1 lines/chars in direction c1 - 1=up 2=down | TO TEST
 
+	call scroll_up
+	call update_display
+
+		NEXTW
+
+
+
 		; get dir
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol

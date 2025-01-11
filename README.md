@@ -47,7 +47,7 @@ Current Specification/Feature Set
    - GPIO on the 8 pins (TODO) and independant control use of SPI bus
 
 * Hardware abstraction layers to allow for common entry points and drivers for different keyboards, screens, etc
-* Multiple frame buffer support (currently three)
+* Multiple selectable frame buffer support (currently three)
 * Built-in Forth OS (inspired by Jupiter Ace). Language defintion and progress etc in ![FORTH.md](FORTH.md)
 * Built-in full monitor for break points at all key points.
 * Using my own very simple malloc/free routinues or can switch to DK88 project version with defines

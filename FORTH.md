@@ -40,7 +40,7 @@ The board has an auto start-up process that loads extra words. These include som
 * ga - A simple number guessing game
 * svv - A screen saver
 
-Look in the file ![os/forth_autostart.asm](forth_autostart.asm) source file for the definitions.
+Look in the file ![forth_autostart.asm](os/forth_autostart.asm) source file for the definitions.
 
 
 Restrictions

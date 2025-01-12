@@ -18,10 +18,10 @@ Stack Values
 The data stack pointer (DSP) supports string and numbers on the same stack for opperations (just note some words don't check and assume a particular type)
 
 
-$xxxx  - 16bit Hex int value
-$xx    -  8bit Hex int value 
-"xxx"  - String (250 char max)
-%xxxxx  - 16bit binary value (todo)
+* $xxxx  - 16bit Hex int value
+* $xx    -  8bit Hex int value 
+* "xxx"  - String (250 char max)
+* %xxxxx  - 16bit binary value (todo)
 
 
 Words
@@ -40,7 +40,7 @@ The board has an auto start-up process that loads extra words. These include som
 * ga - A simple number guessing game
 * svv - A screen saver
 
-Look in the file ![os/forth_autostart.asm] source file for the definitions.
+Look in the file ![os/forth_autostart.asm](forth_autostart.asm) source file for the definitions.
 
 
 Restrictions

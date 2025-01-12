@@ -7,13 +7,13 @@ I now have one in this bit of kit. I was inspired by the Jupiter Ace and with sc
 a version of BASIC would be too tedious and painful to use. Forth is best option. With it tied to
 the hardware I've (or will) added built-in keywords to take advantage of the hardware.
 
-At the moment it is interpreted but there is the posisblity I can add compiled words as each 
+At the moment it is interpreted but there is the possiblity I can add compiled words as each 
 keyword has a byte OP code. 
 
 
 
-Stack Values
-============
+Varitables/Stack
+================
 
 The data stack pointer (DSP) supports string and numbers on the same stack for opperations (just note some words don't check and assume a particular type)
 
@@ -22,6 +22,10 @@ The data stack pointer (DSP) supports string and numbers on the same stack for o
 * $xx    -  8bit Hex int value 
 * "xxx"  - String (250 char max)
 * %xxxxx  - 16bit binary value (todo)
+
+
+There are also a number of variables which hold 16bit values: V0-V3. They are set using ! and pushed to stack with @, e.g. $03 v0! to set, and v0@ will push $03 onto the stack.
+
 
 
 Words

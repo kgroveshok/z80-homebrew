@@ -31,6 +31,18 @@ Words
 While still a lot of dev going on see ![WORD-LIST.md](WORD-LIST.md) for watch is working and what is left to do. There is also a shell script that lists the words from the source and shows which ones are working and what are left to do.
 
 
+Demo Code
+=========
+
+The board has an auto start-up process that loads extra words. These include some demo programs such as:
+
+* sw - Hello world
+* ga - A simple number guessing game
+* svv - A screen saver
+
+Look in the file ![os/forth_autostart.asm] source file for the definitions.
+
+
 Restrictions
 ============
 

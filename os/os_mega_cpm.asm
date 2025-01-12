@@ -7,7 +7,7 @@ BASE_CPM: equ 1
 
 ENABLE_BASIC: equ 0
 
-tos:	equ 07000h
+tos:	equ 0f000h
 ; Using SCM API instead
 ;SC114_SIO_1_OUT: equ 81
 ;SC114_SIO_1_IN: equ 80

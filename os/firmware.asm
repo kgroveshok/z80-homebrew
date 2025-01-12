@@ -95,6 +95,13 @@ STACK_LOOP_SIZE: equ 256
 STACK_DATA_SIZE: equ 256
 endif
 
+if BASE_CPM
+;tos:	equ 0f000h
+stacksize: equ 256
+STACK_RET_SIZE: equ 64
+STACK_LOOP_SIZE: equ 256
+STACK_DATA_SIZE: equ 256
+endif
 
 if STORAGE_SE == 0
 	STORE_BLOCK_PHY:   equ 64    ; physical block size on storage   64byte on 256k eeprom

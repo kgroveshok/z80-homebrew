@@ -25,6 +25,7 @@ lcd_init:
 fLCD_Str:
         ;out (SC114_SIO_1_OUT),a
 	push bc
+; TODO Replace with CP/M BIOS call
 	ld c, $02
 	rst $30
 	pop bc
@@ -36,6 +37,7 @@ fLCD_Pos:
         ;out (SC114_SIO_1_OUT),a
 	push bc
 	ld c, $02
+; TODO Replace with CP/M BIOS call
 	rst $30
 	pop bc
 
@@ -46,6 +48,7 @@ fLCD_Data:
       ;  out (SC114_SIO_1_OUT),a
 	push bc
 	ld c, $02
+; TODO Replace with CP/M BIOS call
 	rst $30
 	pop bc
 
@@ -70,6 +73,7 @@ if API
 
 	ld c, 6
 	ld de, .cls
+; TODO Replace with CP/M BIOS call
 	rst $30
 
 
@@ -77,6 +81,7 @@ if API
 
 	ld de, (display_write_tmp)
 	ld c, 6
+; TODO Replace with CP/M BIOS call
 	rst $30
 	ld c, 7
 	rst $30
@@ -115,20 +120,24 @@ endif
 	ld c, 2
 	;ld de, .cls
 	ld a, 27
+; TODO Replace with CP/M BIOS call
 	rst $30
 
 
 	ld c, 2
 	;ld de, .cls
 	ld a, '['
+; TODO Replace with CP/M BIOS call
 	rst $30
 	ld c, 2
 	;ld de, .cls
 	ld a, '2'
+; TODO Replace with CP/M BIOS call
 	rst $30
 	ld c, 2
 	;ld de, .cls
 	ld a, 'J'
+; TODO Replace with CP/M BIOS call
 	rst $30
 	pop de
 	pop bc
@@ -147,6 +156,7 @@ push hl
 push de
 push bc
 	ld c, 7
+; TODO Replace with CP/M BIOS call
 	rst $30
 pop bc
 pop de
@@ -174,6 +184,7 @@ push hl
 push de
 push bc
 	ld c, 7
+; TODO Replace with CP/M BIOS call
 	rst $30
 pop bc
 pop de
@@ -195,6 +206,7 @@ push hl
 push de
 push bc
 	ld c, 7
+; TODO Replace with CP/M BIOS call
 	rst $30
 pop bc
 pop de

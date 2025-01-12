@@ -11,6 +11,8 @@ cin_wait:
 
 	;in a,(SC114_SIO_1_IN)
         ; Use SCM API to get from whatever console device we are using
+
+; TODO Replace with CP/M BIOS call
 	push bc
 	ld c, $01
 	rst $30
@@ -23,6 +25,7 @@ cin:
 	push bc
 
 	; any key waiting to process?
+; TODO Replace with CP/M BIOS call
 	ld c, $03
 	rst $30
 	jr z, .cin_skip
@@ -30,6 +33,7 @@ cin:
 	; yep, get it
 
 	ld c, $01
+; TODO Replace with CP/M BIOS call
 	rst $30
 	pop bc
 	ret

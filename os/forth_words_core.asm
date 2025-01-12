@@ -168,6 +168,29 @@
 	CWHEAD .ZDUP OPCODE_DUP "DUP" 3 WORD_FLAG_CODE
 ; | DUP ( u -- u u )     Duplicate whatever item is on TOS | DONE
 
+		FORTH_DSP
+
+		ld a, (HL)
+		cp DS_TYPE_STR
+		jr nz, .dupinum
+
+		; push another string
+
+		FORTH_DSP_VALUEHL     		
+
+	if DEBUG_FORTH_WORDS
+		DMARK "DUs"
+		CALLMONITOR
+	endif
+		call forth_apushstrhl
+
+		NEXTW
+
+
+.dupinum:
+		
+
+
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
 	; TODO add floating point number detection

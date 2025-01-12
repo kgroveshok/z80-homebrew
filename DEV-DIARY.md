@@ -2,19 +2,10 @@
 Z80 Home Brew Micro-computer Project - Dev Diary
 ------------------------------------------------
 
-
-10th Jan 2025
+12th Jan 2025
 -------------
 
-
-DONE Fix UPPER
-DONE Fix LOWER
-DONE Fix TCASE
-DONE Fix CONCAT
-DONE Fix FIND
-DONE Remove the need for WORDS as only UWORDS is really useful
-DONE Fix scroll words
-DONE NOT DOING. CLI input on SC114 is running high refresh. Not using key wait? Because on hardware it handles cursor flash
+DONE Fix COPY. Now using DUP with type check
 
 
 TODO wire up a temp interface to the serial EEPROMS so I can test storage on the SC114 as I have the PIO and digital IO cards installed
@@ -23,7 +14,6 @@ TODO PICK word to pick a value at a given value on stack and move to TOS
 TODO Fix NUM2STR. 
 TODO Fix LEFT
 TODO Fix RIGHT
-TODO Fix COPY
 TODO Fix 2SWAP
 TODO Test CALL
 TODO Change NOTE to PLAY and use a stream of items on stack
@@ -58,6 +48,20 @@ TODO Extract all of the symbols in the symbol table to be available as words in 
 
 TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs
 TODO Add a simple assembler feature like BBC Basic
+
+10th Jan 2025
+-------------
+
+
+DONE Fix UPPER
+DONE Fix LOWER
+DONE Fix TCASE
+DONE Fix CONCAT
+DONE Fix FIND
+DONE Remove the need for WORDS as only UWORDS is really useful
+DONE Fix scroll words
+DONE NOT DOING. CLI input on SC114 is running high refresh. Not using key wait? Because on hardware it handles cursor flash
+
 
 
 6th Jan 2025

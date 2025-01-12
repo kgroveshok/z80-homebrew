@@ -495,7 +495,7 @@
 
 	       NEXTW
 .CHAR:
-	CWHEAD .STRLEN 57 "CHAR" 4 WORD_FLAG_CODE
+	CWHEAD .ENDSTR 57 "CHAR" 4 WORD_FLAG_CODE
 ; | CHAR ( u -- n ) Get the ascii value of the first character of the string on the stack | DONE
 		FORTH_DSP
 		;v5 FORTH_DSP_VALUE
@@ -517,11 +517,6 @@
 	       NEXTW
 
 
-.STRLEN:
-	CWHEAD .ENDSTR 69 "COPY" 4 WORD_FLAG_CODE
-; | COPY ( u1 u2 -- Copy string u2 to u1 ) SHOULD THIS BE HANDLED WITH DUP?  | TODO
-
-		NEXTW
 
 
 .ENDSTR:

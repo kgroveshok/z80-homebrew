@@ -619,9 +619,6 @@
 ### CHAR ( u -- n ) Get the ascii value of the first character of the string on the stack | DONE
 
 
-### COPY ( u1 u2 -- Copy string u2 to u1 ) SHOULD THIS BE HANDLED WITH DUP?  | TODO
-
-
 # Words Ready To Use
 
 
@@ -1040,8 +1037,5 @@
 
 
 ### NUM2STR ( n -- s ) Convert a number on TOS to string | NOT DOING
-
-
-### COPY ( u1 u2 -- Copy string u2 to u1 ) SHOULD THIS BE HANDLED WITH DUP?  | TODO
 
 

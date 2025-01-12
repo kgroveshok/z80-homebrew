@@ -122,7 +122,7 @@
 	OPCODE_FIND: equ 119
 	OPCODE_LEN: equ 120
 	OPCODE_CHAR: equ 121
-	OPCODE_STRLEN: equ 122
+; free to reuse	OPCODE_STRLEN: equ 122
 ; free to reuse	OPCODE_ENDSTR: equ 123
 	OPCODE_V0S: equ 124
 	OPCODE_V0Q: equ 125

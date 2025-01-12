@@ -14,6 +14,11 @@ if BASE_SC114
 Device_C: equ  SC103_PIO          ; Storage and ext cart devices
 endif
 
+if BASE_CPM
+; TODO fixup for CPM
+Device_C: equ 080h          ; Storage and ext cart devices
+endif
+
 Device_D: equ 0c0h             ; Keyboard and LCD
 
 ; Odd specific debug points for testing hardware dev

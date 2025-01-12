@@ -1,8 +1,8 @@
 ; Hardware Platform
 
-BASE_SC114: equ 1
+BASE_SC114: equ 0
 BASE_KEV: equ 0
-BASE_CPM: equ 0
+BASE_CPM: equ 1
 
 ENABLE_BASIC: equ 0
 ; Using SCM API instead
@@ -10,7 +10,7 @@ ENABLE_BASIC: equ 0
 ;SC114_SIO_1_IN: equ 80
 
 
-tos:	equ 0f000h
+tos:	equ 07000h
 ;
 ; CPU clock
 ;
@@ -35,8 +35,8 @@ key_cols: equ 4    ; TODO move out to mini and mega
 include "main.asm"
 ;include "firmware_lcd_4x20.asm"
 ;include "firmware_key_4x4.asm"
-include "firmware_serial_display.asm"
-include "firmware_key_serial.asm"
+include "firmware_cpm_display.asm"
+include "firmware_cpm_serial.asm"
 
 baseram: 
 endofcode:

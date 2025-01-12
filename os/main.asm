@@ -16,6 +16,10 @@ if BASE_KEV = 1
 	org 0h
 endif
 
+if BASE_CPM = 1 
+
+	org 100h
+endif
 	jp coldstart     ; rst 0 - cold boot
 
         nop 

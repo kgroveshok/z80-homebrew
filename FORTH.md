@@ -11,13 +11,18 @@ At the moment it is interpreted but there is the posisblity I can add compiled w
 keyword has a byte OP code. 
 
 
+
 Stack Values
 ============
+
+The data stack pointer (DSP) supports string and numbers on the same stack for opperations (just note some words don't check and assume a particular type)
+
 
 $xxxx  - 16bit Hex int value
 $xx    -  8bit Hex int value 
 "xxx"  - String (250 char max)
-%xxxxx  - 16bit binary value
+%xxxxx  - 16bit binary value (todo)
+
 
 Words
 =====
@@ -33,7 +38,7 @@ Restrictions
 * So far IF THEN is working but can't do nested IFs on same line (sub-words are fine). 
 * DO LOOP is working and can do nested loops.
 * 16bit Int maths is working.
-* Frame buffer display is slowing things down so now have a word to disable refresh on every . and rely on DRAW to refresh on demand.
+* Frame biuffer display is slowing things down so now have a word to disable refresh on every. and rely on DRAW to refresh on demand.
 
 Bugs
 ====

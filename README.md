@@ -53,6 +53,8 @@ Current Specification/Feature Set
 * Using my own very simple malloc/free routinues or can switch to DK88 project version with defines
 * 3d printed case designs in 'case' directory.
 
+* Also supports running on the wonderful Steven Cousin's SC114 board.
+
 ![](stage4.0/Gerber_PCB_z80-system-3-sbc.zip)
 ![](stage4.0/Schematic_z80-system-4-sbc-2024-03-02.pdf)
 ![](stage4.0/Schematic_z80-system-4-sbc-2024-03-02.png)

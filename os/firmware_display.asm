@@ -21,13 +21,27 @@ scroll_up:
 
 	pop de
 
-	ex de, hl
+	;ex de, hl
 	ld bc, display_cols*display_rows
 if DEBUG_FORTH_WORDS
 	DMARK "SCL"
 	CALLMONITOR
 endif	
 	ldir
+
+	; wipe bottom row
+
+
+	ld hl, (display_fb_active)
+	ld de, display_cols*display_rows
+	add hl, de
+	ld b, display_cols
+	ld a, ' '
+.scwipe:
+	ld (hl), a
+	dec hl
+	djnz .scwipe
+
 	pop hl
 
 	pop bc

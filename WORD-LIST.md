@@ -91,9 +91,6 @@
 ### ROT ( u1 u2 u3 -- u2 u3 u1 ) Rotate top three items on stack | DONE
 
 
-### WORDS (  -- s1 ... sx u )   List the system and user word dict | TODO
-
-
 ### UWORDS (  -- s1 ... sn u )   List user word dict | DONE
 
 
@@ -349,7 +346,7 @@
 ### SPACES ( u -- str ) A string of u spaces is pushed onto the stack | TO TEST
 
 
-### SCROLL ( u1 c1 -- ) Scroll u1 lines/chars in direction c1 - 1=up 2=down | TO TEST
+### SCROLL ( -- ) Scroll up one line | DONE
 
 
 ### AT@ ( u1 u2 -- n ) Push to stack ASCII value at row u2 col u1 | DONE
@@ -763,6 +760,9 @@
 ### BL (  -- c ) Push the value of space onto the stack as a string  | DONE
 
 
+### SCROLL ( -- ) Scroll up one line | DONE
+
+
 ### AT@ ( u1 u2 -- n ) Push to stack ASCII value at row u2 col u1 | DONE
 
 
@@ -934,9 +934,6 @@
 ### CALL ( w -- w  ) machine code call to address w  push the result of hl to stack | TO TEST
 
 
-### WORDS (  -- s1 ... sx u )   List the system and user word dict | TODO
-
-
 
 
 
@@ -980,9 +977,6 @@
 
 
 ### SPACES ( u -- str ) A string of u spaces is pushed onto the stack | TO TEST
-
-
-### SCROLL ( u1 c1 -- ) Scroll u1 lines/chars in direction c1 - 1=up 2=down | TO TEST
 
 
 ### MENU ( u1....ux n ut -- n ) Create a menu. Ut is the title, n is the number of menu items on stack. Push number selection to TOS |

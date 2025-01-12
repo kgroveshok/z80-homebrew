@@ -13,12 +13,13 @@ DONE Fix TCASE
 DONE Fix CONCAT
 DONE Fix FIND
 DONE Remove the need for WORDS as only UWORDS is really useful
+DONE Fix scroll words
+DONE NOT DOING. CLI input on SC114 is running high refresh. Not using key wait? Because on hardware it handles cursor flash
+
 
 TODO wire up a temp interface to the serial EEPROMS so I can test storage on the SC114 as I have the PIO and digital IO cards installed
 TODO with the second PIO port hook up and debug the sound card
 TODO PICK word to pick a value at a given value on stack and move to TOS
-TODO CLI input on SC114 is running high refresh. Not using key wait? Because on hardware it handles cursor flash
-TODO Fix scroll words
 TODO Fix NUM2STR. 
 TODO Fix LEFT
 TODO Fix RIGHT
@@ -30,7 +31,6 @@ TODO Add support for ELSE and ENDIF. IF THEN ELSE ENDIF   or IF THEN ENDIF
 TODO Fix KEY
 TODO Fix IS 
 
-TODO my malloc is failing on free
 
 TO TEST need word to report where cursor current at
 TODO add more editing features 
@@ -43,17 +43,17 @@ TODO Jump to end of line does not work should set to the number in last debug di
 TODO If cursor at end of line, when go back it leaves custor displayed
 
 
-
+TODO Take the vid out handshake lines and code up a Pico to handle display.
+TODO Pico to handle display to have two way return of data
 TODO Create a disk UI in native asm for robustness and speed?
-TODO Extract all of the symbols in the symbol table to be available as words in FORTH, debug and asm above
 TODO fix saving more than a single block of file storage
 TODO fix loading more than a single block of file storage
 TODO need words to report on hardware e.g. screen dims
 TODO need word to get file id by name
 TODO need word to get file name by id
-
 TODO have a word to set break point at a DMARKer
-
+TODO my malloc is failing on free
+TODO Extract all of the symbols in the symbol table to be available as words in FORTH, debug and asm above
 
 
 TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs

@@ -425,7 +425,7 @@ endif
 
 .SCROLL:
 	CWHEAD .ATQ 63 "SCROLL" 6 WORD_FLAG_CODE
-; | SCROLL ( u1 c1 -- ) Scroll u1 lines/chars in direction c1 - 1=up 2=down | TO TEST
+; | SCROLL ( -- ) Scroll up one line | DONE
 
 	call scroll_up
 	call update_display
@@ -434,56 +434,56 @@ endif
 
 
 
-		; get dir
-
-		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
-
-		push hl
-
-		; destroy value TOS
-
-		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
-
-		; get count
-
-		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
-
-		push hl
-
-		; destroy value TOS
-
-		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
-
-		; one value on hl get other one back
-
-		pop bc    ; count
-
-		pop de   ; dir
-
-
-		ld b, c
-
-.scrolldir:     push bc
-		push de
-
-		ld a, 0
-		cp e
-		jr z, .scrollup 
-		call scroll_down
-		jr .scrollnext
-.scrollup:	call scroll_up
-
-		
-.scrollnext:
-		pop de
-		pop bc
-		djnz .scrolldir
-
-
-
-
-
-		NEXTW
+;		; get dir
+;
+;		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+;
+;		push hl
+;
+;		; destroy value TOS
+;
+;		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+;
+;		; get count
+;
+;		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+;
+;		push hl
+;
+;		; destroy value TOS
+;
+;		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+;
+;		; one value on hl get other one back
+;
+;		pop bc    ; count
+;
+;		pop de   ; dir
+;
+;
+;		ld b, c
+;
+;.scrolldir:     push bc
+;		push de
+;
+;		ld a, 0
+;		cp e
+;		jr z, .scrollup 
+;		call scroll_down
+;		jr .scrollnext
+;.scrollup:	call scroll_up
+;
+;		
+;.scrollnext:
+;		pop de
+;		pop bc
+;		djnz .scrolldir
+;
+;
+;
+;
+;
+;		NEXTW
 
 
 

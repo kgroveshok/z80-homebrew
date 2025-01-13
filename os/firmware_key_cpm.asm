@@ -27,7 +27,7 @@ cin:
 
 	; any key waiting to process?
 ; TODO Replace with CP/M BIOS call
-	ld c, $01
+	ld c, $06
 	call 5
 	jr z, .cin_skip
 

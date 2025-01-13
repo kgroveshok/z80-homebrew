@@ -68,6 +68,7 @@ fLCD_Data:
 .cls:   db 27, '[', 'H', "$"
 
 .clscpm: db 13, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,10,10,10,10,10,"$"
+;.clscpm: db 3, $3c,"$"
 
 ; write the frame buffer given in hl to hardware 
 write_display:
@@ -129,11 +130,17 @@ endif
 ;
 
 
+; lots of CR/LF
+;	ld c, 9
+;	ld de, .clscpm
+;	call 5
 
-	ld c, 9
-	;ld de, .cls
-	ld de, .clscpm
-; TODO Replace with CP/M BIOS call
+; xterm cls
+	ld c, 2
+	ld e, 27
+	call 5
+	ld c, 2
+	ld e, 'c'
 	call 5
 
 LLL: equ 0

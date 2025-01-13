@@ -56,6 +56,7 @@ startcmds:
         dw ssv3
         dw ssv2
         dw ssv1
+        dw ssv1cpm
 	dw keyup
 	dw keydown
 	dw keyleft
@@ -139,6 +140,7 @@ ssv3:            db ": ssvposx $01 $27 rnd v0! ;",0
 ssv4:            db ": ssvposy $01 $05 rnd v1! ;",0
 ssv5:            db ": ssvt ssvposx ssvposy ;",0
 ssv1:          db ": ssv cls repeat ssvposx ssvposy v0@ v1@ at ssvchr emit $01 until nop ;",0
+ssv1cpm:          db ": ssvcpm cls repeat ssvposx ssvposy v0@ v1@ at ssvchr emit $01 pausems $01 until nop ;",0
 ;ssv1:          db ": ssv cls repeat ssvt v0@ v1@ at ssvchr emit $01 until nop ;",0
 ;ssv1:          db ": ssv ssvposx ssvposy at ssvchr ;",0
 ;ssv1:            db ": ssv repeat ssvpos rnd8 $10 if               $01 until nop ;",0

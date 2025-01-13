@@ -25,9 +25,12 @@ lcd_init:
 fLCD_Str:
         ;out (SC114_SIO_1_OUT),a
 	push bc
+	push de
+	ld e, a
 ; TODO Replace with CP/M BIOS call
 	ld c, $02
-	rst $30
+	call 5
+	pop de
 	pop bc
 	ret
 
@@ -36,9 +39,12 @@ fLCD_Pos:
 	; use ASCII escape to position
         ;out (SC114_SIO_1_OUT),a
 	push bc
+	push de
+	ld e, a
 	ld c, $02
 ; TODO Replace with CP/M BIOS call
-	rst $30
+	call 5
+	pop de
 	pop bc
 
 	ret
@@ -47,16 +53,21 @@ fLCD_Pos:
 fLCD_Data:
       ;  out (SC114_SIO_1_OUT),a
 	push bc
+	push de
 	ld c, $02
+	ld e, a
 ; TODO Replace with CP/M BIOS call
-	rst $30
+	call 5
+	pop de
 	pop bc
 
 	ret
 
 ; ascii cls 
 
-.cls:   db 27, '[', 'H', 0
+.cls:   db 27, '[', 'H', "$"
+
+.clscpm: db 13, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,10,10,10,10,10,"$"
 
 ; write the frame buffer given in hl to hardware 
 write_display:
@@ -71,10 +82,10 @@ if API
 
 	; clear and home cursor
 
-	ld c, 6
+	ld c, 9
 	ld de, .cls
 ; TODO Replace with CP/M BIOS call
-	rst $30
+	call 5
 
 
 .writeln:
@@ -117,28 +128,43 @@ endif
 ;	rst $30
 ;
 
+
+
+	ld c, 9
+	;ld de, .cls
+	ld de, .clscpm
+; TODO Replace with CP/M BIOS call
+	call 5
+
+LLL: equ 0
+
+if LLL
+
 	ld c, 2
 	;ld de, .cls
-	ld a, 27
+	ld e, 27
 ; TODO Replace with CP/M BIOS call
-	rst $30
+	call 5
 
 
 	ld c, 2
 	;ld de, .cls
-	ld a, '['
+	ld e, '['
 ; TODO Replace with CP/M BIOS call
-	rst $30
+	call 5
 	ld c, 2
 	;ld de, .cls
-	ld a, '2'
+	ld e, '2'
 ; TODO Replace with CP/M BIOS call
-	rst $30
+	call 5
 	ld c, 2
 	;ld de, .cls
-	ld a, 'J'
+	ld e, 'J'
 ; TODO Replace with CP/M BIOS call
-	rst $30
+	call 5
+
+endif
+
 	pop de
 	pop bc
 	pop hl
@@ -155,9 +181,14 @@ endif
 push hl
 push de
 push bc
-	ld c, 7
+	ld c, 2
+	ld e, 10
+	call 5
+	ld c, 2
+	ld e, 13
+	call 5
 ; TODO Replace with CP/M BIOS call
-	rst $30
+	;rst $30
 pop bc
 pop de
 pop hl
@@ -185,7 +216,13 @@ push de
 push bc
 	ld c, 7
 ; TODO Replace with CP/M BIOS call
-	rst $30
+	;rst $30
+	ld c, 2
+	ld e, 10
+	call 5
+	ld c, 2
+	ld e, 13
+	call 5
 pop bc
 pop de
 pop hl
@@ -207,7 +244,13 @@ push de
 push bc
 	ld c, 7
 ; TODO Replace with CP/M BIOS call
-	rst $30
+	;rst $30
+	ld c, 2
+	ld e, 10
+	call 5
+	ld c, 2
+	ld e, 13
+	call 5
 pop bc
 pop de
 pop hl

@@ -1,5 +1,6 @@
 ; Serial keyboard interface for SC114
 
+
 key_init:
 	; no init as handled by the SCM bios
 	ret
@@ -15,7 +16,7 @@ cin_wait:
 ; TODO Replace with CP/M BIOS call
 	push bc
 	ld c, $01
-	rst $30
+	call 5
 	pop bc
 	ret
 
@@ -26,15 +27,15 @@ cin:
 
 	; any key waiting to process?
 ; TODO Replace with CP/M BIOS call
-	ld c, $03
-	rst $30
+	ld c, $01
+	call 5
 	jr z, .cin_skip
 
 	; yep, get it
 
 	ld c, $01
 ; TODO Replace with CP/M BIOS call
-	rst $30
+	call 5
 	pop bc
 	ret
 .cin_skip:

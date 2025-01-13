@@ -2,12 +2,20 @@
 Z80 Home Brew Micro-computer Project - Dev Diary
 ------------------------------------------------
 
+13th Jan 2025
+-------------
+
+DONE Add CP/M support to speed up dev even more as could see if RunCPM works so wont actually need any hardware!
+
+TODO CP/M screen clearing not working well
+TODO CP/M keyboard entry not great
+
+
 12th Jan 2025
 -------------
 
 DONE Fix COPY. Now using DUP with type check
 
-TODO Add CP/M support to speed up dev even more as could see if RunCPM works so wont actually need any hardware!
 
 TODO wire up a temp interface to the serial EEPROMS so I can test storage on the SC114 as I have the PIO and digital IO cards installed
 TODO with the second PIO port hook up and debug the sound card

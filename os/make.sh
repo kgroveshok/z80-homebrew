@@ -11,3 +11,5 @@
 # TODO fix up CPM
 #./tohex.sh os_mini_cpm 100
 ./tohex.sh os_mega_cpm 100
+
+cp os_mega_cpm.bin ../../../Retro-Projects/RunCPM/go/A/0/OS.COM

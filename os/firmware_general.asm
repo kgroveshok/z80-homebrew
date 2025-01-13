@@ -49,6 +49,16 @@ delay1s:
     ld      bc,0      ; # 0ffffh = approx 1s
 delayloop:
     push bc
+
+if BASE_CPM
+	ld bc, CPM_DELAY_TUNE
+.cpmloop:
+	push bc
+
+endif
+
+
+
 delayloopi:
 ;	push bc
 ;.dl:
@@ -64,6 +74,16 @@ delayloopi:
 	;pop de
 ;pop bc
 
+if BASE_CPM
+	pop bc
+	
+    dec     bc      	; 6
+    ld      a,c     	; 4
+    or      b     	; 4
+    jp      nz,.cpmloop   	; 10, total = 55 states/iteration
+	
+
+endif
 ;if CPU_CLOCK_8MHZ
 ;    pop bc
 ;    push bc

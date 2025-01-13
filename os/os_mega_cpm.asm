@@ -19,6 +19,10 @@ CPU_CLOCK_4MHZ: equ 1
 CPU_CLOCK_8MHZ: equ  0
 CPU_CLOCK_10MHZ: equ  0
 
+; Use this to tune the delay functions if your CPU is a bit quick. i.e. RunCPM on a PC
+
+CPM_DELAY_TUNE: equ 4000
+
 ; use microchip serial eeprom for storage
 
 STORAGE_SE: equ 0

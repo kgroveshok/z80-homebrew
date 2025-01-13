@@ -272,7 +272,7 @@ addatohl:	equ $0a67
 asc:	equ $15eb
 atohex:	equ $0da0
 atoui_16:	equ $0e5c
-baseram:	equ $4afa
+baseram:	equ $4b00
 bootmsg:	equ $0196
 bootmsg1:	equ $01ab
 break_point_state:	equ $1343
@@ -347,7 +347,7 @@ display_word_at:	equ $12c8
 display_write_tmp:	equ $ea98
 dump:	equ $1745
 dumpcont:	equ $1755
-endofcode:	equ $4afa
+endofcode:	equ $4b00
 endprg:	equ $184b
 endprog:	equ $15ef
 enter:	equ $161f
@@ -382,7 +382,7 @@ free_early_exit:	equ $11da
 free_find_higher_block:	equ $1136
 free_find_higher_block_skip:	equ $1150
 free_found_higher_block:	equ $1158
-free_list:	equ $4b04
+free_list:	equ $4b0a
 freeram:	equ $15dd
 game1:	equ $4310
 game1a:	equ $4321
@@ -408,8 +408,8 @@ hd_menu3:	equ $1212
 hd_menu4:	equ $1225
 heap_end:	equ $e24b
 heap_init:	equ $0f0a
-heap_size:	equ $9742
-heap_start:	equ $4b09
+heap_size:	equ $973c
+heap_start:	equ $4b0f
 hexout:	equ $0d68
 iErrorNum:	equ $ea74
 iErrorReg:	equ $ea73

@@ -36,6 +36,12 @@ cin:
 	ld c, $01
 ; TODO Replace with CP/M BIOS call
 	call 5
+
+	cp $7f     ; back space
+	jr nz, .skipbs
+	ld a, KEY_BS
+.skipbs:
+
 	pop bc
 	ret
 .cin_skip:

@@ -139,10 +139,18 @@ endif
 	ld c, 2
 	ld e, 27
 	call 5
-	ld c, 2
-	ld e, 'c'
-	call 5
+; cls causes too much flicker
+;	ld c, 2
+;	ld e, 'c'
+;	call 5
 
+; use xterm home instead
+	ld c, 2
+	ld e, '['
+	call 5
+	ld c, 2
+	ld e, 'H'
+	call 5
 LLL: equ 0
 
 if LLL

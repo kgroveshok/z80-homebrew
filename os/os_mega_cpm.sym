@@ -272,7 +272,7 @@ addatohl:	equ $0a67
 asc:	equ $15eb
 atohex:	equ $0da0
 atoui_16:	equ $0e5c
-baseram:	equ $4b5f
+baseram:	equ $4b66
 bootmsg:	equ $0196
 bootmsg1:	equ $01ab
 break_point_state:	equ $1343
@@ -285,8 +285,8 @@ chk_stk_init:	equ $4843
 chk_stovr:	equ $ef00
 chk_stund:	equ $f002
 chk_word:	equ $e24c
-cin:	equ $4b46
-cin_wait:	equ $4b3e
+cin:	equ $4b4d
+cin_wait:	equ $4b45
 clear:	equ $17ec
 clear_display:	equ $090e
 cli:	equ $1590
@@ -347,7 +347,7 @@ display_word_at:	equ $12c8
 display_write_tmp:	equ $ea98
 dump:	equ $1745
 dumpcont:	equ $1755
-endofcode:	equ $4b5f
+endofcode:	equ $4b66
 endprg:	equ $184b
 endprog:	equ $15ef
 enter:	equ $161f
@@ -382,7 +382,7 @@ free_early_exit:	equ $11da
 free_find_higher_block:	equ $1136
 free_find_higher_block_skip:	equ $1150
 free_found_higher_block:	equ $1158
-free_list:	equ $4b69
+free_list:	equ $4b70
 freeram:	equ $15dd
 game1:	equ $4312
 game1a:	equ $4323
@@ -408,8 +408,8 @@ hd_menu3:	equ $1212
 hd_menu4:	equ $1225
 heap_end:	equ $e24b
 heap_init:	equ $0f0a
-heap_size:	equ $96dd
-heap_start:	equ $4b6e
+heap_size:	equ $96d6
+heap_start:	equ $4b75
 hexout:	equ $0d68
 iErrorNum:	equ $ea74
 iErrorReg:	equ $ea73
@@ -451,7 +451,7 @@ key_fc:	equ $ee83
 key_fd:	equ $ee82
 key_held:	equ $ee8b
 key_held_prev:	equ $ee8a
-key_init:	equ $4b3d
+key_init:	equ $4b44
 key_repeat_ct:	equ $ee86
 key_rows:	equ $0005
 key_shift:	equ $ee61
@@ -642,6 +642,6 @@ user_exec:	equ $3d23
 user_word_eol:	equ $1ce1
 warmstart:	equ $1538
 write_display:	equ $4a93
-write_len_string:	equ $4b35
+write_len_string:	equ $4b3c
 xrandc:	equ $ea7b
 xrnd:	equ $09a8

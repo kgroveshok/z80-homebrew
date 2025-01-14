@@ -84,8 +84,8 @@ test1:		db ": aa 1 2 3 ;", 0
 test2:     	db "111 aa 888 999",0
 test3:     	db ": bb 77 ;",0
 test4:     	db "$02 $01 do i . loop bb",0
-test5:     	db ": hline $13 $00 do i $01 at 1 . i $04 at 1 . loop ;",0
-test6:     	db ": vline $04 $01 do $00 i at 1 . $13 i at 1 . loop ;",0
+test5:     	db ": hline $13 $00 do i $01 at 1 . i $04 at 1 . loop nop ;",0
+test6:     	db ": vline $04 $01 do $00 i at 1 . $13 i at 1 . loop nop ;",0
 test7:     	db ": box hline vline ;",0
 test8:     	db ": world cls box $03 $03 at Hello-World! . ;",0
 test9:     	db ": sw $01 adsp world ;",0

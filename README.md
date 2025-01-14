@@ -60,7 +60,6 @@ Current Specification/Feature Set
 ![](stage4.0/Schematic_z80-system-4-sbc-2024-03-02.png)
 
 
-![](https://youtu.be/hWfx7d5nqZw) 
 
 
 Progress
@@ -90,6 +89,11 @@ Stage 4.x a useable machine now with many expandable features.
 Current Forth word list in WORD-LIST.md
 
 ![](images/20240612_stage4a.jpg)
+
+
+![Stress Testing FORTH OS](https://youtu.be/hWfx7d5nqZw)
+
+
 
 Parts
 -----

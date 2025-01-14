@@ -91,7 +91,10 @@ Current Forth word list in WORD-LIST.md
 ![](images/20240612_stage4a.jpg)
 
 
-![Stress Testing FORTH OS](https://youtu.be/hWfx7d5nqZw)
+Stress testing FORTH OS
+
+
+[https://youtu.be/hWfx7d5nqZw]
 
 
 

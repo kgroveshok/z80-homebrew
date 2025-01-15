@@ -456,7 +456,7 @@
 		DMARK "AP2"
 		CALLMONITOR
 	endif
-		inc de ; skip var type indicator
+		;inc de ; skip var type indicator
 
 		; TODO how to append numerics????
 

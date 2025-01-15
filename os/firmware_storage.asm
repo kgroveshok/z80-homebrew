@@ -936,6 +936,8 @@ storage_read:
 ;	ld a, l
 ;	add h
 ;	cp 0
+; TODO is stack push of DE not balanced?
+
 	ret z			; block not found so EOF
 
 	; hl contains page number to load

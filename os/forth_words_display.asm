@@ -249,8 +249,9 @@ endif
 		ld a, 0
 		call strlent
 		ld a, (f_cursor_ptr)
-		call addatohl
-		ld a, l
+		add a,l
+		;call addatohl
+		;ld a, l
 		ld (f_cursor_ptr), a   ; save new pos
 
 if DEBUG_FORTH_DOT

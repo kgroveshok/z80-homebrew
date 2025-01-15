@@ -2,19 +2,19 @@
 Z80 Home Brew Micro-computer Project - Dev Diary
 ------------------------------------------------
 
-13th Jan 2025
+
+15th Jan 2025
 -------------
 
-DONE Add CP/M support to speed up dev even more as could see if RunCPM works so wont actually need any hardware!
+DONE fixed a minor storage error
+
+
+TODO Rework the storage system file structure and functions 
+
+
 
 TODO CP/M screen clearing not working well
 TODO CP/M keyboard entry not great
-
-
-12th Jan 2025
--------------
-
-DONE Fix COPY. Now using DUP with type check
 
 
 TODO wire up a temp interface to the serial EEPROMS so I can test storage on the SC114 as I have the PIO and digital IO cards installed
@@ -57,6 +57,22 @@ TODO Extract all of the symbols in the symbol table to be available as words in 
 
 TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs
 TODO Add a simple assembler feature like BBC Basic
+
+
+
+
+
+13th Jan 2025
+-------------
+
+DONE Add CP/M support to speed up dev even more as could see if RunCPM works so wont actually need any hardware!
+
+
+12th Jan 2025
+-------------
+
+DONE Fix COPY. Now using DUP with type check
+
 
 10th Jan 2025
 -------------

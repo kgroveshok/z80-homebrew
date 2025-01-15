@@ -7,10 +7,10 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 -------------
 
 DONE fixed a minor storage error
-
+DONE create stub of forthcompile in the parser file 
 
 TODO Rework the storage system file structure and functions 
-
+TODO setup a compiler
 
 
 TODO CP/M screen clearing not working well

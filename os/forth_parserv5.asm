@@ -50,7 +50,110 @@ endif
       
 
 
+; Another go at the parser to compile 
 
+
+; TODO rework parser to change all of the string words to byte tokens
+; TODO do a search for 
+
+; TODO first run normal parser to zero term sections
+; TODO for each word do a token look up to get the op code
+; TODO need some means to flag to the exec that this is a byte code form   
+
+
+forthcompile:
+
+;
+; line parse:
+;       parse raw input buffer
+;       tokenise the words
+;       malloc new copy (for looping etc)
+;       copy to malloc + current pc in line to start of string and add line term
+;       save on new rsp
+;
+
+; hl to point to the line to tokenise
+
+;	push hl
+	ld (os_tok_ptr), hl  ; save ptr to string
+
+;	ld a,0		; string term on input
+;	call strlent
+
+;	ld (os_tok_len), hl	 ; save string length
+
+;if DEBUG_FORTH_TOK
+;	ex de,hl		
+;endif
+
+;	pop hl 		; get back string pointer
+
+if DEBUG_FORTH_TOK
+			DMARK "TOc"
+	CALLMONITOR
+endif
+.cptoken2:    ld a,(hl)
+	inc hl
+	cp FORTH_END_BUFFER
+	jr z, .cptokendone2
+	cp 0
+	jr z, .cptokendone2
+	cp '"'
+	jr z, .cptokenstr2     ; will want to skip until end of string delim
+	cp ' '
+	jr nz,  .cptoken2
+
+; TODO consume comments held between ( and )
+
+	; we have a space so change to zero term for dict match later
+	dec hl
+	ld a,0
+	ld (hl), a
+	inc hl
+	jr .cptoken2
+	
+
+.cptokenstr2:
+	; skip all white space until either eol (because forgot to term) or end double quote
+        ;   if double quotes spotted ensure to skip any space sep until matched doble quote
+	;inc hl ; skip current double quote
+	ld a,(hl)
+	inc hl
+	cp '"'
+	jr z, .cptoken2
+	cp FORTH_END_BUFFER
+	jr z, .cptokendone2
+	cp 0
+	jr z, .cptokendone2
+	cp ' '
+	jr z, .cptmp2
+	jr .cptokenstr2
+
+.cptmp2:	; we have a space so change to zero term for dict match later
+	;dec hl
+	;ld a,"-"	; TODO remove this when working
+	;ld (hl), a
+	;inc hl
+	jr .cptokenstr2
+
+.cptokendone2:
+	;inc hl
+	ld a, FORTH_END_BUFFER
+	ld (hl),a
+	inc hl
+	ld a, '!'
+	ld (hl),a
+
+	ld hl,(os_tok_ptr)
+        
+if DEBUG_FORTH_TOK
+			DMARK "Tc1"
+	CALLMONITOR
+endif
+
+	; push exec string to top of return stack
+	FORTH_RSP_NEXT
+	ret
 
 ; Another go at the parser need to simplify the process
 

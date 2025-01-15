@@ -50,34 +50,36 @@ startcmds:
 	
 	dw start1
 	dw start2
-	dw start3
+;	dw start3
+	dw start3b
+	dw start3c
         dw ssv5
         dw ssv4
         dw ssv3
         dw ssv2
         dw ssv1
         dw ssv1cpm
-	dw keyup
-	dw keydown
-	dw keyleft
-	dw keyright
-	dw 	keyf1
-	dw keyf2
-	dw keyf3
-	dw keyf4
-	dw keyf5
-	dw keyf6
-	dw keyf7
-	dw keyf8
-	dw keyf9
-	dw keyf10
-	dw keyf11
-	dw keyf12
-	dw keytab
-	dw keycr
-	dw keyhome
-	dw keyend
-	dw keybs
+;	dw keyup
+;	dw keydown
+;	dw keyleft
+;	dw keyright
+;	dw 	keyf1
+;	dw keyf2
+;	dw keyf3
+;	dw keyf4
+;	dw keyf5
+;	dw keyf6
+;	dw keyf7
+;	dw keyf8
+;	dw keyf9
+;	dw keyf10
+;	dw keyf11
+;	dw keyf12
+;	dw keytab
+;	dw keycr
+;	dw keyhome
+;	dw keyend
+;	dw keybs
 	db 0, 0	
 
 test1:		db ": aa 1 2 3 ;", 0
@@ -113,7 +115,8 @@ ifthtest3:     	db "$0002 $0003 - IF is-true . $0005 pause THEN next-word . $000
 start1:     	db ": bpon $0000 bp ;",0
 start2:     	db ": bpoff $0001 bp ;",0
 start3:         db ": dirlist dir cls drop dup $00 > if $01 do .> BL .> .> BL .> .> BL .> loop then nop ;",0
-;start3:         db ": dirlist dir cls drop dup $00 > if $01 do $08 i at . $01 i at . $04 i at . loop then nop ;",0
+start3b:         db ": dla dir cls drop dup $00 > if $01 do $08 i at . $01 i at . $04 i at . loop then nop ;",0
+start3c:         db ": dirlist dir cls drop dup $00 > if $01 do \"/\" .> .> \"Ext:\" .> .> \"Id: \" .> .>  loop then nop ;",0
 
 ; a small guess the number game
 

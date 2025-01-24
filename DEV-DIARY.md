@@ -3,6 +3,13 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 ------------------------------------------------
 
 
+24th Jan 2025
+-------------
+
+Start a bit on the sound work
+Work on a small new game 
+
+
 15th Jan 2025
 -------------
 
@@ -11,10 +18,13 @@ DONE create stub of forthcompile in the parser file
 
 TODO Rework the storage system file structure and functions 
 TODO setup a compiler
-
+TODO Add a stack content viewer to callmonitor code
+TODO Add the floating point maths code in
 
 TODO CP/M screen clearing not working well
 TODO CP/M keyboard entry not great
+
+TODO Change circuit so that the storage cart is actually on port a and provides a full 5 chip pack. Then move sound to port b
 
 
 TODO wire up a temp interface to the serial EEPROMS so I can test storage on the SC114 as I have the PIO and digital IO cards installed

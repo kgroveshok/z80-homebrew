@@ -2,7 +2,7 @@
 
 ; support different sound chips through common interface
 
-SOUND_DEVICE_AY: equ 1
+SOUND_DEVICE_AY: equ 0
 
 SOUND_DEVICE: equ Device_A
 

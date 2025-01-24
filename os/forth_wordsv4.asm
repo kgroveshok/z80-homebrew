@@ -83,8 +83,8 @@ include "forth_words_key.asm"
 
 if STORAGE_SE
    	include "forth_words_storage.asm"
-	include "forth_words_device.asm"
 endif
+	include "forth_words_device.asm"
 
 ; var handler
 

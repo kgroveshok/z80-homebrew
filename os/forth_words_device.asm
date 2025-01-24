@@ -13,6 +13,10 @@ if SOUND_ENABLE
 .AFTERSOUND:
 endif
 
+
+USE_GPIO: equ 0
+
+if USE_GPIO
 .GP1:
 	CWHEAD .GP2 31 "IOIN" 4 WORD_FLAG_CODE
 ; | IOIN ( u1 -- u )    Perform a GPIO read of pin u1 and push result  | 
@@ -35,6 +39,11 @@ endif
 
 		NEXTW
 .SIN:
+
+
+endif
+
+
 	CWHEAD .SOUT 31 "IN" 2 WORD_FLAG_CODE
 ; | IN ( u1 -- u )    Perform Z80 IN with u1 being the port number. Push result to TOS | TO TEST
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -64,7 +73,7 @@ endif
 		NEXTW
 .SOUT:
 	CWHEAD .SPIO 32 "OUT" 3 WORD_FLAG_CODE
-; | OUT ( u1 u2 -- ) Perform Z80 OUT to port u2 sending byte u1 | TO TEST
+; | OUT ( u1 u2 -- ) Perform Z80 OUT to port u2 sending byte u1 | DONE
 
 		; get port
 
@@ -92,6 +101,11 @@ endif
 
 		pop bc
 
+		if DEBUG_FORTH_WORDS
+			DMARK "OUT"
+			CALLMONITOR
+		endif
+
 		out (c), l
 
 		NEXTW
@@ -99,6 +113,7 @@ endif
 
 .SPIO:
 
+if STORAGE_SE
 	CWHEAD .SPICEH 61 "SPICEL" 6 WORD_FLAG_CODE
 ; | SPICEL ( -- ) Set SPI CE low for the currently selected device |  DONE
 
@@ -285,7 +300,7 @@ endif
 			CALLMONITOR
 		endif
 		NEXTW
-
+endif
 
 .ENDDEVICE:
 ; eof

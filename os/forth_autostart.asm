@@ -30,6 +30,9 @@ startcmds:
 ;	dw game2b1
 ;	dw game2b2
 	dw game2b
+	dw game2mba
+	dw game2mbas
+	dw game2mb
 
 	dw game1
 	dw game1a
@@ -153,9 +156,22 @@ ssv1cpm:          db ": ssvcpm cls repeat ssvposx ssvposy v0@ v1@ at ssvchr emit
 
 
 
-; minesweeper/star war finding game
+; minesweeper/battleship finding game
+; draws a game board of random ship/mine positions
+; user enters coords to see if it hits on
+; game ends when all are hit
+; when hit or miss says how many may be in the area
 
-game2b:          db ": mb cls $04 $01 do i v2! $10 $01 do i v2@ at rnd8 $30 < if A . then loop loop ;",0
+; setup the game board and then hide it
+game2b:          db ": mbsetup $02 fb cls $04 $01 do i v2! $10 $01 do i v2@ at rnd8 $30 < if A . then loop loop $05 pause $01 fb ;",0
+; prompt for where to target
+game2mba:        db ": mbp $12 $01 at Enter-X-__ .- $1a $01 at accept $12 $02 at Enter-Y-__ .- $1a $02 at accept nop ;", 0 
+game2mbas:        db ": mbsv str2num v2! str2num v1! nop ;", 0 
+; TODO see if the entered coords hits or misses pushes char hit of miss
+game2mbht:      db ": mbckht nop ;",0
+game2mbms:      db ": mbcms nop ;",0
+; TODO how many might be near by
+game2mb:          db ": mb mbsetup repeat mbp mbsv $02 fb mbckht mbcms v1@ v2@ at@ $01 fb v1@ v2@ at emit $01 until nop ;",0
 
 ; key board defs
 

@@ -29,7 +29,14 @@ startcmds:
 ;	dw game2r
 ;	dw game2b1
 ;	dw game2b2
+        dw game3w
+        dw game3p
+        dw game3sc
+        dw game3vsi
+        dw game3vs
+	
 	dw game2b
+	dw game2bf
 	dw game2mba
 	dw game2mbas
 	dw game2mb
@@ -164,14 +171,44 @@ ssv1cpm:          db ": ssvcpm cls repeat ssvposx ssvposy v0@ v1@ at ssvchr emit
 
 ; setup the game board and then hide it
 game2b:          db ": mbsetup $02 fb cls $04 $01 do i v2! $10 $01 do i v2@ at rnd8 $30 < if A . then loop loop $05 pause $01 fb ;",0
+game2bf:         db ": mbsetupf cls $04 $01 do i v2! $10 $01 do i v2@ at \"+\" . loop loop nop ;",0
 ; prompt for where to target
-game2mba:        db ": mbp $12 $01 at Enter-X-__ .- $1a $01 at accept $12 $02 at Enter-Y-__ .- $1a $02 at accept nop ;", 0 
+game2mba:        db ": mbp $12 $04 at Turns .> v3@ . $12 $03 at Score .> v0@ . $12 $01 at Enter-X-__ .- $1a $01 at accept $12 $02 at Enter-Y-__ .- $1a $02 at accept nop ;", 0 
 game2mbas:        db ": mbsv str2num v2! str2num v1! nop ;", 0 
 ; TODO see if the entered coords hits or misses pushes char hit of miss
 game2mbht:      db ": mbckht nop ;",0
 game2mbms:      db ": mbcms nop ;",0
 ; TODO how many might be near by
-game2mb:          db ": mb mbsetup repeat mbp mbsv $02 fb mbckht mbcms v1@ v2@ at@ $01 fb v1@ v2@ at emit $01 until nop ;",0
+game2mb:          db ": mb $00 v0! $00 v3! mbsetup mbsetupf repeat mbp mbsv $02 fb mbckht mbcms v1@ v2@ at@ $01 fb v1@ v2@ at emit $01 until nop ;",0
+
+; Game 3
+
+; Vert scroller fighter/driving???
+
+; v0 score (ie turns)
+; v1 player pos
+; v2 left wall
+; v3 right wall
+
+; Draw side walls randomly
+
+game3w:   db ": vsw v2@ $04 at \"|\" . v3@ $04 at \"|\" . nop ;", 0
+
+; Draw player
+game3p:   db ": vsp v1@ $01 at \"V\" . nop ; ", 0
+
+; TODO Get Key
+
+; TODO Move left right
+
+; scroll and move walls a bit
+
+game3sc:  db ": vsscl v2@ $01 + v2! v3@ $01 - v3! scroll nop ;", 0
+
+; main game loop
+
+game3vsi:    db ": vsi $00 v0! $01 v2! $12 v3! $06 v1! nop ;",0
+game3vs:    db ": vs repeat vsw vsp $02 pause vsscl $01 until nop ;",0
 
 ; key board defs
 

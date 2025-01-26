@@ -1,6 +1,31 @@
 
 ; | ## Logic Words
 
+.NOT:
+	CWHEAD .IS 25 "NOT" 3 WORD_FLAG_CODE
+; | NOT ( u  -- u ) Inverse true/false on stack | DONE
+		FORTH_DSP
+		ld a,(hl)	; get type of value on TOS
+		cp DS_TYPE_INUM 
+		jr z, .noti
+		NEXTW
+.noti:          FORTH_DSP_VALUEHL
+		push hl
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+		pop hl
+		ld a,0
+		cp l
+		jr z, .not2t
+		ld l, 0
+		jr .notip
+
+.not2t:		ld l, 255
+
+.notip:		ld h, 0	
+
+		call forth_push_numhl
+		NEXTW
+
 .IS:
 	CWHEAD .LZERO 25 "IS" 2 WORD_FLAG_CODE
 ; | IS ( s1 s2  -- f ) Push true if string s1 is the same as s2 | TODO

@@ -426,10 +426,10 @@ endif
 
 .SCROLL:
 	CWHEAD .ATQ 63 "SCROLL" 6 WORD_FLAG_CODE
-; | SCROLL ( -- ) Scroll up one line | DONE
+; | SCROLL ( -- ) Scroll up one line - next write will update if required | DONE
 
 	call scroll_up
-	call update_display
+;	call update_display
 
 		NEXTW
 

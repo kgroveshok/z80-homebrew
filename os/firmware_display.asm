@@ -22,11 +22,11 @@ scroll_up:
 	pop de
 
 	;ex de, hl
-	ld bc, display_cols*display_rows
-if DEBUG_FORTH_WORDS
-	DMARK "SCL"
-	CALLMONITOR
-endif	
+	ld bc, display_fb_len -1 
+;if DEBUG_FORTH_WORDS
+;	DMARK "SCL"
+;	CALLMONITOR
+;endif	
 	ldir
 
 	; wipe bottom row
@@ -42,7 +42,7 @@ endif
 	dec hl
 	djnz .scwipe
 
-	pop hl
+	;pop hl
 
 	pop bc
 	pop de

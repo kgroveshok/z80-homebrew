@@ -271,7 +271,7 @@
 ### IN ( u1 -- u )    Perform Z80 IN with u1 being the port number. Push result to TOS | TO TEST
 
 
-### OUT ( u1 u2 -- ) Perform Z80 OUT to port u2 sending byte u1 | TO TEST
+### OUT ( u1 u2 -- ) Perform Z80 OUT to port u2 sending byte u1 | DONE
 
 
 ### SPICEL ( -- ) Set SPI CE low for the currently selected device |  DONE
@@ -346,7 +346,7 @@
 ### SPACES ( u -- str ) A string of u spaces is pushed onto the stack | TO TEST
 
 
-### SCROLL ( -- ) Scroll up one line | DONE
+### SCROLL ( -- ) Scroll up one line - next write will update if required | DONE
 
 
 ### AT@ ( u1 u2 -- n ) Push to stack ASCII value at row u2 col u1 | DONE
@@ -407,6 +407,9 @@
 
 
 ## Logic Words
+
+
+### NOT ( u  -- u ) Inverse true/false on stack | DONE
 
 
 ### IS ( s1 s2  -- f ) Push true if string s1 is the same as s2 | TODO
@@ -706,6 +709,9 @@
 ### ) ( -- )  End of comment |  DONE 
 
 
+### OUT ( u1 u2 -- ) Perform Z80 OUT to port u2 sending byte u1 | DONE
+
+
 ### SPICEL ( -- ) Set SPI CE low for the currently selected device |  DONE
 
 
@@ -757,7 +763,7 @@
 ### BL (  -- c ) Push the value of space onto the stack as a string  | DONE
 
 
-### SCROLL ( -- ) Scroll up one line | DONE
+### SCROLL ( -- ) Scroll up one line - next write will update if required | DONE
 
 
 ### AT@ ( u1 u2 -- n ) Push to stack ASCII value at row u2 col u1 | DONE
@@ -797,6 +803,9 @@
 
 
 ### EDIT ( u -- u ) Takes string on TOS and allows editing of it. Pushes it back once done. | DONE
+
+
+### NOT ( u  -- u ) Inverse true/false on stack | DONE
 
 
 ### < ( u1 u2 -- f ) True if u1 is less than u2 | DONE
@@ -959,9 +968,6 @@
 
 
 ### IN ( u1 -- u )    Perform Z80 IN with u1 being the port number. Push result to TOS | TO TEST
-
-
-### OUT ( u1 u2 -- ) Perform Z80 OUT to port u2 sending byte u1 | TO TEST
 
 
 ## Display Words

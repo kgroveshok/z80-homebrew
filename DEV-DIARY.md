@@ -2,12 +2,19 @@
 Z80 Home Brew Micro-computer Project - Dev Diary
 ------------------------------------------------
 
+26th Jan 2025
+-------------
+
+* Added NOT word
+* Fixed SCROLL display corruption
+* Added user word LIST to demo scroll
+* Adding vert scroller demo game
 
 24th Jan 2025
 -------------
 
-Start a bit on the sound work
-Work on a small new game 
+* Start a bit on the sound work
+* Work on a small new game 
 
 
 15th Jan 2025

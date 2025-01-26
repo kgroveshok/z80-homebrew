@@ -21,6 +21,7 @@
 	OPCODE_PAUSES: equ 19
 	OPCODE_ROT: equ 20
 ;free to reuse	OPCODE_WORDS: equ 21
+        OPCODE_NOT: equ 21
 	OPCODE_UWORDS: equ 22
 	OPCODE_BP: equ 23
 	OPCODE_MONITOR: equ 24 

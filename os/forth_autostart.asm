@@ -29,6 +29,7 @@ startcmds:
 ;	dw game2r
 ;	dw game2b1
 ;	dw game2b2
+	dw list
         dw game3w
         dw game3p
         dw game3sc
@@ -124,9 +125,13 @@ ifthtest3:     	db "$0002 $0003 - IF is-true . $0005 pause THEN next-word . $000
 
 start1:     	db ": bpon $0000 bp ;",0
 start2:     	db ": bpoff $0001 bp ;",0
-start3:         db ": dirlist dir cls drop dup $00 > if $01 do .> BL .> .> BL .> .> BL .> loop then nop ;",0
+;start3:         db ": dirlist ir cls drop dup $00 > if $01 do .> BL .> .> BL .> .> BL .> loop then nop ;",0
 start3b:         db ": dla dir cls drop dup $00 > if $01 do $08 i at . $01 i at . $04 i at . loop then nop ;",0
 start3c:         db ": dirlist dir cls drop dup $00 > if $01 do \"/\" .> .> \"Ext:\" .> .> \"Id: \" .> .>  loop then nop ;",0
+
+; a handy word to list items on the stack
+
+list:            db ": list cls repeat scroll $01 $04 at depth . $0a $04 at .> accept drop depth 0= not until nop ;",0
 
 ; a small guess the number game
 
@@ -183,7 +188,7 @@ game2mb:          db ": mb $00 v0! $00 v3! mbsetup mbsetupf repeat mbp mbsv $02 
 
 ; Game 3
 
-; Vert scroller fighter/driving???
+; Vert scroller ski game - avoid the trees!
 
 ; v0 score (ie turns)
 ; v1 player pos
@@ -208,7 +213,7 @@ game3sc:  db ": vsscl v2@ $01 + v2! v3@ $01 - v3! scroll nop ;", 0
 ; main game loop
 
 game3vsi:    db ": vsi $00 v0! $01 v2! $12 v3! $06 v1! nop ;",0
-game3vs:    db ": vs repeat vsw vsp $02 pause vsscl $01 until nop ;",0
+game3vs:    db ": vs vsi repeat vsw vsp vsscl $05 pause scroll $01 until nop ;",0
 
 ; key board defs
 

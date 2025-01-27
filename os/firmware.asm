@@ -108,6 +108,24 @@ if STORAGE_SE == 0
 	STORE_DEVICE_MAXBLOCKS:  equ  512 ; how many blocks are there on this storage device
 endif
 
+; Blocks where directory table is held
+
+; Reducing the number of entries increases the max file size
+
+STORE_DIR_START: equ 1
+STORE_DIR_END: equ 33
+
+; Blocks from where file data is stored
+
+STORE_DATA_START: equ STORE_DIR_END + 1
+
+; Directory entry flags
+
+STORE_DIR_FREE: equ 0
+STORE_DIR_FILE: equ 1
+
+
+
 ; memory allocation 
 
 chk_stund: equ tos+2           ; underflow check word

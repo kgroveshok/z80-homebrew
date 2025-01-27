@@ -124,7 +124,10 @@ STORE_DATA_START: equ STORE_DIR_END + 1
 STORE_DIR_FREE: equ 0
 STORE_DIR_FILE: equ 1
 
-
+; Structure to directory entries
+STORE_DE_FLAG: equ store_page
+STORE_DE_MAXEXT: equ store_page+1
+STORE_DE_FILENAME: equ store_page+2
 
 ; memory allocation 
 

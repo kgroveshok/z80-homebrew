@@ -13,7 +13,7 @@
 
 .DIR:
 	CWHEAD .SAVE 38 "DIR" 3 WORD_FLAG_CODE
-; | DIR ( u -- lab id ... c t ) Using bank number u push directory entries from persistent storage as w with count u  | DONE
+; | DIR ( u -- lab id ... c t ) Using bank number u push directory entries from persistent storage as w with count u  | TODO
 
 		if DEBUG_FORTH_WORDS
 			DMARK "DIR"
@@ -140,7 +140,7 @@
 		NEXTW
 .LOAD:
 	CWHEAD .BSAVE 40 "LOAD" 4 WORD_FLAG_CODE
-; | LOAD ( u -- )    Load user word memory from file id on current bank | TO TEST
+; | LOAD ( u -- )    Load user word memory from file id on current bank | TODO
 ; | | The indivdual records being loaded can be both uword word difintions or interactive commands.
 ; | | The LOAD command can not be used in any user words or compound lines.
 
@@ -360,7 +360,7 @@
 
 .SFREE:
 	CWHEAD .SIZE 83 "FFREE" 5 WORD_FLAG_CODE
-; | FFREE ( -- n )  Gets number of free file blocks on current storage bank | DONE
+; | FFREE ( -- n )  Gets number of free file blocks on current storage bank | TODO
 
 		call storage_freeblocks
 
@@ -369,7 +369,7 @@
 	       NEXTW
 .SIZE:
 	CWHEAD .CREATE 83 "SIZE" 4 WORD_FLAG_CODE
-; | SIZE ( u -- n )  Gets number of blocks used by file id u and push to stack | DONE
+; | SIZE ( u -- n )  Gets number of blocks used by file id u and push to stack | TODO
 
 		FORTH_DSP_VALUEHL
 		push hl
@@ -384,7 +384,7 @@
 
 .CREATE:
 	CWHEAD .APPEND 84 "CREATE" 6 WORD_FLAG_CODE
-; | CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS | DONE
+; | CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS | TO TEST
 ; | | e.g. 
 ; | | TestProgram CREATE
 ; | | Top of stack will then be the file ID which needs to be used in all file handling words
@@ -427,7 +427,7 @@
 
 .APPEND:
 	CWHEAD .SDEL 85 "APPEND" 6 WORD_FLAG_CODE
-; | APPEND ( u n --  )  Appends data u to file id on current storage bank | DONE
+; | APPEND ( u n --  )  Appends data u to file id on current storage bank | TO TEST
 ; | | e.g.
 ; | | Test CREATE      -> $01
 ; | | "A string to add to file" $01 APPEND
@@ -468,7 +468,7 @@
 	       NEXTW
 .SDEL:
 	CWHEAD .OPEN 86 "ERA" 4 WORD_FLAG_CODE
-; | ERA ( n --  )  Deletes all data for file id n on current storage bank | DONE
+; | ERA ( n --  )  Deletes all data for file id n on current storage bank | TODO
 		FORTH_DSP_VALUEHL
 		push hl 	; save file id
 
@@ -485,7 +485,7 @@
 
 .OPEN:
 	CWHEAD .READ 87 "OPEN" 4 WORD_FLAG_CODE
-; | OPEN ( n -- n )  Sets file id to point to first data page for subsequent READs. Pushes the max number of blocks for this file | DONE
+; | OPEN ( n -- n )  Sets file id to point to first data page for subsequent READs. Pushes the max number of blocks for this file | TODO
 ; | | e.g.
 ; | | $01 OPEN $01 DO $01 READ . LOOP
 
@@ -526,7 +526,7 @@
 	       NEXTW
 .READ:
 	CWHEAD .EOF 88 "READ" 4 WORD_FLAG_CODE
-; | READ ( n -- n  )  Reads next page of file id and push to stack | DONE
+; | READ ( n -- n  )  Reads next page of file id and push to stack | TODO
 ; | | e.g.
 ; | | $01 OPEN $01 DO $01 READ . LOOP
 
@@ -629,7 +629,7 @@
 
 .EOF:
 	CWHEAD .FORMAT 89 "EOF" 3 WORD_FLAG_CODE
-; | EOF ( n -- u )  Returns EOF logical state of file id n - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | DONE
+; | EOF ( n -- u )  Returns EOF logical state of file id n - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | TODO
 ; | | e.g.
 ; | | $01 OPEN REPEAT $01 READ $01 EOF $00 IF LOOP
 		; TODO if current block id for stream is zero then push true else false
@@ -655,7 +655,7 @@
 
 .FORMAT:
 	CWHEAD .LABEL 89 "FORMAT" 6 WORD_FLAG_CODE
-; | FORMAT (  --  )  Formats the current bank selected (NO PROMPT!) | DONE
+; | FORMAT (  --  )  Formats the current bank selected (NO PROMPT!) | TO TEST
 		; TODO if current block id for stream is zero then push true else false
 	
 		; Wipes the bank check flags to cause a reformat on next block 0 read
@@ -671,7 +671,7 @@
 	       NEXTW
 .LABEL:
 	CWHEAD .LABELS 89 "LABEL" 5 WORD_FLAG_CODE
-; | LABEL ( u --  )  Sets the storage bank label to string on top of stack  | DONE
+; | LABEL ( u --  )  Sets the storage bank label to string on top of stack  | TO TEST
 		; TODO test to see if bank is selected
 	
 		FORTH_DSP_VALUEHL
@@ -688,7 +688,7 @@
 	       NEXTW
 .LABELS:
 	CWHEAD .ENDSTORAGE 89 "LABELS" 6 WORD_FLAG_CODE
-; | LABELS (  -- b n .... c  )  Pushes each storage bank labels (n) along with id (b) onto the stack giving count (c) of banks  | DONE
+; | LABELS (  -- b n .... c  )  Pushes each storage bank labels (n) along with id (b) onto the stack giving count (c) of banks  | TODO
 		; 
 
 		; save the current device selected to restore afterwards

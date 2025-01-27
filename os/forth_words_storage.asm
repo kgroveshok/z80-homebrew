@@ -397,17 +397,17 @@
 		; TODO pop hl
 
 		;v5 FORTH_DSP_VALUE
-		FORTH_DSP
+		FORTH_DSP_VALUE
 
 	if DEBUG_STORESE
 		DMARK "CRT"
 		CALLMONITOR
 	endif
-		push hl
-		FORTH_DSP_POP
-		pop hl
+;		push hl
+;		FORTH_DSP_POP
+;		pop hl
 
-		inc hl   ; move past the type marker
+;		inc hl   ; move past the type marker
 
 		call storage_create
 
@@ -415,6 +415,9 @@
 		DMARK "CT1"
 		CALLMONITOR
 	endif
+		push hl
+		FORTH_DSP_POP
+		pop hl
 		; push file id to stack
 		call forth_push_numhl
 
@@ -553,7 +556,7 @@
 		ld l, a
 		
 		cp 0
-		jr z, .ateof     ; dont read past eof
+		jp z, .ateof     ; dont read past eof
 
 
 		ld de, store_page
@@ -571,7 +574,7 @@
 ;	ld a, l
 ;	add h
 ;	cp 0
-	jr z, .readeof
+	jp z, .readeof
 
 	; not eof so hl should point to data to push to stack
 
@@ -581,18 +584,30 @@
 	endif
 	call forth_apushstrhl
 
+	if DEBUG_STORESE
+		DMARK "RE4"
+		CALLMONITOR
+	endif
 	; get next block  or mark as eof
 
 	ld a, (store_openmaxext)   ; get our limit
 	ld c, a	
 	ld a, (store_openext)
 
+	if DEBUG_STORESE
+		DMARK "RE5"
+		CALLMONITOR
+	endif
 	cp c
 	jr z, .readeof     ; at last extent
 
 		inc a
 		ld (store_openext), a
 
+	if DEBUG_STORESE
+		DMARK "RE6"
+		CALLMONITOR
+	endif
 
 
 	       NEXTW

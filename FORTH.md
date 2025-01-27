@@ -32,6 +32,8 @@ Words
 =====
 
 
+User words are executed before system words so in theory you could replace system words with your own...
+
 While still a lot of dev going on see ![WORD-LIST.md](WORD-LIST.md) for watch is working and what is left to do. There is also a shell script that lists the words from the source and shows which ones are working and what are left to do.
 
 

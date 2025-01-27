@@ -3,6 +3,9 @@
 
 
 
+
+
+
 ; Block 0 on storage is a config state
 
 
@@ -853,7 +856,6 @@ storage_create:
 ;	inc hl    ; file name
 	
 	
-	ld de, store_page+3    ; get buffer for term string to use as file name
 	if DEBUG_STORESE
 		DMARK "SCc"
 		CALLMONITOR
@@ -875,6 +877,7 @@ storage_create:
 		;pop af
 		CALLMONITOR
 	endif
+	ld de, store_page+3    ; get buffer for term string to use as file name
 	ldir    ; copy zero term string
 	if DEBUG_STORESE
 		DMARK "SCA"
@@ -938,11 +941,11 @@ storage_read:
 ;	cp 0
 ; TODO is stack push of DE not balanced?
 
-	ret z			; block not found so EOF
+	jr c, .srateof			; block not found so EOF
 
 	; hl contains page number to load
 	pop de   ; get storage
-	push de
+;	push de
 	call storage_read_block
 
 
@@ -955,7 +958,8 @@ storage_read:
 	inc hl   ; past ext
 		ret
 
-
+.srateof:  pop de
+	ret
 
 ;
 ; Append File

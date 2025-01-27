@@ -278,7 +278,9 @@ se_writepage:
 ; returns byte in a
 ; address in hl 
 se_readbyte:
-       
+	push de
+	push bc
+
     ;   ld c, a
         push hl
 
@@ -319,6 +321,9 @@ se_readbyte:
        ld (spi_portbyte), a
 
 	pop af
+
+	push bc
+	push de
 
     ret
 

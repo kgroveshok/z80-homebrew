@@ -638,7 +638,7 @@ storage_freeblocks:
 
 
 
-; TODO TEST Create File
+; OK Create File
 ; -----------
 ;
 ; With current bank 
@@ -667,7 +667,6 @@ storage_create:
 
 
 	ld b, STORE_DIR_START
-	ld c, 0
 	ld hl, STORE_BLOCK_PHY
 
 	if DEBUG_STORESE
@@ -675,17 +674,21 @@ storage_create:
 		CALLMONITOR
 	endif
 .scdirscan:
-	push bc   
+;	push bc   
 	call se_readbyte
+	if DEBUG_STORESE
+		DMARK "Sf?"
+		CALLMONITOR
+	endif
 	cp STORE_DIR_FREE
 	jr z, .dirfree
 	ld de, STORE_BLOCK_PHY
 	add hl, de	; next block
-	pop bc
+;	pop bc
 	ld a, STORE_DIR_END
-	cp c
+	cp b
 	jr z, .nodirfree
-	inc c
+	inc b
 	jr .scdirscan
 
 .nodirfree: 
@@ -708,17 +711,17 @@ storage_create:
 		CALLMONITOR
 	endif
 
-hl address?  80
-de starting location/  40
-bc dir id   0101
+;hl address?  80
+;de starting location/  40
+;bc dir id   0101
 
 
 	call storage_clear_page
 
 	ld a, STORE_DIR_FILE       ; TODO could have different file type attributes e.g. plain file, db, config, exec code
 	ld (store_page),a    ; mark dir entry as in use
-	ld (store_tmp2), hl     ; save the file block id for saving into later
-	ld (store_tmp3), de     ; save the file block address for saving into later
+	ld (store_tmp2), bc     ; save the file block id for saving into later
+	ld (store_tmp3), hl     ; save the file block address for saving into later
 	ld hl,(store_tmp1)     ; get the file name pointer
 
 	ld a, 0
@@ -735,10 +738,6 @@ bc dir id   0101
 	;ex de, hl
 	if DEBUG_STORESE
 		DMARK "SCa"
-		;push af
-		;ld a, 'a'
-		;ld (debug_mark),a
-		;pop af
 		CALLMONITOR
 	endif
 	ldir    ; copy zero term string
@@ -765,9 +764,8 @@ bc dir id   0101
 
 	; return the file id to caller in hl
 
-	ld hl, (store_tmp1)     ; save the file block address for saving into later
-	ld de, (store_tmp2)     ; save the file block id for saving into later
-	ld bc, (store_tmp3)     ; save the file block address for saving into later
+	ld a, (store_tmp2+1)     ; in b of bc
+	ld l, a
 	ld h, 0
 	if DEBUG_STORESE
 		DMARK "SCe"

@@ -571,13 +571,13 @@
  $01 OPEN REPEAT $01 READ $01 EOF $00 IF LOOP
 
 
-### FORMAT (  --  )  Formats the current bank selected (NO PROMPT!) | TO TEST
+### FORMAT (  --  )  Formats the current bank selected (NO PROMPT!) | DONE
 
 
-### LABEL ( u --  )  Sets the storage bank label to string on top of stack  | TO TEST
+### LABEL ( u --  )  Sets the storage bank label to string on top of stack  | DONE
 
 
-### LABELS (  -- b n .... c  )  Pushes each storage bank labels (n) along with id (b) onto the stack giving count (c) of banks  | TODO
+### LABELS (  -- b n .... c  )  Pushes each storage bank labels (n) along with id (b) onto the stack giving count (c) of banks  | TO TEST
 
 
 ## String Words
@@ -850,6 +850,12 @@
 ### SEI ( u2 -- u1 ) Get a byte from Serial EEPROM device at address u2 | DONE
 
 
+### FORMAT (  --  )  Formats the current bank selected (NO PROMPT!) | DONE
+
+
+### LABEL ( u --  )  Sets the storage bank label to string on top of stack  | DONE
+
+
 ### TYPE ( u -- u type ) Push type of value on TOS - 's' string, 'i' integer...   | DONE
 
 
@@ -1024,13 +1030,7 @@
 ### EOF ( n -- u )  Returns EOF logical state of file id n - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | TODO
 
 
-### FORMAT (  --  )  Formats the current bank selected (NO PROMPT!) | TO TEST
-
-
-### LABEL ( u --  )  Sets the storage bank label to string on top of stack  | TO TEST
-
-
-### LABELS (  -- b n .... c  )  Pushes each storage bank labels (n) along with id (b) onto the stack giving count (c) of banks  | TODO
+### LABELS (  -- b n .... c  )  Pushes each storage bank labels (n) along with id (b) onto the stack giving count (c) of banks  | TO TEST
 
 
 ## String Words

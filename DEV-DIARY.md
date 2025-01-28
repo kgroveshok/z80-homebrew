@@ -6,17 +6,30 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 -------------
 
 * DONE Up arrow to recall last command not working
+* DONE FORMAT word
+* DONE CREATE word
+* DONE LABEL word
+* TO TEST LABELS word
+* TODO APPEND word
+* TODO OPEN word
+* TODO READ word
+* TODO ERA word
+* TODO FSIZE word
+* TODO DIR word
+* TODO FFREE word
+* TODO EOF word
 * TODO Add to start up a list of what storage labels are seen
-* TODO Need to debug READ as crash on second call
 * TODO add ram test to the diags
 * TODO Speed up screen updates - instead of writing whole screen detect what has changed? 
+* TODO Add no bank chip detection to format
 
-TODO change storage format a bit:
+Changed storage format a bit:
 1. formated id in first two bytes in block 0
 2. next 16 bytes is storage label in block 0
 3. Next 32 blocks are file names and meta data. 2k
 4. Adding a new file just puts it into a dir slot and the file id is that dir slot number
 5. File data extent is just single byte. First 32 is file id and the remaining up to 255 are the file portions. Still gives 15k zero is free block
+6. Redo all storage words
 
 
 26th Jan 2025

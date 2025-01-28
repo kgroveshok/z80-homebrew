@@ -835,9 +835,9 @@ storage_append:
 	; de - string to append
 
 	ld a, l
-	ld (store_tmpid), a
+	ld (store_tmp1), a
 
-	ld (store_tmppageid), de
+	ld (store_tmp2), de
 	
 	if DEBUG_STORESE
 		DMARK "AP1"
@@ -849,22 +849,30 @@ storage_append:
 	; get current max ext count
 
 	ld a, l 
-	add STORE_DIR_START
+	;add STORE_DIR_START
  	ld de, STORE_BLOCK_PHY 
 	call Mult16       ; hl has the byte location for the start of the dir entry
         inc hl   ; move to the ext count  
 	push hl
 
+	if DEBUG_STORESE
+		DMARK "APX"
+		CALLMONITOR
+	endif
 	call se_readbyte
 
 	; inc max extent count
 
 	inc a
-	ld (store_tmpext), a
+	ld (store_tmp3), a
 
 	; save current max ext count
 
 	pop hl
+	if DEBUG_STORESE
+		DMARK "APx"
+		CALLMONITOR
+	endif
 	call se_writebyte
 
 	; find empty file block
@@ -873,18 +881,29 @@ storage_append:
 	call store_findnextrawid
 
 	push hl   ; save new block location
+	if DEBUG_STORESE
+		DMARK "APb"
+		CALLMONITOR
+	endif
 
 	; TODO check for no spare blocks
 
 	; with max extent set file data block id
 
+	call storage_clear_page
+
 	ld hl, store_page
-	ld a, (store_tmpext)
+	ld a, (store_tmp3)
 	ld (hl), a
+
+	if DEBUG_STORESE
+		DMARK "APi"
+		CALLMONITOR
+	endif
 
 	; copy the data to buffer
 
-	ld de, (store_tmppageid)
+	ld de, (store_tmp2)
 	ex de, hl
 	
 	push hl ; save string start
@@ -898,8 +917,14 @@ storage_append:
 	
 	; write buffer block
 
-	ld hl, (store_tmppageid)
+	ld hl, (store_tmp2)
 	ld de, store_page
+
+	if DEBUG_STORESE
+		DMARK "APe"
+		CALLMONITOR
+	endif
+
 	call storage_write_block
 
 ; TODO include code below to handle writing more than a buffer full

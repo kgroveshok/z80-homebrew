@@ -22,6 +22,8 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO add ram test to the diags
 * TODO Speed up screen updates - instead of writing whole screen detect what has changed? 
 * TODO Add no bank chip detection to format
+* TODO Add ELSE clause: x if true else false then
+
 
 Changed storage format a bit:
 1. formated id in first two bytes in block 0

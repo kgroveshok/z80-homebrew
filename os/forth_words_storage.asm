@@ -655,15 +655,23 @@
 
 .FORMAT:
 	CWHEAD .LABEL 89 "FORMAT" 6 WORD_FLAG_CODE
-; | FORMAT (  --  )  Formats the current bank selected (NO PROMPT!) | TO TEST
+; | FORMAT (  --  )  Formats the current bank selected (NO PROMPT!) | DONE
 		; TODO if current block id for stream is zero then push true else false
 	
+	if DEBUG_STORESE
+		DMARK "FOR"
+		CALLMONITOR
+	endif
 		; Wipes the bank check flags to cause a reformat on next block 0 read
 
-		ld hl, 1
-		ld a, 1
+		ld hl, 0
+		ld a, 0
 		call se_writebyte
 
+	if DEBUG_STORESE
+		DMARK "FO0"
+		CALLMONITOR
+	endif
 		; force bank init
 
 		call storage_get_block_0
@@ -674,6 +682,10 @@
 ; | LABEL ( u --  )  Sets the storage bank label to string on top of stack  | TO TEST
 		; TODO test to see if bank is selected
 	
+	if DEBUG_STORESE
+		DMARK "LBL"
+		CALLMONITOR
+	endif
 		FORTH_DSP_VALUEHL
 		;v5FORTH_DSP_VALUE
 		
@@ -683,6 +695,10 @@
 
 ;v5		inc hl   ; move past the type marker
 
+	if DEBUG_STORESE
+		DMARK "LBl"
+		CALLMONITOR
+	endif
 		call storage_label
 
 	       NEXTW

@@ -5,9 +5,11 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 27th Jan 2025
 -------------
 
+* DONE Up arrow to recall last command not working
 * TODO Add to start up a list of what storage labels are seen
 * TODO Need to debug READ as crash on second call
 * TODO add ram test to the diags
+* TODO Speed up screen updates - instead of writing whole screen detect what has changed? 
 
 TODO change storage format a bit:
 1. formated id in first two bytes in block 0

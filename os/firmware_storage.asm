@@ -1,4 +1,3 @@
-
 ; persisent storage hardware abstraction layer 
 
 
@@ -39,6 +38,27 @@
 ;
 
 
+; Clear out the main buffer store (used to remove junk before writing a new block)
+
+storage_clear_page:
+	push hl
+	push de
+	push bc
+	ld hl, store_page
+	ld a, 0
+	ld (hl), a
+
+	ld de, store_page+1
+	ld bc, STORE_BLOCK_PHY
+
+	ldir
+	
+	pop bc
+	pop de
+	pop hl
+	ret
+
+
 ; Read Block
 ; ----------
 ;
@@ -57,10 +77,21 @@ storage_read_block:
 	; for each of the physical blocks read it into the buffer
 	ld b, STORE_BLOCK_PHY
 
+	if DEBUG_STORESE
+		DMARK "SRB"
+		CALLMONITOR
+	endif
 .rl1:   
 
+;	if DEBUG_STORESE
+;		DMARK "SRb"
+;		CALLMONITOR
+;	endif
 	; read physical block at hl into de
         ; increment hl and de to next read position on exit
+
+;	ld a, 10
+;	call aDelayInMS
 
 	push hl
 	push de	
@@ -73,12 +104,10 @@ storage_read_block:
 	inc hl
 	inc de
 
+
+
 	djnz .rl1
 
-	if DEBUG_STORESE
-		DMARK "SRB"
-		CALLMONITOR
-	endif
 	ret	
 	
 
@@ -164,7 +193,7 @@ storage_write_block:
 	endif
 	ret	
 
-; TODO TEST Init bank
+; Init bank
 ; ---------
 ;
 ; With current bank
@@ -186,22 +215,29 @@ storage_get_block_0:
 
 	; TODO check presence
 
-	; get block 0 config
-
-	ld hl, 0
-	ld de, store_page
-	call storage_read_block
-
 	if DEBUG_STORESE
 		DMARK "SB0"
 		ld de, store_page
 		CALLMONITOR
 	endif
 
+	; get block 0 config
+
+	ld hl, 0
+	ld de, store_page
+	call storage_read_block
+
 	; is this area formatted?
+	ld hl, (store_page+STORE_BK0_ISFOR)
+
+	if DEBUG_STORESE
+		DMARK "SBr"
+		ld de, store_page
+		CALLMONITOR
+	endif
+
 
 ;      Byte 0-1 formated byte pattern: 0x80 x27
-	ld hl, (store_page)
 	ld a,0x80
 	cp l
 	jr nz, .ininotformatted
@@ -226,16 +262,26 @@ storage_get_block_0:
 		CALLMONITOR
 	endif
 
+	call storage_clear_page
+
 	; init the format label
 
 	ld hl, 0x2780     ;      Byte - 0-1 formated: Byte pattern: 0x80 x27
- 	ld (store_page), hl	
+ 	ld (store_page+STORE_BK0_ISFOR), hl	
 
+	if DEBUG_STORESE
+		DMARK "SBz"
+		CALLMONITOR
+	endif
 	; set default label
 
 	ld hl, .defaultbanklabl
- 	ld de, store_page+2
+ 	ld de, store_page+STORE_BK0_LABEL
 	ld bc, 15
+	if DEBUG_STORESE
+		DMARK "SBx"
+		CALLMONITOR
+	endif
 	ldir
 
 	; save default page 0
@@ -247,8 +293,9 @@ storage_get_block_0:
 		CALLMONITOR
 	endif
 	call storage_write_block
+
 	if DEBUG_STORESE
-		DMARK "SB4"
+		DMARK "Fbs"
 		CALLMONITOR
 	endif
 
@@ -292,11 +339,11 @@ storage_get_block_0:
 
 
 
-.defaultbanklabl:   db "BankLabel",0
+.defaultbanklabl:   db "DefaultLabel",0
 
 
 
-; TODO TEST Label Bank
+; OK Label Bank
 ; ----------
 ;
 ; With current bank
@@ -309,7 +356,7 @@ storage_get_block_0:
 storage_label:    
 
 	if DEBUG_STORESE
-		DMARK "LBL"
+		DMARK "SBL"
 		CALLMONITOR
 	endif
 
@@ -321,8 +368,8 @@ storage_label:
 
 	pop hl
 
- 	ld de, store_page+2
-	ld bc, 15
+ 	ld de, store_page+STORE_BK0_LABEL
+	ld bc, 20       ; TODO actual length
 	if DEBUG_STORESE
 		DMARK "LB3"
 		CALLMONITOR
@@ -611,15 +658,22 @@ storage_create:
 		CALLMONITOR
 	endif
 
-	push hl		; save file name pointer
+	ld (store_tmp1), hl		; save file name pointer
 
 	call storage_get_block_0
 
 ; TODO find spare dir entry space
 ; TODO if dir is full return HL=0
 
+
 	ld b, STORE_DIR_START
+	ld c, 0
 	ld hl, STORE_BLOCK_PHY
+
+	if DEBUG_STORESE
+		DMARK "SCs"
+		CALLMONITOR
+	endif
 .scdirscan:
 	push bc   
 	call se_readbyte
@@ -628,14 +682,20 @@ storage_create:
 	ld de, STORE_BLOCK_PHY
 	add hl, de	; next block
 	pop bc
-	ld a,STORE_DIR_END
+	ld a, STORE_DIR_END
 	cp c
 	jr z, .nodirfree
 	inc c
 	jr .scdirscan
 
-.nodirfree:   ; no spare dir space left so return error
-		pop hl     ; get rid of file name pointer
+.nodirfree: 
+
+	if DEBUG_STORESE
+		DMARK "SCn"
+		CALLMONITOR
+	endif
+		  ; no spare dir space left so return error
+		;pop hl     ; get rid of file name pointer
 		 ld hl, 0
 		ret
 
@@ -643,20 +703,35 @@ storage_create:
 ; hl will have the block number handy so can just prep the file dir entry here
 
 .dirfree:
-	ld a, STORE_DIR_FILE       ; TODO could have different file type attributes e.g. plain file, db, config, exec code
-	ld (STORE_DE_FLAG),a    ; mark dir entry as in use
-	pop de     ; get the file name pointer
-	push hl    ; save the file block id for saving into later
+	if DEBUG_STORESE
+		DMARK "SCf"
+		CALLMONITOR
+	endif
 
-	ex de, hl    ; hl now has the file name pointer
-	
-	push hl      ; push to save it for the copy
+hl address?  80
+de starting location/  40
+bc dir id   0101
+
+
+	call storage_clear_page
+
+	ld a, STORE_DIR_FILE       ; TODO could have different file type attributes e.g. plain file, db, config, exec code
+	ld (store_page),a    ; mark dir entry as in use
+	ld (store_tmp2), hl     ; save the file block id for saving into later
+	ld (store_tmp3), de     ; save the file block address for saving into later
+	ld hl,(store_tmp1)     ; get the file name pointer
+
 	ld a, 0
+	if DEBUG_STORESE
+		DMARK "SCl"
+		CALLMONITOR
+	endif
 	call strlent
 	inc hl   ; cover zero term
 	ld b,0
 	ld c,l
-	pop hl
+	ld hl,(store_tmp1)     ; get the file name pointer
+	ld de, store_page+STORE_DE_FILENAME   ; file name data dest
 	;ex de, hl
 	if DEBUG_STORESE
 		DMARK "SCa"
@@ -666,7 +741,6 @@ storage_create:
 		;pop af
 		CALLMONITOR
 	endif
-	ld de, STORE_DE_FILENAME   ; file name data dest
 	ldir    ; copy zero term string
 	if DEBUG_STORESE
 		DMARK "SCA"
@@ -676,18 +750,29 @@ storage_create:
 	; write data ext count for new file which is zero
 
 	ld a, 0
-	ld (STORE_DE_MAXEXT), a
+	ld (store_page+STORE_DE_MAXEXT), a
 
 	; write directory entry
 
-	pop hl    ; get file entry found 
-	ld de, STORE_DE_FLAG
+;	pop hl    ; get file entry found 
+	ld hl, (store_tmp3)     ; save the file block address for saving into later
+	ld de, store_page
 	if DEBUG_STORESE
 		DMARK "SCb"
 		CALLMONITOR
 	endif
 	call storage_write_block
 
+	; return the file id to caller in hl
+
+	ld hl, (store_tmp1)     ; save the file block address for saving into later
+	ld de, (store_tmp2)     ; save the file block id for saving into later
+	ld bc, (store_tmp3)     ; save the file block address for saving into later
+	ld h, 0
+	if DEBUG_STORESE
+		DMARK "SCe"
+		CALLMONITOR
+	endif
 	ret
 	
 

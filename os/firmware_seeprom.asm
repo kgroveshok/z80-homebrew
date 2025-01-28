@@ -26,8 +26,8 @@ storage_bctl: equ Device_C+3     ; device c port b
 
 ; TODO move these to hardware driver file
 
-STORE_BLOCK_PHY:   equ 64    ; physical block size on storage   64byte on 256k eeprom
-STORE_DEVICE_MAXBLOCKS:  equ  512 ; how many blocks are there on this storage device
+;STORE_BLOCK_PHY:   equ 64    ; physical block size on storage   64byte on 256k eeprom
+;STORE_DEVICE_MAXBLOCKS:  equ  512 ; how many blocks are there on this storage device
 ; storage bank file system format
 ;
 ; first page of bank:
@@ -322,8 +322,8 @@ se_readbyte:
 
 	pop af
 
-	push bc
-	push de
+	pop bc
+	pop de
 
     ret
 

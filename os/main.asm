@@ -22,26 +22,26 @@ if BASE_CPM = 1
 endif
 	jp coldstart     ; rst 0 - cold boot
 
-        nop 
-        nop
-;	org 05h		; null out bdos call
-
-        nop 
-        nop 
-        nop
-;	org 08h
-;;
-;	jp cin		; rst 8 - char in
-;;
-
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
+;        nop 
+;        nop
+;;	org 05h		; null out bdos call
+;
+;        nop 
+;        nop 
+;        nop
+;;	org 08h
+;;;
+;;	jp cin		; rst 8 - char in
+;;;
+;
+;        nop
+;        nop
+;        nop
+;        nop
+;        nop
+;        nop
+;        nop
+;        nop
 ;	org 010h
 ;;
 ;	jp cout		; rest 010h  - char out
@@ -259,18 +259,18 @@ cli:
 
 	; copy input to last command
 
-	ld de, os_cli_cmd
-	ld hl, os_last_cmd
-;	ld bc, 250
-;	ldir
+	ld hl, os_cli_cmd
+	ld de, os_last_cmd
+	ld bc, 255
+	ldir
 	; TODO ldir is not working strcpy may not get all the terms on the input line????
-	call strcpy
-	ld a, 0
-	ld (hl), a
-	inc hl
-	ld (hl), a
-	inc hl
-	ld (hl), a
+;	call strcpy
+;	ld a, 0
+;	ld (hl), a
+;	inc hl
+;	ld (hl), a
+;	inc hl
+;	ld (hl), a
 
 	; switch frame buffer to program 
 

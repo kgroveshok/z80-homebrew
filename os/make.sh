@@ -14,3 +14,4 @@
 
 cp os_mega_cpm.bin OS.COM
 cp OS.COM ../../../Retro-Projects/RunCPM/go/A/0/
+cp os_mega.hex ~/Desktop

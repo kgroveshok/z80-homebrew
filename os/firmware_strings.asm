@@ -339,7 +339,7 @@ ld hl, (input_ptr)
 		
 		; swap input and last command buffers
 
-		ld hl, scratch
+		ld hl, os_cli_cmd
 		ld de, os_last_cmd
 		ld b, 255
 .swap1:		ld a, (hl)

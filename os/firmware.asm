@@ -103,10 +103,10 @@ STACK_LOOP_SIZE: equ 256
 STACK_DATA_SIZE: equ 256
 endif
 
-if STORAGE_SE == 0
-	STORE_BLOCK_PHY:   equ 64    ; physical block size on storage   64byte on 256k eeprom
-	STORE_DEVICE_MAXBLOCKS:  equ  512 ; how many blocks are there on this storage device
-endif
+;if STORAGE_SE == 0
+STORE_BLOCK_PHY:   equ 64    ; physical block size on storage   64byte on 256k eeprom
+STORE_DEVICE_MAXBLOCKS:  equ  512 ; how many blocks are there on this storage device
+;endif
 
 ; Blocks where directory table is held
 
@@ -122,12 +122,17 @@ STORE_DATA_START: equ STORE_DIR_END + 1
 ; Directory entry flags
 
 STORE_DIR_FREE: equ 0
-STORE_DIR_FILE: equ 1
+STORE_DIR_FILE:  equ 1
 
-; Structure to directory entries
-STORE_DE_FLAG: equ store_page
-STORE_DE_MAXEXT: equ store_page+1
-STORE_DE_FILENAME: equ store_page+2
+; Structure offsets to directory entries
+STORE_DE_FLAG: equ 0
+STORE_DE_MAXEXT: equ 1
+STORE_DE_FILENAME: equ 2
+
+; Structure offsets to block 0
+
+STORE_BK0_ISFOR: equ 1
+STORE_BK0_LABEL: equ 3
 
 ; memory allocation 
 
@@ -250,9 +255,12 @@ store_bank_active: equ iErrorVer - (5 + 8 ) 		; TODO not used.  indicator of whi
 
 STORE_BLOCK_LOG:  equ   255      ; TODO remove.... Logical block size   
 
-store_page: equ store_bank_active-STORE_BLOCK_LOG            ; page size for eeprom
-store_ffpage: equ store_page-STORE_BLOCK_LOG            ; page size for eeprom
-store_tmpid: equ store_ffpage - 1		; page temp id
+store_page: equ store_bank_active-STORE_BLOCK_PHY            ; page size for eeprom
+;?????store_ffpage: equ store_page-STORE_BLOCK_LOG            ; page size for eeprom?????
+store_tmp1: equ store_page - 2      ; temp pointer holders during ops
+store_tmp2: equ store_tmp1 - 2        ; temp pointer holders during ops
+store_tmp3: equ store_tmp2 - 2        ; temp pointer holders during ops
+store_tmpid: equ store_tmp3 - 1		; page temp id
 store_tmpext: equ store_tmpid - 1		; file extent temp
 store_openext: equ store_tmpext - 1		; file extent of current opened file for read
 store_openmaxext: equ store_openext - 1		; max extent of current opened file for read

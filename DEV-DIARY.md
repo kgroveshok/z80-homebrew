@@ -10,8 +10,6 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE CREATE word
 * DONE LABEL word
 
-* TODO BUG serious bug on se_readbyte. If byte is FE it reads as 1. Bit shifting issue? 8E is fine.
-* TO TEST LABELS word
 * TODO APPEND word
 * TODO OPEN word
 * TODO READ word
@@ -27,13 +25,6 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Add ELSE clause: x if true else false then
 
 
-Changed storage format a bit:
-1. formated id in first two bytes in block 0
-2. next 16 bytes is storage label in block 0
-3. Next 32 blocks are file names and meta data. 2k
-4. Adding a new file just puts it into a dir slot and the file id is that dir slot number
-5. File data extent is just single byte. First 32 is file id and the remaining up to 255 are the file portions. Still gives 15k zero is free block
-6. Redo all storage words
 
 
 26th Jan 2025

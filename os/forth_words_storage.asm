@@ -721,7 +721,7 @@
 		res SPI_CE0, a
 		ld (spi_device), a
 		call storage_get_block_0
-		ld hl, store_page+STORE_BK0_LABEL
+		ld hl, store_page+3
 		call forth_apushstrhl
 
 		
@@ -731,7 +731,7 @@
 		res SPI_CE1, a
 		ld (spi_device), a
 		call storage_get_block_0
-		ld hl, store_page+STORE_BK0_LABEL
+		ld hl, store_page+3
 		call forth_apushstrhl
 
 		
@@ -741,7 +741,7 @@
 		res SPI_CE2, a
 		ld (spi_device), a
 		call storage_get_block_0
-		ld hl, store_page+STORE_BK0_LABEL
+		ld hl, store_page+3
 		call forth_apushstrhl
 
 
@@ -751,7 +751,7 @@
 		res SPI_CE3, a
 		ld (spi_device), a
 		call storage_get_block_0
-		ld hl, store_page+STORE_BK0_LABEL
+		ld hl, store_page+3
 		call forth_apushstrhl
 
 		
@@ -762,7 +762,7 @@
 		res SPI_CE4, a
 		ld (spi_device), a
 		call storage_get_block_0
-		ld hl, store_page+STORE_BK0_LABEL
+		ld hl, store_page+3
 		call forth_apushstrhl
 
 		

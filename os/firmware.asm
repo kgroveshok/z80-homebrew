@@ -112,20 +112,20 @@ STORE_DEVICE_MAXBLOCKS:  equ  255*2 ; how many blocks are there on this storage 
 
 ; Reducing the number of entries increases the max file size
 
-STORE_DIR_START: equ 1
-STORE_DIR_END: equ 33
+;STORE_DIR_START: equ 1
+;STORE_DIR_END: equ 33
 
 ; Blocks from where file data is stored
 
-STORE_DATA_START: equ STORE_DIR_END + 1
+;STORE_DATA_START: equ STORE_DIR_END + 1
 
 ; Block indicators (<32 are data files)
 
-STORE_BLOCK_CFG: equ $8f       ; config block
-STORE_BLOCK_DIRF: equ $8e       ; directory block free
-STORE_BLOCK_DIRU: equ $8d       ; directory block free
-STORE_BLOCK_FREE: equ $85       ; data block free
-STORE_BLOCK_AUTO: equ $89       ; auto start code
+;STORE_BLOCK_CFG: equ $8f       ; config block
+;STORE_BLOCK_DIRF: equ $8e       ; directory block free
+;STORE_BLOCK_DIRU: equ $8d       ; directory block free
+;STORE_BLOCK_FREE: equ $85       ; data block free
+;STORE_BLOCK_AUTO: equ $89       ; auto start code
 
 
 
@@ -135,14 +135,14 @@ STORE_BLOCK_AUTO: equ $89       ; auto start code
 ;STORE_DIR_FILE:  equ 1
 
 ; Structure offsets to directory entries
-STORE_DE_FLAG: equ 0
-STORE_DE_MAXEXT: equ 1
-STORE_DE_FILENAME: equ 2
+;STORE_DE_FLAG: equ 0
+;STORE_DE_MAXEXT: equ 1
+;STORE_DE_FILENAME: equ 2
 
 ; Structure offsets to block 0
 
-STORE_BK0_ISFOR: equ 1
-STORE_BK0_LABEL: equ 3
+;STORE_BK0_ISFOR: equ 1
+;STORE_BK0_LABEL: equ 3
 
 ; memory allocation 
 

@@ -1,9 +1,14 @@
+
 ; persisent storage hardware abstraction layer 
 
 
 
 ; Block 0 on storage is a config state
 
+
+
+; TODO add read phy block and write phy block functions
+; TODO add presence check (i.e. read write byte 0 of block 0 for eeprom)
 
 ; Abstraction layer 
 
@@ -18,45 +23,18 @@
 ;
 ; Block 0 - Bank config 
 ;
-;      Byte 0-1 formated byte pattern: 0x80 x27
-;      Byte 2-20 zero terminated bank label
+;      Byte - 0 file id counter
+;      Byte - 1-2 formated: Byte pattern: 0x80 x27
+;      Byte - 3-20 zero terminated bank label
 ;
-; Block 1-33 - Directory table
+; Block 1 > File storage
 ;
-;      Block number is file id
+;      Byte 0 file id    - block 0 file details
+;      Byte 1 block id - block 0 is file 
+;            Byte 2-15 - File name
 ;
-;      Byte 0 - Zero is table entry free
-;      Byte 1 - Last file block
-;      Byte 2-20 - File name/meta data
+;       - to end of block data
 ;
-; Block 34 => File storage
-
-;      Byte 0 file id:
-;                0 - block is free
-;                up to 32 is the file id, 33 > file block counter
-;      Byte 1 >= block data
-;
-
-
-; Clear out the main buffer store (used to remove junk before writing a new block)
-
-storage_clear_page:
-	push hl
-	push de
-	push bc
-	ld hl, store_page
-	ld a, 0
-	ld (hl), a
-
-	ld de, store_page+1
-	ld bc, STORE_BLOCK_PHY
-
-	ldir
-	
-	pop bc
-	pop de
-	pop hl
-	ret
 
 
 ; Read Block
@@ -78,25 +56,34 @@ storage_read_block:
 	ld b, STORE_BLOCK_PHY
 
 	if DEBUG_STORESE
-		DMARK "SRB"
-		CALLMONITOR
+		push de
 	endif
+	
 .rl1:   
 
-;	if DEBUG_STORESE
-;		DMARK "SRb"
-;		CALLMONITOR
-;	endif
 	; read physical block at hl into de
         ; increment hl and de to next read position on exit
-
-;	ld a, 10
-;	call aDelayInMS
 
 	push hl
 	push de	
 	push bc
+;	if DEBUG_STORESE
+;		push af
+;		ld a, 'R'
+;		ld (debug_mark),a
+;		pop af
+;		CALLMONITOR
+;	endif
 	call se_readbyte
+;	if DEBUG_STORESE
+;		ld a,(spi_portbyte)
+;		ld l, a
+;		push af
+;		ld a, '1'
+;		ld (debug_mark),a
+;		pop af
+;		CALLMONITOR
+;	endif
 	pop bc
 	pop de
 	pop hl
@@ -104,14 +91,30 @@ storage_read_block:
 	inc hl
 	inc de
 
-
+;	if DEBUG_STORESE
+;		push af
+;		ld a, 'r'
+;		ld (debug_mark),a
+;		pop af
+;		CALLMONITOR
+;	endif
 
 	djnz .rl1
 
+	if DEBUG_STORESE
+		DMARK "SRB"
+		pop de
+;
+;		push af
+;		ld a, 'R'
+;		ld (debug_mark),a
+;		pop af
+		CALLMONITOR
+	endif
 	ret	
 	
 
-; TODO File Size
+; File Size
 ; ---------
 ;
 ;   hl file id
@@ -160,8 +163,19 @@ storage_write_block:
 	if DEBUG_STORESE
 		DMARK "SWB"
 
+		;push af
+		;ld a, 'W'
+		;ld (debug_mark),a
+		;pop af
 		CALLMONITOR
 	endif
+
+; might not be working
+;	call se_writepage
+
+;	ret
+;
+
 
 
 .wl1:   
@@ -173,10 +187,25 @@ storage_write_block:
 	push de	
 	push bc
 	ld a,(de)
+	;if DEBUG_STORESE
+;		push af
+;		ld a, 'W'
+;		ld (debug_mark),a
+;		pop af
+;		CALLMONITOR
+;	endif
 	call se_writebyte
+;	call delay250ms
 	nop
 	nop
 	nop
+;	if DEBUG_STORESE
+;		push af
+;		ld a, 'w'
+;		ld (debug_mark),a
+;		pop af
+;		CALLMONITOR
+;	endif
 	pop bc
 	pop de
 	pop hl
@@ -189,6 +218,10 @@ storage_write_block:
 	if DEBUG_STORESE
 		DMARK "SW2"
 
+		;push af
+		;ld a, 'W'
+		;ld (debug_mark),a
+		;pop af
 		CALLMONITOR
 	endif
 	ret	
@@ -198,28 +231,16 @@ storage_write_block:
 ;
 ; With current bank
 ;
-; Block 0 - Bank config 
-;
-;      Byte 0-1 formated byte pattern: 0x80 x27
-;      Byte 2-20 zero terminated bank label
-;
-; Block 1-33 - Directory table
-;
-;      Block number is file id
-;
-;      Byte 0 - Zero is table entry free
-;      Byte 1 - Last file block
-;      Byte 2-20 - File name/meta data
+; Setup block 0 config
+;     Set 0 file id counter
+;     Set formatted byte pattern
+;     Zero out bank label
+;     
+; For every logical block write 0-1 byte as null
 
 storage_get_block_0:
 
 	; TODO check presence
-
-	if DEBUG_STORESE
-		DMARK "SB0"
-		ld de, store_page
-		CALLMONITOR
-	endif
 
 	; get block 0 config
 
@@ -227,17 +248,20 @@ storage_get_block_0:
 	ld de, store_page
 	call storage_read_block
 
-	; is this area formatted?
-	ld hl, (store_page+STORE_BK0_ISFOR)
-
 	if DEBUG_STORESE
-		DMARK "SBr"
+		DMARK "SB0"
 		ld de, store_page
+;		push af
+;		ld a, 'i'
+;		ld (debug_mark),a
+;		pop af
 		CALLMONITOR
 	endif
 
+	; is this area formatted?
 
-;      Byte 0-1 formated byte pattern: 0x80 x27
+;      Byte - 1-2 formated: Byte pattern: 0x80 x27
+	ld hl, (store_page+1)
 	ld a,0x80
 	cp l
 	jr nz, .ininotformatted
@@ -250,6 +274,10 @@ storage_get_block_0:
 
 	if DEBUG_STORESE
 		DMARK "SB1"
+		;push af
+		;ld a, 'I'
+		;ld (debug_mark),a
+		;pop af
 		CALLMONITOR
 	endif
 	ret
@@ -258,33 +286,27 @@ storage_get_block_0:
 	; bank not formatted so poke various bits to make sure
 
 	if DEBUG_STORESE
-		DMARK "SBi"
+		DMARK "SB2"
+		;push af
+		;ld a, 'f'
+		;ld (debug_mark),a
+		;pop af
 		CALLMONITOR
 	endif
 
-	call storage_clear_page
-
-	; init the format label
+	ld hl, store_page
+	ld a, 0
 	
-	ld a, STORE_BLOCK_CFG
-	ld (store_page), a
+	ld (hl),a   ; reset file counter
 
-	ld hl, 0x2780     ;      Byte - 0-1 formated: Byte pattern: 0x80 x27
- 	ld (store_page+STORE_BK0_ISFOR), hl	
+	ld hl, 0x2780     ;      Byte - 1-2 formated: Byte pattern: 0x80 x27
+ 	ld (store_page+1), hl	
 
-	if DEBUG_STORESE
-		DMARK "SBz"
-		CALLMONITOR
-	endif
 	; set default label
 
 	ld hl, .defaultbanklabl
- 	ld de, store_page+STORE_BK0_LABEL
+ 	ld de, store_page+3
 	ld bc, 15
-	if DEBUG_STORESE
-		DMARK "SBx"
-		CALLMONITOR
-	endif
 	ldir
 
 	; save default page 0
@@ -293,12 +315,19 @@ storage_get_block_0:
 	ld de, store_page
 	if DEBUG_STORESE
 		DMARK "SB3"
+;		push af
+;		ld a, 'F'
+;		ld (debug_mark),a
+;		pop af
 		CALLMONITOR
 	endif
 	call storage_write_block
-
 	if DEBUG_STORESE
-		DMARK "Fbs"
+		DMARK "SB4"
+;		push af
+;		ld a, '>'
+;		ld (debug_mark),a
+;		pop af
 		CALLMONITOR
 	endif
 
@@ -306,21 +335,22 @@ storage_get_block_0:
 	nop
 	nop
 
-	; now set block markers in every directory entry and file block to mark as a free block
+	; now set 0 in every page to mark as a free block
 
-
-
-	ld b, (STORE_DEVICE_MAXBLOCKS/2) -1
+	ld b, STORE_DEVICE_MAXBLOCKS/2
 	ld hl, STORE_BLOCK_PHY
 
-
-
-.setmark1:   	ld a,STORE_BLOCK_FREE
+.setmark1:   	ld a,0
 		push hl
 		push bc
 		call se_writebyte
 	ld a, 10
 	call aDelayInMS
+	inc hl
+		call se_writebyte
+	ld a, 10
+	call aDelayInMS
+	dec hl
 		pop bc
 		pop hl
 		ld a, STORE_BLOCK_PHY
@@ -328,44 +358,36 @@ storage_get_block_0:
 		djnz .setmark1
 
 	ld b, STORE_DEVICE_MAXBLOCKS/2
-.setmark2:   	ld a,STORE_BLOCK_FREE
+.setmark2:   	ld a,0
 		push hl
 		push bc
 		call se_writebyte
 	ld a, 10
 	call aDelayInMS
+	inc hl
+		call se_writebyte
+	ld a, 10
+	call aDelayInMS
+	dec hl
 		pop bc
 		pop hl
 		ld a, STORE_BLOCK_PHY
 		call addatohl
 		djnz .setmark2
 
-	ld b, STORE_DIR_END
-	ld hl, STORE_BLOCK_PHY
-
-.setdirmarks:   	ld a,STORE_BLOCK_DIRF
-		push hl
-		push bc
-	call se_writebyte
-	ld a, 10
-	call aDelayInMS
-		pop bc
-		pop hl
-		ld a, STORE_BLOCK_PHY
-		call addatohl
-		djnz .setdirmarks
-
-	; re-enter to get empty file system
 		
-	jp storage_get_block_0
+
+
+	ret
 
 
 
-.defaultbanklabl:   db "DefaultLabel",0
+
+.defaultbanklabl:   db "BankLabel",0
 
 
 
-; OK Label Bank
+; Label Bank
 ; ----------
 ;
 ; With current bank
@@ -378,7 +400,7 @@ storage_get_block_0:
 storage_label:    
 
 	if DEBUG_STORESE
-		DMARK "SBL"
+		DMARK "LBL"
 		CALLMONITOR
 	endif
 
@@ -390,8 +412,8 @@ storage_label:
 
 	pop hl
 
- 	ld de, store_page+STORE_BK0_LABEL
-	ld bc, 20       ; TODO actual length
+ 	ld de, store_page+3
+	ld bc, 15
 	if DEBUG_STORESE
 		DMARK "LB3"
 		CALLMONITOR
@@ -421,7 +443,7 @@ storage_label:
 ; 
 
 
-; TODO Dir
+; Dir
 ; ---
 ;
 ; With current bank
@@ -437,49 +459,110 @@ storage_label:
 ; moving to words as this requires stack control
 
 
-; TODO Delete File
+; Delete File
 ; -----------
 ;
 ; With current bank
 ;
-; Zero directory entry in block id
-; For each file logical block
-;    Read block file id byte
+; Load Block 0 Config
+; Get max file id number
+; For each logical block
+;    Read block file id
+;      If first block of file and dont have file id
+;         if file to delete
+;         Save file id
+;         Null file id
+;         Write this block back
 ;      If file id is one saved
 ;         Null file id
-;         Write this byte back
+;         Write this block back
 
 storage_erase:
 
 	; hl contains the file id
 
+	ld e, l
+	ld d, 0
+	ld hl, STORE_BLOCK_PHY
 		if DEBUG_FORTH_WORDS
 			DMARK "ERA"
 			CALLMONITOR
 		endif
+	call storage_findnextid
 
-	; TODO calc directory entry block number
-	; TODO write zero to entry marker
-	
-	; TODO from start of file data blocks until end of storage
-	; TODO get block marker
-	; TODO if block marker is file id write zero
+	push hl
 
+	; TODO check file not found
+
+	ld de, store_page
+	call storage_read_block
+
+		if DEBUG_FORTH_WORDS
+			DMARK "ER1"
+			CALLMONITOR
+		endif
+	ld a, (store_page)	; get file id
+	ld (store_tmpid), a
+
+	ld a, (store_page+2)    ; get count of extends
+	ld (store_tmpext), a
+
+	; wipe file header
+
+	pop hl
+	ld a, 0
+	ld (store_page), a
+	ld (store_page+1),a
+	ld de, store_page
+		if DEBUG_FORTH_WORDS
+			DMARK "ER2"
+			CALLMONITOR
+		endif
+	call storage_write_block
+
+
+	; wipe file extents
+
+	ld a, (store_tmpext)
+	ld b, a
+
+.eraext:	 
+	push bc
+
+	ld hl, STORE_BLOCK_PHY
+	ld a,(store_tmpid)
+	ld e, a
+	ld d, b	
+		if DEBUG_FORTH_WORDS
+			DMARK "ER3"
+			CALLMONITOR
+		endif
+	call storage_findnextid
+
+	push hl
+	ld de, store_page
+	call storage_read_block
+
+	; free block	
+
+	ld a, 0
+	ld (store_page), a
+	ld (store_page+1),a
+	ld de, store_page
+	pop hl
+		if DEBUG_FORTH_WORDS
+			DMARK "ER4"
+			CALLMONITOR
+		endif
+	call storage_write_block
+
+	pop bc
+	djnz .eraext
 
 	ret
 
 
-; Calculate the single byte mask for the block id from:
-; e contains the file id to locate
-; d contains the block number
-
-.calcblockmask: 
-		ld a, d
-	        add STORE_DATA_START
-		add e	
-		ret
-
-; TODO TEST Find Block
+; Find Free Block
 ; ---------------
 ;
 ; With current bank
@@ -492,49 +575,43 @@ storage_erase:
 
 ; hl starting page number
 ; hl contains free page number or zero if no pages free
-; e contains the block id type to locate i.e. store_block_free
-; d contains the block number   (not used)
+; e contains the file id to locate
+; d contains the block number
 
 ; TODO change to find file id and use zero for free block
 
 storage_findnextid:
 
-storage_findblock:
-
-;	call .calcblockmask
-
-;store_findnextrawid:        ; entry point if already got a mask
-
-;	ld e, a    ; save the mask to locate
-
 	; now locate first 0 page to mark as a free block
 
-	ld b, (STORE_DEVICE_MAXBLOCKS/2)-1
-	ld hl, STORE_BLOCK_PHY
+	ld b, STORE_DEVICE_MAXBLOCKS/2
+;	ld hl, STORE_BLOCK_PHY
 
 		if DEBUG_FORTH_WORDS
-		DMARK "FNB"
+		DMARK "FNI"
 			CALLMONITOR
 		endif
 .ff1:   	
 		push hl
 		push bc
 		push de
-;		if DEBUG_FORTH_WORDS
-;		DMARK "FN>"
-;			CALLMONITOR
-;		endif
 		call se_readbyte
-		pop de
-;		if DEBUG_FORTH_WORDS
-;		DMARK "FN}"
-;			CALLMONITOR
-;		endif
-		cp e
+		ld e,a
+		inc hl
+		call se_readbyte
+		ld d, a
+		pop hl
+		push hl
+		call cmp16
 		jr z, .fffound
 
+		pop de
 		pop bc
 		pop hl
+
+		; is found?
+		;cp e
+		;ret z
 
 		ld a, STORE_BLOCK_PHY
 		call addatohl
@@ -547,12 +624,22 @@ storage_findblock:
 		push bc
 		push de
 		call se_readbyte
-		pop de
-		cp e
+		ld e,a
+		inc hl
+		call se_readbyte
+		ld d, a
+
+		pop hl
+		push hl
+		call cmp16
 		jr z, .fffound
 
+		pop de
 		pop bc
 		pop hl
+		; is found?
+		;cp e
+		;ret z
 
 		ld a, STORE_BLOCK_PHY
 		call addatohl
@@ -561,6 +648,10 @@ storage_findblock:
 
 		if DEBUG_FORTH_WORDS
 		DMARK "FN-"
+		;	push af
+		;	ld a, 'n'
+		;	ld (debug_mark),a
+		;	pop af
 			CALLMONITOR
 		endif
 	; no free marks!
@@ -569,17 +660,22 @@ storage_findblock:
 .fffound:
 	
 
+		pop de
 		pop bc
 		pop hl
 		if DEBUG_FORTH_WORDS
 		DMARK "FNF"
+		;	push af
+		;	ld a, 'n'
+		;	ld (debug_mark),a
+		;	pop af
 			CALLMONITOR
 		endif
 	ret
 
 
 
-; TODO Free Space
+; Free Space
 ; ----------
 ;
 ; With current bank
@@ -645,12 +741,9 @@ storage_freeblocks:
 		djnz .fb2
 
 	ex de, hl
-
-; TODO sub dir entries
-
 	ret
 
-; TODO Get File ID
+; Get File ID
 ; -----------
 ;
 ; With current bank
@@ -665,11 +758,15 @@ storage_freeblocks:
 
 
 
-; OK Create File
+; Create File
 ; -----------
 ;
 ; With current bank 
-; Find free dir block
+; Load Block 0 Config
+; Get max file id number
+; Increment file id number
+; Save Config
+; Find free block
 ; Set buffer with file name and file id
 ; Write buffer to free block 
 
@@ -677,6 +774,17 @@ storage_freeblocks:
 ; hl point to file name
 ; hl returns file id
 
+; file format:
+; byte 0 - file id
+; byte 1 - extent number
+; byte 2-> data
+
+; format for extent number 0:
+;
+; byte 0 - file id
+; byte 1 - extent 0
+; byte 2 - extent count
+; byte 3 -> file name and meta data
 
 
 storage_create:
@@ -685,86 +793,86 @@ storage_create:
 		CALLMONITOR
 	endif
 
-	ld (store_tmp1), hl		; save file name pointer
+	push hl		; save file name pointer
 
 	call storage_get_block_0
 
-; TODO find spare dir entry space
-; TODO if dir is full return HL=0
+	ld a,(store_page)	; get current file id
+	inc a
+	ld (store_page),a
+	
+	ld (store_tmpid),a			; save id
 
+	ld hl, 0
+	ld de, store_page
+	if DEBUG_STORESE
+		DMARK "SCw"
+		CALLMONITOR
+	endif
+	call storage_write_block	 ; save update
 
-	ld b, STORE_DIR_START
+	if DEBUG_STORESE
+		ld de, store_page
+		DMARK "SCC"
+		CALLMONITOR
+	endif
+	; 
+	
 	ld hl, STORE_BLOCK_PHY
+	ld de, 0
+	call storage_findnextid
+
+	ld (store_tmppageid), hl    ; save page to use 
+
+	; TODO detect 0 = no spare blocks
+
+	; hl now contains the free page to use for the file header page
 
 	if DEBUG_STORESE
-		DMARK "SCs"
-		CALLMONITOR
-	endif
-.scdirscan:
-;	push bc   
-	call se_readbyte
-	if DEBUG_STORESE
-		DMARK "Sf?"
-		CALLMONITOR
-	endif
-	cp STORE_BLOCK_DIRF
-	jr z, .dirfree
-	ld de, STORE_BLOCK_PHY
-	add hl, de	; next block
-;	pop bc
-	ld a, STORE_DIR_END
-	cp b
-	jr z, .nodirfree
-	inc b
-	jr .scdirscan
-
-.nodirfree: 
-
-	if DEBUG_STORESE
-		DMARK "SCn"
-		CALLMONITOR
-	endif
-		  ; no spare dir space left so return error
-		;pop hl     ; get rid of file name pointer
-		 ld hl, 0
-		ret
-
-; directory space is spare so create a file entry for it
-; hl will have the block number handy so can just prep the file dir entry here
-
-.dirfree:
-	if DEBUG_STORESE
-		DMARK "SCf"
+	DMARK "SCF"
 		CALLMONITOR
 	endif
 
-;hl address?  80
-;de starting location/  40
-;bc dir id   0101
+	ld (store_tmppageid), hl
+	
+	ld a,(store_tmpid)    ; get file id
+;	ld a, (store_filecache)			; save to cache
 
+	ld (store_page),a    ; set page id
+	ld a, 0			 ; extent 0 is file header
+	ld (store_page+1), a   ; set file extent
 
-	call storage_clear_page
+	ld (store_page+2), a   ; extent count for the file
 
-	ld a, STORE_BLOCK_DIRU       ; different file type attributes e.g. plain file, db, config, exec code
-	ld (store_page),a    ; mark dir entry as in use
-	ld (store_tmp2), bc     ; save the file block id for saving into later
-	ld (store_tmp3), hl     ; save the file block address for saving into later
-	ld hl,(store_tmp1)     ; get the file name pointer
+;	inc hl 		; init block 0 of file
+;	inc hl   		; skip file and extent id
+ ;       ld a, 0
+;	ld (hl),a
+;	ld a, (store_filecache+1)  	; save to cache
 
+;	inc hl    ; file name
+	
+	
+	ld de, store_page+3    ; get buffer for term string to use as file name
+	if DEBUG_STORESE
+		DMARK "SCc"
+		CALLMONITOR
+	endif
+	pop hl    ; get zero term string
+	push hl
 	ld a, 0
-	if DEBUG_STORESE
-		DMARK "SCl"
-		CALLMONITOR
-	endif
 	call strlent
 	inc hl   ; cover zero term
 	ld b,0
 	ld c,l
-	ld hl,(store_tmp1)     ; get the file name pointer
-	ld de, store_page+STORE_DE_FILENAME   ; file name data dest
+	pop hl
 	;ex de, hl
 	if DEBUG_STORESE
 		DMARK "SCa"
+		;push af
+		;ld a, 'a'
+		;ld (debug_mark),a
+		;pop af
 		CALLMONITOR
 	endif
 	ldir    ; copy zero term string
@@ -773,29 +881,29 @@ storage_create:
 		CALLMONITOR
 	endif
 
-	; write data ext count for new file which is zero
+	; write file header page
 
-	ld a, 0
-	ld (store_page+STORE_DE_MAXEXT), a
-
-	; write directory entry
-
-;	pop hl    ; get file entry found 
-	ld hl, (store_tmp3)     ; save the file block address for saving into later
+	ld hl,(store_tmppageid)
 	ld de, store_page
 	if DEBUG_STORESE
 		DMARK "SCb"
+		;push af
+		;ld a, 'b'
+		;ld (debug_mark),a
+		;pop af
 		CALLMONITOR
 	endif
 	call storage_write_block
 
-	; return the file id to caller in hl
-
-	ld a, (store_tmp2+1)     ; in b of bc
+	ld a, (store_tmpid)
 	ld l, a
-	ld h, 0
+	ld h,0
 	if DEBUG_STORESE
-		DMARK "SCe"
+		DMARK "SCz"
+;		push af
+;		ld a, 'z'
+;		ld (debug_mark),a
+;		pop af
 		CALLMONITOR
 	endif
 	ret
@@ -803,7 +911,7 @@ storage_create:
 
 
 ;
-; TODO Read File
+; Read File
 ;
 ; h - file id to locate
 ; l - extent to locate
@@ -828,13 +936,11 @@ storage_read:
 ;	ld a, l
 ;	add h
 ;	cp 0
-; TODO is stack push of DE not balanced?
-
-	jr c, .srateof			; block not found so EOF
+	ret z			; block not found so EOF
 
 	; hl contains page number to load
 	pop de   ; get storage
-;	push de
+	push de
 	call storage_read_block
 
 
@@ -847,11 +953,10 @@ storage_read:
 	inc hl   ; past ext
 		ret
 
-.srateof:  pop de
-	ret
+
 
 ;
-; TODO TEST Append File
+; Append File
 ;
 ; hl - file id to locate
 ; de - pointer to (multi block) string to write
@@ -861,289 +966,155 @@ storage_append:
 	; hl -  file id to append to
 	; de - string to append
 
-; store_tmp1 - block address
-; store_tmp2 - string to copy
-; store_tmp3 - file id + current extent  (id in l)
-
-
-	ld (store_tmp3), hl
-
-	ld (store_tmp2), de
+	push de
 	
 	if DEBUG_STORESE
-		DMARK "SAP"
+		DMARK "AP1"
 		CALLMONITOR
 	endif
 
+	ld a, l
+	ld (store_tmpid), a
 
-	; get dir entry for id
-	; get current max ext count
+	; get file header 
 
-	ld a, l 
-	;add STORE_DIR_START
- 	ld de, STORE_BLOCK_PHY 
-	call Mult16       ; hl has the byte location for the start of the dir entry
-        inc hl   ; move to the ext count  
-	;push hl
-	ld de, store_page
+	ld d, 0			 ; file extent to locate - file name details at item 0
+	ld a, (store_tmpid)
+	ld e, a
+
+		ld hl, STORE_BLOCK_PHY
+		call storage_findnextid
+
+	ld (store_tmppageid), hl
+
+	; TODO handle file id not found
 
 	if DEBUG_STORESE
-		DMARK "APX"
+		DMARK "AP2"
 		CALLMONITOR
 	endif
-	push hl
+
+	; update file extent count
+
+	ld de, store_page
+
 	call storage_read_block
-;	call se_readbyte
-	pop hl
-
-	; inc max extent count
-
-	ld a, (store_page+STORE_DE_MAXEXT)
-	inc a
-	ld (store_page+STORE_DE_MAXEXT), a
-;	ld (store_tmp3), a
-
-	; save current max ext count
-
-ld de, store_page
-;	pop hl
-	if DEBUG_STORESE
-		DMARK "APx"
-		CALLMONITOR
-	endif
-	push af
-	
-	call storage_write_block
-;	call se_writebyte
-	pop af
-
-	; calc file block id and extent
-
-	ld hl, (store_tmp3)      ; l = file id
-
-	ld h, a                  ; h = extent
-	ld (store_tmp3), hl
 
 	if DEBUG_STORESE
-		DMARK "API"
+		DMARK "AP3"
 		CALLMONITOR
 	endif
-
-	; find empty file block
-
-	ld de, STORE_BLOCK_FREE
-
-	ld hl, 0  ; search whole storage
-
-	if DEBUG_STORESE
-		DMARK "APf"
-		CALLMONITOR
-	endif
-
-	call storage_findblock
-
-; TODO handle no space left
-
-	ld (store_tmp1), hl   ; save new block location
-	if DEBUG_STORESE
-		DMARK "APb"
-		CALLMONITOR
-	endif
-
-	; TODO check for no spare blocks
-
-	; with max extent set file data block id
-
-	call storage_clear_page
-
-	ld hl, store_page
-	ld de, (store_tmp3)
-	ld (hl), e
-	inc hl
-	ld (hl), d
-	inc hl
-
-	if DEBUG_STORESE
-		DMARK "APi"
-		CALLMONITOR
-	endif
-
-	; copy the data to buffer
-
-	ld de, (store_tmp2)
-	ex de, hl
-	
-	push hl ; save string start
-	ld a, 0
-	call strlent
-	inc l    ; zero term
-	ld c, l
-	ld b, 0
-	pop hl
-	ldir        ; copy string
-	
-	; write buffer block
-
-	ld hl, (store_tmp1)
-	ld de, store_page
-
-	if DEBUG_STORESE
-		DMARK "APe"
-		CALLMONITOR
-	endif
-
-;	pop hl
-	call storage_write_block
-
-; TODO include code below to handle writing more than a buffer full
-
-	ret
-
-
-
-;
-;
-;	ld a, l
-;
-;	; get file header 
-;
-;	ld d, 0			 ; file extent to locate - file name details at item 0
-;	ld a, (store_tmpid)
-;	ld e, a
-;
-;		ld hl, STORE_BLOCK_PHY
-;		call storage_findnextid
-;
 ;	ld (store_tmppageid), hl
-;
-;	; TODO handle file id not found
-;
-;	if DEBUG_STORESE
-;		DMARK "AP2"
-;		CALLMONITOR
-;	endif
-;
-;	; update file extent count
-;
-;	ld de, store_page
-;
-;	call storage_read_block
-;
-;	if DEBUG_STORESE
-;		DMARK "AP3"
-;		CALLMONITOR
-;	endif
-;;	ld (store_tmppageid), hl
-;
-;	ld a, (store_page+2)
-;	inc a
-;	ld (store_page+2), a
-;	ld (store_tmpext), a
-;	
-;	if DEBUG_STORESE
-;		DMARK "AP3"
-;		CALLMONITOR
-;	endif
-;	ld hl, (store_tmppageid)
-;	ld de, store_page
-;	call storage_write_block
-;
-;	; find free block
-;
-;	ld de, 0			 ; file extent to locate
-;
-;		ld hl, STORE_BLOCK_PHY
-;		call storage_findnextid
-;
-;		; TODO handle no space left
-;		
-;		ld (store_tmppageid), hl
-;
-;	if DEBUG_STORESE
-;		DMARK "AP4"
-;		CALLMONITOR
-;	endif
-;		; init the buffer with zeros so we can id if the buffer is full or not
-;
-;		push hl
-;		push bc
-;
-;		ld hl, store_page
-;		ld b, STORE_BLOCK_PHY
-;		ld a, 0
-;.zeroblock:	ld (hl), a
-;		inc hl
-;		djnz .zeroblock
-;
-;		pop bc
-;		pop hl
-;
-;		; construct block
-;
-;		ld a, (store_tmpid)
-;		ld (store_page), a   ; file id
-;		ld a, (store_tmpext)   ; extent for this block
-;		ld (store_page+1), a
-;
-;		pop hl    ; get string to write
-;		ld b, STORE_BLOCK_PHY-2       ; exclude count of file id and extent
-;		ld de, store_page+2
-;
-;	if DEBUG_STORESE
-;		DMARK "AP5"
-;		CALLMONITOR
-;	endif
-;
-;
-;
-;		; fill buffer with data until end of string or full block
-;
-;.appd:		ld a, (hl)
-;		ld (de), a
-;		cp 0
-;		jr z, .appdone
-;		inc hl
-;		inc de
-;		djnz .appd
-;
-;.appdone:	push hl		 	; save current source in case we need to go around again
-;		push af   		; save last byte dumped
-;
-;
-;	ld hl, (store_tmppageid)
-;	ld de, store_page
-;	if DEBUG_STORESE
-;		DMARK "AP6"
-;		CALLMONITOR
-;	endif
-;		call storage_write_block
-;
-;
-;	; was that a full block of data written?
-;	; any more to write out?
-;
-;	; if yes then set vars and jump to start of function again
-;
-;		pop af
-;		pop de
-;
-;		cp 0		 ; no, string was fully written
-;		ret z
-;
-;		; setup vars for next cycle
-;
-;		ld a, (store_tmpid)
-;		ld l, a
-;		ld h, 0
-;
-;	 	jp storage_append	 ; yes, need to write out some more
-;
-;
-;
-;
-;
-;
-;
+
+	ld a, (store_page+2)
+	inc a
+	ld (store_page+2), a
+	ld (store_tmpext), a
+	
+	if DEBUG_STORESE
+		DMARK "AP3"
+		CALLMONITOR
+	endif
+	ld hl, (store_tmppageid)
+	ld de, store_page
+	call storage_write_block
+
+	; find free block
+
+	ld de, 0			 ; file extent to locate
+
+		ld hl, STORE_BLOCK_PHY
+		call storage_findnextid
+
+		; TODO handle no space left
+		
+		ld (store_tmppageid), hl
+
+	if DEBUG_STORESE
+		DMARK "AP4"
+		CALLMONITOR
+	endif
+		; init the buffer with zeros so we can id if the buffer is full or not
+
+		push hl
+		push bc
+
+		ld hl, store_page
+		ld b, STORE_BLOCK_PHY
+		ld a, 0
+.zeroblock:	ld (hl), a
+		inc hl
+		djnz .zeroblock
+
+		pop bc
+		pop hl
+
+		; construct block
+
+		ld a, (store_tmpid)
+		ld (store_page), a   ; file id
+		ld a, (store_tmpext)   ; extent for this block
+		ld (store_page+1), a
+
+		pop hl    ; get string to write
+		ld b, STORE_BLOCK_PHY-2       ; exclude count of file id and extent
+		ld de, store_page+2
+
+	if DEBUG_STORESE
+		DMARK "AP5"
+		CALLMONITOR
+	endif
+
+
+
+		; fill buffer with data until end of string or full block
+
+.appd:		ld a, (hl)
+		ld (de), a
+		cp 0
+		jr z, .appdone
+		inc hl
+		inc de
+		djnz .appd
+
+.appdone:	push hl		 	; save current source in case we need to go around again
+		push af   		; save last byte dumped
+
+
+	ld hl, (store_tmppageid)
+	ld de, store_page
+	if DEBUG_STORESE
+		DMARK "AP6"
+		CALLMONITOR
+	endif
+		call storage_write_block
+
+
+	; was that a full block of data written?
+	; any more to write out?
+
+	; if yes then set vars and jump to start of function again
+
+		pop af
+		pop de
+
+		cp 0		 ; no, string was fully written
+		ret z
+
+		; setup vars for next cycle
+
+		ld a, (store_tmpid)
+		ld l, a
+		ld h, 0
+
+	 	jp storage_append	 ; yes, need to write out some more
+
+
+
+
+
+
+
 if DEBUG_STORECF
 storageput:	
 		ret
@@ -1177,6 +1148,7 @@ storageread:
 
 		ret
 endif
+
 
 
 ; eof

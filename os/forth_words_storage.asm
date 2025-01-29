@@ -664,7 +664,7 @@
 	endif
 		; Wipes the bank check flags to cause a reformat on next block 0 read
 
-		ld hl, 0
+		ld hl, 1
 		ld a, 0
 		call se_writebyte
 

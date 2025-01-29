@@ -105,7 +105,7 @@ endif
 
 ;if STORAGE_SE == 0
 STORE_BLOCK_PHY:   equ 64    ; physical block size on storage   64byte on 256k eeprom
-STORE_DEVICE_MAXBLOCKS:  equ  512 ; how many blocks are there on this storage device
+STORE_DEVICE_MAXBLOCKS:  equ  255*2 ; how many blocks are there on this storage device
 ;endif
 
 ; Blocks where directory table is held
@@ -119,10 +119,20 @@ STORE_DIR_END: equ 33
 
 STORE_DATA_START: equ STORE_DIR_END + 1
 
+; Block indicators (<32 are data files)
+
+STORE_BLOCK_CFG: equ $8f       ; config block
+STORE_BLOCK_DIRF: equ $8e       ; directory block free
+STORE_BLOCK_DIRU: equ $8d       ; directory block free
+STORE_BLOCK_FREE: equ $85       ; data block free
+STORE_BLOCK_AUTO: equ $89       ; auto start code
+
+
+
 ; Directory entry flags
 
-STORE_DIR_FREE: equ 0
-STORE_DIR_FILE:  equ 1
+;STORE_DIR_FREE: equ 0
+;STORE_DIR_FILE:  equ 1
 
 ; Structure offsets to directory entries
 STORE_DE_FLAG: equ 0

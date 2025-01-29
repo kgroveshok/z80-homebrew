@@ -9,6 +9,8 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE FORMAT word
 * DONE CREATE word
 * DONE LABEL word
+
+* TODO BUG serious bug on se_readbyte. If byte is FE it reads as 1. Bit shifting issue? 8E is fine.
 * TO TEST LABELS word
 * TODO APPEND word
 * TODO OPEN word

@@ -469,7 +469,7 @@
 ### BYNAME ( s -- u ) Get the file ID in the current BANK of the file named s | TODO
 
 
-### DIR ( u -- lab id ... c t ) Using bank number u push directory entries from persistent storage as w with count u  | TODO
+### DIR ( u -- lab id ... c t ) Using bank number u push directory entries from persistent storage as w with count u  | DONE
 
 
 ### SAVE  ( w u -- )    Save user word memory to file name w on bank u | TODO
@@ -496,10 +496,10 @@
 ### SEI ( u2 -- u1 ) Get a byte from Serial EEPROM device at address u2 | DONE
 
 
-### FFREE ( -- n )  Gets number of free file blocks on current storage bank | TODO
+### FFREE ( -- n )  Gets number of free file blocks on current storage bank | DONE
 
 
-### SIZE ( u -- n )  Gets number of blocks used by file id u and push to stack | TODO
+### SIZE ( u -- n )  Gets number of blocks used by file id u and push to stack | DONE
 
 
 ### CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS | TO TEST
@@ -541,19 +541,10 @@
  The maximum file size currently using 32k serial EEPROMS using 64 byte blocks is 15k.
 
 
-### ERA ( n --  )  Deletes all data for file id n on current storage bank | TODO
+### ERA ( n --  )  Deletes all data for file id n on current storage bank | DONE
 
 
-### OPEN ( n -- n )  Sets file id to point to first data page for subsequent READs. Pushes the max number of blocks for this file | TODO
-
-
- e.g.
-
-
- $01 OPEN $01 DO $01 READ . LOOP
-
-
-### READ ( n -- n  )  Reads next page of file id and push to stack | TODO
+### OPEN ( n -- n )  Sets file id to point to first data page for subsequent READs. Pushes the max number of blocks for this file | DONE
 
 
  e.g.
@@ -562,7 +553,16 @@
  $01 OPEN $01 DO $01 READ . LOOP
 
 
-### EOF ( n -- u )  Returns EOF logical state of file id n - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | TODO
+### READ ( n -- n  )  Reads next page of file id and push to stack | DONE
+
+
+ e.g.
+
+
+ $01 OPEN $01 DO $01 READ . LOOP
+
+
+### EOF ( n -- u )  Returns EOF logical state of file id n - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | DONE
 
 
  e.g.
@@ -844,10 +844,31 @@
 ### RND ( u1 u2 -- u ) Generate a random number no lower than u1 and no higher than u2 and push to stack | DONE
 
 
+### DIR ( u -- lab id ... c t ) Using bank number u push directory entries from persistent storage as w with count u  | DONE
+
+
 ### SEO ( u1 u2 -- ) Send byte u1 to Serial EEPROM device at address u2 | DONE
 
 
 ### SEI ( u2 -- u1 ) Get a byte from Serial EEPROM device at address u2 | DONE
+
+
+### FFREE ( -- n )  Gets number of free file blocks on current storage bank | DONE
+
+
+### SIZE ( u -- n )  Gets number of blocks used by file id u and push to stack | DONE
+
+
+### ERA ( n --  )  Deletes all data for file id n on current storage bank | DONE
+
+
+### OPEN ( n -- n )  Sets file id to point to first data page for subsequent READs. Pushes the max number of blocks for this file | DONE
+
+
+### READ ( n -- n  )  Reads next page of file id and push to stack | DONE
+
+
+### EOF ( n -- u )  Returns EOF logical state of file id n - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | DONE
 
 
 ### FORMAT (  --  )  Formats the current bank selected (NO PROMPT!) | DONE
@@ -991,9 +1012,6 @@
 ### BYNAME ( s -- u ) Get the file ID in the current BANK of the file named s | TODO
 
 
-### DIR ( u -- lab id ... c t ) Using bank number u push directory entries from persistent storage as w with count u  | TODO
-
-
 ### SAVE  ( w u -- )    Save user word memory to file name w on bank u | TODO
 
 
@@ -1006,28 +1024,10 @@
 ### BLOAD ( w u a -- )    Load binary file from file name w on bank u into address u | TODO
 
 
-### FFREE ( -- n )  Gets number of free file blocks on current storage bank | TODO
-
-
-### SIZE ( u -- n )  Gets number of blocks used by file id u and push to stack | TODO
-
-
 ### CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS | TO TEST
 
 
 ### APPEND ( u n --  )  Appends data u to file id on current storage bank | TO TEST
-
-
-### ERA ( n --  )  Deletes all data for file id n on current storage bank | TODO
-
-
-### OPEN ( n -- n )  Sets file id to point to first data page for subsequent READs. Pushes the max number of blocks for this file | TODO
-
-
-### READ ( n -- n  )  Reads next page of file id and push to stack | TODO
-
-
-### EOF ( n -- u )  Returns EOF logical state of file id n - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | TODO
 
 
 ### LABELS (  -- b n .... c  )  Pushes each storage bank labels (n) along with id (b) onto the stack giving count (c) of banks  | TO TEST

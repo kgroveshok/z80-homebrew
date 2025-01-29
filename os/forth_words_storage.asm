@@ -13,7 +13,7 @@
 
 .DIR:
 	CWHEAD .SAVE 38 "DIR" 3 WORD_FLAG_CODE
-; | DIR ( u -- lab id ... c t ) Using bank number u push directory entries from persistent storage as w with count u  | TODO
+; | DIR ( u -- lab id ... c t ) Using bank number u push directory entries from persistent storage as w with count u  | DONE
 
 		if DEBUG_FORTH_WORDS
 			DMARK "DIR"
@@ -360,7 +360,7 @@
 
 .SFREE:
 	CWHEAD .SIZE 83 "FFREE" 5 WORD_FLAG_CODE
-; | FFREE ( -- n )  Gets number of free file blocks on current storage bank | TODO
+; | FFREE ( -- n )  Gets number of free file blocks on current storage bank | DONE
 
 		call storage_freeblocks
 
@@ -369,7 +369,7 @@
 	       NEXTW
 .SIZE:
 	CWHEAD .CREATE 83 "SIZE" 4 WORD_FLAG_CODE
-; | SIZE ( u -- n )  Gets number of blocks used by file id u and push to stack | TODO
+; | SIZE ( u -- n )  Gets number of blocks used by file id u and push to stack | DONE
 
 		FORTH_DSP_VALUEHL
 		push hl
@@ -468,7 +468,7 @@
 	       NEXTW
 .SDEL:
 	CWHEAD .OPEN 86 "ERA" 4 WORD_FLAG_CODE
-; | ERA ( n --  )  Deletes all data for file id n on current storage bank | TODO
+; | ERA ( n --  )  Deletes all data for file id n on current storage bank | DONE
 		FORTH_DSP_VALUEHL
 		push hl 	; save file id
 
@@ -485,7 +485,7 @@
 
 .OPEN:
 	CWHEAD .READ 87 "OPEN" 4 WORD_FLAG_CODE
-; | OPEN ( n -- n )  Sets file id to point to first data page for subsequent READs. Pushes the max number of blocks for this file | TODO
+; | OPEN ( n -- n )  Sets file id to point to first data page for subsequent READs. Pushes the max number of blocks for this file | DONE
 ; | | e.g.
 ; | | $01 OPEN $01 DO $01 READ . LOOP
 
@@ -501,15 +501,26 @@
 
 		ld h, l
 		ld l, 0
+
+	if DEBUG_STORESE
+		DMARK "OPN"
+		CALLMONITOR
+	endif
+		push hl
+		FORTH_DSP_POP     ; TODO for now just get rid of stream id
+		pop hl
 			
 		ld de, store_page      ; get block zero of file
 		call storage_read
 
-		FORTH_DSP_POP     ; TODO for now just get rid of stream id
 
 		ld a, (store_page+2)    ; max extents for this file
 		ld  (store_openmaxext), a   ; get our limit and push
 		
+	if DEBUG_STORESE
+		DMARK "OPx"
+		CALLMONITOR
+	endif
 		cp 0
 		jr nz, .skipopeneof
 		; have opened an empty file
@@ -526,7 +537,7 @@
 	       NEXTW
 .READ:
 	CWHEAD .EOF 88 "READ" 4 WORD_FLAG_CODE
-; | READ ( n -- n  )  Reads next page of file id and push to stack | TODO
+; | READ ( n -- n  )  Reads next page of file id and push to stack | DONE
 ; | | e.g.
 ; | | $01 OPEN $01 DO $01 READ . LOOP
 
@@ -629,7 +640,7 @@
 
 .EOF:
 	CWHEAD .FORMAT 89 "EOF" 3 WORD_FLAG_CODE
-; | EOF ( n -- u )  Returns EOF logical state of file id n - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | TODO
+; | EOF ( n -- u )  Returns EOF logical state of file id n - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | DONE
 ; | | e.g.
 ; | | $01 OPEN REPEAT $01 READ $01 EOF $00 IF LOOP
 		; TODO if current block id for stream is zero then push true else false

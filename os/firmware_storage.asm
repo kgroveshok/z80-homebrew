@@ -900,10 +900,6 @@ storage_create:
 	ld h,0
 	if DEBUG_STORESE
 		DMARK "SCz"
-;		push af
-;		ld a, 'z'
-;		ld (debug_mark),a
-;		pop af
 		CALLMONITOR
 	endif
 	ret
@@ -930,8 +926,16 @@ storage_read:
 	ld e, h
 	ld d, l
 	ld hl, STORE_BLOCK_PHY
+	if DEBUG_STORESE
+		DMARK "SRE"
+		CALLMONITOR
+	endif
 	call storage_findnextid
 
+	if DEBUG_STORESE
+		DMARK "SRf"
+		CALLMONITOR
+	endif
 	call ishlzero
 ;	ld a, l
 ;	add h
@@ -941,6 +945,10 @@ storage_read:
 	; hl contains page number to load
 	pop de   ; get storage
 	push de
+	if DEBUG_STORESE
+		DMARK "SRg"
+		CALLMONITOR
+	endif
 	call storage_read_block
 
 
@@ -951,6 +959,10 @@ storage_read:
 	pop hl 		 ; return start of data to show as not EOF
 	inc hl   ; past file id
 	inc hl   ; past ext
+	if DEBUG_STORESE
+		DMARK "SRe"
+		CALLMONITOR
+	endif
 		ret
 
 

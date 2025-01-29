@@ -9,21 +9,21 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE FORMAT word
 * DONE CREATE word
 * DONE LABEL word
+* DONE APPEND word
+* DONE OPEN word
+* DONE READ word any further push of a string (numbers are fine) to stack causes a crash after first use. Appears to be the malloc failing. Using my malloc it works.
+* DONE EOF word
+* DONE ERA word
+* DONE FFREE word
+* DONE SIZE word
 
-* TODO APPEND word
-* TODO OPEN word
-* TODO READ word
-* TODO ERA word
-* TODO FSIZE word
-* TODO DIR word
-* TODO FFREE word
-* TODO EOF word
+* TODO Enforce malloc free
 * TODO Add to start up a list of what storage labels are seen
 * TODO add ram test to the diags
 * TODO Speed up screen updates - instead of writing whole screen detect what has changed? 
 * TODO Add no bank chip detection to format
 * TODO Add ELSE clause: x if true else false then
-
+* TODO Fix prev line recall and insertion. Corruption appears on the end of line
 
 
 

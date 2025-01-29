@@ -75,10 +75,10 @@ CALLMONITOR: macro
 	call break_point_state
 	endm
 
-MALLOC_1: equ 1        ; from dk88 
+MALLOC_1: equ 0        ; from dk88 
 MALLOC_2: equ 0           ; broke
 MALLOC_3: equ 0           ; really broke
-MALLOC_4: equ 0              ; mine pretty basic reuse and max of 250 chars
+MALLOC_4: equ 1              ; mine pretty basic reuse and max of 250 chars
 
 if BASE_KEV 
 stacksize: equ 512*2

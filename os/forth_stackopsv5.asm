@@ -643,7 +643,7 @@ macro_forth_dsp_value_m1:
 
 	dec hl
 	dec hl
-	dec hl
+;	dec hl
 
 	push de
 

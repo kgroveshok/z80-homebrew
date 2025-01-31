@@ -2,6 +2,58 @@
 Z80 Home Brew Micro-computer Project - Dev Diary
 ------------------------------------------------
 
+31st Jan 2025
+-------------
+
+* DONE Test CALL
+
+* TODO Relook at variable use. Setup a VARIABLE word which puts the address on the stack and allows the ! and @ words to access them. 
+* TODO Add to start up a list of what storage labels are seen
+* TODO add ram test to the diags
+* TODO Speed up screen updates - instead of writing whole screen detect what has changed? 
+* TODO Add no bank chip detection to format
+* TODO Add support for ELSE and ENDIF. IF THEN ELSE ENDIF   or IF THEN ENDIF
+* TODO Fix prev line recall and insertion. Corruption appears on the end of line
+* TODO Rework the storage system file structure and functions 
+* TODO setup a compiler
+* TODO Add a stack content viewer to callmonitor code
+* TODO Add the floating point maths code in
+* TODO CP/M screen clearing not working well
+* TODO CP/M keyboard entry not great
+* TODO Change circuit so that the storage cart is actually on port a and provides a full 5 chip pack. Then move sound to port b
+* TODO wire up a temp interface to the serial EEPROMS so I can test storage on the SC114 as I have the PIO and digital IO cards installed
+* TODO with the second PIO port hook up and debug the sound card
+* TODO PICK word to pick a value at a given value on stack and move to TOS
+* TODO Fix NUM2STR. 
+* TODO Fix LEFT
+* TODO Fix RIGHT
+* TODO Fix 2SWAP
+* TODO Change NOTE to PLAY and use a stream of items on stack
+* TODO Fix KEY
+* TODO Fix IS 
+* TO TEST need word to report where cursor current at
+* TODO add more editing features 
+* TODO fix editor bugs
+* TODO fix editor issues
+* TODO Editor issue insert mid string causes loss of zero term giving random data
+* TODO Backspace mid string does not clean up shifted text
+* TODO Jump to end of line does not work should set to the number in last debug display
+* TODO If cursor at end of line, when go back it leaves custor displayed
+* TODO Take the vid out handshake lines and code up a Pico to handle display.
+* TODO Pico to handle display to have two way return of data
+* TODO Create a disk UI in native asm for robustness and speed?
+* TODO fix saving more than a single block of file storage
+* TODO fix loading more than a single block of file storage
+* TODO need words to report on hardware e.g. screen dims
+* TODO need word to get file id by name
+* TODO need word to get file name by id
+* TODO have a word to set break point at a DMARKer
+* TODO my malloc is failing on free
+* TODO Extract all of the symbols in the symbol table to be available as words in FORTH, debug and asm above
+* TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs
+* TODO Add a simple assembler feature like BBC Basic
+
+
 27th Jan 2025
 -------------
 
@@ -21,13 +73,6 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE Added push and pop hl into FORTH_DSP_POP so can remove those from all calls. Will save a few bytes
 * DONE Do I have a +! which is increment a memory location by prev item on stack? Handy for the new variable use. Added along with -! for decrement
 
-* TODO Relook at variable use. Setup a VARIABLE word which puts the address on the stack and allows the ! and @ words to access them. 
-* TODO Add to start up a list of what storage labels are seen
-* TODO add ram test to the diags
-* TODO Speed up screen updates - instead of writing whole screen detect what has changed? 
-* TODO Add no bank chip detection to format
-* TODO Add ELSE clause: x if true else false then
-* TODO Fix prev line recall and insertion. Corruption appears on the end of line
 
 
 
@@ -49,60 +94,8 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 15th Jan 2025
 -------------
 
-DONE fixed a minor storage error
-DONE create stub of forthcompile in the parser file 
-
-TODO Rework the storage system file structure and functions 
-TODO setup a compiler
-TODO Add a stack content viewer to callmonitor code
-TODO Add the floating point maths code in
-
-TODO CP/M screen clearing not working well
-TODO CP/M keyboard entry not great
-
-TODO Change circuit so that the storage cart is actually on port a and provides a full 5 chip pack. Then move sound to port b
-
-
-TODO wire up a temp interface to the serial EEPROMS so I can test storage on the SC114 as I have the PIO and digital IO cards installed
-TODO with the second PIO port hook up and debug the sound card
-TODO PICK word to pick a value at a given value on stack and move to TOS
-TODO Fix NUM2STR. 
-TODO Fix LEFT
-TODO Fix RIGHT
-TODO Fix 2SWAP
-TODO Test CALL
-TODO Change NOTE to PLAY and use a stream of items on stack
-TODO Add support for ELSE and ENDIF. IF THEN ELSE ENDIF   or IF THEN ENDIF
-TODO Fix KEY
-TODO Fix IS 
-
-
-TO TEST need word to report where cursor current at
-TODO add more editing features 
-TODO fix editor bugs
-TODO fix editor issues
-
-TODO Editor issue insert mid string causes loss of zero term giving random data
-TODO Backspace mid string does not clean up shifted text
-TODO Jump to end of line does not work should set to the number in last debug display
-TODO If cursor at end of line, when go back it leaves custor displayed
-
-
-TODO Take the vid out handshake lines and code up a Pico to handle display.
-TODO Pico to handle display to have two way return of data
-TODO Create a disk UI in native asm for robustness and speed?
-TODO fix saving more than a single block of file storage
-TODO fix loading more than a single block of file storage
-TODO need words to report on hardware e.g. screen dims
-TODO need word to get file id by name
-TODO need word to get file name by id
-TODO have a word to set break point at a DMARKer
-TODO my malloc is failing on free
-TODO Extract all of the symbols in the symbol table to be available as words in FORTH, debug and asm above
-
-
-TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs
-TODO Add a simple assembler feature like BBC Basic
+* DONE fixed a minor storage error
+* DONE create stub of forthcompile in the parser file 
 
 
 

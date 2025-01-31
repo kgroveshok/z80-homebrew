@@ -1457,8 +1457,23 @@ pop hl
 
 	       NEXTW
 .COMC:
-	CWHEAD .INC 91 ")" 1 WORD_FLAG_CODE
+	CWHEAD .SCRATCH 91 ")" 1 WORD_FLAG_CODE
 ; | ) ( -- )  End of comment |  DONE 
+	       NEXTW
+
+.SCRATCH:
+	CWHEAD .INC 91 "SCRATCH" 7 WORD_FLAG_CODE
+; | SCRATCH ( u -- addr ) Provides 20 word array. Can be used as single byte or as a word by passing the offset on stack. Pushes the resulting address to stack.  |  DONE 
+		FORTH_DSP_VALUEHL
+	
+		FORTH_DSP_POP
+
+		ld a, l
+		ld hl, os_var_array
+		call addatohl
+
+		call forth_push_numhl
+
 	       NEXTW
 
 .INC:
@@ -1472,6 +1487,8 @@ pop hl
 		FORTH_DSP_POP
 
 		FORTH_DSP_VALUEHL
+
+		FORTH_DSP_POP
 
 		; hl contains value to add to byte at a
 	
@@ -1493,7 +1510,7 @@ pop hl
 	       NEXTW
 
 .DEC:
-	CWHEAD .ENDCORE 91 "-!" 2 WORD_FLAG_CODE
+	CWHEAD .INC2 91 "-!" 2 WORD_FLAG_CODE
 ; | -! ( u a -- )  Decrement byte at address a by the value u | DONE
 
 		FORTH_DSP_VALUEHL
@@ -1523,7 +1540,94 @@ pop hl
 
 	       NEXTW
 
+.INC2:
+	CWHEAD .DEC2 91 "+2!" 3 WORD_FLAG_CODE
+; | +2! ( u a -- )  Increment word at address a by the value u | TO TEST
 
+		if DEBUG_FORTH_WORDS
+			DMARK "+2!"
+			CALLMONITOR
+		endif
+
+		; Address
+
+		FORTH_DSP_VALUEHL
+
+		; load content into de
+
+		ld e,(hl)
+		inc hl
+		ld d, (hl)
+
+		if DEBUG_FORTH_WORDS
+			DMARK "+2a"
+			CALLMONITOR
+		endif
+
+		push de
+
+		; Get value to add
+
+		FORTH_DSP_VALUEM1
+
+		if DEBUG_FORTH_WORDS
+			DMARK "+2v"
+			CALLMONITOR
+		endif
+
+		pop de
+		add hl, de
+
+		if DEBUG_FORTH_WORDS
+			DMARK "+2+"
+			CALLMONITOR
+		endif
+
+		; move result to de
+
+		ex de, hl
+
+		; Address
+
+		FORTH_DSP_VALUEHL
+
+		; save it back
+
+		ld (hl), e
+		inc hl
+		ld (hl), d
+
+		FORTH_DSP_VALUEHL
+
+		if DEBUG_FORTH_WORDS
+			DMARK "+2e"
+			CALLMONITOR
+		endif
+
+		FORTH_DSP_POP
+		FORTH_DSP_POP
+
+
+	       NEXTW
+
+.DEC2:
+	CWHEAD .GET2 91 "-2!" 3 WORD_FLAG_CODE
+; | -2! ( u a -- )  Decrement word at address a by the value u | TODO
+
+
+	       NEXTW
+.GET2:
+	CWHEAD .BANG2 91 "2@" 2 WORD_FLAG_CODE
+; | 2@ ( a -- )  Push word at address a  | TODO
+
+
+	       NEXTW
+.BANG2:
+	CWHEAD .ENDCORE 91 "-2!" 3 WORD_FLAG_CODE
+; | 2! ( u a -- )  Store value u as a word at address a | TODO
+
+
+	       NEXTW
 .ENDCORE:
 
 ; eof

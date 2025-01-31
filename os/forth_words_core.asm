@@ -1063,7 +1063,7 @@ endif
 .LIST:
 	CWHEAD .FORGET 72 "LIST" 4 WORD_FLAG_CODE
 ; | LIST ( uword -- u )    List the code to the word that is quoted (so as not to exec) on TOS | DONE
-; ; | The quoted most also be in upper case.
+; | | The quoted most also be in upper case.
 	if DEBUG_FORTH_WORDS
 		DMARK "LST"
 		CALLMONITOR

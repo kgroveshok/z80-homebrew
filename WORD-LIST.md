@@ -232,7 +232,7 @@
 ### LIST ( uword -- u )    List the code to the word that is quoted (so as not to exec) on TOS | DONE
 
 
-### The quoted most also be in upper case.
+ The quoted most also be in upper case.
 
 
 ### FORGET ( uword -- )    Forget the uword on TOS | DONE
@@ -971,9 +971,6 @@
 
 
 
-
-
-### The quoted most also be in upper case.
 
 
 ### +2! ( u a -- )  Increment word at address a by the value u | TO TEST

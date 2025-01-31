@@ -92,7 +92,7 @@
 
 		; save it
 
-		push hl	
+;		push hl	
 
 		;
 
@@ -102,7 +102,7 @@
 
 		; TODO push value back onto stack for another op etc
 
-		pop hl
+;		pop hl
 
 .dot_done:
 		call forth_push_numhl
@@ -154,7 +154,7 @@
 
 		; save it
 
-		push hl	
+;		push hl	
 
 		;
 
@@ -164,7 +164,7 @@
 
 		; TODO push value back onto stack for another op etc
 
-		pop hl
+;		pop hl
 
 		call forth_push_numhl
 .neg_done:
@@ -280,7 +280,7 @@
 		call Mult16
 		; save it
 
-		push hl	
+;		push hl	
 
 		;
 
@@ -290,7 +290,7 @@
 
 		; TODO push value back onto stack for another op etc
 
-		pop hl
+;		pop hl
 
 		call forth_push_numhl
 

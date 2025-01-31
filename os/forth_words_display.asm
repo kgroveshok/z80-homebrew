@@ -389,14 +389,14 @@ endif
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
-		push hl    ; u
+;		push hl    ; u
 		if DEBUG_FORTH_WORDS
 			DMARK "SPA"
 			CALLMONITOR
 		endif
 
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
-		pop hl
+;		pop hl
 		ld c, l
 		ld b, 0
 		ld hl, scratch 
@@ -545,13 +545,13 @@ endif
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
-		push hl
+;		push hl
 
 		; destroy value TOS
 
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
-		pop hl
+;		pop hl
 
 		ld a,l
 		ld (cli_autodisplay), a
@@ -559,20 +559,20 @@ endif
 
 .MENU:
 	CWHEAD .ENDDISPLAY 92 "MENU" 4 WORD_FLAG_CODE
-; | MENU ( u1....ux n ut -- n ) Create a menu. Ut is the title, n is the number of menu items on stack. Push number selection to TOS |
+; | MENU ( u1....ux n ut -- n ) Create a menu. Ut is the title, n is the number of menu items on stack. Push number selection to TOS | TODO
 
 		; get the title address and save it
 
-		FORTH_DSP_VALUEHL
-		push hl
-		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
-
-		; get number of items on the stack
-
-	
-		FORTH_DSP_VALUEHL
-		push hl
-		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+;		FORTH_DSP_VALUEHL
+;		push hl
+;		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+;
+;		; get number of items on the stack
+;
+;	
+;		FORTH_DSP_VALUEHL
+;		push hl
+;		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
 
 

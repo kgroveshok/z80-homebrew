@@ -259,7 +259,7 @@
 
 		FORTH_DSP_VALUEHL
 
-		push hl
+;		push hl
 
 	if DEBUG_STORESE
 		DMARK "LOA"
@@ -267,7 +267,7 @@
 	endif
 		FORTH_DSP_POP
 
-		pop hl
+;		pop hl
 
 		ld h, l
 		ld l, 0
@@ -442,7 +442,7 @@
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
-		push hl
+;		push hl
 
 		; destroy value TOS
 
@@ -450,7 +450,7 @@
 
 		; one value on hl get other one back
 
-		pop hl
+;		pop hl
 
 
 		; TODO Get SPI byte
@@ -477,9 +477,9 @@
 ; | SIZE ( u -- n )  Gets number of blocks used by file id u and push to stack | DONE
 
 		FORTH_DSP_VALUEHL
-		push hl
+;		push hl
 		FORTH_DSP_POP
-		pop hl
+;		pop hl
 		call storage_file_size
 
 		call forth_push_numhl
@@ -520,9 +520,9 @@
 		DMARK "CT1"
 		CALLMONITOR
 	endif
-		push hl
+;		push hl
 		FORTH_DSP_POP
-		pop hl
+;		pop hl
 		; push file id to stack
 		call forth_push_numhl
 
@@ -575,7 +575,7 @@
 	CWHEAD .OPEN 86 "ERA" 4 WORD_FLAG_CODE
 ; | ERA ( n --  )  Deletes all data for file id n on current storage bank | DONE
 		FORTH_DSP_VALUEHL
-		push hl 	; save file id
+;		push hl 	; save file id
 
 	if DEBUG_STORESE
 		DMARK "ERA"
@@ -583,7 +583,7 @@
 	endif
 		FORTH_DSP_POP
 
-		pop hl
+;		pop hl
 
 		call storage_erase
 	       NEXTW
@@ -611,9 +611,9 @@
 		DMARK "OPN"
 		CALLMONITOR
 	endif
-		push hl
+;		push hl
 		FORTH_DSP_POP     ; TODO for now just get rid of stream id
-		pop hl
+;		pop hl
 			
 		ld de, store_page      ; get block zero of file
 		call storage_read
@@ -656,7 +656,7 @@
 
 		FORTH_DSP_VALUEHL
 
-		push hl
+;		push hl
 
 	if DEBUG_STORESE
 		DMARK "REA"
@@ -664,7 +664,7 @@
 	endif
 		FORTH_DSP_POP
 
-		pop hl
+;		pop hl
 	
 		ld h,l
 
@@ -805,9 +805,9 @@
 		FORTH_DSP_VALUEHL
 		;v5FORTH_DSP_VALUE
 		
-		push hl
+;		push hl
 		FORTH_DSP_POP
-		pop hl
+;		pop hl
 
 ;v5		inc hl   ; move past the type marker
 

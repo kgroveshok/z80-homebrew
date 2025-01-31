@@ -9,9 +9,9 @@
 
 	FORTH_DSP_VALUEHL
 
-	push hl
+;	push hl
 	FORTH_DSP_POP
-	pop hl
+;	pop hl
 
 		if DEBUG_FORTH_WORDS
 			DMARK "IF1"
@@ -124,7 +124,7 @@
 		endif
 
 		FORTH_DSP_VALUEHL
-		push hl		 ; hl now has starting limit counter
+;		push hl		 ; hl now has starting limit counter
 
 		if DEBUG_FORTH_WORDS
 			DMARK "DO6"
@@ -134,7 +134,7 @@
 
 ; put counters on the loop stack
 
-		pop hl			 ; limit counter
+;		pop hl			 ; limit counter
 		pop de			; start counter
 
 		; push limit counter
@@ -446,10 +446,10 @@ endif
 			CALLMONITOR
 		endif
 
-	push hl
+;	push hl
 	FORTH_DSP_POP
 
-	pop hl
+;	pop hl
 
 	; test if true
 

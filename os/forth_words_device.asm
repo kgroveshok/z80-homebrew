@@ -89,7 +89,7 @@ endif
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
-		push hl
+;		push hl
 
 		; destroy value TOS
 
@@ -97,7 +97,7 @@ endif
 
 		; one value on hl get other one back
 
-		pop hl
+;		pop hl
 
 		pop bc
 
@@ -140,7 +140,7 @@ if STORAGE_SE
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
-		push hl    ; u1 
+;		push hl    ; u1 
 
 		; destroy value TOS
 
@@ -148,7 +148,7 @@ if STORAGE_SE
 
 		; one value on hl get other one back
 
-		pop hl   ; u2 - addr
+;		pop hl   ; u2 - addr
 
 		; TODO Send SPI byte
 
@@ -184,7 +184,7 @@ if STORAGE_SE
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
-		push hl
+;		push hl
 
 		; destroy value TOS
 
@@ -192,7 +192,7 @@ if STORAGE_SE
 
 		; one value on hl get other one back
 
-		pop hl
+;		pop hl
 
 
 		ld c, SPI_CE_HIGH
@@ -247,7 +247,7 @@ if STORAGE_SE
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
-		push hl
+;		push hl
 
 		; destroy value TOS
 
@@ -255,7 +255,7 @@ if STORAGE_SE
 
 		; one value on hl get other one back
 
-		pop hl
+;		pop hl
 
 		; active low
 

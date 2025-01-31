@@ -621,11 +621,11 @@ endif
 		FORTH_DSP_POP
 		
 		FORTH_DSP_VALUEHL
-		push hl      ; 1
+;		push hl      ; 1
 
 		FORTH_DSP_POP
 
-		pop hl       ; 1
+;		pop hl       ; 1
 		pop de       ; 2
 
 		call forth_push_numhl
@@ -658,11 +658,11 @@ endif
 .getbyteat:	
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 		
-		push hl
+;		push hl
 	
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
-		pop hl
+;		pop hl
 
 		ld a, (hl)
 
@@ -710,18 +710,18 @@ endif
 		NEXTW
 .SCALL:
 	CWHEAD .DEPTH OPCODE_SCALL "CALL" 4 WORD_FLAG_CODE
-; | CALL ( w -- w  ) machine code call to address w  push the result of hl to stack | TO TEST
+; | CALL ( w -- w  ) machine code call to address w  push the result of hl to stack | DONE
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
-		push hl
+;		push hl
 
 		; destroy value TOS
 
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
 			
-		pop hl
+;		pop hl
 
 		; how to do a call with hl???? save SP?
 		call forth_call_hl
@@ -788,9 +788,9 @@ endif
 	CWHEAD .PAUSES 47 "PAUSEMS" 7 WORD_FLAG_CODE
 ; | PAUSEMS ( n -- )  Pause for n millisconds | DONE
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
-		push hl    ; n2
+;		push hl    ; n2
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
-		pop hl
+;		pop hl
 
 		ld a, l
 		call aDelayInMS
@@ -799,9 +799,9 @@ endif
 	CWHEAD .ROT 48 "PAUSE" 5 WORD_FLAG_CODE
 ; | PAUSE ( n -- )  Pause for n seconds | DONE
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
-		push hl    ; n2
+;		push hl    ; n2
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
-		pop hl
+;		pop hl
 		ld b, l
 		if DEBUG_FORTH_WORDS
 			DMARK "PAU"
@@ -955,13 +955,13 @@ endif
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
-		push hl
+;		push hl
 
 		; destroy value TOS
 
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
-		pop hl
+;		pop hl
 
 		ld a,0
 		cp l
@@ -1020,13 +1020,13 @@ endif
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
-		push hl
+;		push hl
 
 		; destroy value TOS
 
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
-		pop hl
+;		pop hl
 		call malloc
 	if DEBUG_FORTH_MALLOC_GUARD
 		push af
@@ -1049,13 +1049,13 @@ endif
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
-		push hl
+;		push hl
 
 		; destroy value TOS
 
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
-		pop hl
+;		pop hl
 if FORTH_ENABLE_MALLOCFREE
 		call free
 endif

@@ -292,9 +292,9 @@
 			DMARK "S2b"
 			CALLMONITOR
 		endif
-		push hl
+;		push hl
 		FORTH_DSP_POP
-		pop hl
+;		pop hl
 		
 		if DEBUG_FORTH_WORDS
 			DMARK "S2b"
@@ -501,11 +501,11 @@
 		;v5 FORTH_DSP_VALUE
 		inc hl      ; now at start of numeric as string
 
-		push hl
+;		push hl
 
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
-		pop hl
+;		pop hl
 
 		; push the content of a onto the stack as a value
 

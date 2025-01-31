@@ -10,9 +10,9 @@
 		jr z, .noti
 		NEXTW
 .noti:          FORTH_DSP_VALUEHL
-		push hl
+;		push hl
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
-		pop hl
+;		pop hl
 		ld a,0
 		cp l
 		jr z, .not2t
@@ -53,13 +53,13 @@
 .tz_inum:
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
-		push hl
+;		push hl
 
 		; destroy value TOS
 
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
-		pop hl
+;		pop hl
 
 		ld a,0
 

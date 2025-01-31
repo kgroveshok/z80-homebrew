@@ -250,10 +250,25 @@
 ### ) ( -- )  End of comment |  DONE 
 
 
+### SCRATCH ( u -- addr ) Provides 20 word array. Can be used as single byte or as a word by passing the offset on stack. Pushes the resulting address to stack.  |  DONE 
+
+
 ### +! ( u a -- )  Increment byte at address a by the value u | DONE
 
 
 ### -! ( u a -- )  Decrement byte at address a by the value u | DONE
+
+
+### +2! ( u a -- )  Increment word at address a by the value u | TO TEST
+
+
+### -2! ( u a -- )  Decrement word at address a by the value u | TODO
+
+
+### 2@ ( a -- )  Push word at address a  | TODO
+
+
+### 2! ( u a -- )  Store value u as a word at address a | TODO
 
 
 ## Device Words
@@ -727,6 +742,9 @@
 ### ) ( -- )  End of comment |  DONE 
 
 
+### SCRATCH ( u -- addr ) Provides 20 word array. Can be used as single byte or as a word by passing the offset on stack. Pushes the resulting address to stack.  |  DONE 
+
+
 ### +! ( u a -- )  Increment byte at address a by the value u | DONE
 
 
@@ -956,6 +974,18 @@
 
 
 ### The quoted most also be in upper case.
+
+
+### +2! ( u a -- )  Increment word at address a by the value u | TO TEST
+
+
+### -2! ( u a -- )  Decrement word at address a by the value u | TODO
+
+
+### 2@ ( a -- )  Push word at address a  | TODO
+
+
+### 2! ( u a -- )  Store value u as a word at address a | TODO
 
 
 ## Device Words

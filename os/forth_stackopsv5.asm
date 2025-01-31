@@ -799,6 +799,9 @@ macro_forth_loop_pop:
 	ret
 
 macro_forth_dsp_pop:
+
+	push hl
+
 	; release malloc data
 
 	if DEBUG_FORTH_STACK_GUARD
@@ -813,7 +816,6 @@ endif
 
 
 if FORTH_ENABLE_DSPPOPFREE
-
 
 	FORTH_DSP
 
@@ -851,6 +853,9 @@ endif
 		call check_stacks
 		FORTH_CHK_DSP_UNDER
 	endif
+
+	pop hl
+
 	ret
 ; eof
 

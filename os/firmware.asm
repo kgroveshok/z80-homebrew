@@ -37,17 +37,17 @@ DEBUG_SPI: equ 0    ; low level spi tests
 
 ; Enable many break points
 
-DEBUG_FORTH_PARSE_EXEC: equ 1     ; 6
+DEBUG_FORTH_PARSE_EXEC: equ 0     ; 6
 DEBUG_FORTH_PARSE_EXEC_SLOW: equ 0     ; 6
 DEBUG_FORTH_PARSE_NEXTWORD: equ 0
 DEBUG_FORTH_JP: equ 0
 DEBUG_FORTH_MALLOC: equ 1
 DEBUG_FORTH_MALLOC_INT: equ 1
-DEBUG_FORTH_DOT: equ 1
+DEBUG_FORTH_DOT: equ 0
 DEBUG_FORTH_DOT_WAIT: equ 0
 DEBUG_FORTH_MATHS: equ 0
-DEBUG_FORTH_TOK: equ 1    ; 4
-DEBUG_FORTH_PARSE: equ 1    ; 3
+DEBUG_FORTH_TOK: equ 0    ; 4
+DEBUG_FORTH_PARSE: equ 0    ; 3
 DEBUG_FORTH: equ 1  ;2
 DEBUG_FORTH_WORDS: equ 1   ; 1
 DEBUG_FORTH_PUSH: equ 1   ; 1
@@ -64,9 +64,10 @@ DEBUG_FORTH_WORDS_KEY: equ 1   ; 1
 ; House keeping and protections
 
 DEBUG_FORTH_STACK_GUARD: equ 1
-DEBUG_FORTH_MALLOC_GUARD: equ 0
+DEBUG_FORTH_MALLOC_GUARD: equ 1
 DEBUG_FORTH_MALLOC_HIGH: equ 0     ; warn only if more than 255 chars being allocated. would be highly unusual!
 FORTH_ENABLE_FREE: equ 0
+FORTH_ENABLE_MALLOCFREE: equ 1
 FORTH_ENABLE_DSPPOPFREE: equ 1    ; TODO BUG Seems to be OK in some situations but with SW it crashes straight away
 FORTH_ENABLE_FLOATMATH: equ 0
 
@@ -75,10 +76,10 @@ CALLMONITOR: macro
 	call break_point_state
 	endm
 
-MALLOC_1: equ 0        ; from dk88 
+MALLOC_1: equ 1        ; from dk88 
 MALLOC_2: equ 0           ; broke
 MALLOC_3: equ 0           ; really broke
-MALLOC_4: equ 1              ; mine pretty basic reuse and max of 250 chars
+MALLOC_4: equ 0              ; mine pretty basic reuse and max of 250 chars
 
 if BASE_KEV 
 stacksize: equ 512*2
@@ -324,8 +325,9 @@ os_tok_len: equ os_word_scratch - 2
 os_tok_ptr: equ os_tok_len - 2               ; our current PC ptr
 os_tok_malloc: equ os_tok_ptr - 2
 os_last_new_uword: equ os_tok_malloc - 2    ; hold start of last user word added
-os_input: equ os_last_new_uword-100
-scratch: equ os_input-255
+os_input: equ os_last_new_uword-255
+execscratch: equ os_input-255        ; exec cmd eval buffer
+scratch: equ execscratch-255
 
 
 ; temp locations for new word processing to save on adding more 

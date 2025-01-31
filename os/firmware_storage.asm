@@ -1162,5 +1162,24 @@ storageread:
 endif
 
 
+; Clear out the main buffer store (used to remove junk before writing a new block)
+
+storage_clear_page:
+	push hl
+	push de
+	push bc
+	ld hl, store_page
+	ld a, 0
+	ld (hl), a
+
+	ld de, store_page+1
+	ld bc, STORE_BLOCK_PHY
+
+	ldir
+	
+	pop bc
+	pop de
+	pop hl
+	ret
 
 ; eof

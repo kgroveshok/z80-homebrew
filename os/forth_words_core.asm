@@ -50,119 +50,171 @@
 			CALLMONITOR
 		endif
 
-;	FORTH_RSP_NEXT
-
-
-	ld bc,(cli_ptr)   ; move to next token to parse in the input stream
-	ld de,(cli_origptr)   ; move to next token to parse in the input stream
-	ld hl,(os_tok_ptr)   ; move to next token to parse in the input stream
-	push hl
-	push de
-	push bc
-
-
-		if DEBUG_FORTH_WORDS_KEY
-			DMARK "EXR"
-			CALLMONITOR
-		endif
-
-
-
-	;v5 FORTH_DSP_VALUE
 	FORTH_DSP_VALUEHL
 
-	; TODO do string type checks
 
-;v5	inc hl   ; skip type
-
-	push hl  ; source code 
 		if DEBUG_FORTH_WORDS
 			DMARK "EX1"
 			CALLMONITOR
 		endif
-	ld a, 0
-	call strlent
-
-	inc hl
-	inc hl
-	inc hl
-	inc hl
-
-	push hl    ; size
+;	ld e,(hl)
+;	inc hl
+;	ld d,(hl)
+;	ex de,hl
 
 		if DEBUG_FORTH_WORDS
 			DMARK "EX2"
 			CALLMONITOR
 		endif
-	call malloc
+	push hl
 
-	ex de, hl    ; de now contains malloc area
-	pop bc   	; get byte count
-	pop hl      ; get string to copy
-
-	push de     ; save malloc for free later
-
+	ld a, 0
+	;ld a, FORTH_END_BUFFER
+	call strlent
+	inc hl   ; include zero term to copy
+	ld b,0
+	ld c,l
+	pop hl
+	ld de, execscratch
 		if DEBUG_FORTH_WORDS
 			DMARK "EX3"
 			CALLMONITOR
 		endif
-	ldir       ; duplicate string
-
-	; at the end of the string so go back the three extra spaces and fill in with extra terms
-	
-	; TODO fix the parse would be better than this... 
-	ex de, hl
-	dec hl
-	ld a, 0
-	ld (hl), a
-	dec hl
-	ld a, ' '
-	ld (hl), a
-	dec hl
-	ld (hl), a
-
-	dec hl
-	ld (hl), a
+	ldir
 
 
-	FORTH_DSP_POP 
-
-	pop hl    
-	push hl    ; save malloc area
+	ld hl, execscratch
 
 		if DEBUG_FORTH_WORDS
-			DMARK "EX4"
+			DMARK "EXe"
 			CALLMONITOR
 		endif
 
 	call forthparse
 	call forthexec
-	
-	pop hl
-	if DEBUG_FORTH_WORDS
-		DMARK "EX5"
-		CALLMONITOR
-	endif
-	call free
+	call forthexec_cleanup
+;	call forthparse
+;	call forthexec
 
-	if DEBUG_FORTH_WORDS
-		DMARK "EX6"
-		CALLMONITOR
-	endif
-
-	pop bc
-	pop de
-	pop hl
-;	FORTH_RSP_POP	 
-	ld (cli_ptr),bc   ; move to next token to parse in the input stream
-	ld (cli_origptr),de   ; move to next token to parse in the input stream
-	ld (os_tok_ptr),hl   ; move to next token to parse in the input stream
-
-	if DEBUG_FORTH_WORDS
-		DMARK "EX7"
-		CALLMONITOR
-	endif
 	NEXTW
+
+; dead code - old version 
+;	FORTH_RSP_NEXT
+
+; 
+;	ld bc,(cli_ptr)   ; move to next token to parse in the input stream
+;	ld de,(cli_origptr)   ; move to next token to parse in the input stream
+;	ld hl,(os_tok_ptr)   ; move to next token to parse in the input stream
+;	push hl
+;	push de
+;	push bc
+;
+;
+;		if DEBUG_FORTH_WORDS_KEY
+;			DMARK "EXR"
+;			CALLMONITOR
+;		endif
+;
+;
+;
+;	;v5 FORTH_DSP_VALUE
+;	FORTH_DSP_VALUEHL
+;
+;	; TODO do string type checks
+;
+;;v5	inc hl   ; skip type
+;
+;	push hl  ; source code 
+;		if DEBUG_FORTH_WORDS
+;			DMARK "EX1"
+;			CALLMONITOR
+;		endif
+;	ld a, 0
+;	call strlent
+;
+;	inc hl
+;	inc hl
+;	inc hl
+;	inc hl
+;
+;	push hl    ; size
+;
+;		if DEBUG_FORTH_WORDS
+;			DMARK "EX2"
+;			CALLMONITOR
+;		endif
+;	call malloc
+;
+;	ex de, hl    ; de now contains malloc area
+;	pop bc   	; get byte count
+;	pop hl      ; get string to copy
+;
+;	push de     ; save malloc for free later
+;
+;		if DEBUG_FORTH_WORDS
+;			DMARK "EX3"
+;			CALLMONITOR
+;		endif
+;	ldir       ; duplicate string
+;
+;	; at the end of the string so go back the three extra spaces and fill in with extra terms
+;	
+;	; TODO fix the parse would be better than this... 
+;	ex de, hl
+;	dec hl
+;	ld a, 0
+;	ld (hl), a
+;	dec hl
+;	ld a, ' '
+;	ld (hl), a
+;	dec hl
+;	ld (hl), a
+;
+;	dec hl
+;	ld (hl), a
+;
+;
+;	FORTH_DSP_POP 
+;
+;	pop hl    
+;	push hl    ; save malloc area
+;
+;		if DEBUG_FORTH_WORDS
+;			DMARK "EX4"
+;			CALLMONITOR
+;		endif
+;
+;	call forthparse
+;	call forthexec
+;	
+;	pop hl
+;	if DEBUG_FORTH_WORDS
+;		DMARK "EX5"
+;		CALLMONITOR
+;	endif
+;
+;	if FORTH_ENABLE_FREE
+;	call free
+;	endif
+;
+;	if DEBUG_FORTH_WORDS
+;		DMARK "EX6"
+;		CALLMONITOR
+;	endif
+;
+;	pop bc
+;	pop de
+;	pop hl
+;;	FORTH_RSP_POP	 
+;	ld (cli_ptr),bc   ; move to next token to parse in the input stream
+;	ld (cli_origptr),de   ; move to next token to parse in the input stream
+;	ld (os_tok_ptr),hl   ; move to next token to parse in the input stream
+;
+;	if DEBUG_FORTH_WORDS
+;		DMARK "EX7"
+;		CALLMONITOR
+;	endif
+;	NEXTW
 
 .DUP:
 	CWHEAD .ZDUP OPCODE_DUP "DUP" 3 WORD_FLAG_CODE
@@ -194,11 +246,17 @@
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
 	; TODO add floating point number detection
+
+	if DEBUG_FORTH_WORDS
+		DMARK "DUi"
+		CALLMONITOR
+	endif
+
 		call forth_push_numhl
 		NEXTW
 .ZDUP:
 	CWHEAD .SWAP OPCODE_ZDUP "?DUP" 4 WORD_FLAG_CODE
-; | ?DUP ( u -- u u )     Duplicate item on TOS if the item is non-zero | TO TEST
+; | ?DUP ( u -- u u )     Duplicate item on TOS if the item is non-zero | DONE
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
@@ -223,7 +281,6 @@
 
 .dup2orig:
 
-		call forth_push_numhl
 		NEXTW
 .SWAP:
 	CWHEAD .COLN OPCODE_SWAP "SWAP" 4 WORD_FLAG_CODE
@@ -684,10 +741,10 @@ endif
 	ld de, cli_data_stack
 	sbc hl,de
 	
-	; div by two?
+	; div by size of stack item
 
 	ld e,l
-	ld c, 2
+	ld c, 3
 	call Div8
 
 	ld l,a
@@ -999,7 +1056,7 @@ endif
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
 		pop hl
-if FORTH_ENABLE_FREE
+if FORTH_ENABLE_MALLOCFREE
 		call free
 endif
 		NEXTW

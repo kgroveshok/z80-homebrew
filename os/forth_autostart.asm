@@ -30,6 +30,11 @@ startcmds:
 ;	dw game2b1
 ;	dw game2b2
 	dw list
+	dw mtesta
+	dw mtestb
+	dw mtestc
+	dw mtestd
+	dw mteste
         dw game3w
         dw game3p
         dw game3sc
@@ -92,6 +97,24 @@ startcmds:
 ;	dw keyend
 ;	dw keybs
 	db 0, 0	
+
+; random malloc and free cycles
+
+mtesta:      db ": mtesta $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . rnd8 dup $13 $01 at . malloc heap $1f $01 at . $1f $02 at . $01 pause free $01 until nop ;", 0
+
+; fixed malloc and free cycles
+
+mtestb:      db ": mtestb $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . $80 malloc heap $1f $01 at . $1f $02 at . $01 pause free $01 until nop ;", 0
+
+; fixed double string push and drop cycle 
+
+mtestc:      db ": mtestc $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . $80 spaces $2f spaces  heap $1f $01 at . $1f $02 at . $01 pause drop drop $01 until nop ; ", 0
+
+; consistent fixed string push and drop cycle 
+
+mtestd:      db ": mtestd $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . $80 spaces heap $1f $01 at . $1f $02 at . $01 pause drop $01 until nop ; ", 0
+
+mteste:      db ": mteste $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . rnd8 dup spaces $0f $02 at . heap $1f $01 at . $1f $02 at . $01 pause drop $01 until nop ; ", 0
 
 test1:		db ": aa 1 2 3 ;", 0
 test2:     	db "111 aa 888 999",0

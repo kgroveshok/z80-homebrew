@@ -16,8 +16,12 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE ERA word
 * DONE FFREE word
 * DONE SIZE word
+* DONE Enforce malloc free
+* DONE Add direct storage words (BREAD/BWRITE) so I can use soft coded file system ie screen like storage without using the possble flakey file system.
+* DONE Added push and pop hl into FORTH_DSP_POP so can remove those from all calls. Will save a few bytes
 
-* TODO Enforce malloc free
+* TODO Relook at variable use. Setup a VARIABLE word which puts the address on the stack and allows the ! and @ words to access them. 
+* TODO Do I have a +! which is increment a memory location by prev item on stack? Handy for the new variable use
 * TODO Add to start up a list of what storage labels are seen
 * TODO add ram test to the diags
 * TODO Speed up screen updates - instead of writing whole screen detect what has changed? 

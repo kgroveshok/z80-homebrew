@@ -2,6 +2,111 @@
 ; | ## Fixed Storage Words
 
 
+.BREAD:
+ 
+	CWHEAD .BWRITE 38 "BREAD" 5 WORD_FLAG_CODE
+; | BREAD ( u -- u ) With the current bank, read a block from block address u (1-512) and push to stack  | TO TEST
+	
+		if DEBUG_FORTH_WORDS
+			DMARK "BRD"
+			CALLMONITOR
+		endif
+
+	FORTH_DSP_VALUEHL
+
+	FORTH_DSP_POP
+
+	; calc block address
+
+	ex de, hl
+	ld a, STORE_BLOCK_PHY
+	call Mult16
+
+
+	ld de, store_page
+
+		if DEBUG_FORTH_WORDS
+			DMARK "BR1"
+			CALLMONITOR
+		endif
+
+	call storage_read_block
+
+        ld hl, store_page+2
+		if DEBUG_FORTH_WORDS
+			DMARK "BR2"
+			CALLMONITOR
+		endif
+	call forth_apushstrhl			
+
+
+		NEXTW
+.BWRITE:
+	CWHEAD .BYID 38 "BWRITE" 6 WORD_FLAG_CODE
+; | BWRITE ( s u -- ) With the current bank, write the string s to address u | TO TEST
+
+		if DEBUG_FORTH_WORDS
+			DMARK "BWR"
+			CALLMONITOR
+		endif
+
+	FORTH_DSP_VALUEHL
+
+	; calc block address
+
+	ex de, hl
+	ld a, STORE_BLOCK_PHY
+	call Mult16
+
+	push hl         ; address
+
+	FORTH_DSP_POP
+
+	FORTH_DSP_VALUEHL
+
+	FORTH_DSP_POP
+
+	call storage_clear_page
+
+	; copy string to store page
+
+	push hl     ; save string address
+
+	ld a, 0
+	call strlent
+
+	inc hl
+
+	ld c, l
+	ld b, 0
+
+	pop hl
+	ld de, store_page + 2
+		if DEBUG_FORTH_WORDS
+			DMARK "BW1"
+			CALLMONITOR
+		endif
+	ldir
+
+
+	; poke the start of the block with flags to prevent high level file ops hitting the block
+
+	ld hl, $ffff
+
+	ld (store_page), hl	
+	
+	pop hl    ; get address
+	ld de, store_page
+
+		if DEBUG_FORTH_WORDS
+			DMARK "BW2"
+			CALLMONITOR
+		endif
+
+	call storage_write_block
+
+		NEXTW
+
 .BYID:
 	CWHEAD .BYNAME 38 "BYID" 4 WORD_FLAG_CODE
 ; | BYID ( u -- s ) Get the name of the file in the current BANK using the file ID u | TODO

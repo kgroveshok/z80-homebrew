@@ -37,7 +37,7 @@
 ### DUP ( u -- u u )     Duplicate whatever item is on TOS | DONE
 
 
-### ?DUP ( u -- u u )     Duplicate item on TOS if the item is non-zero | TO TEST
+### ?DUP ( u -- u u )     Duplicate item on TOS if the item is non-zero | DONE
 
 
 ### SWAP ( w1 w2 -- w2 w1 )    Swap top two items  on TOS | DONE
@@ -73,7 +73,7 @@
 ### C!  ( x w -- ) Store x at address w  | DONE
 
 
-### CALL ( w -- w  ) machine code call to address w  push the result of hl to stack | TO TEST
+### CALL ( w -- w  ) machine code call to address w  push the result of hl to stack | DONE
 
 
 ### DEPTH ( -- u ) Push count of stack | DONE
@@ -250,6 +250,12 @@
 ### ) ( -- )  End of comment |  DONE 
 
 
+### +! ( u a -- )  Increment byte at address a by the value u | DONE
+
+
+### -! ( u a -- )  Decrement byte at address a by the value u | DONE
+
+
 ## Device Words
 
 
@@ -358,7 +364,7 @@
  If off, use DRAW to refresh. Default is on. $0003 will enable direct screen writes (TODO) 
 
 
-### MENU ( u1....ux n ut -- n ) Create a menu. Ut is the title, n is the number of menu items on stack. Push number selection to TOS |
+### MENU ( u1....ux n ut -- n ) Create a menu. Ut is the title, n is the number of menu items on stack. Push number selection to TOS | TODO
 
 
 ## Program Flow Words
@@ -461,6 +467,12 @@
 
 
 ## Fixed Storage Words
+
+
+### BREAD ( u -- u ) With the current bank, read a block from block address u (1-512) and push to stack  | TO TEST
+
+
+### BWRITE ( s u -- ) With the current bank, write the string s to address u | TO TEST
 
 
 ### BYID ( u -- s ) Get the name of the file in the current BANK using the file ID u | TODO
@@ -634,6 +646,9 @@
 ### DUP ( u -- u u )     Duplicate whatever item is on TOS | DONE
 
 
+### ?DUP ( u -- u u )     Duplicate item on TOS if the item is non-zero | DONE
+
+
 ### SWAP ( w1 w2 -- w2 w1 )    Swap top two items  on TOS | DONE
 
 
@@ -662,6 +677,9 @@
 
 
 ### C!  ( x w -- ) Store x at address w  | DONE
+
+
+### CALL ( w -- w  ) machine code call to address w  push the result of hl to stack | DONE
 
 
 ### DEPTH ( -- u ) Push count of stack | DONE
@@ -707,6 +725,12 @@
 
 
 ### ) ( -- )  End of comment |  DONE 
+
+
+### +! ( u a -- )  Increment byte at address a by the value u | DONE
+
+
+### -! ( u a -- )  Decrement byte at address a by the value u | DONE
 
 
 ### OUT ( u1 u2 -- ) Perform Z80 OUT to port u2 sending byte u1 | DONE
@@ -922,13 +946,7 @@
 
 
 
-### ?DUP ( u -- u u )     Duplicate item on TOS if the item is non-zero | TO TEST
-
-
 ### 2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items | TODO
-
-
-### CALL ( w -- w  ) machine code call to address w  push the result of hl to stack | TO TEST
 
 
 
@@ -973,7 +991,7 @@
 ### SPACES ( u -- str ) A string of u spaces is pushed onto the stack | TO TEST
 
 
-### MENU ( u1....ux n ut -- n ) Create a menu. Ut is the title, n is the number of menu items on stack. Push number selection to TOS |
+### MENU ( u1....ux n ut -- n ) Create a menu. Ut is the title, n is the number of menu items on stack. Push number selection to TOS | TODO
 
 
 ## Program Flow Words
@@ -1004,6 +1022,12 @@
 
 
 ## Fixed Storage Words
+
+
+### BREAD ( u -- u ) With the current bank, read a block from block address u (1-512) and push to stack  | TO TEST
+
+
+### BWRITE ( s u -- ) With the current bank, write the string s to address u | TO TEST
 
 
 ### BYID ( u -- s ) Get the name of the file in the current BANK using the file ID u | TODO

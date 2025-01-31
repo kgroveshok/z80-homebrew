@@ -1457,10 +1457,71 @@ pop hl
 
 	       NEXTW
 .COMC:
-	CWHEAD .ENDCORE 91 ")" 1 WORD_FLAG_CODE
+	CWHEAD .INC 91 ")" 1 WORD_FLAG_CODE
 ; | ) ( -- )  End of comment |  DONE 
 	       NEXTW
 
+.INC:
+	CWHEAD .DEC 91 "+!" 2 WORD_FLAG_CODE
+; | +! ( u a -- )  Increment byte at address a by the value u | DONE
+
+		FORTH_DSP_VALUEHL
+
+		push hl   ; save address
+
+		FORTH_DSP_POP
+
+		FORTH_DSP_VALUEHL
+
+		; hl contains value to add to byte at a
+	
+		ex de, hl
+
+		pop hl
+
+		if DEBUG_FORTH_WORDS
+			DMARK "INC"
+			CALLMONITOR
+		endif
+
+		ld a,(hl)
+		add e
+		ld (hl),a
+
+
+
+	       NEXTW
+
+.DEC:
+	CWHEAD .ENDCORE 91 "-!" 2 WORD_FLAG_CODE
+; | -! ( u a -- )  Decrement byte at address a by the value u | DONE
+
+		FORTH_DSP_VALUEHL
+
+		push hl   ; save address
+
+		FORTH_DSP_POP
+
+		FORTH_DSP_VALUEHL
+
+		; hl contains value to add to byte at a
+	
+		ex de, hl
+
+		pop hl
+
+		if DEBUG_FORTH_WORDS
+			DMARK "DEC"
+			CALLMONITOR
+		endif
+
+		ld a,(hl)
+		sub e
+		ld (hl),a
+
+
+
+	       NEXTW
 
 
 .ENDCORE:

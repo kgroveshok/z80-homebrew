@@ -165,7 +165,7 @@ start3c:         db ": dirlist dir cls drop dup $00 > if $01 do \"/\" .> .> \"Ex
 
 ; a handy word to list items on the stack
 
-list:            db ": list cls repeat scroll $01 $04 at depth . $0a $04 at .> accept drop depth 0= not until nop ;",0
+list:            db ": more cls repeat scroll $01 $04 at depth . $0a $04 at .> accept drop depth 0= not until nop ;",0
 
 ; a small guess the number game
 

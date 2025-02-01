@@ -1131,10 +1131,6 @@ endif
 		call strcmp
 		jp nz, .lnuword
 	
-	if DEBUG_FORTH_WORDS
-		DMARK "LSm"
-		CALLMONITOR
-	endif
 
 
 
@@ -1142,6 +1138,11 @@ endif
 
 ;	   	push hl  ; save so we can move to next dict block
 pop hl
+
+	if DEBUG_FORTH_WORDS
+		DMARK "LSm"
+		CALLMONITOR
+	endif
 
 		; skip opcode
 		inc hl 
@@ -1154,7 +1155,7 @@ pop hl
 		DMARK "LS2"
 		CALLMONITOR
 	endif
-		inc hl
+		;inc hl
 		; skip word string
 		call addatohl
 
@@ -1242,10 +1243,10 @@ pop hl
 		push de   ; save our string for now
 		ex de, hl
 
-		FORTH_DSP
+		FORTH_DSP_VALUE
 		;v5 FORTH_DSP_VALUE
 
-		inc hl   ; skip type but we know by now this is OK
+;		inc hl   ; skip type but we know by now this is OK
 
 .luword:	ld a,(hl)
 		cp 0

@@ -1069,6 +1069,10 @@ endif
 		CALLMONITOR
 	endif
 
+		FORTH_DSP_VALUEHL
+
+		push hl
+		pop bc
 
 ; Start format of scratch string
 
@@ -1125,9 +1129,8 @@ push hl   ; sacreifical push
 
 		; found a uword but is it the one we want...
 
-		ex de, hl
-		FORTH_DSP_VALUEHL
-		ex de, hl
+		push bc     ; uword to find is on bc
+		pop de
 
 		push hl  ; to save the ptr
 

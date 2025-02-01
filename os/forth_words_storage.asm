@@ -42,7 +42,7 @@
 
 		NEXTW
 .BWRITE:
-	CWHEAD .BYID 38 "BWRITE" 6 WORD_FLAG_CODE
+	CWHEAD .BUPD 38 "BWRITE" 6 WORD_FLAG_CODE
 ; | BWRITE ( s u -- ) With the current bank, write the string s to address u | TO TEST
 
 		if DEBUG_FORTH_WORDS
@@ -100,6 +100,39 @@
 
 		if DEBUG_FORTH_WORDS
 			DMARK "BW2"
+			CALLMONITOR
+		endif
+
+	call storage_write_block
+
+		NEXTW
+
+.BUPD:
+	CWHEAD .BYID 38 "BUPD" 4 WORD_FLAG_CODE
+; | BUPD ( u -- ) Write the contents of the current file system storage buffer directly to address u | TO TEST
+; | | Coupled with the use of the BREAD, BWRITE and STOREPAGE words it is possible to implement a direct
+; | | or completely different file system structure.
+
+		if DEBUG_FORTH_WORDS
+			DMARK "BUD"
+			CALLMONITOR
+		endif
+
+	FORTH_DSP_VALUEHL
+
+	; calc block address
+
+	ex de, hl
+	ld a, STORE_BLOCK_PHY
+	call Mult16
+
+	FORTH_DSP_POP
+
+
+	ld de, store_page
+
+		if DEBUG_FORTH_WORDS
+			DMARK "BUe"
 			CALLMONITOR
 		endif
 
@@ -794,7 +827,7 @@
 		
 	       NEXTW
 .LABEL:
-	CWHEAD .LABELS 89 "LABEL" 5 WORD_FLAG_CODE
+	CWHEAD .STOREPAGE 89 "LABEL" 5 WORD_FLAG_CODE
 ; | LABEL ( u --  )  Sets the storage bank label to string on top of stack  | DONE
 		; TODO test to see if bank is selected
 	
@@ -816,6 +849,21 @@
 		CALLMONITOR
 	endif
 		call storage_label
+
+	       NEXTW
+.STOREPAGE:
+	CWHEAD .LABELS 89 "STOREPAGE" 9 WORD_FLAG_CODE
+; | STOREPAGE ( -- addr )  Pushes the address of the file system record buffer to stack for direct access  | DONE
+		; TODO test to see if bank is selected
+	
+	if DEBUG_STORESE
+		DMARK "STP"
+		CALLMONITOR
+	endif
+
+	ld hl, store_page
+	call forth_push_numhl
+
 
 	       NEXTW
 .LABELS:

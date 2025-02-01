@@ -1463,7 +1463,19 @@ pop hl
 
 .SCRATCH:
 	CWHEAD .INC 91 "SCRATCH" 7 WORD_FLAG_CODE
-; | SCRATCH ( u -- addr ) Provides 20 word array. Can be used as single byte or as a word by passing the offset on stack. Pushes the resulting address to stack.  |  DONE 
+; | SCRATCH ( u -- addr ) Pushes address of offset u to stack | DONE
+; | | The scratch area provides 32 word array. Can be used as single byte or as a word by passing the offset on stack. Pushes the resulting address to stack. 
+; | | When used with the direct storage writing/malloc and the !@ or word versions it is possible to construct an expanded and flexible variable system
+; | | 
+; | | e.g.    : score $00 scratch ;
+; | | 
+; | | $00 score !
+; | | $01 score +!
+; | | 
+; | | e.g.   : varword $0a scratch ; 
+; | |
+; | | $8000 varword !
+
 		FORTH_DSP_VALUEHL
 	
 		FORTH_DSP_POP
@@ -1542,7 +1554,7 @@ pop hl
 
 .INC2:
 	CWHEAD .DEC2 91 "+2!" 3 WORD_FLAG_CODE
-; | +2! ( u a -- )  Increment word at address a by the value u | TO TEST
+; | +2! ( u a -- )  Increment word at address a by the value u | DONE
 
 		if DEBUG_FORTH_WORDS
 			DMARK "+2!"
@@ -1552,6 +1564,8 @@ pop hl
 		; Address
 
 		FORTH_DSP_VALUEHL
+
+		push hl    ; save address
 
 		; load content into de
 
@@ -1564,18 +1578,17 @@ pop hl
 			CALLMONITOR
 		endif
 
-		push de
+		FORTH_DSP_POP
 
 		; Get value to add
 
-		FORTH_DSP_VALUEM1
+		FORTH_DSP_VALUE
 
 		if DEBUG_FORTH_WORDS
 			DMARK "+2v"
 			CALLMONITOR
 		endif
 
-		pop de
 		add hl, de
 
 		if DEBUG_FORTH_WORDS
@@ -1589,7 +1602,7 @@ pop hl
 
 		; Address
 
-		FORTH_DSP_VALUEHL
+		pop hl
 
 		; save it back
 
@@ -1597,34 +1610,127 @@ pop hl
 		inc hl
 		ld (hl), d
 
-		FORTH_DSP_VALUEHL
-
 		if DEBUG_FORTH_WORDS
 			DMARK "+2e"
 			CALLMONITOR
 		endif
 
-		FORTH_DSP_POP
-		FORTH_DSP_POP
+
+
 
 
 	       NEXTW
 
 .DEC2:
 	CWHEAD .GET2 91 "-2!" 3 WORD_FLAG_CODE
-; | -2! ( u a -- )  Decrement word at address a by the value u | TODO
+; | -2! ( u a -- )  Decrement word at address a by the value u | DONE
+
+
+		if DEBUG_FORTH_WORDS
+			DMARK "-2!"
+			CALLMONITOR
+		endif
+
+		; Address
+
+		FORTH_DSP_VALUEHL
+
+		push hl    ; save address
+
+		; load content into de
+
+		ld e,(hl)
+		inc hl
+		ld d, (hl)
+
+		if DEBUG_FORTH_WORDS
+			DMARK "-2a"
+			CALLMONITOR
+		endif
+
+		FORTH_DSP_POP
+
+		; Get value to remove
+
+		FORTH_DSP_VALUE
+
+		if DEBUG_FORTH_WORDS
+			DMARK "-2v"
+			CALLMONITOR
+		endif
+
+		ex de, hl
+		sbc hl, de
+
+		if DEBUG_FORTH_WORDS
+			DMARK "-2d"
+			CALLMONITOR
+		endif
+
+		; move result to de
+
+		ex de, hl
+
+		; Address
+
+		pop hl
+
+		; save it back
+
+		ld (hl), e
+		inc hl
+		ld (hl), d
+
+		if DEBUG_FORTH_WORDS
+			DMARK "-2e"
+			CALLMONITOR
+		endif
+
+
+
 
 
 	       NEXTW
 .GET2:
 	CWHEAD .BANG2 91 "2@" 2 WORD_FLAG_CODE
-; | 2@ ( a -- )  Push word at address a  | TODO
+; | 2@ ( a -- u )  Push word at address a onto stack | DONE
 
+		FORTH_DSP_VALUEHL
+
+		ld e, (hl)
+		inc hl
+		ld d, (hl)
+
+		ex de, hl
+
+		call forth_push_numhl
 
 	       NEXTW
 .BANG2:
-	CWHEAD .ENDCORE 91 "-2!" 3 WORD_FLAG_CODE
-; | 2! ( u a -- )  Store value u as a word at address a | TODO
+	CWHEAD .ENDCORE 91 "2!" 2 WORD_FLAG_CODE
+; | 2! ( u a -- )  Store value u as a word at address a | DONE
+
+		FORTH_DSP_VALUEHL
+
+		push hl   ; save address
+
+
+		FORTH_DSP_POP
+
+		
+		FORTH_DSP_VALUEHL
+
+		FORTH_DSP_POP
+
+		ex de, hl    ; value now in de
+
+		pop hl
+
+		ld (hl), e
+
+		inc hl
+
+		ld (hl), d
 
 
 	       NEXTW

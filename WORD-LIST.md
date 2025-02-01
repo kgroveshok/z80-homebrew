@@ -250,7 +250,40 @@
 ### ) ( -- )  End of comment |  DONE 
 
 
-### SCRATCH ( u -- addr ) Provides 20 word array. Can be used as single byte or as a word by passing the offset on stack. Pushes the resulting address to stack.  |  DONE 
+### SCRATCH ( u -- addr ) Pushes address of offset u to stack | DONE
+
+
+ The scratch area provides 32 word array. Can be used as single byte or as a word by passing the offset on stack. Pushes the resulting address to stack. 
+
+
+ When used with the direct storage writing/malloc and the !@ or word versions it is possible to construct an expanded and flexible variable system
+
+
+ 
+
+
+ e.g.    : score $00 scratch ;
+
+
+ 
+
+
+ $00 score !
+
+
+ $01 score +!
+
+
+ 
+
+
+ e.g.   : varword $0a scratch ; 
+
+
+
+
+
+ $8000 varword !
 
 
 ### +! ( u a -- )  Increment byte at address a by the value u | DONE
@@ -259,16 +292,16 @@
 ### -! ( u a -- )  Decrement byte at address a by the value u | DONE
 
 
-### +2! ( u a -- )  Increment word at address a by the value u | TO TEST
+### +2! ( u a -- )  Increment word at address a by the value u | DONE
 
 
-### -2! ( u a -- )  Decrement word at address a by the value u | TODO
+### -2! ( u a -- )  Decrement word at address a by the value u | DONE
 
 
-### 2@ ( a -- )  Push word at address a  | TODO
+### 2@ ( a -- u )  Push word at address a onto stack | DONE
 
 
-### 2! ( u a -- )  Store value u as a word at address a | TODO
+### 2! ( u a -- )  Store value u as a word at address a | DONE
 
 
 ## Device Words
@@ -490,6 +523,15 @@
 ### BWRITE ( s u -- ) With the current bank, write the string s to address u | TO TEST
 
 
+### BUPD ( u -- ) Write the contents of the current file system storage buffer directly to address u | TO TEST
+
+
+ Coupled with the use of the BREAD, BWRITE and STOREPAGE words it is possible to implement a direct
+
+
+ or completely different file system structure.
+
+
 ### BYID ( u -- s ) Get the name of the file in the current BANK using the file ID u | TODO
 
 
@@ -602,6 +644,9 @@
 
 
 ### LABEL ( u --  )  Sets the storage bank label to string on top of stack  | DONE
+
+
+### STOREPAGE ( -- addr )  Pushes the address of the file system record buffer to stack for direct access  | DONE
 
 
 ### LABELS (  -- b n .... c  )  Pushes each storage bank labels (n) along with id (b) onto the stack giving count (c) of banks  | TO TEST
@@ -742,13 +787,25 @@
 ### ) ( -- )  End of comment |  DONE 
 
 
-### SCRATCH ( u -- addr ) Provides 20 word array. Can be used as single byte or as a word by passing the offset on stack. Pushes the resulting address to stack.  |  DONE 
+### SCRATCH ( u -- addr ) Pushes address of offset u to stack | DONE
 
 
 ### +! ( u a -- )  Increment byte at address a by the value u | DONE
 
 
 ### -! ( u a -- )  Decrement byte at address a by the value u | DONE
+
+
+### +2! ( u a -- )  Increment word at address a by the value u | DONE
+
+
+### -2! ( u a -- )  Decrement word at address a by the value u | DONE
+
+
+### 2@ ( a -- u )  Push word at address a onto stack | DONE
+
+
+### 2! ( u a -- )  Store value u as a word at address a | DONE
 
 
 ### OUT ( u1 u2 -- ) Perform Z80 OUT to port u2 sending byte u1 | DONE
@@ -919,6 +976,9 @@
 ### LABEL ( u --  )  Sets the storage bank label to string on top of stack  | DONE
 
 
+### STOREPAGE ( -- addr )  Pushes the address of the file system record buffer to stack for direct access  | DONE
+
+
 ### TYPE ( u -- u type ) Push type of value on TOS - 's' string, 'i' integer...   | DONE
 
 
@@ -973,16 +1033,7 @@
 
 
 
-### +2! ( u a -- )  Increment word at address a by the value u | TO TEST
 
-
-### -2! ( u a -- )  Decrement word at address a by the value u | TODO
-
-
-### 2@ ( a -- )  Push word at address a  | TODO
-
-
-### 2! ( u a -- )  Store value u as a word at address a | TODO
 
 
 ## Device Words
@@ -1055,6 +1106,9 @@
 
 
 ### BWRITE ( s u -- ) With the current bank, write the string s to address u | TO TEST
+
+
+### BUPD ( u -- ) Write the contents of the current file system storage buffer directly to address u | TO TEST
 
 
 ### BYID ( u -- s ) Get the name of the file in the current BANK using the file ID u | TODO

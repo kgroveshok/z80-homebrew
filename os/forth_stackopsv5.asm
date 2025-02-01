@@ -857,5 +857,24 @@ endif
 	pop hl
 
 	ret
+
+getwordathl:
+	; hl points to an address
+	; load hl with the word at that address
+
+	push de
+
+	ld e, (hl)
+	inc hl
+	ld d, (hl)
+	ex de, hl
+
+	pop de
+	ret
+
+
+
+
+
 ; eof
 

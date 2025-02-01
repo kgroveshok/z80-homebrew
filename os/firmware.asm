@@ -314,7 +314,7 @@ chk_loop_ovr: equ cli_loop_stack -2; overflow check word
 cli_data_stack: equ chk_loop_ovr - STACK_DATA_SIZE		 ; 
 chk_data_ovr: equ cli_data_stack -2; overflow check word
 
-os_var_array: equ chk_data_ovr - (20 * 2)      ;   20 word array for use using the SCRATCH word
+os_var_array: equ chk_data_ovr - (32 * 2)      ;   32 word array for use using the SCRATCH word
 
 ; os/forth token vars
 

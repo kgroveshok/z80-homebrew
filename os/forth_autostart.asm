@@ -29,6 +29,7 @@ startcmds:
 ;	dw game2r
 ;	dw game2b1
 ;	dw game2b2
+	dw strncpy
 	dw list
 	dw mtesta
 	dw mtestb
@@ -97,6 +98,12 @@ startcmds:
 ;	dw keyend
 ;	dw keybs
 	db 0, 0	
+
+
+; some direct memory words
+; strncpy ( len t f -- t )
+
+strncpy:   db ": strncpy $00 scratch 2! $02 scratch 2! do $00 scratch 2@ i + @ $02 scratch 2@ i + ! loop nop  ;",0
 
 ; random malloc and free cycles
 

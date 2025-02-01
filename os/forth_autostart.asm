@@ -29,6 +29,7 @@ startcmds:
 ;	dw game2r
 ;	dw game2b1
 ;	dw game2b2
+	dw type
 	dw strncpy
 	dw list
 	dw mtesta
@@ -99,6 +100,9 @@ startcmds:
 ;	dw keybs
 	db 0, 0	
 
+
+; type ( addr count - )
+type:     db ": type $00 do dup i + @ emit loop ;", 0
 
 ; some direct memory words
 ; strncpy ( len t f -- t )

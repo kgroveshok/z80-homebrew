@@ -4,6 +4,9 @@
 
 
 
+Also refer to the auto start list examples as these contain extra words created at runtime as needed
+
+
 ## Core Words
 
 
@@ -655,7 +658,16 @@
 ## String Words
 
 
-### TYPE ( u -- u type ) Push type of value on TOS - 's' string, 'i' integer...   | DONE
+### PTR ( -- addr ) Low level push pointer to the value on TOS | DONE
+
+
+ If a string will give the address of the string without dropping it. Handy for direct string access
+
+
+ If a number can then use 2@ and 2! for direct value update without using stack words 
+
+
+### STYPE ( u -- u type ) Push type of value on TOS - 's' string, 'i' integer...   | DONE
 
 
 ### UPPER ( s -- s ) Upper case string s  | DONE
@@ -979,7 +991,10 @@
 ### STOREPAGE ( -- addr )  Pushes the address of the file system record buffer to stack for direct access  | DONE
 
 
-### TYPE ( u -- u type ) Push type of value on TOS - 's' string, 'i' integer...   | DONE
+### PTR ( -- addr ) Low level push pointer to the value on TOS | DONE
+
+
+### STYPE ( u -- u type ) Push type of value on TOS - 's' string, 'i' integer...   | DONE
 
 
 ### UPPER ( s -- s ) Upper case string s  | DONE

@@ -2,6 +2,7 @@
 
 echo "# Forth Language Reference"
 echo
+echo "Also refer to the auto start list examples as these contain extra words created at runtime as needed"
 cat forth_words_*.asm | grep "|"  | cut -f2- -d'|'
 
 echo "# Words Ready To Use"

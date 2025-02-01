@@ -9,6 +9,8 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE Relook at variable use. Setup a VARIABLE word which puts the address on the stack and allows the ! and @ words to access them. Now with SCRATCH to emulate via uwords
 * DONE my malloc is failing on free. Not doing as the other malloc is fine.
 
+* TODO Add a print using ptr on stack: TYPE ( addr c - )
+* TODO LIST and FORGET might be broken
 * TODO Fix NUM2STR. 
 * TODO Fix LEFT
 * TODO Fix RIGHT

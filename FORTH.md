@@ -24,7 +24,35 @@ The data stack pointer (DSP) supports string and numbers on the same stack for o
 * %xxxxx  - 16bit binary value (todo)
 
 
-There are also a number of variables which hold 16bit values: V0-V3. They are set using ! and pushed to stack with @, e.g. $03 v0! to set, and v0@ will push $03 onto the stack.
+There are also a number of variables which hold 16bit values: V0-V3. They are set using ! and pushed to stack with @, e.g. $03 v0! to set, and v0@ will push $03 onto the stack. While not that flexible nor using standard FORTH methods, there is another way to have an any kind of data structure available.
+
+The PTR, MALLOC and SCRATCH words provide a dynamic (MALLOC) or fixed buffer (SCRATCH) areas for whatever data/variable structure you require:
+
+e.g.
+
+Pushes a pointer to the stack for the offset 0 in the scratch area.
+
+: score $00 scratch ;
+
+This allows for things such as setting and then incrementing at "variable":
+
+$00 score !
+
+$01 score +!
+
+This method supports both single byte and word accesses via !/2! etc. There is no checking so ensure no overlap!
+
+e.g.
+
+: timer $01 scratch ;
+
+Don't use:
+
+$01 score 2!
+
+As that would over write 'timer'.
+
+
 
 
 

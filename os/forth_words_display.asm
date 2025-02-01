@@ -90,6 +90,9 @@ endif
 				call update_display
 		.enoupdate:
 
+		ld a, (f_cursor_ptr)
+		inc a
+		ld (f_cursor_ptr), a   ; save new pos
 
 
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 

@@ -1,9 +1,21 @@
 
 ; | ## String Words
 
-.TYPE:
-	CWHEAD .UPPER 52 "TYPE" 4 WORD_FLAG_CODE
-; | TYPE ( u -- u type ) Push type of value on TOS - 's' string, 'i' integer...   | DONE
+.PTR:  
+
+	CWHEAD .STYPE 52 "PTR" 3 WORD_FLAG_CODE
+; | PTR ( -- addr ) Low level push pointer to the value on TOS | DONE
+; | | If a string will give the address of the string without dropping it. Handy for direct string access
+; | | If a number can then use 2@ and 2! for direct value update without using stack words 
+
+		FORTH_DSP_VALUEHL
+		call forth_push_numhl
+
+
+		NEXTW
+.STYPE:
+	CWHEAD .UPPER 52 "STYPE" 5 WORD_FLAG_CODE
+; | STYPE ( u -- u type ) Push type of value on TOS - 's' string, 'i' integer...   | DONE
 		FORTH_DSP
 		;v5 FORTH_DSP_VALUE
 

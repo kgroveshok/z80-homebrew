@@ -6,14 +6,30 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 -------------
 
 * DONE Test CALL
+* DONE Relook at variable use. Setup a VARIABLE word which puts the address on the stack and allows the ! and @ words to access them. Now with SCRATCH to emulate via uwords
+* DONE my malloc is failing on free. Not doing as the other malloc is fine.
 
-* TODO Relook at variable use. Setup a VARIABLE word which puts the address on the stack and allows the ! and @ words to access them. 
+* TODO Fix NUM2STR. 
+* TODO Fix LEFT
+* TODO Fix RIGHT
+* TODO Fix 2SWAP
+* TODO Fix KEY
+* TODO Fix IS 
+
+* TODO add more editing features 
+* TODO fix editor bugs
+* TODO fix editor issues
+* TODO Fix prev line recall and insertion. Corruption appears on the end of line
+* TODO Editor issue insert mid string causes loss of zero term giving random data
+* TODO Backspace mid string does not clean up shifted text
+* TODO Jump to end of line does not work should set to the number in last debug display
+* TODO If cursor at end of line, when go back it leaves custor displayed
+
 * TODO Add to start up a list of what storage labels are seen
 * TODO add ram test to the diags
 * TODO Speed up screen updates - instead of writing whole screen detect what has changed? 
 * TODO Add no bank chip detection to format
 * TODO Add support for ELSE and ENDIF. IF THEN ELSE ENDIF   or IF THEN ENDIF
-* TODO Fix prev line recall and insertion. Corruption appears on the end of line
 * TODO Rework the storage system file structure and functions 
 * TODO setup a compiler
 * TODO Add a stack content viewer to callmonitor code
@@ -24,21 +40,8 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO wire up a temp interface to the serial EEPROMS so I can test storage on the SC114 as I have the PIO and digital IO cards installed
 * TODO with the second PIO port hook up and debug the sound card
 * TODO PICK word to pick a value at a given value on stack and move to TOS
-* TODO Fix NUM2STR. 
-* TODO Fix LEFT
-* TODO Fix RIGHT
-* TODO Fix 2SWAP
 * TODO Change NOTE to PLAY and use a stream of items on stack
-* TODO Fix KEY
-* TODO Fix IS 
 * TO TEST need word to report where cursor current at
-* TODO add more editing features 
-* TODO fix editor bugs
-* TODO fix editor issues
-* TODO Editor issue insert mid string causes loss of zero term giving random data
-* TODO Backspace mid string does not clean up shifted text
-* TODO Jump to end of line does not work should set to the number in last debug display
-* TODO If cursor at end of line, when go back it leaves custor displayed
 * TODO Take the vid out handshake lines and code up a Pico to handle display.
 * TODO Pico to handle display to have two way return of data
 * TODO Create a disk UI in native asm for robustness and speed?
@@ -48,7 +51,6 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO need word to get file id by name
 * TODO need word to get file name by id
 * TODO have a word to set break point at a DMARKer
-* TODO my malloc is failing on free
 * TODO Extract all of the symbols in the symbol table to be available as words in FORTH, debug and asm above
 * TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs
 * TODO Add a simple assembler feature like BBC Basic

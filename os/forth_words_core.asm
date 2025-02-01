@@ -1063,45 +1063,60 @@ endif
 .LIST:
 	CWHEAD .FORGET 72 "LIST" 4 WORD_FLAG_CODE
 ; | LIST ( uword -- u )    List the code to the word that is quoted (so as not to exec) on TOS | DONE
-; | | The quoted most also be in upper case.
+; | | The quoted word must be in upper case.
 	if DEBUG_FORTH_WORDS
 		DMARK "LST"
 		CALLMONITOR
 	endif
 
 
+; Start format of scratch string
 
+		ld hl, scratch
+
+		ld a, ':'
+		ld (hl),a
+		inc hl
+		ld a, ' '
+		ld (hl), a
 
 		; Get ptr to the word we need to look up
 
-		FORTH_DSP_VALUEHL
+;		FORTH_DSP_VALUEHL
 		;v5 FORTH_DSP_VALUE
 	; TODO type check
 ;		inc hl    ; Skip type check 
-		push hl
+;		push hl
 ;		ex de, hl    ; put into DE
 
 
 		ld hl, baseram
 		;ld hl, baseusermem
 
-		
+push hl   ; sacreifical push
 
+.ldouscanm:
+	pop hl
+.ldouscan:
+	if DEBUG_FORTH_WORDS
+		DMARK "LSs"
+		CALLMONITOR
+	endif
 	; skip dict stub
 		call forth_tok_next
 
 
 ; while we have words to look for
 
-.ldouscan:	ld a, (hl)     
+	ld a, (hl)     
 	if DEBUG_FORTH_WORDS
-		DMARK "LSs"
+		DMARK "LSk"
 		CALLMONITOR
 	endif
 		cp WORD_SYS_END
-		jp z, .ludone
+		jp z, .lunotfound
 		cp WORD_SYS_UWORD
-		jp nz, .lnuword
+		jp nz, .ldouscan
 
 	if DEBUG_FORTH_WORDS
 		DMARK "LSu"
@@ -1110,9 +1125,9 @@ endif
 
 		; found a uword but is it the one we want...
 
-
-	        pop de   ; get back the dsp name
-		push de
+		ex de, hl
+		FORTH_DSP_VALUEHL
+		ex de, hl
 
 		push hl  ; to save the ptr
 
@@ -1129,9 +1144,8 @@ endif
 		CALLMONITOR
 	endif
 		call strcmp
-		jp nz, .lnuword
+		jp nz, .ldouscanm
 	
-
 
 
 		; we have a uword so push its name to the stack
@@ -1155,6 +1169,36 @@ pop hl
 		DMARK "LS2"
 		CALLMONITOR
 	endif
+
+		; save this location
+	
+		push hl
+
+		inc hl
+		ld de, scratch+2
+		ld c, a
+		ld b, 0
+
+	if DEBUG_FORTH_WORDS
+		DMARK "LSn"
+		CALLMONITOR
+	endif
+
+		; copy uword name to scratch
+
+		ldir
+
+		dec de
+		ld a, ' '    ; change null to space
+		ld (de), a
+
+		inc de
+
+		push de
+		pop bc     ; move scratch pointer to end of word name and save it
+
+		pop hl
+		ld a, (hl)
 		;inc hl
 		; skip word string
 		call addatohl
@@ -1185,139 +1229,203 @@ pop hl
 
 ; cant push right now due to tokenised strings 
 
-		push hl   ; save pointer to start of uword def string
+; get the destination of where to copy this definition to.
 
-; look for FORTH_EOL_LINE
-		ld a, FORTH_END_BUFFER
-		call strlent
-
-		inc hl		 ; space for coln def
-		inc hl
-		inc hl          ; space for terms
-		inc hl
-
-		ld a, 20   ; TODO get actual length
-		call addatohl    ; include a random amount of room for the uword name
-
-		
-	if DEBUG_FORTH_WORDS
-		DMARK "Lt1"
-		CALLMONITOR
-	endif
-		
-
-; malloc space for the string because we cant change it
-
-		call malloc
-	if DEBUG_FORTH_MALLOC_GUARD
-		push af
-		call ishlzero
-		pop af
-		
-		call z,malloc_error
-	endif
-
-	if DEBUG_FORTH_WORDS
-		DMARK "Lt2"
-		CALLMONITOR
-	endif
+		push bc
 		pop de
-		push hl    ; push the malloc to release later
-		push hl   ;  push back a copy for the later stack push
-		
-; copy the string swapping out the zero terms for spaces
 
-		; de has our source
-		; hl has our dest
-
-; add the coln def
-
-		ld a, ':'
-		ld (hl), a
-		inc hl
-		ld a, ' '
-		ld (hl), a
-		inc hl
-
-; add the uname word
-		push de   ; save our string for now
-		ex de, hl
-
-		FORTH_DSP_VALUE
-		;v5 FORTH_DSP_VALUE
-
-;		inc hl   ; skip type but we know by now this is OK
-
-.luword:	ld a,(hl)
+.listl:         ld a,(hl)
 		cp 0
-		jr z, .luword2
-		ld (de), a
-		inc de
-		inc hl
-		jr .luword
-
-.luword2:	ld a, ' '
-		ld (de), a
-;		inc hl
-;		inc de
-;		ld (de), a
-;		inc hl
-		inc de
-
-		ex de, hl
-		pop de
-		
-		
-
-; detoken that string and copy it
-
-	if DEBUG_FORTH_WORDS
-		DMARK "Lt2"
-		CALLMONITOR
-	endif
-.ldetok:	ld a, (de)
+		jr z, .lreplsp     ; replace zero with space
 		cp FORTH_END_BUFFER
-		jr z, .ldetokend
-		; swap out any zero term for space
-		cp 0
-		jr nz, .ldetoknext
-		ld a, ' '
+		jr z, .listdone    ; at end of uword defination to close of scratch and finish
+	
+		; just copy this char as is then
 
-	if DEBUG_FORTH_WORDS
-		DMARK "LtS"
-		CALLMONITOR
-	endif
-.ldetoknext:	ld (hl), a
+		ld (de), a
+
+.listnxt:	inc hl
 		inc de
-		inc hl
-		jr .ldetok
+		jr .listl
 
-.ldetokend:	ld a, 0    ; replace forth eol with string term for pushing
-		ld (hl), a 
+.lreplsp:	ld a,' '
+		ld (de), a
+		jr .listnxt
 
-; free that temp malloc
+; close up uword def
 
-		pop hl   
+.listdone:
+		ld a, 0
+		ld (de), a
 
+; now have def so clean up and push to stack
+
+		ld hl, scratch
 	if DEBUG_FORTH_WORDS
-		DMARK "Lt4"
+		DMARK "Ltp"
 		CALLMONITOR
 	endif
+
+	jr .listpush
+
+;.lnuword:	pop hl
+;		call forth_tok_next
+;		jp .ldouscan 
+
+.lunotfound:		 
+
+
+		
+		FORTH_DSP_POP
+		ld hl, .luno
+			
+
+.listpush:
 		call forth_apushstrhl
 
-		; get rid of temp malloc area
 
-		pop hl
-		call free
 
-		jr .ludone
+		NEXTW
 
-.lnuword:	pop hl
-		call forth_tok_next
-		jp .ldouscan 
+.luno:    db "Not found",0
 
-.ludone:		 pop hl
 
+
+
+
+;		push hl   ; save pointer to start of uword def string
+;
+;; look for FORTH_EOL_LINE
+;		ld a, FORTH_END_BUFFER
+;		call strlent
+;
+;		inc hl		 ; space for coln def
+;		inc hl
+;		inc hl          ; space for terms
+;		inc hl
+;
+;		ld a, 20   ; TODO get actual length
+;		call addatohl    ; include a random amount of room for the uword name
+;
+;		
+;	if DEBUG_FORTH_WORDS
+;		DMARK "Lt1"
+;		CALLMONITOR
+;	endif
+;		
+;
+;; malloc space for the string because we cant change it
+;
+;		call malloc
+;	if DEBUG_FORTH_MALLOC_GUARD
+;		push af
+;		call ishlzero
+;		pop af
+;		
+;		call z,malloc_error
+;	endif
+;
+;	if DEBUG_FORTH_WORDS
+;		DMARK "Lt2"
+;		CALLMONITOR
+;	endif
+;		pop de
+;		push hl    ; push the malloc to release later
+;		push hl   ;  push back a copy for the later stack push
+;		
+;; copy the string swapping out the zero terms for spaces
+;
+;		; de has our source
+;		; hl has our dest
+;
+;; add the coln def
+;
+;		ld a, ':'
+;		ld (hl), a
+;		inc hl
+;		ld a, ' '
+;		ld (hl), a
+;		inc hl
+;
+;; add the uname word
+;		push de   ; save our string for now
+;		ex de, hl
+;
+;		FORTH_DSP_VALUE
+;		;v5 FORTH_DSP_VALUE
+;
+;		inc hl   ; skip type but we know by now this is OK
+;
+;.luword:	ld a,(hl)
+;		cp 0
+;		jr z, .luword2
+;		ld (de), a
+;		inc de
+;		inc hl
+;		jr .luword
+;
+;.luword2:	ld a, ' '
+;		ld (de), a
+;;		inc hl
+;;		inc de
+;;		ld (de), a
+;;		inc hl
+;		inc de
+;
+;		ex de, hl
+;		pop de
+;		
+;		
+;
+;; detoken that string and copy it
+;
+;	if DEBUG_FORTH_WORDS
+;		DMARK "Lt2"
+;		CALLMONITOR
+;	endif
+;.ldetok:	ld a, (de)
+;		cp FORTH_END_BUFFER
+;		jr z, .ldetokend
+;		; swap out any zero term for space
+;		cp 0
+;		jr nz, .ldetoknext
+;		ld a, ' '
+;
+;	if DEBUG_FORTH_WORDS
+;		DMARK "LtS"
+;		CALLMONITOR
+;	endif
+;.ldetoknext:	ld (hl), a
+;		inc de
+;		inc hl
+;		jr .ldetok
+;
+;.ldetokend:	ld a, 0    ; replace forth eol with string term for pushing
+;		ld (hl), a 
+;
+;; free that temp malloc
+;
+;		pop hl   
+;
+;	if DEBUG_FORTH_WORDS
+;		DMARK "Lt4"
+;		CALLMONITOR
+;	endif
+;		call forth_apushstrhl
+;
+;		; get rid of temp malloc area
+;
+;		pop hl
+;		call free
+;
+;		jr .ludone
+;
+;.lnuword:	pop hl
+;		call forth_tok_next
+;		jp .ldouscan 
+;
+;.ludone:		 pop hl
+;
 		NEXTW
 
 .FORGET:

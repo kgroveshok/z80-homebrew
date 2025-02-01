@@ -907,6 +907,7 @@ forth_find_tok:
 forth_tok_next:
 	; hl now points to the address of the next word pointer 
 	; TODO skip compiled symbol for now
+;	push de
 	inc hl
 	ld e, (hl)
 	inc hl
@@ -921,7 +922,7 @@ if DEBUG_FORTH_PARSE_NEXTWORD
 	CALLMONITOR
 	pop bc
 endif
-	
+;	pop de	
 	ret
 
 

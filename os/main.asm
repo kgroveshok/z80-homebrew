@@ -256,11 +256,11 @@ cli:
 
 	ld hl, os_cli_cmd
 
-	STACKFRAME ON $fefe $9f9f
+	STACKFRAME OFF $fefe $9f9f
 
 	call input_str
 
-	STACKFRAMECHK ON $fefe $9f9f
+	STACKFRAMECHK OFF $fefe $9f9f
 
 	; copy input to last command
 
@@ -283,6 +283,7 @@ cli:
 		ld (display_fb_active), hl
 
 ;	nop
+	STACKFRAME ON $fbfe $8f9f
 	; first time into the parser so pass over the current scratch pad
 	ld hl,os_cli_cmd
 	; tokenise the entered statement(s) in HL
@@ -292,6 +293,7 @@ cli:
 	;call forthexec_cleanup
 ;	call parsenext
 
+	STACKFRAMECHK ON $fbfe $8f9f
 	; TODO on return from forth parsing should there be a prompt to return to system? but already in system.
 
 	ld a, display_row_4

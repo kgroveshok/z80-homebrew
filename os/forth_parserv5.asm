@@ -714,9 +714,12 @@ endif
 
 ; push token to stack to end of word
 
+	STACKFRAME ON $1efe $2f9f
 
 ld hl,(os_tok_ptr)
 call forth_apush
+
+	STACKFRAMECHK ON $1efe $2f9f
 
 execnext:
 

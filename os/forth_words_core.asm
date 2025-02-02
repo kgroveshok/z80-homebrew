@@ -45,6 +45,8 @@
 ; | | u - A qutoed string which can consist of any valid Forth expression excluding : defintions (use LOAD instead)
 ; | |
 ; | |  
+	STACKFRAME OFF $5efe $5f9f
+
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "EXE"
 			CALLMONITOR
@@ -96,6 +98,7 @@
 ;	call forthparse
 ;	call forthexec
 
+	STACKFRAMECHK OFF $5efe $5f9f
 	NEXTW
 
 ; dead code - old version 
@@ -296,6 +299,7 @@
 	CWHEAD .SCOLN OPCODE_COLN ":" 1 WORD_FLAG_CODE
 ; | : ( -- )         Create new word | DONE
 
+	STACKFRAME OFF $8efe $989f
 	; get parser buffer length  of new word
 
 	
@@ -580,6 +584,7 @@ if DEBUG_FORTH_UWORD
 	CALLMONITOR
 endif
 
+	STACKFRAMECHK OFF $8efe $989f
 
 ret    ; dont process any remaining parser tokens as they form new word
 

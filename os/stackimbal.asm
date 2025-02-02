@@ -9,12 +9,21 @@ STACKFRAME: macro onoff frame1 frame2
 	if DEBUG_STACK_IMB
 		if onoff
 			; save current SP
+			exx
 
+			ld de, frame1
+			ld a, d
+			ld hl, curframe
+			call hexout
+			ld a, e
+			ld hl, curframe+2
+			call hexout
+ 
 			ld hl, frame1
 			push hl
 			ld hl, frame2
 			push hl
-
+			exx
 		endif
 		
 	endif
@@ -25,6 +34,7 @@ STACKFRAMECHK: macro onoff frame1 frame2
 		
 	if DEBUG_STACK_IMB
 		if onoff
+			exx
 			; check stack frame SP
 
 			ld hl, frame2
@@ -44,6 +54,7 @@ STACKFRAMECHK: macro onoff frame1 frame2
 
 			.spfrsame: nop
 
+			exx
 		endif
 		
 	endif
@@ -135,9 +146,9 @@ check_stack_sp:
 showsperror:
 
 
-	push de
-	push af
 	push hl
+	push af
+	push de
 	call clear_display
 	ld de, .sperr
 	ld a,0
@@ -146,15 +157,21 @@ showsperror:
 	ld a, display_row_1+17
 	ld de, debug_mark
 	call str_at_display
+	ld a, 0
+	ld (curframe+4),a
+	ld hl, curframe
+	ld de, os_word_scratch
+	ld a, display_row_4
+	call str_at_display
 	call update_display
 	;call break_point_state
 	call cin_wait
 
 	ld a, ' '
 	ld (os_view_disable), a
-	pop hl
-	pop af
 	pop de	
+	pop af
+	pop hl
 	CALLMONITOR
 	ret
 

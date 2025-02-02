@@ -64,7 +64,7 @@ DEBUG_FORTH_WORDS_KEY: equ 1   ; 1
 ON: equ 1
 OFF: equ 0
 
-DEBUG_STACK_IMB: equ 1         
+DEBUG_STACK_IMB: equ 1
 STACK_IMB_STORE: equ 20
 
 ; House keeping and protections
@@ -358,7 +358,8 @@ os_view_bc: equ os_view_de - 2
 
 ; stack checksum word
 if DEBUG_STACK_IMB
-	store_sp: equ os_view_de - (STACK_IMB_STORE*4)
+	curframe: equ  os_view_de - 5
+	store_sp: equ curframe - (STACK_IMB_STORE*4)
 	chk_word: equ store_sp - 2		 ; this is the word to init and then check against to detect stack corruption. Held far away from all stacks
 else
 	chk_word: equ os_view_bc - 2		 ; this is the word to init and then check against to detect stack corruption. Held far away from all stacks

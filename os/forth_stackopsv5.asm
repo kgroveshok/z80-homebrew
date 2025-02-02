@@ -224,6 +224,8 @@ forth_push_numhl:
 forth_apush:
 	; kernel push
 
+	SAVESP ON SPPUSH
+
 if DEBUG_FORTH_PUSH
 			DMARK "PSH"
 	CALLMONITOR
@@ -439,6 +441,7 @@ endif
 	;pop af
 	;ld (cli_origptr),hl
 
+	CHECKSP ON SPPUSH
 	ret
 
 .fapbin:    ; push a binary string. 
@@ -577,12 +580,15 @@ endif
 
 
 
+	
+	CHECKSP ON SPPUSH
 	ret
 	 nop
 
 .fabin:   ; TODO bin conversion
 
 
+	CHECKSP ON SPPUSH
 
 	ret
 

@@ -1,6 +1,58 @@
 ; Macro and code to detect stock imbalances
 
-; for a call, wrap SP collection and comparisons
+SPPUSH: equ 0
+
+; Add a stack frame which can be checked before return
+
+STACKFRAME: macro onoff frame1 frame2
+
+	if DEBUG_STACK_IMB
+		if onoff
+			; save current SP
+
+			ld hl, frame1
+			push hl
+			ld hl, frame2
+			push hl
+
+		endif
+		
+	endif
+endm
+
+STACKFRAMECHK: macro onoff frame1 frame2
+
+		
+	if DEBUG_STACK_IMB
+		if onoff
+			; check stack frame SP
+
+			ld hl, frame2
+			pop de   ; frame2
+
+			call cmp16
+			jr nz, .spnosame
+			
+
+			ld hl, frame1
+			pop de   ; frame1
+
+			call cmp16
+			jr z, .spfrsame
+
+			.spnosame: call showsperror
+
+			.spfrsame: nop
+
+		endif
+		
+	endif
+
+
+endm
+
+
+; for a sub routine, wrap SP collection and comparisons
 
 ; Usage:
 ;
@@ -70,6 +122,18 @@ check_stack_sp:
 
 		; not same
 
+		call showsperror
+.spsame:
+
+		pop de
+
+		ret
+
+.sperr:  db "Stack imbalance",0
+
+
+showsperror:
+
 
 	push de
 	push af
@@ -92,14 +156,7 @@ check_stack_sp:
 	pop af
 	pop de	
 	CALLMONITOR
-
-.spsame:
-
-		pop de
-
-		ret
-
-.sperr:  db "Stack imbalance",0
+	ret
 
 endif
 

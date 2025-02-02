@@ -255,8 +255,12 @@ cli:
 	ld e, 40
 
 	ld hl, os_cli_cmd
+
+	STACKFRAME ON $fefe $9f9f
+
 	call input_str
 
+	STACKFRAMECHK ON $fefe $9f9f
 
 	; copy input to last command
 

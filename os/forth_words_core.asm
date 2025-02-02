@@ -237,7 +237,7 @@
 		DMARK "DUs"
 		CALLMONITOR
 	endif
-		call forth_apushstrhl
+		call forth_push_str
 
 		NEXTW
 
@@ -925,7 +925,7 @@ endif
 		inc bc
 
 		push bc
-		call forth_apushstrhl
+		call forth_push_str
 		pop bc
 
 		pop hl 	
@@ -1289,7 +1289,7 @@ pop hl
 			
 
 .listpush:
-		call forth_apushstrhl
+		call forth_push_str
 
 
 

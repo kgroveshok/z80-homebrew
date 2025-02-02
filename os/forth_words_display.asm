@@ -379,7 +379,7 @@ endif
 	CWHEAD .SPACES 50 "BL" 2 WORD_FLAG_CODE
 ; | BL (  -- c ) Push the value of space onto the stack as a string  | DONE
 		ld hl, .blstr
-		call forth_apushstrhl
+		call forth_push_str
 		
 	       NEXTW
 

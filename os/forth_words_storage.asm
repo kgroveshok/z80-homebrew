@@ -37,7 +37,7 @@
 			DMARK "BR2"
 			CALLMONITOR
 		endif
-	call forth_apushstrhl			
+	call forth_push_str
 
 
 		NEXTW
@@ -234,7 +234,7 @@
 			DMARK "DI5"
 			CALLMONITOR
 		endif
-		call forth_apushstrhl
+		call forth_push_str
 		if DEBUG_FORTH_WORDS
 			DMARK "DI6"
 			CALLMONITOR
@@ -266,8 +266,7 @@
 			DMARK "DI8"
 			CALLMONITOR
 		endif
-		call forth_apushstrhl
-		;call forth_apush
+		call forth_push_str
 
 
 	
@@ -731,7 +730,7 @@
 		DMARK "RE3"
 		CALLMONITOR
 	endif
-	call forth_apushstrhl
+	call forth_push_str
 
 	if DEBUG_STORESE
 		DMARK "RE4"
@@ -762,7 +761,7 @@
 	       NEXTW
 .ateof:
 		ld hl, .showeof
-		call forth_apushstrhl
+		call forth_push_str
 .readeof:	ld a, 0
 		ld (store_openext), a
 
@@ -886,7 +885,7 @@
 		ld (spi_device), a
 		call storage_get_block_0
 		ld hl, store_page+3
-		call forth_apushstrhl
+		call forth_push_str
 
 		
 		ld hl, 2
@@ -896,7 +895,7 @@
 		ld (spi_device), a
 		call storage_get_block_0
 		ld hl, store_page+3
-		call forth_apushstrhl
+		call forth_push_str
 
 		
 		ld hl, 3
@@ -906,7 +905,7 @@
 		ld (spi_device), a
 		call storage_get_block_0
 		ld hl, store_page+3
-		call forth_apushstrhl
+		call forth_push_str
 
 
 		ld hl, 4
@@ -916,7 +915,7 @@
 		ld (spi_device), a
 		call storage_get_block_0
 		ld hl, store_page+3
-		call forth_apushstrhl
+		call forth_push_str
 
 		
 
@@ -927,7 +926,7 @@
 		ld (spi_device), a
 		call storage_get_block_0
 		ld hl, store_page+3
-		call forth_apushstrhl
+		call forth_push_str
 
 		
 		; push fixed count of storage devices (on board) for now

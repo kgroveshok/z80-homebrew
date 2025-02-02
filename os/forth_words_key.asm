@@ -41,7 +41,7 @@
 			DMARK "AC1"
 			CALLMONITOR
 		endif
-		call forth_apushstrhl
+		call forth_push_str
 		NEXTW
 
 .EDIT:
@@ -89,7 +89,7 @@
 			DMARK "ED1"
 			CALLMONITOR
 		endif
-		call forth_apushstrhl
+		call forth_push_str
 		NEXTW
 
 

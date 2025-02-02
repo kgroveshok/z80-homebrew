@@ -43,7 +43,7 @@
 
 .tpush:
 
-		call forth_apushstrhl
+		call forth_push_str
 
 		NEXTW
 .tstr:	db "s",0
@@ -255,7 +255,7 @@
 		pop hl    ; get malloc so we can push it
 		push hl   ; save so we can free it afterwards
 
-		call forth_apushstrhl
+		call forth_push_str
 
 		pop hl
 		call free
@@ -332,7 +332,6 @@
 ;		call DispAToASCII  
 ;;TODO need to chage above call to dump into string
 ;
-;		call forth_apushstrhl
 ;
 
 	       NEXTW
@@ -408,7 +407,7 @@
 			CALLMONITOR
 		endif
 
-		call forth_apushstrhl
+		call forth_push_str
 
 
 

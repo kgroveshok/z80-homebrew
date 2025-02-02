@@ -37,7 +37,7 @@ DEBUG_SPI: equ 0    ; low level spi tests
 
 ; Enable many break points
 
-DEBUG_FORTH_PARSE_EXEC: equ 1     ; 6
+DEBUG_FORTH_PARSE_EXEC: equ 0     ; 6
 DEBUG_FORTH_PARSE_EXEC_SLOW: equ 0     ; 6
 DEBUG_FORTH_PARSE_NEXTWORD: equ 0
 DEBUG_FORTH_JP: equ 0    ; 4

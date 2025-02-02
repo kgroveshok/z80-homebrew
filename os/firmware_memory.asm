@@ -461,7 +461,19 @@ heap_init:
 ;       |             |                                                       :
 ;                                                                             :
 ;------------------------------------------------------------------------------
+
+
 malloc:
+
+	SAVESP ON 1
+
+	call malloc_code
+
+	CHECKSP ON 1
+	ret
+
+
+malloc_code:
       push  BC
       push  DE
       push  IX

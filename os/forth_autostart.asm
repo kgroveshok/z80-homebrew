@@ -30,6 +30,7 @@ startcmds:
 ;	dw game2b1
 ;	dw game2b2
 	dw type
+	dw stest
 	dw strncpy
 	dw list
 	dw mtesta
@@ -108,6 +109,11 @@ type:     db ": type $00 do dup i + @ emit loop ;", 0
 ; strncpy ( len t f -- t )
 
 strncpy:   db ": strncpy $00 scratch 2! $02 scratch 2! do $00 scratch 2@ i + @ $02 scratch 2@ i + ! loop nop  ;",0
+
+; test stack 
+; rnd8 stest
+
+stest:   db ": stest cls  v0! v0@ $00 do rnd8 $01 $01 at i . $01 pause loop v0@ $00 do drop $12 $01 at depth . $01 pause loop nop ;",0 
 
 ; random malloc and free cycles
 

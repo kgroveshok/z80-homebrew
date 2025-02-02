@@ -486,6 +486,9 @@ endif
 	inc hl     ; skip string length (use zero term instead to end)
 	ld (cli_token), hl
 
+if DEBUG_FORTH_PARSE_KEY
+			DMARK "KY2"
+endif
 if DEBUG_FORTH_PARSE_EXEC
 	; see if disabled
 
@@ -523,6 +526,9 @@ if DEBUG_FORTH_PARSE_EXEC
 endif	
 .execpnchar:    ; compare char between token and string to parse
 
+if DEBUG_FORTH_PARSE_KEY
+			DMARK "Ky3"
+endif
 if DEBUG_FORTH_PARSE_EXEC
 	; see if disabled
 
@@ -569,6 +575,9 @@ endif
 ;
 ;.pnskipspace:
 
+if DEBUG_FORTH_PARSE_KEY
+			DMARK "KY7"
+endif
 	cp b
 	jp nz, .execpnskipword	 ; no match so move to next word
 	
@@ -576,6 +585,9 @@ endif
 ;       scan for string terms 0 for token and 32 for input
 
 	
+if DEBUG_FORTH_PARSE_KEY
+			DMARK "KY8"
+endif
 
 	add b			
 	cp 0			 ; add both chars together, if 32 then other must be 0 so at end of string we are parsing?
@@ -593,6 +605,9 @@ endif
 	ld (cli_origptr), hl     ; save for any restart of current string ie a number or string to push to data stack
 	
 	
+if DEBUG_FORTH_PARSE_KEY
+			DMARK "KY3"
+endif
 
 
 
@@ -630,6 +645,9 @@ if DEBUG_FORTH_JP
 	call delay1s
 endif
 
+if DEBUG_FORTH_PARSE_KEY
+			DMARK "KYj"
+endif
 	; TODO save the word pointer in this exec
 
 	ld hl,(cli_execword)
@@ -649,6 +667,9 @@ endif
 ;	cp 0
 	jr z, .execendofdict			 ; at end of words
 
+if DEBUG_FORTH_PARSE_KEY
+			DMARK "KY4"
+endif
 if DEBUG_FORTH_PARSE_EXEC
 
 	; see if disabled
@@ -675,10 +696,16 @@ endif
 	ld hl,(cli_origptr)
 	ld (cli_ptr),hl
 
+if DEBUG_FORTH_PARSE_KEY
+			DMARK "KY5"
+endif
 	jp .execpnword			; else go to next word
 
 .execendofdict: 
 
+if DEBUG_FORTH_PARSE_KEY
+			DMARK "KYe"
+endif
 if DEBUG_FORTH_PARSE_EXEC
 	; see if disabled
 
@@ -723,6 +750,9 @@ call forth_apush
 
 execnext:
 
+if DEBUG_FORTH_PARSE_KEY
+			DMARK "KY>"
+endif
 ; move past token to next word
 
 ld hl, (os_tok_ptr)

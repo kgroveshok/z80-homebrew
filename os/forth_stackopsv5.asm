@@ -132,7 +132,7 @@ macro_forth_rsp_tos:
 	;ld d, (hl)
 	;ex de, hl
 		if DEBUG_FORTH_WORDS
-			DMARK "RST"
+;			DMARK "RST"
 			CALLMONITOR
 		endif
 	;pop de
@@ -147,7 +147,7 @@ FORTH_RSP_POP: macro
 
 macro_forth_rsp_pop:
 	if DEBUG_FORTH_STACK_GUARD
-		DMARK "RPP"
+;		DMARK "RPP"
 		call check_stacks
 		FORTH_CHK_RSP_UNDER
 	endif

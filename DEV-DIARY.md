@@ -8,6 +8,8 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE Test CALL
 * DONE Relook at variable use. Setup a VARIABLE word which puts the address on the stack and allows the ! and @ words to access them. Now with SCRATCH to emulate via uwords
 * DONE my malloc is failing on free. Not doing as the other malloc is fine.
+* DONE Rewrite push code to see if that removes the crashing issue
+* DONE Added stack checkpoint macros
 
 * TODO Add a print using ptr on stack: TYPE ( addr c - )
 * TODO LIST and FORGET might be broken
@@ -17,6 +19,7 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Fix 2SWAP
 * TODO Fix KEY
 * TODO Fix IS 
+
 
 * TODO EXEC causes crash
 

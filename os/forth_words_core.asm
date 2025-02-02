@@ -94,7 +94,7 @@
 
 	call forthparse
 	call forthexec
-	call forthexec_cleanup
+;	call forthexec_cleanup
 ;	call forthparse
 ;	call forthexec
 

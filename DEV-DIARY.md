@@ -21,7 +21,7 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Fix IS 
 
 
-* TODO EXEC causes crash
+* TODO EXEC causes crash. Narrowing down crash point. RSP issue.
 
 * TODO BUG Any push following the use of BREAD results in a malloc error
 * TODO add more editing features 

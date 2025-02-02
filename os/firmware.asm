@@ -64,7 +64,7 @@ DEBUG_FORTH_WORDS_KEY: equ 1   ; 1
 ON: equ 1
 OFF: equ 0
 
-DEBUG_STACK_IMB: equ 1
+DEBUG_STACK_IMB: equ 0
 STACK_IMB_STORE: equ 20
 
 ; House keeping and protections

@@ -99,6 +99,9 @@
 ;	call forthexec
 
 	STACKFRAMECHK OFF $5efe $5f9f
+
+	; an immediate word so no need to process any more words
+	ret
 	NEXTW
 
 ; dead code - old version 

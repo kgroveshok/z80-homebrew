@@ -10,6 +10,7 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE my malloc is failing on free. Not doing as the other malloc is fine.
 * DONE Rewrite push code to see if that removes the crashing issue
 * DONE Added stack checkpoint macros
+* DONE EXEC causes crash. Narrowing down crash point. RSP issue. OK might be a recursive issue.
 
 * TODO Add a print using ptr on stack: TYPE ( addr c - )
 * TODO LIST and FORGET might be broken
@@ -20,8 +21,7 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Fix KEY
 * TODO Fix IS 
 
-
-* TODO EXEC causes crash. Narrowing down crash point. RSP issue.
+* TODO Can't use EXEC in code so need another way to trigger stack eval. Make EXEC to take a count of strings?
 
 * TODO BUG Any push following the use of BREAD results in a malloc error
 * TODO add more editing features 

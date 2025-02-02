@@ -179,7 +179,7 @@ macro_forth_rsp_pop:
 	dec hl
 	dec hl
 	ld (cli_ret_sp), hl
-	; TODO do stack underflow checks
+	; do stack underflow checks
 	pop hl
 	if DEBUG_FORTH_STACK_GUARD
 		call check_stacks

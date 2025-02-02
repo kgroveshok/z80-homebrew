@@ -37,15 +37,15 @@ DEBUG_SPI: equ 0    ; low level spi tests
 
 ; Enable many break points
 
-DEBUG_FORTH_PARSE_EXEC: equ 0     ; 6
+DEBUG_FORTH_PARSE_EXEC: equ 1     ; 6
 DEBUG_FORTH_PARSE_EXEC_SLOW: equ 0     ; 6
 DEBUG_FORTH_PARSE_NEXTWORD: equ 0
 DEBUG_FORTH_JP: equ 0    ; 4
 DEBUG_FORTH_MALLOC: equ 1
 DEBUG_FORTH_MALLOC_INT: equ 1
-DEBUG_FORTH_DOT: equ 0
+DEBUG_FORTH_DOT: equ 1
 DEBUG_FORTH_DOT_WAIT: equ 0
-DEBUG_FORTH_MATHS: equ 0
+DEBUG_FORTH_MATHS: equ 1
 DEBUG_FORTH_TOK: equ 1    ; 4
 DEBUG_FORTH_PARSE: equ 1    ; 3
 DEBUG_FORTH: equ 1  ;2
@@ -59,7 +59,13 @@ DEBUG_FORTH_DOT_KEY: equ 0
 DEBUG_FORTH_PARSE_KEY: equ 1   ; 5
 DEBUG_FORTH_WORDS_KEY: equ 1   ; 1
 
+; Debug stack imbalances
 
+ON: equ 1
+OFF: equ 0
+
+DEBUG_STACK_IMB: equ 1         
+STACK_IMB_STORE: equ 20
 
 ; House keeping and protections
 
@@ -350,10 +356,13 @@ os_view_hl: equ os_view_af -2
 os_view_de: equ os_view_hl - 2
 os_view_bc: equ os_view_de - 2
 
-
 ; stack checksum word
-
-chk_word: equ os_view_bc - 2		 ; this is the word to init and then check against to detect stack corruption. Held far away from all stacks
+if DEBUG_STACK_IMB
+	store_sp: equ os_view_de - (STACK_IMB_STORE*4)
+	chk_word: equ store_sp - 2		 ; this is the word to init and then check against to detect stack corruption. Held far away from all stacks
+else
+	chk_word: equ os_view_bc - 2		 ; this is the word to init and then check against to detect stack corruption. Held far away from all stacks
+endif
 
 ; with data stack could see memory filled with junk. need some memory management 
 ; malloc and free entry points added
@@ -473,6 +482,9 @@ DMARK: macro str
 endm
 
 
+; macro to detect for stack imbalances
+
+include "stackimbal.asm"
 
 ;TODO macro to calc col and row offset into screen
 
@@ -652,6 +664,7 @@ if SOUND_ENABLE
 endif
 
 include "firmware_diags.asm"
+
 
 
 

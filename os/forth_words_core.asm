@@ -68,9 +68,9 @@
 		endif
 	push hl
 
-	ld a, 0
+	;ld a, 0
 	;ld a, FORTH_END_BUFFER
-	call strlent
+	call strlenz
 	inc hl   ; include zero term to copy
 	ld b,0
 	ld c,l

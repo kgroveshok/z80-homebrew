@@ -18,9 +18,13 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Fix KEY
 * TODO Fix IS 
 
+* TODO EXEC causes crash
+
+* TODO BUG Any push following the use of BREAD results in a malloc error
 * TODO add more editing features 
 * TODO fix editor bugs
 * TODO fix editor issues
+* TODO typing a long few lines and then back space, then insert ends up creating spurious characters
 * TODO Fix prev line recall and insertion. Corruption appears on the end of line
 * TODO Editor issue insert mid string causes loss of zero term giving random data
 * TODO Backspace mid string does not clean up shifted text

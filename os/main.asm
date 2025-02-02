@@ -92,6 +92,7 @@ coldstart:
 	ld sp, tos
 ;	ei
 
+
 	; disable breakpoint by default
 
 	ld a,'*'

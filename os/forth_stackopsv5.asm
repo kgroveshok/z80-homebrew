@@ -343,6 +343,7 @@ if DEBUG_FORTH_PUSH
 	call update_display
 	call delay1s
 	call delay1s
+	pop af
 .pskip1:
 	pop af
 endif	

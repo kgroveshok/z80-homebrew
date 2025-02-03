@@ -13,6 +13,8 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE FORGET might be broken
 * TODO Can't use EXEC in code so need another way to trigger stack eval. Make EXEC to take a count of strings?
 
+* DONE? fix loading more than a single block of file storage via BREAD
+
 * TODO add more editing features 
 * TODO fix editor bugs
 * TODO fix editor issues
@@ -31,7 +33,8 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 
 * TODO BUG Any push following the use of BREAD results in a malloc error... Retest
 
-* TODO New value type for signed and unsigned val. Add to maths.
+* TODO Add word to call fill_display with a char
+* TODO New value type for signed and unsigned val. Add to maths. added DS_TYPE_SNUM need a word to convert type. SIGN/UNSIGN. Fix up <= and dot.
 * TODO Add FILL word - ( addr n char -- ) fills address for n long with char
 * TODO Add ERASE word - ( addr n -- ) fills address for n long with zero
 * TODO LSHIFT and RSHIFT for bit shifting
@@ -57,7 +60,6 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Pico to handle display to have two way return of data
 * TODO Create a disk UI in native asm for robustness and speed?
 * TODO fix saving more than a single block of file storage
-* TODO fix loading more than a single block of file storage
 * TODO need words to report on hardware e.g. screen dims
 * TODO need word to get file id by name
 * TODO need word to get file name by id

@@ -2,7 +2,8 @@
 ; kernel to the forth OS
 
 DS_TYPE_STR: equ 1     ; string type
-DS_TYPE_INUM: equ 2     ; $ 16 bit int usually a hex address
+DS_TYPE_INUM: equ 2     ; $ 16 bit unsigned int usually a hex address
+DS_TYPE_SNUM: equ 3     ; $ 16 bit signed int 
 ;DS_TYPE_FNUM: equ 3      ; 24/32 bit floating point  do string conversion instead of a new type
 
 FORTH_PARSEV1: equ 0

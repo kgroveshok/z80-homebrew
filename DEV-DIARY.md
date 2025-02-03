@@ -31,7 +31,8 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Fix KEY
 * TODO Fix IS 
 
-* TODO BUG Any push following the use of BREAD results in a malloc error... Retest
+* TODO BUG Any push following the use of BREAD results in a malloc error... Retest. Or this could mean string longer >64bytes to go to multiple blocks
+* TODO fix saving more than a single block of file storage. Means to concate multiple blocks?
 
 * TODO Add word to call fill_display with a char
 * TODO New value type for signed and unsigned val. Add to maths. added DS_TYPE_SNUM need a word to convert type. SIGN/UNSIGN. Fix up <= and dot.
@@ -44,7 +45,11 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Add no bank chip detection to format
 * TODO Add support for ELSE and ENDIF. IF THEN ELSE ENDIF   or IF THEN ENDIF. Or IF ... ELSE ... THEN
 * TODO Word to define lcd user character 0-3. Then word to output via emit etc
-* TODO Rework the storage system file structure and functions 
+
+* TODO Rework the storage system file structure and functions. Remove some of the defunct words.
+* TODO need word to get file id by name
+* TODO need word to get file name by id
+
 * TODO setup a compiler
 * TODO Add a stack content viewer to callmonitor code
 * TODO Add the floating point maths code in
@@ -59,10 +64,7 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Take the vid out handshake lines and code up a Pico to handle display.
 * TODO Pico to handle display to have two way return of data
 * TODO Create a disk UI in native asm for robustness and speed?
-* TODO fix saving more than a single block of file storage
 * TODO need words to report on hardware e.g. screen dims
-* TODO need word to get file id by name
-* TODO need word to get file name by id
 * TODO have a word to set break point at a DMARKer
 * TODO Extract all of the symbols in the symbol table to be available as words in FORTH, debug and asm above
 * TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs. FORGET and LIST use a scanner. Combine with main parser and have one for keyword and another for byte code

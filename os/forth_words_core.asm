@@ -1112,7 +1112,7 @@ endif
 ; | | that break points are enabled. Pressing any key will then continue boot process.
 		; get byte count
 		if DEBUG_FORTH_WORDS_KEY
-			DMARK "BP_"
+			DMARK "BP."
 			CALLMONITOR
 		endif
 

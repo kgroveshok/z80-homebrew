@@ -8,6 +8,10 @@
 ; | | If a string will give the address of the string without dropping it. Handy for direct string access
 ; | | If a number can then use 2@ and 2! for direct value update without using stack words 
 
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "PTR"
+			CALLMONITOR
+		endif
 		FORTH_DSP_VALUEHL
 		call forth_push_numhl
 
@@ -16,6 +20,10 @@
 .STYPE:
 	CWHEAD .UPPER 52 "STYPE" 5 WORD_FLAG_CODE
 ; | STYPE ( u -- u type ) Push type of value on TOS - 's' string, 'i' integer...   | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "STY"
+			CALLMONITOR
+		endif
 		FORTH_DSP
 		;v5 FORTH_DSP_VALUE
 
@@ -54,6 +62,10 @@
 .UPPER:
 	CWHEAD .LOWER 52 "UPPER" 5 WORD_FLAG_CODE
 ; | UPPER ( s -- s ) Upper case string s  | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "UPR"
+			CALLMONITOR
+		endif
 
 		FORTH_DSP
 		
@@ -84,6 +96,10 @@
 .LOWER:
 	CWHEAD .TCASE 52 "LOWER" 5 WORD_FLAG_CODE
 ; | LOWER ( s -- s ) Lower case string s  | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "LWR"
+			CALLMONITOR
+		endif
 
 		FORTH_DSP
 		
@@ -112,6 +128,10 @@
 .TCASE:
 	CWHEAD .SUBSTR 52 "TCASE" 5 WORD_FLAG_CODE
 ; | TCASE ( s -- s ) Title case string s  | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "TCS"
+			CALLMONITOR
+		endif
 
 		FORTH_DSP
 		
@@ -204,6 +224,10 @@
 	CWHEAD .LEFT 52 "SUBSTR" 6 WORD_FLAG_CODE
 ; | SUBSTR ( s u1 u2 -- s sb ) Push to TOS chars starting at position u1 and with length u2 from string s  | DONE
 
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "SST"
+			CALLMONITOR
+		endif
 ; TODO check string type
 		FORTH_DSP_VALUEHL
 
@@ -269,11 +293,19 @@
 .LEFT:
 	CWHEAD .RIGHT 52 "LEFT" 4 WORD_FLAG_CODE
 ; | LEFT ( s u -- s sub ) Push to TOS string u long starting from left of s  | TODO
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "LEF"
+			CALLMONITOR
+		endif
 
 		NEXTW
 .RIGHT:
 	CWHEAD .STR2NUM 52 "RIGHT" 5 WORD_FLAG_CODE
 ; | RIGHT ( s u -- s sub ) Push to TOS string u long starting from right of s  | TODO
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "RIG"
+			CALLMONITOR
+		endif
 
 		NEXTW
 
@@ -284,7 +316,7 @@
 
 
 ; TODO STR type check to do
-		if DEBUG_FORTH_WORDS
+		if DEBUG_FORTH_WORDS_KEY
 			DMARK "S2N"
 			CALLMONITOR
 		endif
@@ -343,7 +375,7 @@
 ; TODO check string type
 ; TODO create macro to get pointer for next item on stack. Handy for lots of things
 
-		if DEBUG_FORTH_WORDS
+		if DEBUG_FORTH_WORDS_KEY
 			DMARK "CON"
 			CALLMONITOR
 		endif
@@ -419,7 +451,7 @@
 	CWHEAD .LEN 55 "FIND" 4 WORD_FLAG_CODE
 ; | FIND ( s c -- s u ) Search the string s for the char c and push the position of the first occurance to TOS | DONE
 
-		if DEBUG_FORTH_WORDS
+		if DEBUG_FORTH_WORDS_KEY
 			DMARK "FND"
 			CALLMONITOR
 		endif
@@ -488,9 +520,13 @@
 	       NEXTW
 
 .LEN:
-	CWHEAD .CHAR 56 "LEN" 3 WORD_FLAG_CODE
-; | LEN (  u1 -- u2 ) Push the length of the string on TOS | DONE
+	CWHEAD .CHAR 56 "COUNT" 5 WORD_FLAG_CODE
+; | COUNT (  u1 -- u2 ) Push the length of the string on TOS | DONE
 
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "CNT"
+			CALLMONITOR
+		endif
 ; TODO check string type
 		FORTH_DSP
 		;v5FORTH_DSP_VALUE
@@ -508,6 +544,10 @@
 .CHAR:
 	CWHEAD .ENDSTR 57 "CHAR" 4 WORD_FLAG_CODE
 ; | CHAR ( u -- n ) Get the ascii value of the first character of the string on the stack | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "CHR"
+			CALLMONITOR
+		endif
 		FORTH_DSP
 		;v5 FORTH_DSP_VALUE
 		inc hl      ; now at start of numeric as string

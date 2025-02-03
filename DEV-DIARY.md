@@ -9,10 +9,8 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE Add better handling of empty stack. Stop execution and return to prompt? Yes jump to cli and not warmstart
 * DONE Clear stack word? Make a uword for it if needed??
 * DONE Add ALLOT to be same as malloc
+* DONE Go through all word code and set key debug spots 
 * TODO Can't use EXEC in code so need another way to trigger stack eval. Make EXEC to take a count of strings?
-
-
-* TODO Go through all word code and set key debug spots 
 
 * TODO add more editing features 
 * TODO fix editor bugs

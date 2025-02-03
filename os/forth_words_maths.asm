@@ -4,6 +4,10 @@
 .PLUS:	
 	CWHEAD .NEG 1 "+" 1 WORD_FLAG_CODE
 ; | + ( u u -- u )    Add two numbers and push result   | INT DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "PLU"
+			CALLMONITOR
+		endif
 		; add top two values and push back result
 
 		;for v5 FORTH_DSP_VALUE
@@ -112,6 +116,10 @@
 
 	CWHEAD .DIV 3 "-" 1 WORD_FLAG_CODE
 ; | - ( u1 u2 -- u )    Subtract u2 from u1 and push result  | INT DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "SUB"
+			CALLMONITOR
+		endif
 
 
 	; TODO add floating point number detection
@@ -173,6 +181,10 @@
 .DIV:
 	CWHEAD .MUL 4 "/" 1 WORD_FLAG_CODE
 ; | / ( u1 u2 -- result remainder )     Divide u1 by u2 and push result | INT DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "DIV"
+			CALLMONITOR
+		endif
 	; TODO add floating point number detection
 		; v5 FORTH_DSP_VALUE
 		FORTH_DSP
@@ -243,6 +255,10 @@
 	CWHEAD .MIN 5 "*" 1 WORD_FLAG_CODE
 ; | * ( u1 u2 -- u )     Multiply TOS and push result | INT DONE
 	; TODO add floating point number detection
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "MUL"
+			CALLMONITOR
+		endif
 		FORTH_DSP
 		; v5 FORTH_DSP_VALUE
 		ld a,(hl)	; get type of value on TOS
@@ -303,6 +319,10 @@
 .MIN:
 	CWHEAD .MAX 53 "MIN" 3 WORD_FLAG_CODE
 ; | MIN (  u1 u2 -- u3 ) Whichever is the smallest value is pushed back onto the stack | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "MIN"
+			CALLMONITOR
+		endif
 		; get u2
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -352,6 +372,10 @@
 .MAX:
 	CWHEAD .RND16 54 "MAX" 3 WORD_FLAG_CODE
 ; | MAX (  u1 u2 -- u3 )  Whichever is the largest value is pushed back onto the stack | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "MAX"
+			CALLMONITOR
+		endif
 		; get u2
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -401,12 +425,20 @@
 .RND16:
 	CWHEAD .RND8 58 "RND16" 5 WORD_FLAG_CODE
 ; | RND16 (  -- n ) Generate a random 16bit number and push to stack | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "R16"
+			CALLMONITOR
+		endif
 		call prng16 
 		call forth_push_numhl
 	       NEXTW
 .RND8:
 	CWHEAD .RND 76 "RND8" 4 WORD_FLAG_CODE
 ; | RND8 (  -- n ) Generate a random 8bit number and push to stack | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "RN8"
+			CALLMONITOR
+		endif
 		ld hl,(xrandc)
 		inc hl
 		call xrnd
@@ -418,7 +450,7 @@
 	CWHEAD .ENDMATHS 76 "RND" 3 WORD_FLAG_CODE
 ; | RND ( u1 u2 -- u ) Generate a random number no lower than u1 and no higher than u2 and push to stack | DONE
 
-		if DEBUG_FORTH_WORDS
+		if DEBUG_FORTH_WORDS_KEY
 			DMARK "RND"
 			CALLMONITOR
 		endif

@@ -5,6 +5,10 @@
 	CWHEAD .THEN 10 "IF" 2 WORD_FLAG_CODE
 ; | IF ( w -- f ) If TOS is true exec code following up to THEN - Note: currently not supporting ELSE or nested IF | DONE
 ;
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "IF."
+			CALLMONITOR
+		endif
 ; eval TOS
 
 	FORTH_DSP_VALUEHL
@@ -70,11 +74,19 @@
 .THEN:
 	CWHEAD .ELSE 11 "THEN" 4 WORD_FLAG_CODE
 ; | THEN ( -- ) Does nothing. It is a marker for the end of an IF block | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "THN"
+			CALLMONITOR
+		endif
 		NEXTW
 .ELSE:
 	CWHEAD .DO 12 "ELSE" 2 WORD_FLAG_CODE
 ; | ELSE ( -- ) Not supported - does nothing | TODO
 
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "ELS"
+			CALLMONITOR
+		endif
 
 
 		NEXTW
@@ -82,8 +94,8 @@
 	CWHEAD .LOOP 13 "DO" 2 WORD_FLAG_CODE
 ; | DO ( u1 u2 -- ) Loop starting at u2 with a limit of u1 | DONE
 
-		if DEBUG_FORTH_WORDS
-			DMARK "DO1"
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "DO."
 			CALLMONITOR
 		endif
 ;  push pc to rsp stack past the DO
@@ -176,7 +188,7 @@
 	FORTH_LOOP_TOS
 	push hl
 
-		if DEBUG_FORTH_WORDS
+		if DEBUG_FORTH_WORDS_KEY
 			DMARK "LOP"
 			CALLMONITOR
 		endif
@@ -291,6 +303,10 @@ endif
 
 	CWHEAD .DLOOP 74 "I" 1 WORD_FLAG_CODE
 ; | I ( -- ) Current loop counter | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "I.."
+			CALLMONITOR
+		endif
 
 		ld hl,(os_current_i)
 		call forth_push_numhl
@@ -300,6 +316,10 @@ endif
 	CWHEAD .REPEAT 75 "-LOOP" 5 WORD_FLAG_CODE
 ; | -LOOP ( -- ) Decrement and test loop counter  | DONE
 	; pop tos as current loop count to hl
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "-LP"
+			CALLMONITOR
+		endif
 
 	; if new tos (loop limit) is not same as hl, inc hl, push hl to tos, pop rsp and set pc to it
 
@@ -410,6 +430,10 @@ endif
 	CWHEAD .UNTIL 93 "REPEAT" 5 WORD_FLAG_CODE
 ; | REPEAT ( --  ) Start REPEAT...UNTIL loop  | DONE
 ;  push pc to rsp stack past the REPEAT
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "REP"
+			CALLMONITOR
+		endif
 
 		ld hl, (os_tok_ptr)
 		inc hl   ; R
@@ -441,7 +465,7 @@ endif
 
 	FORTH_DSP_VALUEHL
 
-		if DEBUG_FORTH_WORDS
+		if DEBUG_FORTH_WORDS_KEY
 			DMARK "UNT"
 			CALLMONITOR
 		endif

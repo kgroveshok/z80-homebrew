@@ -4,6 +4,10 @@
 .NOT:
 	CWHEAD .IS 25 "NOT" 3 WORD_FLAG_CODE
 ; | NOT ( u  -- u ) Inverse true/false on stack | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "NOT"
+			CALLMONITOR
+		endif
 		FORTH_DSP
 		ld a,(hl)	; get type of value on TOS
 		cp DS_TYPE_INUM 
@@ -29,6 +33,10 @@
 .IS:
 	CWHEAD .LZERO 25 "IS" 2 WORD_FLAG_CODE
 ; | IS ( s1 s2  -- f ) Push true if string s1 is the same as s2 | TODO
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "IS."
+			CALLMONITOR
+		endif
 		NEXTW
 .LZERO:
 	CWHEAD .TZERO 25 "0<" 2 WORD_FLAG_CODE
@@ -39,6 +47,10 @@
 ; | 0= ( u -- f ) Push true if u equals 0 | TEST NO DEBUG
 	; TODO add floating point number detection
 		;v5 FORTH_DSP_VALUE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "0=."
+			CALLMONITOR
+		endif
 		FORTH_DSP
 		ld a,(hl)	; get type of value on TOS
 		cp DS_TYPE_INUM 
@@ -86,6 +98,10 @@
 	CWHEAD .GT 27 "<" 1 WORD_FLAG_CODE
 ; | < ( u1 u2 -- f ) True if u1 is less than u2 | DONE
 	; TODO add floating point number detection
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "LES"
+			CALLMONITOR
+		endif
 		FORTH_DSP
 		;v5 FORTH_DSP_VALUE
 		ld a,(hl)	; get type of value on TOS
@@ -138,6 +154,10 @@
 	CWHEAD .EQUAL 28 ">" 1 WORD_FLAG_CODE
 ; | > ( u1 u2 -- f ) True if u1 is greater than u2 | DONE
 	; TODO add floating point number detection
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "GRT"
+			CALLMONITOR
+		endif
 		FORTH_DSP
 		;FORTH_DSP_VALUE
 		ld a,(hl)	; get type of value on TOS
@@ -190,6 +210,10 @@
 	CWHEAD .ENDLOGIC 29 "=" 1 WORD_FLAG_CODE
 ; | = ( u1 u2 -- f ) True if u1 equals u2 | DONE
 	; TODO add floating point number detection
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "EQ."
+			CALLMONITOR
+		endif
 		FORTH_DSP
 		;v5 FORTH_DSP_VALUE
 		ld a,(hl)	; get type of value on TOS

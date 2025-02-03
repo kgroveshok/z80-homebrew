@@ -7,7 +7,7 @@
 	CWHEAD .BWRITE 38 "BREAD" 5 WORD_FLAG_CODE
 ; | BREAD ( u -- u ) With the current bank, read a block from block address u (1-512) and push to stack  | TO TEST
 	
-		if DEBUG_FORTH_WORDS
+		if DEBUG_FORTH_WORDS_KEY
 			DMARK "BRD"
 			CALLMONITOR
 		endif
@@ -45,7 +45,7 @@
 	CWHEAD .BUPD 38 "BWRITE" 6 WORD_FLAG_CODE
 ; | BWRITE ( s u -- ) With the current bank, write the string s to address u | TO TEST
 
-		if DEBUG_FORTH_WORDS
+		if DEBUG_FORTH_WORDS_KEY
 			DMARK "BWR"
 			CALLMONITOR
 		endif
@@ -113,7 +113,7 @@
 ; | | Coupled with the use of the BREAD, BWRITE and STOREPAGE words it is possible to implement a direct
 ; | | or completely different file system structure.
 
-		if DEBUG_FORTH_WORDS
+		if DEBUG_FORTH_WORDS_KEY
 			DMARK "BUD"
 			CALLMONITOR
 		endif
@@ -153,7 +153,7 @@
 	CWHEAD .SAVE 38 "DIR" 3 WORD_FLAG_CODE
 ; | DIR ( u -- lab id ... c t ) Using bank number u push directory entries from persistent storage as w with count u  | DONE
 
-		if DEBUG_FORTH_WORDS
+		if DEBUG_FORTH_WORDS_KEY
 			DMARK "DIR"
 			CALLMONITOR
 		endif
@@ -498,6 +498,10 @@
 .SFREE:
 	CWHEAD .SIZE 83 "FFREE" 5 WORD_FLAG_CODE
 ; | FFREE ( -- n )  Gets number of free file blocks on current storage bank | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "FFR"
+			CALLMONITOR
+		endif
 
 		call storage_freeblocks
 
@@ -507,6 +511,10 @@
 .SIZE:
 	CWHEAD .CREATE 83 "SIZE" 4 WORD_FLAG_CODE
 ; | SIZE ( u -- n )  Gets number of blocks used by file id u and push to stack | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "SIZ"
+			CALLMONITOR
+		endif
 
 		FORTH_DSP_VALUEHL
 ;		push hl
@@ -529,6 +537,10 @@
 ; | | Max file IDs are 255.
 ; | | 
 		
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "CRT"
+			CALLMONITOR
+		endif
 ;		call storage_get_block_0
 
 		; TODO pop hl
@@ -537,7 +549,7 @@
 		FORTH_DSP_VALUE
 
 	if DEBUG_STORESE
-		DMARK "CRT"
+		DMARK "CR1"
 		CALLMONITOR
 	endif
 ;		push hl
@@ -570,12 +582,16 @@
 ; | | "A string to add to file" $01 APPEND
 ; | | 
 ; | | The maximum file size currently using 32k serial EEPROMS using 64 byte blocks is 15k.
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "APP"
+			CALLMONITOR
+		endif
 
 		FORTH_DSP_VALUEHL
 		push hl 	; save file id
 
 	if DEBUG_STORESE
-		DMARK "APP"
+		DMARK "AP1"
 		CALLMONITOR
 	endif
 		FORTH_DSP_POP
@@ -609,8 +625,12 @@
 		FORTH_DSP_VALUEHL
 ;		push hl 	; save file id
 
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "ERA"
+			CALLMONITOR
+		endif
 	if DEBUG_STORESE
-		DMARK "ERA"
+		DMARK "ER1"
 		CALLMONITOR
 	endif
 		FORTH_DSP_POP
@@ -626,6 +646,10 @@
 ; | | e.g.
 ; | | $01 OPEN $01 DO $01 READ . LOOP
 
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "OPN"
+			CALLMONITOR
+		endif
 		; TODO handle multiple file opens
 
 	       	ld a, 1
@@ -678,6 +702,10 @@
 ; | | e.g.
 ; | | $01 OPEN $01 DO $01 READ . LOOP
 
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "REA"
+			CALLMONITOR
+		endif
 		; store_openext use it. If zero it is EOF
 
 		; read block from current stream id
@@ -782,6 +810,10 @@
 ; | | $01 OPEN REPEAT $01 READ $01 EOF $00 IF LOOP
 		; TODO if current block id for stream is zero then push true else false
 
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "EOF"
+			CALLMONITOR
+		endif
 
 		; TODO handlue multiple file streams
 
@@ -830,10 +862,14 @@
 ; | LABEL ( u --  )  Sets the storage bank label to string on top of stack  | DONE
 		; TODO test to see if bank is selected
 	
-	if DEBUG_STORESE
-		DMARK "LBL"
-		CALLMONITOR
-	endif
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "LBL"
+			CALLMONITOR
+		endif
+;	if DEBUG_STORESE
+;		DMARK "LBL"
+;		CALLMONITOR
+;	endif
 		FORTH_DSP_VALUEHL
 		;v5FORTH_DSP_VALUE
 		
@@ -855,10 +891,14 @@
 ; | STOREPAGE ( -- addr )  Pushes the address of the file system record buffer to stack for direct access  | DONE
 		; TODO test to see if bank is selected
 	
-	if DEBUG_STORESE
-		DMARK "STP"
-		CALLMONITOR
-	endif
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "STP"
+			CALLMONITOR
+		endif
+;	if DEBUG_STORESE
+;		DMARK "STP"
+;		CALLMONITOR
+;	endif
 
 	ld hl, store_page
 	call forth_push_numhl

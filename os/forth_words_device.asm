@@ -6,6 +6,10 @@ if SOUND_ENABLE
 .NOTE:
 	CWHEAD .AFTERSOUND 31 "NOTE" 4 WORD_FLAG_CODE
 ; | NOTE ( ud uf --  )  Plays a note of frequency uf for the duration of ud millseconds | TODO
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "NTE"
+			CALLMONITOR
+		endif
 
 	
 
@@ -46,6 +50,10 @@ endif
 
 	CWHEAD .SOUT 31 "IN" 2 WORD_FLAG_CODE
 ; | IN ( u1 -- u )    Perform Z80 IN with u1 being the port number. Push result to TOS | TO TEST
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "IN."
+			CALLMONITOR
+		endif
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
 		push hl
@@ -74,6 +82,10 @@ endif
 .SOUT:
 	CWHEAD .SPIO 32 "OUT" 3 WORD_FLAG_CODE
 ; | OUT ( u1 u2 -- ) Perform Z80 OUT to port u2 sending byte u1 | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "OUT"
+			CALLMONITOR
+		endif
 
 		; get port
 
@@ -176,6 +188,10 @@ if STORAGE_SE
 .SESEL:
 	CWHEAD .CARTDEV 82 "BANK" 4 WORD_FLAG_CODE
 ; | BANK ( u1 -- ) Select Serial EEPROM Bank Device at bank address u1 1-5 (disables CARTDEV). Set to zero to disable storage. | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "BNK"
+			CALLMONITOR
+		endif
 
 		ld a, 255
 		ld (spi_cartdev), a
@@ -237,6 +253,10 @@ if STORAGE_SE
 .CARTDEV:
 	CWHEAD .ENDDEVICE 82 "CARTDEV" 7 WORD_FLAG_CODE
 ; | CARTDEV ( u1 -- ) Select cart device 1-8 (Disables BANK). Set to zero to disable devices. |  DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "CDV"
+			CALLMONITOR
+		endif
 
 		; disable se storage bank selection
 

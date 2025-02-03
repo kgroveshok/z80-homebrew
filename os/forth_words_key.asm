@@ -5,6 +5,10 @@
 	CWHEAD .WAITK 42 "KEY" 3 WORD_FLAG_CODE
 ; | KEY ( -- w f ) Scan for keypress but do not wait true if next item on stack is key press | TODO
 
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "KEY"
+			CALLMONITOR
+		endif
 ; TODO currently waits
 		call cin_wait
 		ld l, a
@@ -14,6 +18,10 @@
 .WAITK:
 	CWHEAD .ACCEPT 43 "WAITK" 5 WORD_FLAG_CODE
 ; | WAITK ( -- w ) Wait for keypress TOS is key press | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "WAI"
+			CALLMONITOR
+		endif
 		call cin_wait
 		ld l, a
 		ld h, 0

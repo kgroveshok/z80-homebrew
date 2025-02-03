@@ -4,6 +4,10 @@
 .ATP:
 	CWHEAD .FB 78 "AT?" 3 WORD_FLAG_CODE
 ; | AT? ( -- c r )  Push to stack the current position of the next print | TO TEST
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "AT?"
+			CALLMONITOR
+		endif
 		ld a, (f_cursor_ptr)
 
 if DEBUG_FORTH_WORDS
@@ -38,6 +42,10 @@ endif
 ; | | Default frame buffer is 1. System uses 0 which can't be selected for system messages etc.
 ; | | Selecting the frame buffer wont display unless automatic display is setup (default).
 ; | | If automatic display is off then updates will not be shown until DRAW is used.
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "FB."
+			CALLMONITOR
+		endif
 
 		FORTH_DSP_VALUEHL
 
@@ -68,6 +76,10 @@ endif
 ; |  EMIT ( u -- ) Display ascii character  TOS   | DONE
 		; get value off TOS and display it
 
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "EMT"
+			CALLMONITOR
+		endif
 
 		FORTH_DSP_VALUEHL
 
@@ -103,6 +115,10 @@ endif
 	CWHEAD .DOTF 8 ".-" 2 WORD_FLAG_CODE
         ; | .- ( u -- ) Display TOS replacing any dashes with spaces. Means you dont need to wrap strings in double quotes!   | DONE
 		; get value off TOS and display it
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "DTD"
+			CALLMONITOR
+		endif
 	ld c, 1	  ; flag for removal of '-' enabled
 	ld a, 0
 	ld (cli_mvdot), a
@@ -114,6 +130,10 @@ endif
 		; get value off TOS and display it
         ; TODO BUG adds extra spaces
         ; TODO BUG handle numerics?
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "DTC"
+			CALLMONITOR
+		endif
 	ld a, 1
 	ld (cli_mvdot), a
 	jp .dotgo
@@ -124,6 +144,10 @@ endif
         ; | . ( u -- ) Display TOS | DONE
 		; get value off TOS and display it
 
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "DOT"
+			CALLMONITOR
+		endif
 	ld a, 0
 	ld (cli_mvdot), a
 ld c, 0	  ; flag for removal of '-' disabled
@@ -288,6 +312,10 @@ endif
 .CLS:
 	CWHEAD .DRAW 33 "CLS" 3 WORD_FLAG_CODE
 ; | CLS ( -- ) Clear current frame buffer and set next print position to top left corner  | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "CLS"
+			CALLMONITOR
+		endif
 		call clear_display
 		jp .home		; and home cursor
 		NEXTW
@@ -295,6 +323,10 @@ endif
 .DRAW:
 	CWHEAD .DUMP 34 "DRAW" 4 WORD_FLAG_CODE
 ; | DRAW ( -- ) Draw contents of current frame buffer  | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "DRW"
+			CALLMONITOR
+		endif
 		call update_display
 		NEXTW
 
@@ -302,6 +334,10 @@ endif
 	CWHEAD .CDUMP 35 "DUMP" 4 WORD_FLAG_CODE
 ; | DUMP ( x -- ) With address x display dump   | DONE
 ; TODO pop address to use off of the stack
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "DUM"
+			CALLMONITOR
+		endif
 		call clear_display
 
 		; get address
@@ -322,6 +358,10 @@ endif
 .CDUMP:
 	CWHEAD .DAT 36 "CDUMP" 5 WORD_FLAG_CODE
 ; | CDUMP ( -- ) Continue dump of memory from DUMP | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "CDP"
+			CALLMONITOR
+		endif
 		call clear_display
 		call dumpcont	
 		ret			; TODO command causes end of remaining parsing so cant do: $0000 DUMP CDUMP $8000 DUMP
@@ -333,6 +373,10 @@ endif
 .DAT:
 	CWHEAD .HOME 41 "AT" 2 WORD_FLAG_CODE
 ; | AT ( u1 u2 -- ) Set next output via . or emit at row u2 col u1 | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "AT."
+			CALLMONITOR
+		endif
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
 
@@ -370,6 +414,10 @@ endif
 .HOME:
 	CWHEAD .SPACE 45 "HOME" 4 WORD_FLAG_CODE
 ; | HOME ( -- ) Reset the current cursor for output to home | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "HOM"
+			CALLMONITOR
+		endif
 .home:		ld a, 0		; and home cursor
 		ld (f_cursor_ptr), a
 		NEXTW
@@ -378,6 +426,10 @@ endif
 .SPACE:
 	CWHEAD .SPACES 50 "BL" 2 WORD_FLAG_CODE
 ; | BL (  -- c ) Push the value of space onto the stack as a string  | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "BL."
+			CALLMONITOR
+		endif
 		ld hl, .blstr
 		call forth_push_str
 		
@@ -388,6 +440,10 @@ endif
 .SPACES:
 	CWHEAD .SCROLL 51 "SPACES" 6 WORD_FLAG_CODE
 ; | SPACES ( u -- str ) A string of u spaces is pushed onto the stack | TO TEST
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "SPS"
+			CALLMONITOR
+		endif
 
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -430,6 +486,10 @@ endif
 .SCROLL:
 	CWHEAD .ATQ 63 "SCROLL" 6 WORD_FLAG_CODE
 ; | SCROLL ( -- ) Scroll up one line - next write will update if required | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "SCR"
+			CALLMONITOR
+		endif
 
 	call scroll_up
 ;	call update_display
@@ -495,6 +555,10 @@ endif
 .ATQ:
 	CWHEAD .AUTODSP 78 "AT@" 3 WORD_FLAG_CODE
 ; | AT@ ( u1 u2 -- n ) Push to stack ASCII value at row u2 col u1 | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "ATA"
+			CALLMONITOR
+		endif
 
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol

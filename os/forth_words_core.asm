@@ -1617,7 +1617,9 @@ pop hl
 .FORGET:
 	CWHEAD .NOP 73 "FORGET" 6 WORD_FLAG_CODE
 ; | FORGET ( uword -- )    Forget the uword on TOS | DONE
-; | | Will flag the word's op code to be deleted as well as replace the first char of the word with '_'.
+; | | Will flag the word's op code to be deleted as well as replace the first char of the word with '_'. Quote uword name must be in caps.
+; | | 
+; | | e.g. "MORE" forget
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "FRG"
 			CALLMONITOR

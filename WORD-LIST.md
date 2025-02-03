@@ -37,13 +37,16 @@ Also refer to the auto start list examples as these contain extra words created 
   
 
 
+### STKEXEC ( u .. u c -- ) Taking c count of strings off of the stack the strings are evaluated as code | TO TEST
+
+
 ### DUP ( u -- u u )     Duplicate whatever item is on TOS | DONE
 
 
 ### ?DUP ( u -- u u )     Duplicate item on TOS if the item is non-zero | DONE
 
 
-### SWAP ( w1 w2 -- w2 w1 )    Swap top two items  on TOS | DONE
+### SWAP ( w1 w2 -- w2 w1 )    Swap top two items on TOS | DONE
 
 
 ### : ( -- )         Create new word | DONE
@@ -226,6 +229,9 @@ Also refer to the auto start list examples as these contain extra words created 
     Q - Return to previous
 
 
+### ALLOT ( u -- u ) Allocate u bytes of memory space and push the pointer TOS  | DONE
+
+
 ### MALLOC ( u -- u ) Allocate u bytes of memory space and push the pointer TOS  | DONE
 
 
@@ -235,13 +241,19 @@ Also refer to the auto start list examples as these contain extra words created 
 ### LIST ( uword -- u )    List the code to the word that is quoted (so as not to exec) on TOS | DONE
 
 
- The quoted most also be in upper case.
+ The quoted word must be in upper case.
 
 
 ### FORGET ( uword -- )    Forget the uword on TOS | DONE
 
 
- Will flag the word's op code to be deleted as well as replace the first char of the word with '_'.
+ Will flag the word's op code to be deleted as well as replace the first char of the word with '_'. Quote uword name must be in caps.
+
+
+ 
+
+
+ e.g. "MORE" forget
 
 
 ### NOP (  --  ) Do nothing | DONE
@@ -700,7 +712,7 @@ Also refer to the auto start list examples as these contain extra words created 
 ### FIND ( s c -- s u ) Search the string s for the char c and push the position of the first occurance to TOS | DONE
 
 
-### LEN (  u1 -- u2 ) Push the length of the string on TOS | DONE
+### COUNT (  u1 -- u2 ) Push the length of the string on TOS | DONE
 
 
 ### CHAR ( u -- n ) Get the ascii value of the first character of the string on the stack | DONE
@@ -721,7 +733,7 @@ Also refer to the auto start list examples as these contain extra words created 
 ### ?DUP ( u -- u u )     Duplicate item on TOS if the item is non-zero | DONE
 
 
-### SWAP ( w1 w2 -- w2 w1 )    Swap top two items  on TOS | DONE
+### SWAP ( w1 w2 -- w2 w1 )    Swap top two items on TOS | DONE
 
 
 ### : ( -- )         Create new word | DONE
@@ -776,6 +788,9 @@ Also refer to the auto start list examples as these contain extra words created 
 
 
 ### MONITOR ( -- ) Display system breakpoint/monitor | DONE
+
+
+### ALLOT ( u -- u ) Allocate u bytes of memory space and push the pointer TOS  | DONE
 
 
 ### MALLOC ( u -- u ) Allocate u bytes of memory space and push the pointer TOS  | DONE
@@ -1018,7 +1033,7 @@ Also refer to the auto start list examples as these contain extra words created 
 ### FIND ( s c -- s u ) Search the string s for the char c and push the position of the first occurance to TOS | DONE
 
 
-### LEN (  u1 -- u2 ) Push the length of the string on TOS | DONE
+### COUNT (  u1 -- u2 ) Push the length of the string on TOS | DONE
 
 
 ### CHAR ( u -- n ) Get the ascii value of the first character of the string on the stack | DONE
@@ -1037,6 +1052,9 @@ Also refer to the auto start list examples as these contain extra words created 
 
 
 
+
+
+### STKEXEC ( u .. u c -- ) Taking c count of strings off of the stack the strings are evaluated as code | TO TEST
 
 
 ### 2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items | TODO

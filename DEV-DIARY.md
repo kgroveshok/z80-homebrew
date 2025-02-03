@@ -12,6 +12,8 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Can't use EXEC in code so need another way to trigger stack eval. Make EXEC to take a count of strings?
 
 
+* TODO Go through all word code and set key debug spots 
+
 * TODO add more editing features 
 * TODO fix editor bugs
 * TODO fix editor issues
@@ -22,7 +24,6 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Jump to end of line does not work should set to the number in last debug display
 * TODO If cursor at end of line, when go back it leaves custor displayed
 * TODO FORGET might be broken
-* TODO Go through all word code and set key debug spots 
 * TODO Fix NUM2STR. 
 * TODO Fix LEFT
 * TODO Fix RIGHT

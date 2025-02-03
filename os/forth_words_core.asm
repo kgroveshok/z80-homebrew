@@ -284,6 +284,11 @@
 	CWHEAD .ZDUP OPCODE_DUP "DUP" 3 WORD_FLAG_CODE
 ; | DUP ( u -- u u )     Duplicate whatever item is on TOS | DONE
 
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "DUP"
+			CALLMONITOR
+		endif
+
 		FORTH_DSP
 
 		ld a, (HL)
@@ -322,6 +327,10 @@
 	CWHEAD .SWAP OPCODE_ZDUP "?DUP" 4 WORD_FLAG_CODE
 ; | ?DUP ( u -- u u )     Duplicate item on TOS if the item is non-zero | DONE
 
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "qDU"
+			CALLMONITOR
+		endif
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
 		push hl
@@ -349,6 +358,10 @@
 .SWAP:
 	CWHEAD .COLN OPCODE_SWAP "SWAP" 4 WORD_FLAG_CODE
 ; | SWAP ( w1 w2 -- w2 w1 )    Swap top two items on TOS | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "SWP"
+			CALLMONITOR
+		endif
 
 		FORTH_DSP_VALUEHL
 		push hl     ; w2
@@ -376,6 +389,10 @@
 	CWHEAD .SCOLN OPCODE_COLN ":" 1 WORD_FLAG_CODE
 ; | : ( -- )         Create new word | DONE
 
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "CLN"
+			CALLMONITOR
+		endif
 	STACKFRAME OFF $8efe $989f
 	; get parser buffer length  of new word
 
@@ -676,6 +693,10 @@ ret    ; dont process any remaining parser tokens as they form new word
 	db 2
 	db ";",0          
 ; | ; ( -- )     Terminate new word and return exec to previous exec level | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "SCN"
+			CALLMONITOR
+		endif
 		FORTH_RSP_TOS
 		push hl
 		FORTH_RSP_POP
@@ -692,11 +713,19 @@ endif
 .DROP:
 	CWHEAD .DUP2 OPCODE_DROP "DROP" 4 WORD_FLAG_CODE
 ; | DROP ( w -- )   drop the TOS item   | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "DRP"
+			CALLMONITOR
+		endif
 		FORTH_DSP_POP
 		NEXTW
 .DUP2:
 	CWHEAD .DROP2 OPCODE_DUP2 "2DUP" 4 WORD_FLAG_CODE
 ; | 2DUP ( w1 w2 -- w1 w2 w1 w2 ) Duplicate the top two items on TOS  | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "2DU"
+			CALLMONITOR
+		endif
 		FORTH_DSP_VALUEHL
 		push hl      ; 2
 
@@ -726,17 +755,29 @@ endif
 .DROP2:
 	CWHEAD .SWAP2 OPCODE_DROP2 "2DROP" 5 WORD_FLAG_CODE
 ; | 2DROP ( w w -- )    Double drop | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "2DR"
+			CALLMONITOR
+		endif
 		FORTH_DSP_POP
 		FORTH_DSP_POP
 		NEXTW
 .SWAP2:
 	CWHEAD .AT OPCODE_SWAP2 "2SWAP" 5 WORD_FLAG_CODE
 ; | 2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items | TODO
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "2SW"
+			CALLMONITOR
+		endif
 		NEXTW
 .AT:
 	CWHEAD .CAT OPCODE_AT "@" 1 WORD_FLAG_CODE
 ; | @ ( w -- ) Push onto TOS byte stored at address   | DONE
 
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "AT."
+			CALLMONITOR
+		endif
 .getbyteat:	
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 		
@@ -756,11 +797,19 @@ endif
 .CAT:
 	CWHEAD .BANG OPCODE_CAT "C@" 2 WORD_FLAG_CODE
 ; | C@  ( w -- ) Push onto TOS byte stored at address   | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "CAA"
+			CALLMONITOR
+		endif
 		jp .getbyteat
 		NEXTW
 .BANG:
 	CWHEAD .CBANG OPCODE_BANG "!" 1 WORD_FLAG_CODE
 ; | ! ( x w -- ) Store x at address w      | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "BNG"
+			CALLMONITOR
+		endif
 
 .storebyteat:		
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -788,11 +837,19 @@ endif
 .CBANG:
 	CWHEAD .SCALL OPCODE_CBANG "C!" 2 WORD_FLAG_CODE
 ; | C!  ( x w -- ) Store x at address w  | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "CBA"
+			CALLMONITOR
+		endif
 		jp .storebyteat
 		NEXTW
 .SCALL:
 	CWHEAD .DEPTH OPCODE_SCALL "CALL" 4 WORD_FLAG_CODE
 ; | CALL ( w -- w  ) machine code call to address w  push the result of hl to stack | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "CLL"
+			CALLMONITOR
+		endif
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
@@ -817,6 +874,10 @@ endif
 	CWHEAD .OVER OPCODE_DEPTH "DEPTH" 5 WORD_FLAG_CODE
 ; | DEPTH ( -- u ) Push count of stack | DONE
 		; take current TOS and remove from base value div by two to get count
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "DEP"
+			CALLMONITOR
+		endif
 
 
 	ld hl, (cli_data_sp)
@@ -840,6 +901,10 @@ endif
 .OVER:
 	CWHEAD .PAUSE 46 "OVER" 4 WORD_FLAG_CODE
 ; | OVER ( n1 n2 -- n1 n2 n1 )  Copy one below TOS onto TOS | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "OVR"
+			CALLMONITOR
+		endif
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 		push hl    ; n2
@@ -869,6 +934,10 @@ endif
 .PAUSE:
 	CWHEAD .PAUSES 47 "PAUSEMS" 7 WORD_FLAG_CODE
 ; | PAUSEMS ( n -- )  Pause for n millisconds | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "PMS"
+			CALLMONITOR
+		endif
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 ;		push hl    ; n2
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
@@ -880,6 +949,10 @@ endif
 .PAUSES: 
 	CWHEAD .ROT 48 "PAUSE" 5 WORD_FLAG_CODE
 ; | PAUSE ( n -- )  Pause for n seconds | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "PAU"
+			CALLMONITOR
+		endif
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 ;		push hl    ; n2
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
@@ -902,6 +975,10 @@ endif
 .ROT:
 	CWHEAD .UWORDS 49 "ROT" 3 WORD_FLAG_CODE
 ; | ROT ( u1 u2 u3 -- u2 u3 u1 ) Rotate top three items on stack | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "ROT"
+			CALLMONITOR
+		endif
 
 		FORTH_DSP_VALUEHL
 		push hl    ; u3 
@@ -955,7 +1032,7 @@ endif
 ; | | 
 ; | | Can be used to save the words to storage via:
 ; | | UWORDS $01 DO $01 APPEND LOOP
-	if DEBUG_FORTH_WORDS
+	if DEBUG_FORTH_WORDS_KEY
 		DMARK "UWR"
 		CALLMONITOR
 	endif
@@ -1034,6 +1111,10 @@ endif
 ; | | and on release of the pressed key a message will be disaplayed to notify
 ; | | that break points are enabled. Pressing any key will then continue boot process.
 		; get byte count
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "BP_"
+			CALLMONITOR
+		endif
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
@@ -1085,6 +1166,10 @@ endif
 ; | |    M xxxx - Set start of memory edit at address xx
 ; | |    U xx - Poke the hex byte xx into the address set by M and increment the address to the next location
 ; | |    Q - Return to previous
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "MON"
+			CALLMONITOR
+		endif
 		ld a, 0
 		ld (os_view_disable), a
 
@@ -1098,11 +1183,19 @@ endif
 .MALLOC:
 	CWHEAD .MALLOC2 66 "ALLOT" 5 WORD_FLAG_CODE
 ; | ALLOT ( u -- u ) Allocate u bytes of memory space and push the pointer TOS  | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "ALL"
+			CALLMONITOR
+		endif
 		jp .mallocc
 .MALLOC2:
 	CWHEAD .FREE 66 "MALLOC" 6 WORD_FLAG_CODE
 ; | MALLOC ( u -- u ) Allocate u bytes of memory space and push the pointer TOS  | DONE
 		; get byte count
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "MAL"
+			CALLMONITOR
+		endif
 .mallocc:
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
@@ -1131,6 +1224,10 @@ endif
 .FREE:
 	CWHEAD .LIST 67 "FREE" 4 WORD_FLAG_CODE
 ; | FREE ( u --  ) Free memory block from malloc given u address  | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "FRE"
+			CALLMONITOR
+		endif
 		; get address
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -1150,7 +1247,7 @@ endif
 	CWHEAD .FORGET 72 "LIST" 4 WORD_FLAG_CODE
 ; | LIST ( uword -- u )    List the code to the word that is quoted (so as not to exec) on TOS | DONE
 ; | | The quoted word must be in upper case.
-	if DEBUG_FORTH_WORDS
+	if DEBUG_FORTH_WORDS_KEY
 		DMARK "LST"
 		CALLMONITOR
 	endif
@@ -1521,6 +1618,10 @@ pop hl
 	CWHEAD .NOP 73 "FORGET" 6 WORD_FLAG_CODE
 ; | FORGET ( uword -- )    Forget the uword on TOS | DONE
 ; | | Will flag the word's op code to be deleted as well as replace the first char of the word with '_'.
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "FRG"
+			CALLMONITOR
+		endif
 
 	; find uword
         ; update start of word with "_"
@@ -1628,6 +1729,10 @@ pop hl
 .NOP:
 	CWHEAD .COMO 77 "NOP" 3 WORD_FLAG_CODE
 ; | NOP (  --  ) Do nothing | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "NOP"
+			CALLMONITOR
+		endif
 	       NEXTW
 .COMO:
 	CWHEAD .COMC 90 "(" 1 WORD_FLAG_CODE
@@ -1673,6 +1778,10 @@ pop hl
 ; | | e.g.   : varword $0a scratch ; 
 ; | |
 ; | | $8000 varword !
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "SCR"
+			CALLMONITOR
+		endif
 
 		FORTH_DSP_VALUEHL
 	
@@ -1689,6 +1798,10 @@ pop hl
 .INC:
 	CWHEAD .DEC 91 "+!" 2 WORD_FLAG_CODE
 ; | +! ( u a -- )  Increment byte at address a by the value u | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "+s_"
+			CALLMONITOR
+		endif
 
 		FORTH_DSP_VALUEHL
 
@@ -1722,6 +1835,10 @@ pop hl
 .DEC:
 	CWHEAD .INC2 91 "-!" 2 WORD_FLAG_CODE
 ; | -! ( u a -- )  Decrement byte at address a by the value u | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "-s_"
+			CALLMONITOR
+		endif
 
 		FORTH_DSP_VALUEHL
 
@@ -1754,8 +1871,8 @@ pop hl
 	CWHEAD .DEC2 91 "+2!" 3 WORD_FLAG_CODE
 ; | +2! ( u a -- )  Increment word at address a by the value u | DONE
 
-		if DEBUG_FORTH_WORDS
-			DMARK "+2!"
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "+2s"
 			CALLMONITOR
 		endif
 
@@ -1824,8 +1941,8 @@ pop hl
 ; | -2! ( u a -- )  Decrement word at address a by the value u | DONE
 
 
-		if DEBUG_FORTH_WORDS
-			DMARK "-2!"
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "-2s"
 			CALLMONITOR
 		endif
 
@@ -1892,6 +2009,10 @@ pop hl
 .GET2:
 	CWHEAD .BANG2 91 "2@" 2 WORD_FLAG_CODE
 ; | 2@ ( a -- u )  Push word at address a onto stack | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "2A_"
+			CALLMONITOR
+		endif
 
 		FORTH_DSP_VALUEHL
 
@@ -1907,6 +2028,10 @@ pop hl
 .BANG2:
 	CWHEAD .ENDCORE 91 "2!" 2 WORD_FLAG_CODE
 ; | 2! ( u a -- )  Store value u as a word at address a | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "2S_"
+			CALLMONITOR
+		endif
 
 		FORTH_DSP_VALUEHL
 

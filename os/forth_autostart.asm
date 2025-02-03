@@ -29,6 +29,7 @@ startcmds:
 ;	dw game2r
 ;	dw game2b1
 ;	dw game2b2
+	dw clrstack
 	dw type
 	dw stest
 	dw strncpy
@@ -101,6 +102,10 @@ startcmds:
 ;	dw keybs
 	db 0, 0	
 
+
+; clear stack 
+
+clrstack:  db ": clrstk depth ?dup if $01 do drop loop then nop ;", 0
 
 ; type ( addr count - )
 type:     db ": type $00 do dup i + @ emit loop ;", 0

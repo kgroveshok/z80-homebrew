@@ -2,28 +2,16 @@
 Z80 Home Brew Micro-computer Project - Dev Diary
 ------------------------------------------------
 
-31st Jan 2025
--------------
-
-* DONE Test CALL
-* DONE Relook at variable use. Setup a VARIABLE word which puts the address on the stack and allows the ! and @ words to access them. Now with SCRATCH to emulate via uwords
-* DONE my malloc is failing on free. Not doing as the other malloc is fine.
-* DONE Rewrite push code to see if that removes the crashing issue
-* DONE Added stack checkpoint macros
-* DONE EXEC causes crash. Narrowing down crash point. RSP issue. OK might be a recursive issue.
-
-* TODO Add a print using ptr on stack: TYPE ( addr c - )
-* TODO LIST and FORGET might be broken
-* TODO Fix NUM2STR. 
-* TODO Fix LEFT
-* TODO Fix RIGHT
-* TODO Fix 2SWAP
-* TODO Fix KEY
-* TODO Fix IS 
-
+3rd Feb 2025
+------------
+* DONE SWAP was flagged as done but it wasnt
+* DONE Add a print using ptr on stack: TYPE ( addr c - ). Replaced with a uword in auto start.
+* DONE Add better handling of empty stack. Stop execution and return to prompt? Yes jump to cli and not warmstart
+* DONE Clear stack word? Make a uword for it if needed??
+* DONE Add ALLOT to be same as malloc
 * TODO Can't use EXEC in code so need another way to trigger stack eval. Make EXEC to take a count of strings?
 
-* TODO BUG Any push following the use of BREAD results in a malloc error
+
 * TODO add more editing features 
 * TODO fix editor bugs
 * TODO fix editor issues
@@ -33,12 +21,27 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Backspace mid string does not clean up shifted text
 * TODO Jump to end of line does not work should set to the number in last debug display
 * TODO If cursor at end of line, when go back it leaves custor displayed
+* TODO FORGET might be broken
+* TODO Go through all word code and set key debug spots 
+* TODO Fix NUM2STR. 
+* TODO Fix LEFT
+* TODO Fix RIGHT
+* TODO Fix 2SWAP
+* TODO Fix KEY
+* TODO Fix IS 
 
+* TODO BUG Any push following the use of BREAD results in a malloc error... Retest
+
+* TODO New value type for signed and unsigned val. Add to maths.
+* TODO Add FILL word - ( addr n char -- ) fills address for n long with char
+* TODO Add ERASE word - ( addr n -- ) fills address for n long with zero
+* TODO LSHIFT and RSHIFT for bit shifting
 * TODO Add to start up a list of what storage labels are seen
 * TODO add ram test to the diags
 * TODO Speed up screen updates - instead of writing whole screen detect what has changed? 
 * TODO Add no bank chip detection to format
-* TODO Add support for ELSE and ENDIF. IF THEN ELSE ENDIF   or IF THEN ENDIF
+* TODO Add support for ELSE and ENDIF. IF THEN ELSE ENDIF   or IF THEN ENDIF. Or IF ... ELSE ... THEN
+* TODO Word to define lcd user character 0-3. Then word to output via emit etc
 * TODO Rework the storage system file structure and functions 
 * TODO setup a compiler
 * TODO Add a stack content viewer to callmonitor code
@@ -63,6 +66,18 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Extract all of the symbols in the symbol table to be available as words in FORTH, debug and asm above
 * TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs
 * TODO Add a simple assembler feature like BBC Basic
+
+31st Jan 2025
+-------------
+
+* DONE Test CALL
+* DONE Relook at variable use. Setup a VARIABLE word which puts the address on the stack and allows the ! and @ words to access them. Now with SCRATCH to emulate via uwords
+* DONE my malloc is failing on free. Not doing as the other malloc is fine.
+* DONE Rewrite push code to see if that removes the crashing issue
+* DONE Added stack checkpoint macros
+* DONE EXEC causes crash. Narrowing down crash point. RSP issue. OK might be a recursive issue.
+
+
 
 
 27th Jan 2025

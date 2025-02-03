@@ -747,6 +747,9 @@ type_faults: 	push de
 		pop hl
 		pop de
 		call monitor
-		jp warmstart
+; do a dump to cli and not warmstart so we preserve all of the uwords. 
+; TODO Make optional fault restart to cli or warm boot?
+		;jp warmstart
+		jp cli
 		halt
 ; eof

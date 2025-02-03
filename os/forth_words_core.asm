@@ -40,7 +40,7 @@
 ;endif
 
 .EXEC:
-	CWHEAD .DUP OPCODE_EXEC "EXEC" 4 WORD_FLAG_CODE
+	CWHEAD .STKEXEC OPCODE_EXEC "EXEC" 4 WORD_FLAG_CODE
 ; | EXEC ( u -- )    Execs the string on TOS as a FORTH expression | CRASHES ON NEXTW
 ; | | u - A qutoed string which can consist of any valid Forth expression excluding : defintions (use LOAD instead)
 ; | |
@@ -54,6 +54,7 @@
 
 	FORTH_DSP_VALUEHL
 
+	FORTH_DSP_POP
 
 		if DEBUG_FORTH_WORDS
 			DMARK "EX1"
@@ -222,6 +223,63 @@
 ;	endif
 ;	NEXTW
 
+.STKEXEC:
+	CWHEAD .ZDUP 43 "STKEXEC" 7 WORD_FLAG_CODE
+; | STKEXEC ( u .. u c -- ) Taking c count of strings off of the stack the strings are evaluated as code | TO TEST
+
+
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "STX"
+			CALLMONITOR
+		endif
+
+	FORTH_DSP_VALUEHL
+
+	ld (store_tmp1), hl    ; count
+
+	FORTH_DSP_POP
+.stkexec1:
+	ld hl, (store_tmp1)   ; count
+	ld a, 0
+	cp l
+	ret z
+
+	dec hl
+	ld (store_tmp1), hl    ; count
+	
+	FORTH_DSP_VALUEHL
+	push hl
+	
+	FORTH_DSP_POP
+
+	call strlenz
+	inc hl   ; include zero term to copy
+	ld b,0
+	ld c,l
+	pop hl
+	ld de, execscratch
+		if DEBUG_FORTH_WORDS
+			DMARK "EX3"
+			CALLMONITOR
+		endif
+	ldir
+
+
+	ld hl, execscratch
+
+		if DEBUG_FORTH_WORDS
+			DMARK "EXe"
+			CALLMONITOR
+		endif
+
+	call forthparse
+	call forthexec
+
+	jp .stkexec1
+
+	ret
+
+
 .DUP:
 	CWHEAD .ZDUP OPCODE_DUP "DUP" 3 WORD_FLAG_CODE
 ; | DUP ( u -- u u )     Duplicate whatever item is on TOS | DONE
@@ -290,11 +348,27 @@
 		NEXTW
 .SWAP:
 	CWHEAD .COLN OPCODE_SWAP "SWAP" 4 WORD_FLAG_CODE
-; | SWAP ( w1 w2 -- w2 w1 )    Swap top two items  on TOS | DONE
+; | SWAP ( w1 w2 -- w2 w1 )    Swap top two items on TOS | DONE
 
 		FORTH_DSP_VALUEHL
-		push hl
+		push hl     ; w2
 
+		FORTH_DSP_POP
+
+		FORTH_DSP_VALUEHL
+
+		FORTH_DSP_POP
+
+		pop de     ; w2	, hl = w1
+
+		ex de, hl
+		push de
+
+		call forth_push_numhl
+
+		pop hl
+
+		call forth_push_numhl
 		
 
 		NEXTW
@@ -1022,10 +1096,14 @@ endif
 
 
 .MALLOC:
+	CWHEAD .MALLOC2 66 "ALLOT" 5 WORD_FLAG_CODE
+; | ALLOT ( u -- u ) Allocate u bytes of memory space and push the pointer TOS  | DONE
+		jp .mallocc
+.MALLOC2:
 	CWHEAD .FREE 66 "MALLOC" 6 WORD_FLAG_CODE
 ; | MALLOC ( u -- u ) Allocate u bytes of memory space and push the pointer TOS  | DONE
 		; get byte count
-
+.mallocc:
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
 ;		push hl

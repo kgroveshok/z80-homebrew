@@ -74,6 +74,7 @@ startcmds:
 	dw game1t
 	dw game1f
 	dw game1z
+	dw game1zz
 
 	dw test5
 	dw test6
@@ -204,6 +205,10 @@ game1s:          db ": gck gcb gcc gcd ;",0
 game1t:          db ": sc v3@ $01 + v3! ;",0
 game1f:          db ": fsc v3@ cls $01 $01 at You-Took .- $02 $03 at . ;",0
 game1z:         db ": ga $00 v3! gsn repeat cls gs cls gck $02 pause sc until fsc nop ;",0
+
+; Using 'ga' save a high score across multiple runs using external storage
+
+game1zz:         db ": gas ga $01 bank $80 bread $01 $04 at Prev-Score .> . storepage v3@ $80 bupd ;",0
 
 
 ;game2r:          db ": m2r rnd8 v1! ;  ",0, 0, 0, FORTH_END_BUFFER

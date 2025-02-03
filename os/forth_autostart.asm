@@ -29,16 +29,30 @@ startcmds:
 ;	dw game2r
 ;	dw game2b1
 ;	dw game2b2
+
+	; start up words that are actually useful
+
 	dw clrstack
 	dw type
 	dw stest
 	dw strncpy
 	dw list
+	dw start1
+	dw start2
+;	dw start3
+	dw start3b
+	dw start3c
+
+	; (unit) testing words
+
 	dw mtesta
 	dw mtestb
 	dw mtestc
 	dw mtestd
 	dw mteste
+
+	; demo/game words
+
         dw game3w
         dw game3p
         dw game3sc
@@ -68,11 +82,6 @@ startcmds:
 	dw test9
 	dw test10
 	
-	dw start1
-	dw start2
-;	dw start3
-	dw start3b
-	dw start3c
         dw ssv5
         dw ssv4
         dw ssv3
@@ -115,6 +124,18 @@ type:     db ": type $00 do dup i + @ emit loop ;", 0
 
 strncpy:   db ": strncpy $00 scratch 2! $02 scratch 2! do $00 scratch 2@ i + @ $02 scratch 2@ i + ! loop nop  ;",0
 
+start1:     	db ": bpon $0000 bp ;",0
+start2:     	db ": bpoff $0001 bp ;",0
+;start3:         db ": dirlist ir cls drop dup $00 > if $01 do .> BL .> .> BL .> .> BL .> loop then nop ;",0
+start3b:         db ": dla dir cls drop dup $00 > if $01 do $08 i at . $01 i at . $04 i at . loop then nop ;",0
+start3c:         db ": dirlist dir cls drop dup $00 > if $01 do \"/\" .> .> \"Ext:\" .> .> \"Id: \" .> .>  loop then nop ;",0
+
+
+; a handy word to list items on the stack
+
+list:            db ": more cls repeat scroll $01 $04 at depth . $0a $04 at .> accept drop depth 0= not until nop ;",0
+
+
 ; test stack 
 ; rnd8 stest
 
@@ -138,10 +159,11 @@ mtestd:      db ": mtestd $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0!
 
 mteste:      db ": mteste $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . rnd8 dup spaces $0f $02 at . heap $1f $01 at . $1f $02 at . $01 pause drop $01 until nop ; ", 0
 
-test1:		db ": aa 1 2 3 ;", 0
-test2:     	db "111 aa 888 999",0
-test3:     	db ": bb 77 ;",0
-test4:     	db "$02 $01 do i . loop bb",0
+;test1:		db ": aa 1 2 3 ;", 0
+;test2:     	db "111 aa 888 999",0
+;test3:     	db ": bb 77 ;",0
+;test4:     	db "$02 $01 do i . loop bb",0
+
 test5:     	db ": hline $13 $00 do i $01 at 1 . i $04 at 1 . loop nop ;",0
 test6:     	db ": vline $04 $01 do $00 i at 1 . $13 i at 1 . loop nop ;",0
 test7:     	db ": box hline vline ;",0
@@ -151,32 +173,24 @@ test10:     	db ": fw $00 adsp world draw $05 pause ;",0
 test11:     	db "hello create .",0
 test12:     	db "hello2 create .",0
 
-mmtest1:     	db "cls $0001 $0008 MIN . $0002 pause",0
-mmtest2:     	db "cls $0101 $0008 MIN . $0002 pause",0
-mmtest3:     	db "cls $0001 $0008 MAX . $0002 pause",0
-mmtest4:     	db "cls $0101 $0008 MAX . $0002 pause",0
-mmtest5:     	db "cls $0001 $0001 MIN . $0002 pause",0
-mmtest6:     	db "cls $0001 $0001 MAX . $0002 pause",0
+;mmtest1:     	db "cls $0001 $0008 MIN . $0002 pause",0
+;mmtest2:     	db "cls $0101 $0008 MIN . $0002 pause",0
+;mmtest3:     	db "cls $0001 $0008 MAX . $0002 pause",0
+;mmtest4:     	db "cls $0101 $0008 MAX . $0002 pause",0
+;mmtest5:     	db "cls $0001 $0001 MIN . $0002 pause",0
+;mmtest6:     	db "cls $0001 $0001 MAX . $0002 pause",0
 
-iftest1:     	db "$0001 IF cls .",0
-iftest2:     	db "$0000 IF cls .",0
-iftest3:     	db "$0002 $0003 - IF cls .",0
-looptest1:     	db "$0003 $0001 do i . loop 8",0
-looptest2:     	db "$0003 $0001 do i . $0001 pause loop 8",0
+;iftest1:     	db "$0001 IF cls .",0
+;iftest2:     	db "$0000 IF cls .",0
+;iftest3:     	db "$0002 $0003 - IF cls .",0
+;looptest1:     	db "$0003 $0001 do i . loop 8",0
+;looptest2:     	db "$0003 $0001 do i . $0001 pause loop 8",0
 
-ifthtest1:     	db "$0001 IF is-true . $0005 pause THEN next-word . $0005 pause",0
-ifthtest2:     	db "$0000 IF is-true . $0005 pause THEN next-word . $0005 pause",0
-ifthtest3:     	db "$0002 $0003 - IF is-true . $0005 pause THEN next-word . $0005 pause",0
+;ifthtest1:     	db "$0001 IF is-true . $0005 pause THEN next-word . $0005 pause",0
+;ifthtest2:     	db "$0000 IF is-true . $0005 pause THEN next-word . $0005 pause",0
+;ifthtest3:     	db "$0002 $0003 - IF is-true . $0005 pause THEN next-word . $0005 pause",0
 
-start1:     	db ": bpon $0000 bp ;",0
-start2:     	db ": bpoff $0001 bp ;",0
-;start3:         db ": dirlist ir cls drop dup $00 > if $01 do .> BL .> .> BL .> .> BL .> loop then nop ;",0
-start3b:         db ": dla dir cls drop dup $00 > if $01 do $08 i at . $01 i at . $04 i at . loop then nop ;",0
-start3c:         db ": dirlist dir cls drop dup $00 > if $01 do \"/\" .> .> \"Ext:\" .> .> \"Id: \" .> .>  loop then nop ;",0
 
-; a handy word to list items on the stack
-
-list:            db ": more cls repeat scroll $01 $04 at depth . $0a $04 at .> accept drop depth 0= not until nop ;",0
 
 ; a small guess the number game
 

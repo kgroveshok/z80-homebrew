@@ -3466,6 +3466,7 @@
 88e8			 
 88e8			if FORTH_ENABLE_FLOATMATH 
 88e8			include "float/bbcmath.z80" 
+88e8			;include "float/lpfpcalc.asm" 
 88e8			endif 
 88e8			 
 88e8			 

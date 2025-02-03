@@ -4255,6 +4255,7 @@
 0b43			 
 0b43			if FORTH_ENABLE_FLOATMATH 
 0b43			include "float/bbcmath.z80" 
+0b43			;include "float/lpfpcalc.asm" 
 0b43			endif 
 0b43			 
 0b43			 

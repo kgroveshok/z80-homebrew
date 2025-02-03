@@ -558,7 +558,8 @@ ishlzero:
 
 
 if FORTH_ENABLE_FLOATMATH
-include "float/bbcmath.z80"
+;include "float/bbcmath.z80"
+include "float/lpfpcalc.asm"
 endif
 
 

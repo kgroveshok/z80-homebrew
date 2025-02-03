@@ -3470,6 +3470,7 @@
 09f3			 
 09f3			if FORTH_ENABLE_FLOATMATH 
 09f3			include "float/bbcmath.z80" 
+09f3			;include "float/lpfpcalc.asm" 
 09f3			endif 
 09f3			 
 09f3			 

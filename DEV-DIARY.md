@@ -10,6 +10,7 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE Clear stack word? Make a uword for it if needed??
 * DONE Add ALLOT to be same as malloc
 * DONE Go through all word code and set key debug spots 
+* DONE FORGET might be broken
 * TODO Can't use EXEC in code so need another way to trigger stack eval. Make EXEC to take a count of strings?
 
 * TODO add more editing features 
@@ -21,7 +22,6 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Backspace mid string does not clean up shifted text
 * TODO Jump to end of line does not work should set to the number in last debug display
 * TODO If cursor at end of line, when go back it leaves custor displayed
-* TODO FORGET might be broken
 * TODO Fix NUM2STR. 
 * TODO Fix LEFT
 * TODO Fix RIGHT
@@ -63,7 +63,7 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO need word to get file name by id
 * TODO have a word to set break point at a DMARKer
 * TODO Extract all of the symbols in the symbol table to be available as words in FORTH, debug and asm above
-* TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs
+* TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs. FORGET and LIST use a scanner. Combine with main parser and have one for keyword and another for byte code
 * TODO Add a simple assembler feature like BBC Basic
 
 31st Jan 2025

@@ -1628,19 +1628,20 @@ pop hl
 	; replace uword with deleted flag
 
 
-	if DEBUG_FORTH_WORDS
-		DMARK "FOG"
-		CALLMONITOR
-	endif
+;	if DEBUG_FORTH_WORDS
+;		DMARK "FOG"
+;		CALLMONITOR
+;	endif
 
 
 		; Get ptr to the word we need to look up
 
-		FORTH_DSP
+		FORTH_DSP_VALUEHL
 		;v5 FORTH_DSP_VALUE
 	; TODO type check
-		inc hl    ; Skip type check 
+;		inc hl    ; Skip type check 
 		push hl
+		pop bc
 ;		ex de, hl    ; put into DE
 
 
@@ -1648,31 +1649,41 @@ pop hl
 		;ld hl, baseusermem
 
 	; skip dict stub
+;	call forth_tok_next
+push hl   ; sacreifical push
+
+.fldouscanm:
+	pop hl
+.fldouscan:
+;	if DEBUG_FORTH_WORDS
+;		DMARK "LSs"
+;		CALLMONITOR
+;	endif
+	; skip dict stub
 		call forth_tok_next
 
 
 ; while we have words to look for
 
-.fdouscan:	ld a, (hl)     
-	if DEBUG_FORTH_WORDS
-		DMARK "LSs"
-		CALLMONITOR
-	endif
+	ld a, (hl)     
+;	if DEBUG_FORTH_WORDS
+;		DMARK "LSk"
+;		CALLMONITOR
+;	endif
 		cp WORD_SYS_END
-		jp z, .fudone
+		jp z, .flunotfound
 		cp WORD_SYS_UWORD
-		jp nz, .fnuword
+		jp nz, .fldouscan
 
-	if DEBUG_FORTH_WORDS
-		DMARK "FGu"
-		CALLMONITOR
-	endif
+;	if DEBUG_FORTH_WORDS
+;		DMARK "LSu"
+;		CALLMONITOR
+;	endif
 
 		; found a uword but is it the one we want...
 
-
-	        pop de   ; get back the dsp name
-		push de
+		push bc     ; uword to find is on bc
+		pop de
 
 		push hl  ; to save the ptr
 
@@ -1684,12 +1695,57 @@ pop hl
 		; skip len
 		inc hl
 
-	if DEBUG_FORTH_WORDS
-		DMARK "FGc"
-		CALLMONITOR
-	endif
+;	if DEBUG_FORTH_WORDS
+;		DMARK "LSc"
+;		CALLMONITOR
+;	endif
 		call strcmp
-		jp nz, .fnuword
+		jp nz, .fldouscanm
+;
+;
+;; while we have words to look for
+;
+;.fdouscan:	ld a, (hl)     
+;	if DEBUG_FORTH_WORDS
+;		DMARK "LSs"
+;		CALLMONITOR
+;	endif
+;		cp WORD_SYS_END
+;		jp z, .fudone
+;		cp WORD_SYS_UWORD
+;		jp nz, .fnuword
+;
+;	if DEBUG_FORTH_WORDS
+;		DMARK "FGu"
+;		CALLMONITOR
+;	endif
+;
+;		; found a uword but is it the one we want...
+;
+;
+;	        pop de   ; get back the dsp name
+;		push de
+;
+;		push hl  ; to save the ptr
+;
+;		; skip opcode
+;		inc hl 
+;		; skip next ptr
+;		inc hl 
+;		inc hl
+;		; skip len
+;		inc hl
+;
+;	if DEBUG_FORTH_WORDS
+;		DMARK "FGc"
+;		CALLMONITOR
+;	endif
+;		call strcmp
+;		jp nz, .fnuword
+
+
+pop hl
+
 	
 	if DEBUG_FORTH_WORDS
 		DMARK "FGm"
@@ -1701,7 +1757,7 @@ pop hl
 		; we have a uword so push its name to the stack
 
 ;	   	push hl  ; save so we can move to next dict block
-pop hl
+;pop hl
 
 		; update opcode to deleted
 		ld a, WORD_SYS_DELETED
@@ -1718,13 +1774,19 @@ pop hl
 		ld a, "_"
 		ld  (hl),a
 
-		jr .fudone
+;		jr .fudone
+;
+;.fnuword:	pop hl
+;		call forth_tok_next
+;		jp .fdouscan 
 
-.fnuword:	pop hl
-		call forth_tok_next
-		jp .fdouscan 
+.flunotfound:		 
 
-.fudone:		 pop hl
+
+		
+		FORTH_DSP_POP
+;		ld hl, .luno
+;.fudone:		 pop hl
 		NEXTW
 .NOP:
 	CWHEAD .COMO 77 "NOP" 3 WORD_FLAG_CODE

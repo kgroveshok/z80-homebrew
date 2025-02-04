@@ -208,7 +208,7 @@ game1z:         db ": ga $00 v3! gsn repeat cls gs cls gck $02 pause sc until fs
 
 ; Using 'ga' save a high score across multiple runs using external storage
 
-game1zz:         db ": gas ga $01 bank $80 bread $01 $04 at Prev-Score .> . storepage v3@ $80 bupd ;",0
+game1zz:         db ": gas ga $01 bank $80 bread $01 $04 at Prev-Score .> storepage ptr $02 + dup 2@ . v3@ swap 2! $80 bupd ;",0
 
 
 ;game2r:          db ": m2r rnd8 v1! ;  ",0, 0, 0, FORTH_END_BUFFER

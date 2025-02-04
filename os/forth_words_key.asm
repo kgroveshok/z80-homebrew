@@ -10,7 +10,8 @@
 			CALLMONITOR
 		endif
 ; TODO currently waits
-		call cin_wait
+		call cin
+		;call cin_wait
 		ld l, a
 		ld h, 0
 		call forth_push_numhl

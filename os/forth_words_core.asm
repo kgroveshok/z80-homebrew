@@ -65,16 +65,18 @@
 ;	ld d,(hl)
 ;	ex de,hl
 
-		if DEBUG_FORTH_WORDS
-			DMARK "EX2"
-			CALLMONITOR
-		endif
+;		if DEBUG_FORTH_WORDS
+;			DMARK "EX2"
+;			CALLMONITOR
+;		endif
 	push hl
 
 	;ld a, 0
 	;ld a, FORTH_END_BUFFER
 	call strlenz
 	inc hl   ; include zero term to copy
+	inc hl   ; include term
+	inc hl   ; include term
 	ld b,0
 	ld c,l
 	pop hl
@@ -250,9 +252,15 @@
 	FORTH_DSP_VALUEHL
 	push hl
 	
+		if DEBUG_FORTH_WORDS
+			DMARK "EXp"
+			CALLMONITOR
+		endif
 	FORTH_DSP_POP
 
 	call strlenz
+	inc hl   ; include zero term to copy
+	inc hl   ; include zero term to copy
 	inc hl   ; include zero term to copy
 	ld b,0
 	ld c,l
@@ -268,11 +276,16 @@
 	ld hl, execscratch
 
 		if DEBUG_FORTH_WORDS
-			DMARK "EXe"
+			DMARK "EXP"
 			CALLMONITOR
 		endif
 
 	call forthparse
+	ld hl, execscratch
+		if DEBUG_FORTH_WORDS
+			DMARK "EXx"
+			CALLMONITOR
+		endif
 	call forthexec
 
 	jp .stkexec1

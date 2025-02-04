@@ -49,9 +49,9 @@ DEBUG_FORTH_MATHS: equ 0
 DEBUG_FORTH_TOK: equ 0    ; 4
 DEBUG_FORTH_PARSE: equ 0    ; 3
 DEBUG_FORTH: equ 0  ;2
-DEBUG_FORTH_WORDS: equ 0   ; 1
+DEBUG_FORTH_WORDS: equ 1   ; 1
 DEBUG_FORTH_PUSH: equ 0   ; 1
-DEBUG_FORTH_UWORD: equ 0   ; 1
+DEBUG_FORTH_UWORD: equ 1   ; 1
 
 ; Enable key point breakpoints
 

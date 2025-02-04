@@ -11,9 +11,14 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE Add ALLOT to be same as malloc
 * DONE Go through all word code and set key debug spots 
 * DONE FORGET might be broken
-* TODO Can't use EXEC in code so need another way to trigger stack eval. Make EXEC to take a count of strings?
+* DONE WAITK on cpm fails 
+* DONE KEY on cpm waits for key press - KEY change below??
+* DONE fix loading more than a single block of file storage via BREAD
 
-* DONE? fix loading more than a single block of file storage via BREAD
+* TODO Can't use EXEC in code so need another way to trigger stack eval. Make EXEC to take a count of strings?
+* TODO EXEC and STKEXEC not evaluating???? is COLN def non re-entrant? does it care about existing setups? EXEC is OK but STKEXEC not working?  Stack appears messed up. Where is it going wrong?
+
+* TODO KEY was waiting on hardware but changed from cin_wait to cin
 
 * TODO add more editing features 
 * TODO fix editor bugs

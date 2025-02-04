@@ -15,6 +15,7 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE KEY on cpm waits for key press - KEY change below??
 * DONE fix loading more than a single block of file storage via BREAD
 * DONE BUG Any push following the use of BREAD results in a malloc error... Retest. Or this could mean string longer >64bytes to go to multiple blocks
+* DONE Rework the storage system file structure and functions. Remove some of the defunct words.
 
 * TODO Can't use EXEC in code so need another way to trigger stack eval. Make EXEC to take a count of strings?
 * TODO EXEC and STKEXEC not evaluating???? is COLN def non re-entrant? does it care about existing setups? EXEC is OK but STKEXEC not working?  Stack appears messed up. Where is it going wrong?
@@ -39,6 +40,10 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 
 * TODO fix saving more than a single block of file storage. Means to concate multiple blocks?
 
+
+* TODO Add to docs that looking up file name of id is just id BREAD 
+* TODO Add to docs that looking up file id by name just need to go through 1-32 and look for name
+
 * TODO Add word to call fill_display with a char
 * TODO New value type for signed and unsigned val. Add to maths. added DS_TYPE_SNUM need a word to convert type. SIGN/UNSIGN. Fix up <= and dot.
 * TODO Add FILL word - ( addr n char -- ) fills address for n long with char
@@ -51,7 +56,6 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Add support for ELSE and ENDIF. IF THEN ELSE ENDIF   or IF THEN ENDIF. Or IF ... ELSE ... THEN
 * TODO Word to define lcd user character 0-3. Then word to output via emit etc
 
-* TODO Rework the storage system file structure and functions. Remove some of the defunct words.
 * TODO need word to get file id by name
 * TODO need word to get file name by id
 

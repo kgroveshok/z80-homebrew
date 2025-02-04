@@ -532,13 +532,13 @@ Also refer to the auto start list examples as these contain extra words created 
 ## Fixed Storage Words
 
 
-### BREAD ( u -- u ) With the current bank, read a block from block address u (1-512) and push to stack  | TO TEST
+### BREAD ( u -- u ) With the current bank, read a block from block address u (1-512) and push to stack  | DONE
 
 
-### BWRITE ( s u -- ) With the current bank, write the string s to address u | TO TEST
+### BWRITE ( s u -- ) With the current bank, write the string s to address u | DONE
 
 
-### BUPD ( u -- ) Write the contents of the current file system storage buffer directly to address u | TO TEST
+### BUPD ( u -- ) Write the contents of the current file system storage buffer directly to address u | DONE
 
 
  Coupled with the use of the BREAD, BWRITE and STOREPAGE words it is possible to implement a direct
@@ -547,31 +547,7 @@ Also refer to the auto start list examples as these contain extra words created 
  or completely different file system structure.
 
 
-### BYID ( u -- s ) Get the name of the file in the current BANK using the file ID u | TODO
-
-
-### BYNAME ( s -- u ) Get the file ID in the current BANK of the file named s | TODO
-
-
 ### DIR ( u -- lab id ... c t ) Using bank number u push directory entries from persistent storage as w with count u  | DONE
-
-
-### SAVE  ( w u -- )    Save user word memory to file name w on bank u | TODO
-
-
-### LOAD ( u -- )    Load user word memory from file id on current bank | TODO
-
-
- The indivdual records being loaded can be both uword word difintions or interactive commands.
-
-
- The LOAD command can not be used in any user words or compound lines.
-
-
-### BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at address a for s bytes | TODO
-
-
-### BLOAD ( w u a -- )    Load binary file from file name w on bank u into address u | TODO
 
 
 ### SEO ( u1 u2 -- ) Send byte u1 to Serial EEPROM device at address u2 | DONE
@@ -586,7 +562,7 @@ Also refer to the auto start list examples as these contain extra words created 
 ### SIZE ( u -- n )  Gets number of blocks used by file id u and push to stack | DONE
 
 
-### CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS | TO TEST
+### CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS | DONE
 
 
  e.g. 
@@ -607,7 +583,7 @@ Also refer to the auto start list examples as these contain extra words created 
  
 
 
-### APPEND ( u n --  )  Appends data u to file id on current storage bank | TO TEST
+### APPEND ( u n --  )  Appends data u to file id on current storage bank | DONE
 
 
  e.g.
@@ -970,6 +946,15 @@ Also refer to the auto start list examples as these contain extra words created 
 ### RND ( u1 u2 -- u ) Generate a random number no lower than u1 and no higher than u2 and push to stack | DONE
 
 
+### BREAD ( u -- u ) With the current bank, read a block from block address u (1-512) and push to stack  | DONE
+
+
+### BWRITE ( s u -- ) With the current bank, write the string s to address u | DONE
+
+
+### BUPD ( u -- ) Write the contents of the current file system storage buffer directly to address u | DONE
+
+
 ### DIR ( u -- lab id ... c t ) Using bank number u push directory entries from persistent storage as w with count u  | DONE
 
 
@@ -983,6 +968,12 @@ Also refer to the auto start list examples as these contain extra words created 
 
 
 ### SIZE ( u -- n )  Gets number of blocks used by file id u and push to stack | DONE
+
+
+### CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS | DONE
+
+
+### APPEND ( u n --  )  Appends data u to file id on current storage bank | DONE
 
 
 ### ERA ( n --  )  Deletes all data for file id n on current storage bank | DONE
@@ -1133,39 +1124,6 @@ Also refer to the auto start list examples as these contain extra words created 
 
 
 ## Fixed Storage Words
-
-
-### BREAD ( u -- u ) With the current bank, read a block from block address u (1-512) and push to stack  | TO TEST
-
-
-### BWRITE ( s u -- ) With the current bank, write the string s to address u | TO TEST
-
-
-### BUPD ( u -- ) Write the contents of the current file system storage buffer directly to address u | TO TEST
-
-
-### BYID ( u -- s ) Get the name of the file in the current BANK using the file ID u | TODO
-
-
-### BYNAME ( s -- u ) Get the file ID in the current BANK of the file named s | TODO
-
-
-### SAVE  ( w u -- )    Save user word memory to file name w on bank u | TODO
-
-
-### LOAD ( u -- )    Load user word memory from file id on current bank | TODO
-
-
-### BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at address a for s bytes | TODO
-
-
-### BLOAD ( w u a -- )    Load binary file from file name w on bank u into address u | TODO
-
-
-### CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS | TO TEST
-
-
-### APPEND ( u n --  )  Appends data u to file id on current storage bank | TO TEST
 
 
 ### LABELS (  -- b n .... c  )  Pushes each storage bank labels (n) along with id (b) onto the stack giving count (c) of banks  | TO TEST

@@ -5,7 +5,7 @@
 .BREAD:
  
 	CWHEAD .BWRITE 38 "BREAD" 5 WORD_FLAG_CODE
-; | BREAD ( u -- u ) With the current bank, read a block from block address u (1-512) and push to stack  | TO TEST
+; | BREAD ( u -- u ) With the current bank, read a block from block address u (1-512) and push to stack  | DONE
 	
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "BRD"
@@ -43,7 +43,7 @@
 		NEXTW
 .BWRITE:
 	CWHEAD .BUPD 38 "BWRITE" 6 WORD_FLAG_CODE
-; | BWRITE ( s u -- ) With the current bank, write the string s to address u | TO TEST
+; | BWRITE ( s u -- ) With the current bank, write the string s to address u | DONE
 
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "BWR"
@@ -109,7 +109,7 @@
 
 .BUPD:
 	CWHEAD .BYID 38 "BUPD" 4 WORD_FLAG_CODE
-; | BUPD ( u -- ) Write the contents of the current file system storage buffer directly to address u | TO TEST
+; | BUPD ( u -- ) Write the contents of the current file system storage buffer directly to address u | DONE
 ; | | Coupled with the use of the BREAD, BWRITE and STOREPAGE words it is possible to implement a direct
 ; | | or completely different file system structure.
 
@@ -141,14 +141,39 @@
 		NEXTW
 
 .BYID:
-	CWHEAD .BYNAME 38 "BYID" 4 WORD_FLAG_CODE
-; | BYID ( u -- s ) Get the name of the file in the current BANK using the file ID u | TODO
-		NEXTW
-.BYNAME:
-	CWHEAD .DIR 38 "BYNAME" 6 WORD_FLAG_CODE
-; | BYNAME ( s -- u ) Get the file ID in the current BANK of the file named s | TODO
-		NEXTW
-
+;	CWHEAD .BYNAME 38 "BYID" 4 WORD_FLAG_CODE
+;; > BYID ( u -- s ) Get the name of the file in the current BANK using the file ID u > TODO
+;
+;		
+;		if DEBUG_FORTH_WORDS_KEY
+;			DMARK "BYID"
+;			CALLMONITOR
+;		endif
+;
+;		; get direct address
+;
+;		FORTH_DSP_VALUEHL
+;
+;		FORTH_DSP_POP
+;
+;	; calc block address
+;
+;	ex de, hl
+;	ld a, STORE_BLOCK_PHY
+;	call Mult16
+;	;	do BREAD with number as param
+;	; push the file name	
+;	ld de, store_page
+;	call storage_read_block
+ ;       ld hl, store_page+2
+;
+;
+;		NEXTW
+;.BYNAME:
+;	CWHEAD .DIR 38 "BYNAME" 6 WORD_FLAG_CODE
+;; > BYNAME ( s -- u ) Get the file ID in the current BANK of the file named s > TODO
+;		NEXTW
+;
 .DIR:
 	CWHEAD .SAVE 38 "DIR" 3 WORD_FLAG_CODE
 ; | DIR ( u -- lab id ... c t ) Using bank number u push directory entries from persistent storage as w with count u  | DONE
@@ -272,157 +297,157 @@
 	
 		NEXTW
 .SAVE:
-	CWHEAD .LOAD 39 "SAVE" 4 WORD_FLAG_CODE
-; | SAVE  ( w u -- )    Save user word memory to file name w on bank u | TODO
-		NEXTW
-.LOAD:
-	CWHEAD .BSAVE 40 "LOAD" 4 WORD_FLAG_CODE
-; | LOAD ( u -- )    Load user word memory from file id on current bank | TODO
-; | | The indivdual records being loaded can be both uword word difintions or interactive commands.
-; | | The LOAD command can not be used in any user words or compound lines.
-
-		; store_openext use it. If zero it is EOF
-
-		; read block from current stream id
-		; if the block does not contain zero term keep reading blocks until zero found
-		; push the block to stack
-		; save the block id to stream
-
-
-		FORTH_DSP_VALUEHL
-
-;		push hl
-
-	if DEBUG_STORESE
-		DMARK "LOA"
-		CALLMONITOR
-	endif
-		FORTH_DSP_POP
-
-;		pop hl
-
-		ld h, l
-		ld l, 0
-
-		push hl     ; stack holds current file id and extent to work with
-
-
-		ld de, store_page      ; get block zero of file
-	if DEBUG_STORESE
-		DMARK "LO0"
-		CALLMONITOR
-	endif
-		call storage_read
-
-		ld a, (store_page+2)    ; max extents for this file
-		ld  (store_openmaxext),a   ; get our limit
-
-	if DEBUG_STORESE
-		DMARK "LOE"
-		CALLMONITOR
-	endif
-
-; TODO dont know why max extents are not present
-;		cp 0
-;		jp z, .loadeof     ; dont read past eof
-
-;		ld a, 1   ; start from the head of the file
-
-.loadline:	pop hl
-		inc hl
-		ld  a, (store_openmaxext)   ; get our limit
-	if DEBUG_STORESE
-		DMARK "LOx"
-		CALLMONITOR
-	endif
-		inc a
-		cp l
-		jp z, .loadeof
-		push hl    ; save current extent
-
-		ld de, store_page
-
-	if DEBUG_STORESE
-		DMARK "LO1"
-		CALLMONITOR
-	endif
-		call storage_read
-
-	if DEBUG_STORESE
-		DMARK "LO2"
-		CALLMONITOR
-	endif
-	call ishlzero
+;	CWHEAD .LOAD 39 "SAVE" 4 WORD_FLAG_CODE
+;; > SAVE  ( w u -- )    Save user word memory to file name w on bank u > TODO
+;		NEXTW
+;.LOAD:
+;	CWHEAD .BSAVE 40 "LOAD" 4 WORD_FLAG_CODE
+;; > LOAD ( u -- )    Load user word memory from file id on current bank > TODO
+;; > > The indivdual records being loaded can be both uword word difintions or interactive commands.
+;; > > The LOAD command can not be used in any user words or compound lines.
+;
+;		; store_openext use it. If zero it is EOF
+;
+;		; read block from current stream id
+;		; if the block does not contain zero term keep reading blocks until zero found
+;		; push the block to stack
+;		; save the block id to stream
+;
+;
+;		FORTH_DSP_VALUEHL
+;
+;;		push hl
+;
+;	if DEBUG_STORESE
+;		DMARK "LOA"
+;		CALLMONITOR
+;	endif
+;		FORTH_DSP_POP
+;
+;;		pop hl
+;
+;		ld h, l
+;		ld l, 0
+;
+;		push hl     ; stack holds current file id and extent to work with
+;
+;
+;		ld de, store_page      ; get block zero of file
+;	if DEBUG_STORESE
+;		DMARK "LO0"
+;		CALLMONITOR
+;	endif
+;		call storage_read
+;
+;		ld a, (store_page+2)    ; max extents for this file
+;		ld  (store_openmaxext),a   ; get our limit
+;
+;	if DEBUG_STORESE
+;		DMARK "LOE"
+;		CALLMONITOR
+;	endif
+;
+;; TODO dont know why max extents are not present
+;;		cp 0
+;;		jp z, .loadeof     ; dont read past eof
+;
+;;		ld a, 1   ; start from the head of the file
+;
+;.loadline:	pop hl
+;		inc hl
+;		ld  a, (store_openmaxext)   ; get our limit
+;	if DEBUG_STORESE
+;		DMARK "LOx"
+;		CALLMONITOR
+;	endif
+;		inc a
+;		cp l
+;		jp z, .loadeof
+;		push hl    ; save current extent
+;
+;		ld de, store_page
+;
+;	if DEBUG_STORESE
+;		DMARK "LO1"
+;		CALLMONITOR
+;	endif
+;		call storage_read
+;
+;	if DEBUG_STORESE
+;		DMARK "LO2"
+;		CALLMONITOR
+;	endif
+;	call ishlzero
 ;	ld a, l
 ;	add h
 ;	cp 0
-	jr z, .loadeof
-
-	; not eof so hl should point to data to exec
-
-	; will need to add the FORTH_END_BUFFER flag
- 
-	ld hl, store_page+2
-	ld bc, 255
-	ld a, 0
-	cpir
-	if DEBUG_STORESE
-		DMARK "LOt"
-		CALLMONITOR
-	endif
-	dec hl
-	ld a, ' '
-	ld (hl), a
-	inc hl
-	ld (hl), a
-	inc hl
-	ld (hl), a
-	inc hl
-	ld a, FORTH_END_BUFFER
-	ld (hl), a
-
-	; TODO handle more than a single block read
-
-
-	ld hl, store_page+2
-
-	ld (os_tok_ptr), hl
-
-	if DEBUG_STORESE
-		DMARK "LO3"
-		CALLMONITOR
-	endif
-
-	call forthparse
-	call forthexec
-	call forthexec_cleanup
-
-	; go to next extent
-
-	; get next block  or mark as eof
-	jp .loadline
-
-
-
-	       NEXTW
-.loadeof:	ld a, 0
-		ld (store_openext), a
-
-	if DEBUG_STORESE
-		DMARK "LOF"
-		CALLMONITOR
-	endif
-		ret
-		;NEXTW
-.BSAVE:  
-
-	CWHEAD .BLOAD 70 "BSAVE" 5 WORD_FLAG_CODE
-; | BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at address a for s bytes | TODO
-		NEXTW
-.BLOAD:
-	CWHEAD .SEO 71 "BLOAD" 5 WORD_FLAG_CODE
-; | BLOAD ( w u a -- )    Load binary file from file name w on bank u into address u | TODO
-		NEXTW
+;	jr z, .loadeof
+;
+;	; not eof so hl should point to data to exec
+;
+;	; will need to add the FORTH_END_BUFFER flag
+ ;
+;	ld hl, store_page+2
+;	ld bc, 255
+;	ld a, 0
+;	cpir
+;	if DEBUG_STORESE
+;		DMARK "LOt"
+;		CALLMONITOR
+;	endif
+;	dec hl
+;	ld a, ' '
+;	ld (hl), a
+;	inc hl
+;	ld (hl), a
+;	inc hl
+;	ld (hl), a
+;	inc hl
+;	ld a, FORTH_END_BUFFER
+;	ld (hl), a
+;
+;	; TODO handle more than a single block read
+;
+;
+;	ld hl, store_page+2
+;
+;	ld (os_tok_ptr), hl
+;
+;	if DEBUG_STORESE
+;		DMARK "LO3"
+;		CALLMONITOR
+;	endif
+;
+;	call forthparse
+;	call forthexec
+;	call forthexec_cleanup
+;
+;	; go to next extent
+;
+;	; get next block  or mark as eof
+;	jp .loadline
+;
+;
+;
+;	       NEXTW
+;.loadeof:	ld a, 0
+;		ld (store_openext), a
+;
+;	if DEBUG_STORESE
+;		DMARK "LOF"
+;		CALLMONITOR
+;	endif
+;		ret
+;		;NEXTW
+;.BSAVE:  
+;
+;	CWHEAD .BLOAD 70 "BSAVE" 5 WORD_FLAG_CODE
+;; > BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at address a for s bytes > TODO
+;		NEXTW
+;.BLOAD:
+;	CWHEAD .SEO 71 "BLOAD" 5 WORD_FLAG_CODE
+;; > BLOAD ( w u a -- )    Load binary file from file name w on bank u into address u > TODO
+;		NEXTW
 ;;;; counter gap
 
 
@@ -529,7 +554,7 @@
 
 .CREATE:
 	CWHEAD .APPEND 84 "CREATE" 6 WORD_FLAG_CODE
-; | CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS | TO TEST
+; | CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS | DONE
 ; | | e.g. 
 ; | | TestProgram CREATE
 ; | | Top of stack will then be the file ID which needs to be used in all file handling words
@@ -576,7 +601,7 @@
 
 .APPEND:
 	CWHEAD .SDEL 85 "APPEND" 6 WORD_FLAG_CODE
-; | APPEND ( u n --  )  Appends data u to file id on current storage bank | TO TEST
+; | APPEND ( u n --  )  Appends data u to file id on current storage bank | DONE
 ; | | e.g.
 ; | | Test CREATE      -> $01
 ; | | "A string to add to file" $01 APPEND

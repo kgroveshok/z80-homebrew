@@ -16,6 +16,7 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE fix loading more than a single block of file storage via BREAD
 * DONE BUG Any push following the use of BREAD results in a malloc error... Retest. Or this could mean string longer >64bytes to go to multiple blocks
 * DONE Rework the storage system file structure and functions. Remove some of the defunct words.
+* DONE have a word to set break point at a DMARKer. Not doing
 
 * TODO Can't use EXEC in code so need another way to trigger stack eval. Make EXEC to take a count of strings?
 * TODO EXEC and STKEXEC not evaluating???? is COLN def non re-entrant? does it care about existing setups? EXEC is OK but STKEXEC not working?  Stack appears messed up. Where is it going wrong?
@@ -74,7 +75,6 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Pico to handle display to have two way return of data
 * TODO Create a disk UI in native asm for robustness and speed?
 * TODO need words to report on hardware e.g. screen dims
-* TODO have a word to set break point at a DMARKer
 * TODO Extract all of the symbols in the symbol table to be available as words in FORTH, debug and asm above
 * TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs. FORGET and LIST use a scanner. Combine with main parser and have one for keyword and another for byte code
 * TODO Add a simple assembler feature like BBC Basic

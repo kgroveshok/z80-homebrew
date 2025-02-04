@@ -21277,7 +21277,7 @@
 41ed .. 00			db "BREAD",0              
 41f3				endm 
 # End of macro CWHEAD
-41f3			; | BREAD ( u -- u ) With the current bank, read a block from block address u (1-512) and push to stack  | TO TEST 
+41f3			; | BREAD ( u -- u ) With the current bank, read a block from block address u (1-512) and push to stack  | DONE 
 41f3				 
 41f3					if DEBUG_FORTH_WORDS_KEY 
 41f3						DMARK "BRD" 
@@ -21375,7 +21375,7 @@
 4266 .. 00			db "BWRITE",0              
 426d				endm 
 # End of macro CWHEAD
-426d			; | BWRITE ( s u -- ) With the current bank, write the string s to address u | TO TEST 
+426d			; | BWRITE ( s u -- ) With the current bank, write the string s to address u | DONE 
 426d			 
 426d					if DEBUG_FORTH_WORDS_KEY 
 426d						DMARK "BWR" 
@@ -21507,7 +21507,7 @@
 42fb .. 00			db "BUPD",0              
 4300				endm 
 # End of macro CWHEAD
-4300			; | BUPD ( u -- ) Write the contents of the current file system storage buffer directly to address u | TO TEST 
+4300			; | BUPD ( u -- ) Write the contents of the current file system storage buffer directly to address u | DONE 
 4300			; | | Coupled with the use of the BREAD, BWRITE and STOREPAGE words it is possible to implement a direct 
 4300			; | | or completely different file system structure. 
 4300			 
@@ -21579,7 +21579,7 @@
 434d			 
 434d			.BYID: 
 434d			;	CWHEAD .BYNAME 38 "BYID" 4 WORD_FLAG_CODE 
-434d			;; | BYID ( u -- s ) Get the name of the file in the current BANK using the file ID u | TODO 
+434d			;; > BYID ( u -- s ) Get the name of the file in the current BANK using the file ID u > TODO 
 434d			; 
 434d			;		 
 434d			;		if DEBUG_FORTH_WORDS_KEY 
@@ -21608,7 +21608,7 @@
 434d			;		NEXTW 
 434d			;.BYNAME: 
 434d			;	CWHEAD .DIR 38 "BYNAME" 6 WORD_FLAG_CODE 
-434d			;; | BYNAME ( s -- u ) Get the file ID in the current BANK of the file named s | TODO 
+434d			;; > BYNAME ( s -- u ) Get the file ID in the current BANK of the file named s > TODO 
 434d			;		NEXTW 
 434d			; 
 434d			.DIR: 
@@ -21834,13 +21834,13 @@
 # End of macro NEXTW
 4451			.SAVE: 
 4451			;	CWHEAD .LOAD 39 "SAVE" 4 WORD_FLAG_CODE 
-4451			;; | SAVE  ( w u -- )    Save user word memory to file name w on bank u | TODO 
+4451			;; > SAVE  ( w u -- )    Save user word memory to file name w on bank u > TODO 
 4451			;		NEXTW 
 4451			;.LOAD: 
 4451			;	CWHEAD .BSAVE 40 "LOAD" 4 WORD_FLAG_CODE 
-4451			;; | LOAD ( u -- )    Load user word memory from file id on current bank | TODO 
-4451			;; | | The indivdual records being loaded can be both uword word difintions or interactive commands. 
-4451			;; | | The LOAD command can not be used in any user words or compound lines. 
+4451			;; > LOAD ( u -- )    Load user word memory from file id on current bank > TODO 
+4451			;; > > The indivdual records being loaded can be both uword word difintions or interactive commands. 
+4451			;; > > The LOAD command can not be used in any user words or compound lines. 
 4451			; 
 4451			;		; store_openext use it. If zero it is EOF 
 4451			; 
@@ -21978,11 +21978,11 @@
 4451			;.BSAVE:   
 4451			; 
 4451			;	CWHEAD .BLOAD 70 "BSAVE" 5 WORD_FLAG_CODE 
-4451			;; | BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at address a for s bytes | TODO 
+4451			;; > BSAVE  ( w u a s -- )    Save binary file to file name w on bank u starting at address a for s bytes > TODO 
 4451			;		NEXTW 
 4451			;.BLOAD: 
 4451			;	CWHEAD .SEO 71 "BLOAD" 5 WORD_FLAG_CODE 
-4451			;; | BLOAD ( w u a -- )    Load binary file from file name w on bank u into address u | TODO 
+4451			;; > BLOAD ( w u a -- )    Load binary file from file name w on bank u into address u > TODO 
 4451			;		NEXTW 
 4451			;;;; counter gap 
 4451			 

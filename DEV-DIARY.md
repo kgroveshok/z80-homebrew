@@ -14,6 +14,7 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE WAITK on cpm fails 
 * DONE KEY on cpm waits for key press - KEY change below??
 * DONE fix loading more than a single block of file storage via BREAD
+* DONE BUG Any push following the use of BREAD results in a malloc error... Retest. Or this could mean string longer >64bytes to go to multiple blocks
 
 * TODO Can't use EXEC in code so need another way to trigger stack eval. Make EXEC to take a count of strings?
 * TODO EXEC and STKEXEC not evaluating???? is COLN def non re-entrant? does it care about existing setups? EXEC is OK but STKEXEC not working?  Stack appears messed up. Where is it going wrong?
@@ -23,8 +24,8 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO add more editing features 
 * TODO fix editor bugs
 * TODO fix editor issues
-* TODO typing a long few lines and then back space, then insert ends up creating spurious characters
-* TODO Fix prev line recall and insertion. Corruption appears on the end of line
+* TODO typing a long few lines and then back space, then insert ends up creating spurious characters - added clear of edit buffer
+* TODO Fix prev line recall and insertion. Corruption appears on the end of line - added clear of edit buffer
 * TODO Editor issue insert mid string causes loss of zero term giving random data
 * TODO Backspace mid string does not clean up shifted text
 * TODO Jump to end of line does not work should set to the number in last debug display
@@ -36,7 +37,6 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Fix KEY
 * TODO Fix IS 
 
-* TODO BUG Any push following the use of BREAD results in a malloc error... Retest. Or this could mean string longer >64bytes to go to multiple blocks
 * TODO fix saving more than a single block of file storage. Means to concate multiple blocks?
 
 * TODO Add word to call fill_display with a char

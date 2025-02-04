@@ -268,6 +268,14 @@ cli:
 	ld de, os_last_cmd
 	ld bc, 255
 	ldir
+
+	; wipe current buffer
+
+	ld a, 0
+	ld hl, os_cli_cmd
+	ld de, os_cli_cmd+1
+	ld bc, 254
+	ldir
 	; TODO ldir is not working strcpy may not get all the terms on the input line????
 ;	call strcpy
 ;	ld a, 0

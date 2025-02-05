@@ -2,26 +2,37 @@
 Z80 Home Brew Micro-computer Project - Dev Diary
 ------------------------------------------------
 
-3rd Feb 2025
+5th Feb 2025
 ------------
-* DONE SWAP was flagged as done but it wasnt
-* DONE Add a print using ptr on stack: TYPE ( addr c - ). Replaced with a uword in auto start.
-* DONE Add better handling of empty stack. Stop execution and return to prompt? Yes jump to cli and not warmstart
-* DONE Clear stack word? Make a uword for it if needed??
-* DONE Add ALLOT to be same as malloc
-* DONE Go through all word code and set key debug spots 
-* DONE FORGET might be broken
-* DONE WAITK on cpm fails 
-* DONE KEY on cpm waits for key press - KEY change below??
-* DONE fix loading more than a single block of file storage via BREAD
-* DONE BUG Any push following the use of BREAD results in a malloc error... Retest. Or this could mean string longer >64bytes to go to multiple blocks
-* DONE Rework the storage system file structure and functions. Remove some of the defunct words.
-* DONE have a word to set break point at a DMARKer. Not doing
 
+* DONE Added a low level menu function and moved diags around so that it will be possible to configure settings via storage
+* DONE Rework diag menu to be config which loads persissent settings from block 0
+* DONE Alternative to EXEC/STKEXEC is a word that presents a menu of uwords to save or load on storage. CONFIG is the word
+* DONE Need that MENU word done then! Low level word done, add to user words using scratch buffer to setup ptrs to strings. max 127 menu items
+
+
+
+* TODO Saved setting to enable/disable auto load of words from block 0 as part of auto start
+
+* TODO Add a flag to block 0 to include the file id to exec at startup
+
+
+* TODO Saved setting to enable/disable auto start
+* TODO Saved setting to select words to auto load from storage
+* TODO Add to start up a list of what storage labels are seen
+* TODO add ram test to the diags
+* TODO Hook up Pico and get it talking over SPI
+
+
+* TODO Cease support for os-mini as a lot of features just wont work... Perhaps do defines????
 * TODO Can't use EXEC in code so need another way to trigger stack eval. Make EXEC to take a count of strings?
 * TODO EXEC and STKEXEC not evaluating???? is COLN def non re-entrant? does it care about existing setups? EXEC is OK but STKEXEC not working?  Stack appears messed up. Where is it going wrong?
-
-* TODO KEY was waiting on hardware but changed from cin_wait to cin
+* TODO With the float code being so big need to do some opt via http://z80-heaven.wikidot.com/optimization
+* TODO Alt T is duplicated }. Free to reuse
+* TODO Alt H is duplicated |. Free to reuse
+* TODO Alt U, O, P, 5, 7, 8, 9, Enter are free
+* TODO Do a nice FORTH primer with the hardware. Screen shots and all...
+* TODO New case design
 
 * TODO add more editing features 
 * TODO fix editor bugs
@@ -41,7 +52,6 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 
 * TODO fix saving more than a single block of file storage. Means to concate multiple blocks?
 
-
 * TODO Add to docs that looking up file name of id is just id BREAD 
 * TODO Add to docs that looking up file id by name just need to go through 1-32 and look for name
 
@@ -50,8 +60,6 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Add FILL word - ( addr n char -- ) fills address for n long with char
 * TODO Add ERASE word - ( addr n -- ) fills address for n long with zero
 * TODO LSHIFT and RSHIFT for bit shifting
-* TODO Add to start up a list of what storage labels are seen
-* TODO add ram test to the diags
 * TODO Speed up screen updates - instead of writing whole screen detect what has changed? 
 * TODO Add no bank chip detection to format
 * TODO Add support for ELSE and ENDIF. IF THEN ELSE ENDIF   or IF THEN ENDIF. Or IF ... ELSE ... THEN
@@ -78,6 +86,27 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Extract all of the symbols in the symbol table to be available as words in FORTH, debug and asm above
 * TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs. FORGET and LIST use a scanner. Combine with main parser and have one for keyword and another for byte code
 * TODO Add a simple assembler feature like BBC Basic
+
+
+3rd Feb 2025
+------------
+* DONE SWAP was flagged as done but it wasnt
+* DONE Add a print using ptr on stack: TYPE ( addr c - ). Replaced with a uword in auto start.
+* DONE Add better handling of empty stack. Stop execution and return to prompt? Yes jump to cli and not warmstart
+* DONE Clear stack word? Make a uword for it if needed??
+* DONE Add ALLOT to be same as malloc
+* DONE Go through all word code and set key debug spots 
+* DONE FORGET might be broken
+* DONE WAITK on cpm fails 
+* DONE KEY on cpm waits for key press - KEY change below??
+* DONE fix loading more than a single block of file storage via BREAD
+* DONE BUG Any push following the use of BREAD results in a malloc error... Retest. Or this could mean string longer >64bytes to go to multiple blocks
+* DONE Rework the storage system file structure and functions. Remove some of the defunct words.
+* DONE have a word to set break point at a DMARKer. Not doing
+* DONE KEY was waiting on hardware but changed from cin_wait to cin
+* DONE back slash not working on hardware. Alt space. Escaped backslash was there but switched it for dec 92. Apparently 92 is a Yen on the LCD so not possible
+
+
 
 31st Jan 2025
 -------------

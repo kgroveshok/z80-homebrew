@@ -111,7 +111,8 @@ coldstart:
 	cp 0
 	jr z, .nokeys
 
-	call hardware_diags
+	;call hardware_diags
+	call config
 
 ;	ld de, .bpen
 ;	ld a, display_row_4

@@ -2103,7 +2103,7 @@ pop hl
 
 	       NEXTW
 .BANG2:
-	CWHEAD .ENDCORE 91 "2!" 2 WORD_FLAG_CODE
+	CWHEAD .CONFIG 91 "2!" 2 WORD_FLAG_CODE
 ; | 2! ( u a -- )  Store value u as a word at address a | DONE
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "2S_"
@@ -2134,6 +2134,12 @@ pop hl
 
 
 	       NEXTW
+.CONFIG:
+	CWHEAD .ENDCORE 91 "CONFIG" 6 WORD_FLAG_CODE
+; | CONFIG ( -- )  Access the system configuration menu | TO DO
+
+		call config
+		NEXTW
 .ENDCORE:
 
 ; eof

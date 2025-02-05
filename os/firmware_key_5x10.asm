@@ -98,7 +98,8 @@ key_init:
 		db 252,237,"5789",247,KEY_BS,KEY_UP,KEY_DOWN,0
 		db "-+/=_?~",176,KEY_HOME,KEY_END,0
 		db KEY_SYMBOLSHIFT,"[]{}",165,124,219,255,KEY_CR,0
-		db KEY_SHIFT,"<>,.:;'\\",KEY_SHIFT,0
+;		db KEY_SHIFT,"<>,.:;'\\",KEY_SHIFT,0
+    	 	db KEY_SHIFT,"<>,.:;'",92, KEY_SHIFT,0
 		db "@",246,235,125,126,KEY_F9,KEY_F10,KEY_F11,223,KEY_F12,0
 
 

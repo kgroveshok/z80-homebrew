@@ -1,85 +1,194 @@
 ; Hardware diags menu
 
 
-hd_menu1:   db "Diags:  1: Key Matrix   5: Sound",0
-hd_menu2:   db "        2: Editor",0  
-;hd_menu2:   db "        2: Editor       6: BASIC",0  
-hd_menu3:   db "        3: Storage",0
-hd_menu4:   db "0=quit  4: Debug",0
-hd_don:     db "ON",0
-hd_doff:     db "OFF",0
+config:
 
+	ld a, 0
+	ld hl, .configmn
+	call menu
+
+	cp 0
+	ret z
+
+	cp 4
+	call z, hardware_diags
+
+	jr config
+
+.configmn:
+	dw .c3
+	dw .c2
+	dw .c4
+	dw .c1
+	dw 0
+	
+
+.c3: db "Save User Words To Storage",0
+.c2: db "Select Autoload File",0
+.c4: db "Settings",0
+.c1: db "Hardware Diags",0
+
+
+; Settings
+; Run 
+
+
+
+;hd_menu1:   db "Diags:  1: Key Matrix   5: Sound",0
+;;hd_menu2:   db "        2: Editor",0  
+;hd_menu2:   db "        2: Editor       6: Menu",0  
+;hd_menu3:   db "        3: Storage",0
+;hd_menu4:   db "0=quit  4: Debug",0
+;hd_don:     db "ON",0
+;hd_doff:     db "OFF",0
+;
+;
+;
+;hardware_diags_old:      
+;
+;.diagmenu:
+;	call clear_display
+;	ld a, display_row_1
+;	ld de, hd_menu1
+;	call str_at_display
+;
+;	ld a, display_row_2
+;	ld de, hd_menu2
+;	call str_at_display
+;
+;	ld a, display_row_3
+;	ld de, hd_menu3
+;	call str_at_display
+;
+;	ld a,  display_row_4
+;	ld de, hd_menu4
+;	call str_at_display
+;
+;	; display debug state
+;
+;	ld de, hd_don
+;	ld a, (os_view_disable)
+;	cp 0
+;	jr z, .distog
+;	ld de, hd_doff
+;.distog: ld a, display_row_4+17
+;	call str_at_display
+;
+;	call update_display
+;
+;	call cin_wait
+;
+;
+;
+;	cp '4'
+;	jr nz, .diagn1
+;
+;	; debug toggle
+;
+;	ld a, (os_view_disable)
+;	ld b, '*'
+;	cp 0
+;	jr z, .debtog
+;	ld b, 0
+;.debtog:	
+;	ld a,b
+;	ld (os_view_disable),a
+;
+;.diagn1: cp '0'
+;	 ret z
+;
+;;	cp '1'
+;;       jp z, matrix	
+;;   TODO keyboard matrix test
+;
+;	cp '2'
+;	jp z, .diagedit
+;
+;;	cp '6'
+;;	jp z, .menutest
+;;if ENABLE_BASIC
+;;	cp '6'
+;;	jp z, basic
+;;endif
+ ;
+;	jp .diagmenu
+;
+;
+;	ret
+
+
+.debug_tog:
+	ld hl, .menudebug
+	
+	ld a, (os_view_disable)
+	cp '*'
+	jr nz,.tdon 
+	ld a, 1
+	jr .tog1
+.tdon: ld a, 0
+
+.tog1:
+	call menu
+	cp 0
+	ret z
+	cp 1    ; disable debug
+	jr z, .dtog0
+	ld a, '*'
+	jr .dtogset
+.dtog0: ld a, 0
+.dtogset:  ld (os_view_disable), a
+	jp .debug_tog
 
 
 hardware_diags:      
 
-.diagmenu:
-	call clear_display
-	ld a, display_row_1
-	ld de, hd_menu1
-	call str_at_display
+.diagm:
+	ld hl, .menuitems
+	ld a, 0
+	call menu
 
-	ld a, display_row_2
-	ld de, hd_menu2
-	call str_at_display
-
-	ld a, display_row_3
-	ld de, hd_menu3
-	call str_at_display
-
-	ld a,  display_row_4
-	ld de, hd_menu4
-	call str_at_display
-
-	; display debug state
-
-	ld de, hd_don
-	ld a, (os_view_disable)
-	cp 0
-	jr z, .distog
-	ld de, hd_doff
-.distog: ld a, display_row_4+17
-	call str_at_display
-
-	call update_display
-
-	call cin_wait
-
-
-
-	cp '4'
-	jr nz, .diagn1
-
-	; debug toggle
-
-	ld a, (os_view_disable)
-	ld b, '*'
-	cp 0
-	jr z, .debtog
-	ld b, 0
-.debtog:	
-	ld a,b
-	ld (os_view_disable),a
-
-.diagn1: cp '0'
+         cp 0
 	 ret z
 
-;	cp '1'
-;       jp z, matrix	
-;   TODO keyboard matrix test
-
-	cp '2'
+	cp 2
 	jp z, .diagedit
+	cp 4
+	call z, .debug_tog
 
+;	cp '6'
+;	jp z, .menutest
 ;if ENABLE_BASIC
 ;	cp '6'
 ;	jp z, basic
 ;endif
  
-	jp .diagmenu
+	jp .diagm
 
+	
+.menuitems:   	dw .m1
+		dw .m2
+		dw .m3
+		dw .m4
+		dw .m5
+		dw .m5a
+		dw .m5b
+		dw 0
 
-	ret
+.menudebug:
+		dw .m6
+		dw .m7
+		dw 0
+
+.m1:   db "Key Matrix",0
+.m2:   db "Editor",0
+.m3:   db "Storage",0
+.m4:   db "Software Debug",0
+.m5:   db "Sound",0
+.m5a:  db "RAM Test",0
+.m5b:  db "LCD Test",0
+
+.m6:   db "Debug ON",0
+.m7:   db "Debug OFF",0
 
 ; debug editor
 

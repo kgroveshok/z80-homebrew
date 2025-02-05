@@ -484,7 +484,7 @@ endif
 
 
 .SCROLL:
-	CWHEAD .ATQ 63 "SCROLL" 6 WORD_FLAG_CODE
+	CWHEAD .SCROLLD 63 "SCROLL" 6 WORD_FLAG_CODE
 ; | SCROLL ( -- ) Scroll up one line - next write will update if required | DONE
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "SCR"
@@ -549,7 +549,18 @@ endif
 ;
 ;		NEXTW
 
+.SCROLLD:
+	CWHEAD .ATQ 63 "SCROLLD" 7 WORD_FLAG_CODE
+; | SCROLLD ( -- ) Scroll down one line - next write will update if required | TO DO
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "SCD"
+			CALLMONITOR
+		endif
 
+	call scroll_down
+;	call update_display
+
+		NEXTW
 
 
 .ATQ:
@@ -626,20 +637,82 @@ endif
 
 .MENU:
 	CWHEAD .ENDDISPLAY 92 "MENU" 4 WORD_FLAG_CODE
-; | MENU ( u1....ux n ut -- n ) Create a menu. Ut is the title, n is the number of menu items on stack. Push number selection to TOS | TODO
+; | MENU ( u1....ux n -- n ) Create a menu. n is the number of menu items on stack. Push number selection to TOS | TODO
 
-		; get the title address and save it
-
-;		FORTH_DSP_VALUEHL
-;		push hl
-;		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
-;
 ;		; get number of items on the stack
 ;
-;	
-;		FORTH_DSP_VALUEHL
-;		push hl
-;		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+	
+		FORTH_DSP_VALUEHL
+	
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "MNU"
+			CALLMONITOR
+		endif
+
+		ld b, l	
+		dec b
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+
+		; go directly through the stack to pluck out the string pointers and build an array
+
+;		FORTH_DSP
+
+		; hl contains top most stack item
+	
+		ld de, scratch
+
+.mbuild:
+
+		FORTH_DSP_VALUEHL
+
+		if DEBUG_FORTH_WORDS
+			DMARK "MN3"
+			CALLMONITOR
+		endif
+		ex de, hl
+		ld (hl), e
+		inc hl
+		ld (hl), d
+		inc hl
+		ex de, hl
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		djnz .mbuild
+
+		; done add term
+
+		ex de, hl
+		ld (hl), 0
+		inc hl
+		ld (hl), 0
+
+	
+		
+		ld hl, scratch
+
+		if DEBUG_FORTH_WORDS
+			DMARK "MNx"
+			CALLMONITOR
+		endif
+
+
+
+		ld a, 0
+		call menu
+
+
+		ld l, a
+		ld h, 0
+
+		if DEBUG_FORTH_WORDS
+			DMARK "MNr"
+			CALLMONITOR
+		endif
+
+		call forth_push_numhl
 
 
 

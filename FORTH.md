@@ -23,6 +23,23 @@ The data stack pointer (DSP) supports string and numbers on the same stack for o
 * "xxx"  - String (250 char max)
 * %xxxxx  - 16bit binary value (todo)
 
+Note: If text appears to the parser that isnt above or a valid word in any form it will be pushed to the stack with the assumption that it is a string of some sort.
+
+e.g.
+
+a b c d
+
+If they are not 'words' then you will get four strings on the stack. It is a handy means to push a single text word to the stack without having to worry about quoting it. There is a further feature in that if you push a sentence onto the stack and join each word with the '-' (hyphen) it will be pushed as a whole string and can be displayed with the '-' automatically replaced with a space using the .- word:
+
+e.g.
+
+this-is-a-string .-
+
+Displays as:
+
+this is a string
+
+Again removes the need to double quote strings and possibly miss one. Reduces the space too!
 
 There are also a number of variables which hold 16bit values: V0-V3. They are set using ! and pushed to stack with @, e.g. $03 v0! to set, and v0@ will push $03 onto the stack. While not that flexible nor using standard FORTH methods, there is another way to have an any kind of data structure available.
 

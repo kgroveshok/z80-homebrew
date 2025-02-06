@@ -13,7 +13,8 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 
 
 
-
+* TODO It appears the config dir scan is corrupting the spi_device byte and poking f5 into it every time. Corruption where? Not normal DIR. Must be in the config code
+* TODO reduce some of the stack sizes, loops and ret might be a bit too big. Then extend the main data stack
 
 * TODO Saved setting to enable/disable auto load of words from block 0 as part of auto start
 * TODO Add a flag to block 0 to include the bank id to exec at startup

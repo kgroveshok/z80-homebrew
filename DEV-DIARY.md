@@ -9,12 +9,21 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE Rework diag menu to be config which loads persissent settings from block 0
 * DONE Alternative to EXEC/STKEXEC is a word that presents a menu of uwords to save or load on storage. CONFIG is the word
 * DONE Need that MENU word done then! Low level word done, add to user words using scratch buffer to setup ptrs to strings. max 127 menu items
+* DONE FIle system words not working. FORMAT, BREAD, BUPD work. But not CREATE, DIR and LABEL. Then check APPEND manually Why? CREATE, APPEND and READ are OK. LABEL is OK. DIR is not working. A push to string to stack fault
+
+
 
 
 
 * TODO Saved setting to enable/disable auto load of words from block 0 as part of auto start
 
 * TODO Add a flag to block 0 to include the file id to exec at startup
+* TODO Add a flag to block 0 to decide if the auto startup prompt is given and/or run
+
+* TODO Add scroll down indicator to menu code
+* TODO Stop menu scrolling past last item
+* TODO for auto run storage include a CHAIN feature
+* TODO Cant use special chars in quoted strings??? Why? Emit works for the char code.
 
 
 * TODO Saved setting to enable/disable auto start

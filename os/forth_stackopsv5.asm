@@ -294,8 +294,8 @@ endif
 	push hl
 	push hl
 
-	ld a, 0   ; find end of string
-	call strlent      
+;	ld a, 0   ; find end of string
+	call strlenz
 if DEBUG_FORTH_PUSH
 			DMARK "PQ2"
 	CALLMONITOR
@@ -352,7 +352,8 @@ endif
 
 	ex de, hl    ; prep for ldir
 
-	push hl   ; save malloc area for DSP later
+	push de   ; save malloc area for DSP later
+	;push hl   ; save malloc area for DSP later
 
 if DEBUG_FORTH_PUSH
 			DMARK "PHc"

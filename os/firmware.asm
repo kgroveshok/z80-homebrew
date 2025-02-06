@@ -50,7 +50,7 @@ DEBUG_FORTH_TOK: equ 0    ; 4
 DEBUG_FORTH_PARSE: equ 0    ; 3
 DEBUG_FORTH: equ 0  ;2
 DEBUG_FORTH_WORDS: equ 1   ; 1
-DEBUG_FORTH_PUSH: equ 0   ; 1
+DEBUG_FORTH_PUSH: equ 1   ; 1
 DEBUG_FORTH_UWORD: equ 1   ; 1
 
 ; Enable key point breakpoints
@@ -114,6 +114,14 @@ endif
 STORE_BLOCK_PHY:   equ 64    ; physical block size on storage   64byte on 256k eeprom
 STORE_DEVICE_MAXBLOCKS:  equ  255*2 ; how many blocks are there on this storage device
 ;endif
+
+; Block 0 at offset $3c holds the file number to run at system startup after the display
+
+STORE_0_FILERUN: equ $3c
+
+; Block 0 at offset $3b is a flag to decide to offer auto start up - 0 = prompt 1-auto run no prompt 2 - dont run
+
+STORE_0_AUTORUN: equ $3c
 
 ; Blocks where directory table is held
 
@@ -291,12 +299,13 @@ spi_cartdev: equ store_tmppageid - 1      ; holds bit mask to send to portb (ext
 spi_cartdev2: equ spi_cartdev - 1      ; holds bit mask to send to portb's shift reg devices
 spi_portbyte: equ spi_cartdev2 - 1      ; holds bit mask to send to spi bus 
 spi_device: equ spi_portbyte - 1    ; bit mask to send to porta (eeproms) devices
+spi_device_id: equ spi_device - 1    ; human readable bank number
 
 ;;;;; forth cli params
 
 ; TODO use a different frame buffer for forth???
 
-f_cursor_ptr:  equ spi_device - 1  ; offset into frame buffer for any . or EMIT output
+f_cursor_ptr:  equ spi_device_id - 1  ; offset into frame buffer for any . or EMIT output
 cli_buffer: equ f_cursor_ptr - 20     ; temp hold - maybe not needed
 cli_origtoken: equ cli_buffer - 2     ; pointer to the text of token for this word being checked
 cli_token: equ cli_origtoken - 2     ; pointer to the text of token for this word being checked

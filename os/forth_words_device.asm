@@ -212,6 +212,7 @@ if STORAGE_SE
 
 
 		ld c, SPI_CE_HIGH
+		ld b, '0'    ; human readable bank number
 
 		ld a, l
 
@@ -227,22 +228,29 @@ if STORAGE_SE
 		cp 1
 		jr nz, .b2
 		res 0, c
+		ld b, '1'    ; human readable bank number
 .b2:		cp 2
 		jr nz, .b3
 		res 1, c
+		ld b, '2'    ; human readable bank number
 .b3:		cp 3
 		jr nz, .b4
 		res 2, c
+		ld b, '3'    ; human readable bank number
 .b4:		cp 4
 		jr nz, .b5
 		res 3, c
+		ld b, '4'    ; human readable bank number
 .b5:		cp 5
 		jr nz, .bset
 		res 4, c
+		ld b, '5'    ; human readable bank number
 
 .bset:
 		ld a, c
 		ld (spi_device),a
+		ld a, b
+		ld (spi_device_id),a
 		if DEBUG_FORTH_WORDS
 			DMARK "BN2"
 			CALLMONITOR

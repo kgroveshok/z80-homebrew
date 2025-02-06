@@ -16,10 +16,11 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 
 
 * TODO Saved setting to enable/disable auto load of words from block 0 as part of auto start
-
+* TODO Add a flag to block 0 to include the bank id to exec at startup
 * TODO Add a flag to block 0 to include the file id to exec at startup
 * TODO Add a flag to block 0 to decide if the auto startup prompt is given and/or run
-
+* TODO EXEC and STKEXEC not evaluating???? is COLN def non re-entrant? does it care about existing setups? EXEC is OK but STKEXEC not working?  Stack appears messed up. Where is it going wrong?
+* TODO Can't use EXEC in code so need another way to trigger stack eval. Make EXEC to take a count of strings?
 * TODO Add scroll down indicator to menu code
 * TODO Stop menu scrolling past last item
 * TODO for auto run storage include a CHAIN feature
@@ -34,8 +35,6 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 
 
 * TODO Cease support for os-mini as a lot of features just wont work... Perhaps do defines????
-* TODO Can't use EXEC in code so need another way to trigger stack eval. Make EXEC to take a count of strings?
-* TODO EXEC and STKEXEC not evaluating???? is COLN def non re-entrant? does it care about existing setups? EXEC is OK but STKEXEC not working?  Stack appears messed up. Where is it going wrong?
 * TODO With the float code being so big need to do some opt via http://z80-heaven.wikidot.com/optimization
 * TODO Alt T is duplicated }. Free to reuse
 * TODO Alt H is duplicated |. Free to reuse

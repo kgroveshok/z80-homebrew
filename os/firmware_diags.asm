@@ -10,7 +10,14 @@ config:
 	cp 0
 	ret z
 
-	cp 4
+	cp 1
+	call z, .savetostore
+
+	cp 3
+	call z, .selbank
+	cp 5
+	call z, .debug_tog
+	cp 6
 	call z, hardware_diags
 
 	jr config
@@ -18,15 +25,234 @@ config:
 .configmn:
 	dw .c3
 	dw .c2
+	dw .c2b
 	dw .c4
+	dw .m4
 	dw .c1
 	dw 0
 	
 
-.c3: db "Save User Words To Storage",0
+.c3: db "Add User Dictionary To File",0
 .c2: db "Select Autoload File",0
+.c2b: db "Select Storage Bank",0
 .c4: db "Settings",0
+.m4:   db "Debug & Breakpoints On/Off",0
 .c1: db "Hardware Diags",0
+
+; Select storage bank
+
+.selbank:
+
+	if STORAGE_SE
+	endif
+	
+	ret
+
+if STORAGE_SE
+
+.config_ldir:  
+	; Load storage bank labels into menu array
+
+	
+
+
+	ret
+
+
+endif
+
+
+; Save user words to storage
+
+.savetostore:
+
+	if STORAGE_SE
+
+		call config_dir
+	        ld hl, scratch
+		ld a, 0
+		call menu
+		
+		ld hl, scratch
+		call config_fdir
+
+
+	endif
+
+	ret
+
+
+
+if STORAGE_SE
+
+config_fdir:
+	; using the scratch dir go through and release the memory allocated for each string
+	
+	ld hl, scratch
+.cfdir:	ld e,(hl)
+	inc hl
+	ld d,(hl)
+	inc hl
+
+	ex de, hl
+	call ishlzero
+	ret z     ; return on null pointer
+	call free
+	ex de, hl
+	jr .cfdir
+
+
+	ret
+
+
+config_dir:
+
+	; for the config menus that need to build a directory of storage call this routine
+	; it will construct a menu in scratch to pass to menu
+
+	; open storage device
+
+	; execute DIR to build a list of files and their ids into scratch in menu format
+	; once the menu has finished then will need to call config_fdir to release the strings
+	
+	; c = number items
+
+	
+	call storage_get_block_0
+
+	ld hl, store_page     ; get current id count
+	ld b, (hl)
+	ld c, 0    ; count of files  
+
+
+	ld hl, scratch
+	ld (store_tmp2), hl    ; location to poke strings
+
+	; check for empty drive
+
+	ld a, 0
+	cp b
+	jp z, .dirdone
+
+	
+		if DEBUG_FORTH_WORDS
+			DMARK "Cdc"
+			CALLMONITOR
+		endif
+
+
+.diritem:	
+	push bc
+	; for each of the current ids do a search for them and if found push to stack
+
+		ld hl, STORE_BLOCK_PHY
+		ld d, 0		 ; look for extent 0 of block id as this contains file name
+		ld e,b
+
+		call storage_findnextid
+
+
+		; if found hl will be non zero
+
+		call ishlzero
+		jr z, .dirnotfound
+
+		; increase count
+
+		pop bc	
+		inc c
+		push bc
+		
+
+		; get file header and push the file name
+
+		ld de, store_page
+		call storage_read_block
+
+		; push file id to stack
+	
+		ld a, (store_page)
+		ld h, 0
+		ld l, a
+
+		;call forth_push_numhl
+		; TODO store id
+
+		push hl
+
+		; push extent count to stack 
+	
+		ld hl, store_page+3
+
+		; get file name length
+
+		call strlenz  
+
+		inc hl   ; cover zero term
+		inc hl  ; stick the id at the end of the area
+
+		push hl
+		pop bc    ; move length to bc
+
+		call malloc
+
+		; TODO save malloc area to scratch
+
+		ex de, hl
+		ld hl, (store_tmp2)
+		ld (hl), e
+		inc hl
+		ld (hl), d
+		inc hl
+		ld (store_tmp2), hl
+
+		
+
+		;pop hl   ; get source
+;		ex de, hl    ; swap aronund	
+
+		ld hl, store_page+3
+		if DEBUG_FORTH_WORDS
+			DMARK "CFd"
+			CALLMONITOR
+		endif
+		ldir
+
+		; de is past string, move back one and store id
+		
+		dec de
+
+		; store file id
+
+		pop hl
+		ex de,hl
+		ld (hl), e
+
+		if DEBUG_FORTH_WORDS
+			DMARK "Cdi"
+			CALLMONITOR
+		endif
+		
+.dirnotfound:
+		pop bc    
+		djnz .diritem
+	
+.dirdone:	
+
+		ld a, 0
+		ld hl, (store_tmp2)
+		ld (hl), a
+		inc hl
+		ld (hl), a
+		inc hl
+		; push a count of the dir items found
+
+;		ld h, 0
+;		ld l, c
+
+	ret
+
+endif
 
 
 ; Settings
@@ -152,8 +378,6 @@ hardware_diags:
 
 	cp 2
 	jp z, .diagedit
-	cp 4
-	call z, .debug_tog
 
 ;	cp '6'
 ;	jp z, .menutest
@@ -168,7 +392,6 @@ hardware_diags:
 .menuitems:   	dw .m1
 		dw .m2
 		dw .m3
-		dw .m4
 		dw .m5
 		dw .m5a
 		dw .m5b
@@ -182,7 +405,6 @@ hardware_diags:
 .m1:   db "Key Matrix",0
 .m2:   db "Editor",0
 .m3:   db "Storage",0
-.m4:   db "Software Debug",0
 .m5:   db "Sound",0
 .m5a:  db "RAM Test",0
 .m5b:  db "LCD Test",0

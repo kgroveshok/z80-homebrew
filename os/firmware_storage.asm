@@ -309,6 +309,11 @@ storage_get_block_0:
 	ld bc, 15
 	ldir
 
+	; Append the current bank id
+	ld hl, store_page+3+9
+	ld a, (spi_device_id)
+	ld (hl), a
+
 	; save default page 0
 
 	ld hl, 0
@@ -383,7 +388,7 @@ storage_get_block_0:
 
 
 
-.defaultbanklabl:   db "BankLabel",0
+.defaultbanklabl:   db "BankLabel_",0
 
 
 

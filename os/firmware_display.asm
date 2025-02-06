@@ -241,7 +241,11 @@ cout:
 ; returns 0 if back button pressed
 ;
 ; NOTE: Uses system frame buffer to display
-
+;
+; LEFT, Q = go back
+; RIGHT, SPACE, CR = select
+; UP, A - Up
+; DOWN, Z - Down
 
 
 
@@ -361,6 +365,8 @@ endif
 		cp 'z'
 		jr z, .mgod
 		cp ' '
+		jr z, .goend
+		cp KEY_RIGHT
 		jr z, .goend
 		cp KEY_CR
 		jr z, .goend

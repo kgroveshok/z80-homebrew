@@ -10,10 +10,22 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE Alternative to EXEC/STKEXEC is a word that presents a menu of uwords to save or load on storage. CONFIG is the word
 * DONE Need that MENU word done then! Low level word done, add to user words using scratch buffer to setup ptrs to strings. max 127 menu items
 * DONE FIle system words not working. FORMAT, BREAD, BUPD work. But not CREATE, DIR and LABEL. Then check APPEND manually Why? CREATE, APPEND and READ are OK. LABEL is OK. DIR is not working. A push to string to stack fault
+* DONE overlap os_new_malloc=os_input
+* DONE f_cursor_ptr=store_tmpext
+* DONE spi_device_id=store_tmpid
+* DONE spi_device=store_tmp3
+* DONE spi_cartdev2=store_tmp2
+* DONE store_tmp1=store_tmppageid
+* DONE store_filecache=store_page
+* DONE It appears the config dir scan is corrupting the spi_device byte and poking f5 into it every time. Corruption where? Not normal DIR. Must be in the config code. store_tempid=spi_device_id, store_tmpext=f_cursor_ptr and store_tmp3=spi_device, store_tmp1=storetmppageid. got location overlaps. double check all of the symbols as a few more overlaps.
 
 
 
-* TODO It appears the config dir scan is corrupting the spi_device byte and poking f5 into it every time. Corruption where? Not normal DIR. Must be in the config code
+
+
+
+
+
 * TODO reduce some of the stack sizes, loops and ret might be a bit too big. Then extend the main data stack
 
 * TODO Saved setting to enable/disable auto load of words from block 0 as part of auto start

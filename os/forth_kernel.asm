@@ -762,7 +762,8 @@ type_faults: 	push de
 
 if STORAGE_SE
 
-sprompt3: db "Loading from start-up file:",0
+sprompt3: db "Loading from start-up file?:",0
+sprompt4: db "(Y=Any key/N=No)",0
 
 
 forth_autoload:
@@ -788,34 +789,95 @@ forth_autoload:
 
 	; get file id to load from and get the file name to display
 
-		ld a, (store_page+STORE_0_AUTOFILE)
+		ld a, (store_page+STORE_0_FILERUN)
 
 		ld l, 0
 		ld h, a
 		ld de, store_page
 
+		if DEBUG_FORTH_WORDS
+			DMARK "ASp"
+			CALLMONITOR
+		endif
 		call storage_read
+
+		if DEBUG_FORTH_WORDS
+			DMARK "ASr"
+			CALLMONITOR
+		endif
 
 		call ishlzero
 		ret z             ; file not found
 
-		ld a, display_row_3 + 10
+		ld a, display_row_2 + 10
 		ld de, store_page+3
 		call str_at_display
 	
 ;
 
-	ld a, display_row_2+5
+	ld a, display_row_1+5
 	ld de, sprompt3
+	call str_at_display
+	ld a, display_row_3+15
+	ld de, sprompt4
 	call str_at_display
 
 	call update_display
 
+	call cin_wait
+	cp 'n'
+	ret z
+	cp 'N'
+	ret z
 
 	call delay1s
 
+	ld a, (store_page+2)
+	ld (store_openmaxext), a    ; save count of ext
+	ld a, 1 
+	ld (store_openext), a    ; save count of ext
+
+.autof: 
+	ld l , a
+	
+	ld a, (store_page)
+	ld h, a	
+	ld de, store_page
+		if DEBUG_FORTH_WORDS
+			DMARK "ASl"
+			CALLMONITOR
+		endif
+		call storage_read
+	call ishlzero
+	jr z, .autofdone
+
+	ld de, store_page+2
+	ld a, display_row_4
+	call str_at_display
+
+	call update_display
+	call delay250ms
 
 
+
+	ld hl, store_page+2
+	call forthparse
+	call forthexec
+	call forthexec_cleanup
+
+	
+	ld a, (store_openext)
+	inc a
+	ld (store_openext), a    ; save count of ext
+
+	jr .autof
+
+.autofdone:
+
+		if DEBUG_FORTH_WORDS
+			DMARK "ASx"
+			CALLMONITOR
+		endif
 	call clear_display
 	ret
 

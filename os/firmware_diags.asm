@@ -20,6 +20,8 @@ config:
 	cp 5
 	call z, .debug_tog
 	cp 6
+	call z, .bpsgo
+	cp 7
 	call z, hardware_diags
 
 	jr config
@@ -30,6 +32,7 @@ config:
 	dw .c2b
 	dw .c4
 	dw .m4
+	dw .m4b
 	dw .c1
 	dw 0
 	
@@ -39,7 +42,10 @@ config:
 .c2b: db "Select Storage Bank",0
 .c4: db "Settings",0
 .m4:   db "Debug & Breakpoints On/Off",0
+.m4b:   db "Monitor",0
 .c1: db "Hardware Diags",0
+
+
 
 ; Select auto start
 
@@ -53,18 +59,32 @@ config:
 		ld a, 0
 		call menu
 
+		cp 0
+		ret z
+
+		dec a
+
+
 		; locate menu option
 
 		ld hl, scratch
 		call table_lookup
 
+		if DEBUG_FORTH_WORDS
+			DMARK "ALl"
+			CALLMONITOR
+		endif
 		; with the pointer to the menu it, the byte following the zero term is the file id
 
 		ld a, 0
 		ld bc, 50   ; max of bytes to look at
 		cpir 
 
-		inc hl
+		if DEBUG_FORTH_WORDS
+			DMARK "ALb"
+			CALLMONITOR
+		endif
+		;inc hl
 
 		ld a, (hl)   ; file id
 		
@@ -76,6 +96,10 @@ config:
 
 		call storage_get_block_0
 
+		if DEBUG_FORTH_WORDS
+			DMARK "AL0"
+			CALLMONITOR
+		endif
 		pop af
 
 		ld (store_page+STORE_0_FILERUN),a
@@ -94,6 +118,10 @@ config:
 
 		ld hl, 0
 		ld de, store_page
+		if DEBUG_FORTH_WORDS
+			DMARK "ALw"
+			CALLMONITOR
+		endif
 	call storage_write_block	 ; save update
  
 

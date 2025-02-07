@@ -16,12 +16,14 @@ config:
 	cp 2
 	call z, .selautoload
 	cp 3
+	call z, .disautoload
+	cp 4
 	call z, .selbank
-	cp 5
-	call z, .debug_tog
 	cp 6
-	call z, .bpsgo
+	call z, .debug_tog
 	cp 7
+	call z, .bpsgo
+	cp 8
 	call z, hardware_diags
 
 	jr config
@@ -29,6 +31,7 @@ config:
 .configmn:
 	dw .c3
 	dw .c2
+	dw .c2a
 	dw .c2b
 	dw .c4
 	dw .m4
@@ -39,11 +42,31 @@ config:
 
 .c3: db "Add User Dictionary To File",0
 .c2: db "Select Autoload File",0
+.c2a: db "Disable Autoload File", 0
 .c2b: db "Select Storage Bank",0
 .c4: db "Settings",0
 .m4:   db "Debug & Breakpoints On/Off",0
 .m4b:   db "Monitor",0
 .c1: db "Hardware Diags",0
+
+
+.disautoload:
+	if STORAGE_SE
+	ld a, $fe      ; bit 0 clear
+	ld (spi_device), a
+
+	call storage_get_block_0
+
+	ld a, 0
+	ld (store_page+STORE_0_AUTOFILE), a
+
+		ld hl, 0
+		ld de, store_page
+	call storage_write_block	 ; save update
+	endif
+
+
+	ret
 
 
 

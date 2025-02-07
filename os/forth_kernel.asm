@@ -867,7 +867,7 @@ forth_autoload:
 	ld hl, store_page+2
 	call forthparse
 	call forthexec
-;	call forthexec_cleanup
+	call forthexec_cleanup
 
 	
 	ld a, (store_openext)

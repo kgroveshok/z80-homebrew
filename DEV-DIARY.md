@@ -25,7 +25,7 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 
 * TODO Save auto run flags to block 0 on bank 1 and not on currently selected device
 
-* TODO Add auto run of selected file. Prompt and running load but crashes on 'ret'
+* TODO Add auto run of selected file. Prompt and running load but crashes on 'ret'. Even if moved before main autoload still crashes. 
 * TODO EXEC and STKEXEC not evaluating???? is COLN def non re-entrant? does it care about existing setups? EXEC is OK but STKEXEC not working?  Stack appears messed up. Where is it going wrong?
 * TODO Can't use EXEC in code so need another way to trigger stack eval. Make EXEC to take a count of strings?
 

@@ -232,7 +232,7 @@
 8003			  
 8003			; Block 0 at offset $3c holds the file number to run at system startup after the display  
 8003			  
-8003			STORE_0_AUTOEFILE: equ $21  
+8003			STORE_0_AUTOFILE: equ $21  
 8003			STORE_0_BANKRUN: equ $23  
 8003			STORE_0_FILERUN: equ $24  
 8003			  
@@ -7424,6 +7424,10 @@
 91b3			 
 91b3					ld a,(spi_device) 
 91b3					ld (store_page+STORE_0_BANKRUN),a 
+91b3			 
+91b3					; enable auto run of store file 
+91b3					ld a, 1 
+91b3					ld (store_page+STORE_0_AUTOFILE),a 
 91b3			 
 91b3					; save buffer 
 91b3			 

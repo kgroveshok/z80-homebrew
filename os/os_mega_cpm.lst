@@ -236,7 +236,7 @@
 0103			  
 0103			; Block 0 at offset $3c holds the file number to run at system startup after the display  
 0103			  
-0103			STORE_0_AUTOEFILE: equ $21  
+0103			STORE_0_AUTOFILE: equ $21  
 0103			STORE_0_BANKRUN: equ $23  
 0103			STORE_0_FILERUN: equ $24  
 0103			  
@@ -7428,6 +7428,10 @@
 12be			 
 12be					ld a,(spi_device) 
 12be					ld (store_page+STORE_0_BANKRUN),a 
+12be			 
+12be					; enable auto run of store file 
+12be					ld a, 1 
+12be					ld (store_page+STORE_0_AUTOFILE),a 
 12be			 
 12be					; save buffer 
 12be			 

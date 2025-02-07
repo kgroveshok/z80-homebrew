@@ -1,5 +1,29 @@
 
+; word look up
 
+; in
+; a is the index
+; hl is pointer start of array
+;
+; returns
+; hl to the word
+;
+
+table_lookup: 
+		push de
+		ex de, hl
+
+		ld l, a
+		ld h, 0
+		add hl, hl
+		add hl, de
+		ld a, (hl)
+		inc hl
+		ld h,(hl)
+		ld l, a
+
+		pop de
+		ret
 
 ; Delay loops
 

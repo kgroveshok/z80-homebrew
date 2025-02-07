@@ -319,6 +319,9 @@ Also refer to the auto start list examples as these contain extra words created 
 ### 2! ( u a -- )  Store value u as a word at address a | DONE
 
 
+### CONFIG ( -- )  Access the system configuration menu | TO DO
+
+
 ## Device Words
 
 
@@ -418,6 +421,9 @@ Also refer to the auto start list examples as these contain extra words created 
 ### SCROLL ( -- ) Scroll up one line - next write will update if required | DONE
 
 
+### SCROLLD ( -- ) Scroll down one line - next write will update if required | TO DO
+
+
 ### AT@ ( u1 u2 -- n ) Push to stack ASCII value at row u2 col u1 | DONE
 
 
@@ -427,7 +433,7 @@ Also refer to the auto start list examples as these contain extra words created 
  If off, use DRAW to refresh. Default is on. $0003 will enable direct screen writes (TODO) 
 
 
-### MENU ( u1....ux n ut -- n ) Create a menu. Ut is the title, n is the number of menu items on stack. Push number selection to TOS | TODO
+### MENU ( u1....ux n -- n ) Create a menu. n is the number of menu items on stack. Push number selection to TOS | TODO
 
 
 ## Program Flow Words
@@ -1060,6 +1066,9 @@ Also refer to the auto start list examples as these contain extra words created 
 
 
 
+### CONFIG ( -- )  Access the system configuration menu | TO DO
+
+
 ## Device Words
 
 
@@ -1093,7 +1102,10 @@ Also refer to the auto start list examples as these contain extra words created 
 ### SPACES ( u -- str ) A string of u spaces is pushed onto the stack | TO TEST
 
 
-### MENU ( u1....ux n ut -- n ) Create a menu. Ut is the title, n is the number of menu items on stack. Push number selection to TOS | TODO
+### SCROLLD ( -- ) Scroll down one line - next write will update if required | TO DO
+
+
+### MENU ( u1....ux n -- n ) Create a menu. n is the number of menu items on stack. Push number selection to TOS | TODO
 
 
 ## Program Flow Words

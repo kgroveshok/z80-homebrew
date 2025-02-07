@@ -84,7 +84,8 @@ config:
 		ld (store_page+STORE_0_BANKRUN),a
 
 		; enable auto run of store file
-		ld (store_page+STORE_0_AUTOFILE),1
+		ld a, 1
+		ld (store_page+STORE_0_AUTOFILE),a
 
 		; save buffer
 

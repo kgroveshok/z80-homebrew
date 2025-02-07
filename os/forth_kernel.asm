@@ -850,6 +850,7 @@ forth_autoload:
 		call storage_read
 	call ishlzero
 	ret z
+;	jr z, .autoend
 
 		if DEBUG_FORTH_WORDS
 			DMARK "ASc"
@@ -875,7 +876,6 @@ forth_autoload:
 	ld (store_openext), a    ; save count of ext
 
 	jr .autof
-
 ;.autofdone:
 ;
 ;		if DEBUG_FORTH_WORDS

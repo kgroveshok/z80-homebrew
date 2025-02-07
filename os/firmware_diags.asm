@@ -19,11 +19,11 @@ config:
 	call z, .disautoload
 	cp 4
 	call z, .selbank
-	cp 6
+	cp 5
 	call z, .debug_tog
-	cp 7
+	cp 6
 	call z, .bpsgo
-	cp 8
+	cp 7
 	call z, hardware_diags
 
 	jr config
@@ -33,14 +33,14 @@ config:
 	dw .c2
 	dw .c2a
 	dw .c2b
-	dw .c4
+;	dw .c4
 	dw .m4
 	dw .m4b
 	dw .c1
 	dw 0
 	
 
-.c3: db "Add User Dictionary To File",0
+.c3: db "Add Dictionary To File",0
 .c2: db "Select Autoload File",0
 .c2a: db "Disable Autoload File", 0
 .c2b: db "Select Storage Bank",0

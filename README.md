@@ -45,7 +45,7 @@ Current Specification/Feature Set
    - Extra storage via SD and/or Microchip serial EEPROMS  (TODO)
    - RP Pico using SPI for extra features such as wifi network support
    - GPIO on the 8 pins (TODO) and independant control use of SPI bus
-
+* Feature to load a user dictionary from file storage at boot time
 * Hardware abstraction layers to allow for common entry points and drivers for different keyboards, screens, etc
 * Multiple selectable frame buffer support (currently three)
 * Built-in Forth OS (inspired by Jupiter Ace). Language defintion and progress etc in ![FORTH.md](FORTH.md)

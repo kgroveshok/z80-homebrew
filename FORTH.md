@@ -12,7 +12,7 @@ keyword has a byte OP code.
 
 
 
-Varitables/Stack
+Variables/Stack
 ================
 
 The data stack pointer (DSP) supports string and numbers on the same stack for opperations (just note some words don't check and assume a particular type)
@@ -70,7 +70,13 @@ $01 score 2!
 As that would over write 'timer'.
 
 
+Storage
+=======
 
+
+Various storage words for both high level file access as well as direct block access. 
+
+Through the use of the CONFIG word it is possible to select a file to be executed at boot time and load word definitions into memory.
 
 
 Words

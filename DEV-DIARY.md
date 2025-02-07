@@ -21,26 +21,26 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE Saved setting to enable/disable auto load of words from block 0 as part of auto start
 * DONE Add a flag to block 0 to include the bank id to exec at startup
 * DONE Add a flag to block 0 to include the file id to exec at startup
+* DONE Add auto run of selected file. Prompt and running load but crashes on 'ret'. Even if moved before main autoload still crashes. Got it. storage_read fail has something on stack
+* DONE EXEC and STKEXEC not evaluating???? is COLN def non re-entrant? does it care about existing setups? EXEC is OK but STKEXEC not working?  Stack appears messed up. Where is it going wrong?
+* DONE Can't use EXEC in code so need another way to trigger stack eval. Make EXEC to take a count of strings?
 
+
+* TODO stack imbalance on storage_read. Needs a pop of de if no record found. Have added code watch for further issues
 
 * TODO Save auto run flags to block 0 on bank 1 and not on currently selected device
+* TODO Add a flag to block 0 to decide if the auto startup prompt is given and/or run
 
-* TODO Add auto run of selected file. Prompt and running load but crashes on 'ret'. Even if moved before main autoload still crashes. 
-* TODO EXEC and STKEXEC not evaluating???? is COLN def non re-entrant? does it care about existing setups? EXEC is OK but STKEXEC not working?  Stack appears messed up. Where is it going wrong?
-* TODO Can't use EXEC in code so need another way to trigger stack eval. Make EXEC to take a count of strings?
 
 
 
 
 * TODO reduce some of the stack sizes, loops and ret might be a bit too big. Then extend the main data stack
 
-* TODO Add a flag to block 0 to decide if the auto startup prompt is given and/or run
 * TODO Add scroll down indicator to menu code
 * TODO Stop menu scrolling past last item
 * TODO for auto run storage include a CHAIN feature
 * TODO Cant use special chars in quoted strings??? Why? Emit works for the char code.
-
-
 * TODO Saved setting to enable/disable auto start
 * TODO Saved setting to select words to auto load from storage
 * TODO Add to start up a list of what storage labels are seen

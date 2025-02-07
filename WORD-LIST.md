@@ -304,7 +304,7 @@ Also refer to the auto start list examples as these contain extra words created 
 ### 2! ( u a -- )  Store value u as a word at address a | DONE
 
 
-### CONFIG ( -- )  Access the system configuration menu | TO DO
+### CONFIG ( -- )  Access the system configuration menu. Set boot from file, hardware diags, and more! | DONE
 
 
 ## Device Words
@@ -802,6 +802,9 @@ Also refer to the auto start list examples as these contain extra words created 
 ### 2! ( u a -- )  Store value u as a word at address a | DONE
 
 
+### CONFIG ( -- )  Access the system configuration menu. Set boot from file, hardware diags, and more! | DONE
+
+
 ### OUT ( u1 u2 -- ) Perform Z80 OUT to port u2 sending byte u1 | DONE
 
 
@@ -1040,9 +1043,6 @@ Also refer to the auto start list examples as these contain extra words created 
 
 
 
-
-
-### CONFIG ( -- )  Access the system configuration menu | TO DO
 
 
 ## Device Words

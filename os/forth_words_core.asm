@@ -2136,7 +2136,7 @@ pop hl
 	       NEXTW
 .CONFIG:
 	CWHEAD .ENDCORE 91 "CONFIG" 6 WORD_FLAG_CODE
-; | CONFIG ( -- )  Access the system configuration menu | TO DO
+; | CONFIG ( -- )  Access the system configuration menu. Set boot from file, hardware diags, and more! | DONE
 
 		call config
 		NEXTW

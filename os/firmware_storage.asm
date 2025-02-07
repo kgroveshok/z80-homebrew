@@ -921,6 +921,11 @@ storage_create:
 ; de - pointer to string to read into
 ;
 ; returns hl is 0 if block not found ie end of file or pointer to start of data read
+
+.sr_fail:
+	pop de
+	ret
+
 storage_read:
 	push de
 
@@ -947,7 +952,7 @@ storage_read:
 ;	ld a, l
 ;	add h
 ;	cp 0
-	ret z			; block not found so EOF
+	jr z,.sr_fail			; block not found so EOF
 
 	; hl contains page number to load
 	pop de   ; get storage

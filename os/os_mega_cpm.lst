@@ -23084,8 +23084,12 @@
 58d6					endif 
 58d6					call storage_read 
 58d6				call ishlzero 
-58d6				jr z, .autofdone 
+58d6				ret z 
 58d6			 
+58d6					if DEBUG_FORTH_WORDS 
+58d6						DMARK "ASc" 
+58d6						CALLMONITOR 
+58d6					endif 
 58d6				ld de, store_page+2 
 58d6				ld a, display_row_4 
 58d6				call str_at_display 
@@ -23107,14 +23111,14 @@
 58d6			 
 58d6				jr .autof 
 58d6			 
-58d6			.autofdone: 
-58d6			 
-58d6					if DEBUG_FORTH_WORDS 
-58d6						DMARK "ASx" 
-58d6						CALLMONITOR 
-58d6					endif 
-58d6				call clear_display 
-58d6				ret 
+58d6			;.autofdone: 
+58d6			; 
+58d6			;		if DEBUG_FORTH_WORDS 
+58d6			;			DMARK "ASx" 
+58d6			;			CALLMONITOR 
+58d6			;		endif 
+58d6			;;	call clear_display 
+58d6			;	ret 
 58d6			 
 58d6			 
 58d6			 

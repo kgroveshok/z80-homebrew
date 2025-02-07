@@ -849,8 +849,12 @@ forth_autoload:
 		endif
 		call storage_read
 	call ishlzero
-	jr z, .autofdone
+	ret z
 
+		if DEBUG_FORTH_WORDS
+			DMARK "ASc"
+			CALLMONITOR
+		endif
 	ld de, store_page+2
 	ld a, display_row_4
 	call str_at_display
@@ -863,7 +867,7 @@ forth_autoload:
 	ld hl, store_page+2
 	call forthparse
 	call forthexec
-	call forthexec_cleanup
+;	call forthexec_cleanup
 
 	
 	ld a, (store_openext)
@@ -872,14 +876,14 @@ forth_autoload:
 
 	jr .autof
 
-.autofdone:
-
-		if DEBUG_FORTH_WORDS
-			DMARK "ASx"
-			CALLMONITOR
-		endif
-	call clear_display
-	ret
+;.autofdone:
+;
+;		if DEBUG_FORTH_WORDS
+;			DMARK "ASx"
+;			CALLMONITOR
+;		endif
+;;	call clear_display
+;	ret
 
 
 

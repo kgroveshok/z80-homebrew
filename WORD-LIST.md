@@ -25,21 +25,6 @@ Also refer to the auto start list examples as these contain extra words created 
  The heap is used for storing user defined words as well as any values pushed to stack.
 
 
-### EXEC ( u -- )    Execs the string on TOS as a FORTH expression | CRASHES ON NEXTW
-
-
- u - A qutoed string which can consist of any valid Forth expression excluding : defintions (use LOAD instead)
-
-
-
-
-
-  
-
-
-### STKEXEC ( u .. u c -- ) Taking c count of strings off of the stack the strings are evaluated as code | TO TEST
-
-
 ### DUP ( u -- u u )     Duplicate whatever item is on TOS | DONE
 
 
@@ -1043,15 +1028,6 @@ Also refer to the auto start list examples as these contain extra words created 
 
 
 ## Core Words
-
-
-### EXEC ( u -- )    Execs the string on TOS as a FORTH expression | CRASHES ON NEXTW
-
-
-
-
-
-### STKEXEC ( u .. u c -- ) Taking c count of strings off of the stack the strings are evaluated as code | TO TEST
 
 
 ### 2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items | TODO

@@ -40,72 +40,72 @@
 ;endif
 
 .EXEC:
-	CWHEAD .STKEXEC OPCODE_EXEC "EXEC" 4 WORD_FLAG_CODE
-; | EXEC ( u -- )    Execs the string on TOS as a FORTH expression | CRASHES ON NEXTW
-; | | u - A qutoed string which can consist of any valid Forth expression excluding : defintions (use LOAD instead)
-; | |
-; | |  
-	STACKFRAME OFF $5efe $5f9f
-
-		if DEBUG_FORTH_WORDS_KEY
-			DMARK "EXE"
-			CALLMONITOR
-		endif
-
-	FORTH_DSP_VALUEHL
-
-	FORTH_DSP_POP
-
-		if DEBUG_FORTH_WORDS
-			DMARK "EX1"
-			CALLMONITOR
-		endif
-;	ld e,(hl)
-;	inc hl
-;	ld d,(hl)
-;	ex de,hl
-
-;		if DEBUG_FORTH_WORDS
-;			DMARK "EX2"
+;	CWHEAD .STKEXEC OPCODE_EXEC "EXEC" 4 WORD_FLAG_CODE
+;; > EXEC ( u -- )    Execs the string on TOS as a FORTH expression > CRASHES ON NEXTW
+;; > > u - A qutoed string which can consist of any valid Forth expression excluding : defintions (use LOAD instead)
+;; > >
+;; > >  
+;	STACKFRAME OFF $5efe $5f9f
+;
+;		if DEBUG_FORTH_WORDS_KEY
+;			DMARK "EXE"
 ;			CALLMONITOR
 ;		endif
-	push hl
-
-	;ld a, 0
-	;ld a, FORTH_END_BUFFER
-	call strlenz
-	inc hl   ; include zero term to copy
-	inc hl   ; include term
-	inc hl   ; include term
-	ld b,0
-	ld c,l
-	pop hl
-	ld de, execscratch
-		if DEBUG_FORTH_WORDS
-			DMARK "EX3"
-			CALLMONITOR
-		endif
-	ldir
-
-
-	ld hl, execscratch
-
-		if DEBUG_FORTH_WORDS
-			DMARK "EXe"
-			CALLMONITOR
-		endif
-
-	call forthparse
-	call forthexec
-;	call forthexec_cleanup
+;
+;	FORTH_DSP_VALUEHL
+;
+;	FORTH_DSP_POP
+;
+;		if DEBUG_FORTH_WORDS
+;			DMARK "EX1"
+;			CALLMONITOR
+;		endif
+;;	ld e,(hl)
+;;	inc hl
+;;	ld d,(hl)
+;;	ex de,hl
+;
+;;		if DEBUG_FORTH_WORDS
+;;			DMARK "EX2"
+;;			CALLMONITOR
+;;		endif
+;	push hl
+;
+;	;ld a, 0
+;	;ld a, FORTH_END_BUFFER
+;	call strlenz
+;	inc hl   ; include zero term to copy
+;	inc hl   ; include term
+;	inc hl   ; include term
+;	ld b,0
+;	ld c,l
+;	pop hl
+;	ld de, execscratch
+;		if DEBUG_FORTH_WORDS
+;			DMARK "EX3"
+;			CALLMONITOR
+;		endif
+;	ldir
+;
+;
+;	ld hl, execscratch
+;
+;		if DEBUG_FORTH_WORDS
+;			DMARK "EXe"
+;			CALLMONITOR
+;		endif
+;
 ;	call forthparse
 ;	call forthexec
-
-	STACKFRAMECHK OFF $5efe $5f9f
-
-	; an immediate word so no need to process any more words
-	ret
-	NEXTW
+;;	call forthexec_cleanup
+;;	call forthparse
+;;	call forthexec
+;
+;	STACKFRAMECHK OFF $5efe $5f9f
+;
+;	; an immediate word so no need to process any more words
+;	ret
+;	NEXTW
 
 ; dead code - old version 
 ;	FORTH_RSP_NEXT
@@ -225,72 +225,72 @@
 ;	endif
 ;	NEXTW
 
-.STKEXEC:
-	CWHEAD .ZDUP 43 "STKEXEC" 7 WORD_FLAG_CODE
-; | STKEXEC ( u .. u c -- ) Taking c count of strings off of the stack the strings are evaluated as code | TO TEST
-
-
-		if DEBUG_FORTH_WORDS_KEY
-			DMARK "STX"
-			CALLMONITOR
-		endif
-
-	FORTH_DSP_VALUEHL
-
-	ld (store_tmp1), hl    ; count
-
-	FORTH_DSP_POP
-.stkexec1:
-	ld hl, (store_tmp1)   ; count
-	ld a, 0
-	cp l
-	ret z
-
-	dec hl
-	ld (store_tmp1), hl    ; count
-	
-	FORTH_DSP_VALUEHL
-	push hl
-	
-		if DEBUG_FORTH_WORDS
-			DMARK "EXp"
-			CALLMONITOR
-		endif
-	FORTH_DSP_POP
-
-	call strlenz
-	inc hl   ; include zero term to copy
-	inc hl   ; include zero term to copy
-	inc hl   ; include zero term to copy
-	ld b,0
-	ld c,l
-	pop hl
-	ld de, execscratch
-		if DEBUG_FORTH_WORDS
-			DMARK "EX3"
-			CALLMONITOR
-		endif
-	ldir
-
-
-	ld hl, execscratch
-
-		if DEBUG_FORTH_WORDS
-			DMARK "EXP"
-			CALLMONITOR
-		endif
-
-	call forthparse
-	ld hl, execscratch
-		if DEBUG_FORTH_WORDS
-			DMARK "EXx"
-			CALLMONITOR
-		endif
-	call forthexec
-
-	jp .stkexec1
-
-	ret
+;.STKEXEC:
+;	CWHEAD .ZDUP 43 "STKEXEC" 7 WORD_FLAG_CODE
+;; > STKEXEC ( u .. u c -- ) Taking c count of strings off of the stack the strings are evaluated as code > TO TEST
+;
+;
+;		if DEBUG_FORTH_WORDS_KEY
+;			DMARK "STX"
+;			CALLMONITOR
+;		endif
+;
+;	FORTH_DSP_VALUEHL
+;
+;	ld (store_tmp1), hl    ; count
+;
+;	FORTH_DSP_POP
+;.stkexec1:
+;	ld hl, (store_tmp1)   ; count
+;	ld a, 0
+;	cp l
+;	ret z
+;
+;	dec hl
+;	ld (store_tmp1), hl    ; count
+;	
+;	FORTH_DSP_VALUEHL
+;	push hl
+;	
+;		if DEBUG_FORTH_WORDS
+;			DMARK "EXp"
+;			CALLMONITOR
+;		endif
+;	FORTH_DSP_POP
+;
+;	call strlenz
+;	inc hl   ; include zero term to copy
+;	inc hl   ; include zero term to copy
+;	inc hl   ; include zero term to copy
+;	ld b,0
+;	ld c,l
+;	pop hl
+;	ld de, execscratch
+;		if DEBUG_FORTH_WORDS
+;			DMARK "EX3"
+;			CALLMONITOR
+;		endif
+;	ldir
+;
+;
+;	ld hl, execscratch
+;
+;		if DEBUG_FORTH_WORDS
+;			DMARK "EXP"
+;			CALLMONITOR
+;		endif
+;
+;	call forthparse
+;	ld hl, execscratch
+;		if DEBUG_FORTH_WORDS
+;			DMARK "EXx"
+;			CALLMONITOR
+;		endif
+;	call forthexec
+;
+;	jp .stkexec1
+;
+;	ret
 
 
 .DUP:

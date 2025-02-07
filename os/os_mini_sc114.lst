@@ -23074,8 +23074,12 @@ d7cb						CALLMONITOR
 d7cb					endif 
 d7cb					call storage_read 
 d7cb				call ishlzero 
-d7cb				jr z, .autofdone 
+d7cb				ret z 
 d7cb			 
+d7cb					if DEBUG_FORTH_WORDS 
+d7cb						DMARK "ASc" 
+d7cb						CALLMONITOR 
+d7cb					endif 
 d7cb				ld de, store_page+2 
 d7cb				ld a, display_row_4 
 d7cb				call str_at_display 
@@ -23097,14 +23101,14 @@ d7cb				ld (store_openext), a    ; save count of ext
 d7cb			 
 d7cb				jr .autof 
 d7cb			 
-d7cb			.autofdone: 
-d7cb			 
-d7cb					if DEBUG_FORTH_WORDS 
-d7cb						DMARK "ASx" 
-d7cb						CALLMONITOR 
-d7cb					endif 
-d7cb				call clear_display 
-d7cb				ret 
+d7cb			;.autofdone: 
+d7cb			; 
+d7cb			;		if DEBUG_FORTH_WORDS 
+d7cb			;			DMARK "ASx" 
+d7cb			;			CALLMONITOR 
+d7cb			;		endif 
+d7cb			;;	call clear_display 
+d7cb			;	ret 
 d7cb			 
 d7cb			 
 d7cb			 

@@ -117,11 +117,13 @@ STORE_DEVICE_MAXBLOCKS:  equ  255*2 ; how many blocks are there on this storage 
 
 ; Block 0 at offset $3c holds the file number to run at system startup after the display
 
-STORE_0_FILERUN: equ $3c
+STORE_0_AUTOFILE: equ $21
+STORE_0_BANKRUN: equ $23
+STORE_0_FILERUN: equ $24
 
 ; Block 0 at offset $3b is a flag to decide to offer auto start up - 0 = prompt 1-auto run no prompt 2 - dont run
 
-STORE_0_AUTORUN: equ $3c
+STORE_0_AUTORUN: equ $20
 
 ; Blocks where directory table is held
 

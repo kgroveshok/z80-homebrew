@@ -18,22 +18,21 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE store_tmp1=store_tmppageid
 * DONE store_filecache=store_page
 * DONE It appears the config dir scan is corrupting the spi_device byte and poking f5 into it every time. Corruption where? Not normal DIR. Must be in the config code. store_tempid=spi_device_id, store_tmpext=f_cursor_ptr and store_tmp3=spi_device, store_tmp1=storetmppageid. got location overlaps. double check all of the symbols as a few more overlaps.
+* DONE Saved setting to enable/disable auto load of words from block 0 as part of auto start
+* DONE Add a flag to block 0 to include the bank id to exec at startup
+* DONE Add a flag to block 0 to include the file id to exec at startup
 
 
-
-
+* TODO Add auto run of selected file
+* TODO EXEC and STKEXEC not evaluating???? is COLN def non re-entrant? does it care about existing setups? EXEC is OK but STKEXEC not working?  Stack appears messed up. Where is it going wrong?
+* TODO Can't use EXEC in code so need another way to trigger stack eval. Make EXEC to take a count of strings?
 
 
 
 
 * TODO reduce some of the stack sizes, loops and ret might be a bit too big. Then extend the main data stack
 
-* TODO Saved setting to enable/disable auto load of words from block 0 as part of auto start
-* TODO Add a flag to block 0 to include the bank id to exec at startup
-* TODO Add a flag to block 0 to include the file id to exec at startup
 * TODO Add a flag to block 0 to decide if the auto startup prompt is given and/or run
-* TODO EXEC and STKEXEC not evaluating???? is COLN def non re-entrant? does it care about existing setups? EXEC is OK but STKEXEC not working?  Stack appears messed up. Where is it going wrong?
-* TODO Can't use EXEC in code so need another way to trigger stack eval. Make EXEC to take a count of strings?
 * TODO Add scroll down indicator to menu code
 * TODO Stop menu scrolling past last item
 * TODO for auto run storage include a CHAIN feature

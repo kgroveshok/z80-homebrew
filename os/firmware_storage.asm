@@ -294,6 +294,8 @@ storage_get_block_0:
 		CALLMONITOR
 	endif
 
+	call storage_clear_page
+
 	ld hl, store_page
 	ld a, 0
 	

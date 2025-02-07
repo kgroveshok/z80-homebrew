@@ -13,6 +13,8 @@ config:
 	cp 1
 	call z, .savetostore
 
+	cp 2
+	call z, .selautoload
 	cp 3
 	call z, .selbank
 	cp 5
@@ -38,6 +40,69 @@ config:
 .c4: db "Settings",0
 .m4:   db "Debug & Breakpoints On/Off",0
 .c1: db "Hardware Diags",0
+
+; Select auto start
+
+.selautoload:
+
+	
+	if STORAGE_SE
+
+		call config_dir
+	        ld hl, scratch
+		ld a, 0
+		call menu
+
+		; locate menu option
+
+		ld hl, scratch
+		call table_lookup
+
+		; with the pointer to the menu it, the byte following the zero term is the file id
+
+		ld a, 0
+		ld bc, 50   ; max of bytes to look at
+		cpir 
+
+		inc hl
+
+		ld a, (hl)   ; file id
+		
+	        ; save bank and file ids
+
+		push af
+
+		call storage_get_block_0
+
+		pop af
+
+		ld (store_page+STORE_0_FILERUN),a
+		
+		; save bank id
+
+		ld a,(spi_device)
+		ld (store_page+STORE_0_BANKRUN),a
+
+		; enable auto run of store file
+		ld (store_page+STORE_0_AUTOFILE),1
+
+		; save buffer
+
+		ld hl, 0
+		ld de, store_page
+	call storage_write_block	 ; save update
+ 
+
+
+
+		ld hl, scratch
+		call config_fdir
+
+
+	endif
+	ret
+
+
 
 ; Select storage bank
 

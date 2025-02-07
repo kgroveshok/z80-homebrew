@@ -115,7 +115,7 @@ STORE_BLOCK_PHY:   equ 64    ; physical block size on storage   64byte on 256k e
 STORE_DEVICE_MAXBLOCKS:  equ  255*2 ; how many blocks are there on this storage device
 ;endif
 
-; Block 0 at offset $3c holds the file number to run at system startup after the display
+; Block 0 at offset $20+ holds the file number to run at system startup after the display
 
 STORE_0_AUTOFILE: equ $21
 STORE_0_BANKRUN: equ $23

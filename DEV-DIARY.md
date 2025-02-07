@@ -23,6 +23,8 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE Add a flag to block 0 to include the file id to exec at startup
 
 
+* TODO Save auto run flags to block 0 on bank 1 and not on currently selected device
+
 * TODO Add auto run of selected file
 * TODO EXEC and STKEXEC not evaluating???? is COLN def non re-entrant? does it care about existing setups? EXEC is OK but STKEXEC not working?  Stack appears messed up. Where is it going wrong?
 * TODO Can't use EXEC in code so need another way to trigger stack eval. Make EXEC to take a count of strings?

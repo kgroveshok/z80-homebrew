@@ -184,6 +184,11 @@ warmstart:
 
 	if STARTUP_ENABLE
 		call forth_startup
+
+		if STORAGE_SE
+			call forth_autoload
+		endif
+
 	endif
 
 	; show free memory after boot

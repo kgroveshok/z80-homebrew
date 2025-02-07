@@ -388,6 +388,9 @@ include "forth_autostart.asm"
 sprompt1: db "Startup load...",0
 sprompt2: db "Run? 1=No *=End #=All",0
 
+
+
+
 forth_startup:
 	ld hl, startcmds
 	ld a, 0
@@ -753,4 +756,72 @@ type_faults: 	push de
 		;jp warmstart
 		jp cli
 		halt
+
+; handle the auto run of code from files in storage
+
+
+if STORAGE_SE
+
+sprompt3: db "Loading from start-up file:",0
+
+
+forth_autoload:
+
+	; load block 0 of store 1
+	
+	ld a, $fe      ; bit 0 clear
+	ld (spi_device), a
+
+	call storage_get_block_0
+
+	ld a, (store_page+STORE_0_AUTOFILE)
+
+	cp 0
+	ret z     ; auto start not enabled
+
+	call clear_display
+
+	; set bank
+
+		ld a, (store_page+STORE_0_BANKRUN)
+		ld (spi_device), a
+
+	; get file id to load from and get the file name to display
+
+		ld a, (store_page+STORE_0_AUTOFILE)
+
+		ld l, 0
+		ld h, a
+		ld de, store_page
+
+		call storage_read
+
+		call ishlzero
+		ret z             ; file not found
+
+		ld a, display_row_3 + 10
+		ld de, store_page+3
+		call str_at_display
+	
+;
+
+	ld a, display_row_2+5
+	ld de, sprompt3
+	call str_at_display
+
+	call update_display
+
+
+	call delay1s
+
+
+
+	call clear_display
+	ret
+
+
+
+endif
+
+
 ; eof

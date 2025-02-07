@@ -72,6 +72,8 @@ config:
 
 		push af
 
+; TODO need to save to block 0 on bank 1	
+
 		call storage_get_block_0
 
 		pop af

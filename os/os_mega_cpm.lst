@@ -234,7 +234,7 @@
 0103			STORE_DEVICE_MAXBLOCKS:  equ  255*2 ; how many blocks are there on this storage device  
 0103			;endif  
 0103			  
-0103			; Block 0 at offset $3c holds the file number to run at system startup after the display  
+0103			; Block 0 at offset $20+ holds the file number to run at system startup after the display  
 0103			  
 0103			STORE_0_AUTOFILE: equ $21  
 0103			STORE_0_BANKRUN: equ $23  
@@ -7418,6 +7418,8 @@
 12be			 
 12be					push af 
 12be			 
+12be			; TODO need to save to block 0 on bank 1	 
+12be			 
 12be					call storage_get_block_0 
 12be			 
 12be					pop af 
@@ -7430,6 +7432,7 @@
 12be					ld (store_page+STORE_0_BANKRUN),a 
 12be			 
 12be					; enable auto run of store file 
+12be			 
 12be					ld a, 1 
 12be					ld (store_page+STORE_0_AUTOFILE),a 
 12be			 
@@ -8416,6 +8419,11 @@
 15f7			 
 15f7				if STARTUP_ENABLE 
 15f7 cd 04 56				call forth_startup 
+15fa			 
+15fa					if STORAGE_SE 
+15fa						call forth_autoload 
+15fa					endif 
+15fa			 
 15fa				endif 
 15fa			 
 15fa				; show free memory after boot 
@@ -22587,6 +22595,9 @@
 55de .. 00		sprompt1: db "Startup load...",0 
 55ee .. 00		sprompt2: db "Run? 1=No *=End #=All",0 
 5604			 
+5604			 
+5604			 
+5604			 
 5604			forth_startup: 
 5604 21 3c 47			ld hl, startcmds 
 5607 3e 00			ld a, 0 
@@ -22952,6 +22963,71 @@
 58c3					;jp warmstart 
 58c3 c3 4c 16				jp cli 
 58c6 76					halt 
+58c7			 
+58c7			; handle the auto run of code from files in storage 
+58c7			 
+58c7			 
+58c7			if STORAGE_SE 
+58c7			 
+58c7			sprompt3: db "Loading from start-up file:",0 
+58c7			 
+58c7			 
+58c7			forth_autoload: 
+58c7			 
+58c7				; load block 0 of store 1 
+58c7				 
+58c7				ld a, $fe      ; bit 0 clear 
+58c7				ld (spi_device), a 
+58c7			 
+58c7				call storage_get_block_0 
+58c7			 
+58c7				ld a, (store_page+STORE_0_AUTOFILE) 
+58c7			 
+58c7				cp 0 
+58c7				ret z     ; auto start not enabled 
+58c7			 
+58c7				call clear_display 
+58c7			 
+58c7				; set bank 
+58c7			 
+58c7					ld a, (store_page+STORE_0_BANKRUN) 
+58c7					ld (spi_device), a 
+58c7			 
+58c7				; get file id to load from and get the file name to display 
+58c7			 
+58c7					ld a, (store_page+STORE_0_AUTOFILE) 
+58c7			 
+58c7					ld l, 0 
+58c7					ld h, a 
+58c7					ld de, store_page 
+58c7			 
+58c7					call storage_read 
+58c7			 
+58c7					call ishlzero 
+58c7					ret z             ; file not found 
+58c7			 
+58c7					ld a, display_row_3 + 10 
+58c7					ld de, store_page+3 
+58c7					call str_at_display 
+58c7				 
+58c7			; 
+58c7			 
+58c7				ld a, display_row_2+5 
+58c7				ld de, sprompt3 
+58c7				call str_at_display 
+58c7			 
+58c7				call update_display 
+58c7			 
+58c7			 
+58c7				call delay1s 
+58c7			 
+58c7				ret 
+58c7			 
+58c7			 
+58c7			 
+58c7			endif 
+58c7			 
+58c7			 
 58c7			; eof 
 # End of file forth_kernel.asm
 58c7			;include "nascombasic.asm" 

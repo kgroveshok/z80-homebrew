@@ -289,7 +289,7 @@ store_tmpid: equ store_tmp3 - 1		; page temp id
 store_tmpext: equ store_tmpid - 1		; file extent temp
 store_openext: equ store_tmpext - 1		; file extent of current opened file for read
 store_openmaxext: equ store_openext - 1		; max extent of current opened file for read
-store_filecache: equ store_openmaxext+(2*5)   ;  TODO (using just one for now)  file id + extent count cache * 5
+store_filecache: equ store_openmaxext-(2*5)   ;  TODO (using just one for now)  file id + extent count cache * 5
 store_tmppageid: equ store_filecache-2    ; phyical page id temp
 ;
 ; spi vars
@@ -349,17 +349,17 @@ scratch: equ execscratch-255
 
 ; temp locations for new word processing to save on adding more 
 
-os_new_malloc: equ os_input
-os_new_parse_len: equ os_new_malloc + 2
-os_new_word_len: equ os_new_parse_len + 2
-os_new_work_ptr: equ os_new_word_len + 2
-os_new_src_ptr: equ os_new_work_ptr + 2
-os_new_exec: equ os_new_src_ptr + 2
-os_new_exec_ptr: equ os_new_exec + 2
+os_new_malloc: equ scratch-2
+os_new_parse_len: equ os_new_malloc - 2
+os_new_word_len: equ os_new_parse_len - 2
+os_new_work_ptr: equ os_new_word_len - 2
+os_new_src_ptr: equ os_new_work_ptr - 2
+os_new_exec: equ os_new_src_ptr - 2
+os_new_exec_ptr: equ os_new_exec - 2
 
 ; resume memory alloocations....
 
-os_view_disable: equ scratch - 1
+os_view_disable: equ os_new_exec_ptr - 1
 os_view_af: equ os_view_disable - 2
 os_view_hl: equ os_view_af -2
 os_view_de: equ os_view_hl - 2

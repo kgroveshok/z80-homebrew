@@ -1,6 +1,50 @@
 ; display routines that use the physical hardware abstraction layer
 
 
+; information window
+
+; pass hl with 1st string to display
+; pass de with 2nd string to display
+
+info_panel:
+	push hl
+
+	ld hl, (display_fb_active)
+	push hl    ; future de destination
+		ld hl, display_fb0
+		ld (display_fb_active), hl
+
+	call clear_display
+
+
+	ld a, display_row_3 + 5
+	call str_at_display
+
+	pop hl
+	pop de
+
+	push hl
+
+
+	ld a, display_row_2 + 5
+	call str_at_display
+
+
+	call update_display
+	call next_page_prompt
+	call clear_display
+
+	
+		ld hl, display_fb1
+		ld (display_fb_active), hl
+	call update_display
+
+
+	ret
+
+
+
+
 ; TODO windowing?
 
 ; TODO scroll line up

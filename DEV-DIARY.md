@@ -36,7 +36,7 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 
 
 * TODO reduce some of the stack sizes, loops and ret might be a bit too big. Then extend the main data stack
-
+* TODO Conslidate all prompts into a single file to allow for removing duplicates and may even localisation
 * TODO Add scroll down indicator to menu code
 * TODO Stop menu scrolling past last item
 * TODO for auto run storage include a CHAIN feature

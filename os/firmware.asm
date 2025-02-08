@@ -344,7 +344,7 @@ os_tok_len: equ os_word_scratch - 2
 os_tok_ptr: equ os_tok_len - 2               ; our current PC ptr
 os_tok_malloc: equ os_tok_ptr - 2
 os_last_new_uword: equ os_tok_malloc - 2    ; hold start of last user word added
-os_input: equ os_last_new_uword-255
+os_input: equ os_last_new_uword-255    ; buffer for EDIT word
 execscratch: equ os_input-255        ; exec cmd eval buffer
 scratch: equ execscratch-255
 

@@ -63,13 +63,18 @@
 			CALLMONITOR
 		endif
 
-		FORTH_DSP
-		;v5 FORTH_DSP_VALUE
-		inc hl    ; TODO do type check
+		;FORTH_DSP
+		FORTH_DSP_VALUEHL
+;		inc hl    ; TODO do type check
 
+;		call get_word_hl
 		push hl
-		ld a, 0
-		call strlent
+		if DEBUG_FORTH_WORDS
+			DMARK "EDp"
+			CALLMONITOR
+		endif
+	;	ld a, 0
+		call strlenz
 		inc hl
 
 		ld b, 0

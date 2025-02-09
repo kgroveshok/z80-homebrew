@@ -484,6 +484,11 @@ storage_label:
 ;         Null file id
 ;         Write this block back
 
+
+.se_done:
+	pop hl
+	ret
+
 storage_erase:
 
 	; hl contains the file id
@@ -505,6 +510,9 @@ storage_erase:
 
 	ld de, store_page
 	call storage_read_block
+
+	call ishlzero
+	jp z,.se_done
 
 		if DEBUG_FORTH_WORDS
 			DMARK "ER1"
@@ -547,6 +555,8 @@ storage_erase:
 			CALLMONITOR
 		endif
 	call storage_findnextid
+	call ishlzero
+	jp z,.se_done
 
 	push hl
 	ld de, store_page

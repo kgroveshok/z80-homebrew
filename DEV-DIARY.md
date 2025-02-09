@@ -14,7 +14,7 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO fix saving more than a single block of file storage. Means to concate multiple blocks? Append is creating more blocks. But is it writing correctly? READ is picking up extra blocks but second block is corrupted. Is READ or APPEND broken?
 * TODO Future bug? stack imbalance on storage_read. Needs a pop of de if no record found. Have added code watch for further issues
 
-* TODO Save auto run flags to block 0 on bank 1 and not on currently selected device
+* TODO Save auto run flags to block 0 on bank 1 and not on currently selected device. Need a function to load from block 0 into hardware_config and then repoint all menu options to load and save them.
 * TODO Add a flag to block 0 to decide if the auto startup prompt is given and/or run
 
 * TODO Conslidate all prompts into a single file to allow for removing duplicates and may even localisation

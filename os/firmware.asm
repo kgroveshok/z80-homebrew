@@ -115,15 +115,21 @@ STORE_BLOCK_PHY:   equ 64    ; physical block size on storage   64byte on 256k e
 STORE_DEVICE_MAXBLOCKS:  equ  255*2 ; how many blocks are there on this storage device
 ;endif
 
+; Block 0 at offset $3b is a flag to decide to offer auto start up - 0 = prompt 1-auto run no prompt 2 - dont run
+
+STORE_0_AUTORUN: equ $20
+
 ; Block 0 at offset $20+ holds the file number to run at system startup after the display
 
 STORE_0_AUTOFILE: equ $21
 STORE_0_BANKRUN: equ $23
 STORE_0_FILERUN: equ $24
 
-; Block 0 at offset $3b is a flag to decide to offer auto start up - 0 = prompt 1-auto run no prompt 2 - dont run
+; Block 0 offsets for settings
 
-STORE_0_AUTORUN: equ $20
+; if set then skip prompt for start up and accept all
+
+STORE_0_QUICKSTART: equ $25
 
 ; Blocks where directory table is held
 
@@ -189,9 +195,9 @@ key_fc: equ key_fb -1 ;
 key_fd: equ key_fc -1 ;
 key_face_held: equ key_fd - 1 
 
-; flag for enabling/disabling various hardware diags 
+; flag for enabling/disabling various hardware diag loading via block 0 on bank 1
 
-hardware_diag: equ key_face_held - 1
+hardware_config: equ key_face_held - 10
 
 ; hardware config switches
 ; TODO add bitmasks on includes for hardware
@@ -210,7 +216,7 @@ hardware_diag: equ key_face_held - 1
 ;     0000 1100   spi/ext display
 ;     0001 0000   ide interface available
 
-hardware_word: equ hardware_diag - 2
+hardware_word: equ hardware_config - 2
 
 ; debug marker - optional display of debug point on the debug screens
 

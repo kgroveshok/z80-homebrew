@@ -2,6 +2,96 @@
 Z80 Home Brew Micro-computer Project - Dev Diary
 ------------------------------------------------
 
+
+9th Feb 2025
+------------
+
+
+* TODO Future bug? stack imbalance on storage_read. Needs a pop of de if no record found. Have added code watch for further issues
+* TODO BUG If a non-existing file extent/id is given as param to ERA, APPEND etc then the storage appears to be reformatted!
+* TODO BUG If an unknown uword is given for LIST then the system reboots
+
+* TODO Save auto run flags to block 0 on bank 1 and not on currently selected device
+* TODO Add a flag to block 0 to decide if the auto startup prompt is given and/or run
+
+* TODO Conslidate all prompts into a single file to allow for removing duplicates and may even localisation
+* TODO Add scroll down indicator to menu code
+* TODO Stop menu scrolling past last item
+* TODO Cant use special chars in quoted strings??? Why? Emit works for the char code.
+* TODO Saved setting to enable/disable auto start
+* TODO Saved setting to select words to auto load from storage
+* TODO Add to start up a list of what storage labels are seen
+* TODO add ram test to the diags
+* TODO Hook up Pico and get it talking over SPI to enable networking
+
+* TODO fix saving more than a single block of file storage. Means to concate multiple blocks?
+
+
+* TODO add more editing features 
+* TODO fix editor bugs
+* TODO fix editor issues
+* TODO typing a long few lines and then back space, then insert ends up creating spurious characters - added clear of edit buffer
+* TODO Fix prev line recall and insertion. Corruption appears on the end of line - added clear of edit buffer
+* TODO Editor issue insert mid string causes loss of zero term giving random data
+* TODO Backspace mid string does not clean up shifted text
+* TODO Jump to end of line does not work should set to the number in last debug display
+* TODO If cursor at end of line, when go back it leaves custor displayed
+* TODO With the float code being so big need to do some opt via http://z80-heaven.wikidot.com/optimization
+* TODO Fix NUM2STR. 
+* TODO Fix LEFT
+* TODO Fix RIGHT
+* TODO Fix 2SWAP
+* TODO Fix KEY
+* TODO Fix IS 
+
+
+
+Nice to haves:
+
+
+* TODO reduce some of the stack sizes, loops and ret might be a bit too big. Then extend the main data stack
+* TODO Alt T is duplicated }. Free to reuse
+* TODO Alt H is duplicated |. Free to reuse
+* TODO Alt U, O, P, 5, 7, 8, 9, Enter are free
+* TODO Cease support for os-mini as a lot of features just wont work... Perhaps do defines????
+* TODO for auto run storage include a CHAIN feature
+* TODO Do a nice FORTH primer with the hardware. Screen shots and all...
+* TODO New case design
+* TODO Add to docs that looking up file name of id is just id BREAD 
+* TODO Add to docs that looking up file id by name just need to go through 1-32 and look for name
+* TODO Create a disk UI in native asm for robustness and speed? Have some config routines for this now. Expand on them
+* TODO Add word to call fill_display with a char
+* TODO Add FILL word - ( addr n char -- ) fills address for n long with char
+* TODO Add ERASE word - ( addr n -- ) fills address for n long with zero
+* TODO LSHIFT and RSHIFT for bit shifting
+* TODO New value type for signed and unsigned val. Add to maths. added DS_TYPE_SNUM need a word to convert type. SIGN/UNSIGN. Fix up <= and dot.
+* TODO Speed up screen updates - instead of writing whole screen detect what has changed? 
+* TODO Add no bank chip detection to format
+* TODO Add support for ELSE and ENDIF. IF THEN ELSE ENDIF   or IF THEN ENDIF. Or IF ... ELSE ... THEN
+* TODO Word to define lcd user character 0-3. Then word to output via emit etc
+
+* TODO need word to get file id by name
+* TODO need word to get file name by id
+
+* TODO setup a compiler
+* TODO Add a stack content viewer to callmonitor code
+* TODO Add the floating point maths code in
+* TODO CP/M screen clearing not working well
+* TODO CP/M keyboard entry not great
+* TODO Change circuit so that the storage cart is actually on port a and provides a full 5 chip pack. Then move sound to port b
+* TODO wire up a temp interface to the serial EEPROMS so I can test storage on the SC114 as I have the PIO and digital IO cards installed
+* TODO with the second PIO port hook up and debug the sound card
+* TODO PICK word to pick a value at a given value on stack and move to TOS
+* TODO Change NOTE to PLAY and use a stream of items on stack
+* TO TEST need word to report where cursor current at
+* TODO Take the vid out handshake lines and code up a Pico to handle display.
+* TODO Pico to handle display to have two way return of data
+* TODO need words to report on hardware e.g. screen dims
+* TODO Extract all of the symbols in the symbol table to be available as words in FORTH, debug and asm above
+* TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs. FORGET and LIST use a scanner. Combine with main parser and have one for keyword and another for byte code
+* TODO Add a simple assembler feature like BBC Basic
+
+
 5th Feb 2025
 ------------
 
@@ -26,88 +116,6 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE Can't use EXEC in code so need another way to trigger stack eval. Make EXEC to take a count of strings?
 
 
-* TODO stack imbalance on storage_read. Needs a pop of de if no record found. Have added code watch for further issues
-
-* TODO Save auto run flags to block 0 on bank 1 and not on currently selected device
-* TODO Add a flag to block 0 to decide if the auto startup prompt is given and/or run
-
-
-
-
-
-* TODO reduce some of the stack sizes, loops and ret might be a bit too big. Then extend the main data stack
-* TODO Conslidate all prompts into a single file to allow for removing duplicates and may even localisation
-* TODO Add scroll down indicator to menu code
-* TODO Stop menu scrolling past last item
-* TODO for auto run storage include a CHAIN feature
-* TODO Cant use special chars in quoted strings??? Why? Emit works for the char code.
-* TODO Saved setting to enable/disable auto start
-* TODO Saved setting to select words to auto load from storage
-* TODO Add to start up a list of what storage labels are seen
-* TODO add ram test to the diags
-* TODO Hook up Pico and get it talking over SPI
-
-
-* TODO Cease support for os-mini as a lot of features just wont work... Perhaps do defines????
-* TODO With the float code being so big need to do some opt via http://z80-heaven.wikidot.com/optimization
-* TODO Alt T is duplicated }. Free to reuse
-* TODO Alt H is duplicated |. Free to reuse
-* TODO Alt U, O, P, 5, 7, 8, 9, Enter are free
-* TODO Do a nice FORTH primer with the hardware. Screen shots and all...
-* TODO New case design
-
-* TODO add more editing features 
-* TODO fix editor bugs
-* TODO fix editor issues
-* TODO typing a long few lines and then back space, then insert ends up creating spurious characters - added clear of edit buffer
-* TODO Fix prev line recall and insertion. Corruption appears on the end of line - added clear of edit buffer
-* TODO Editor issue insert mid string causes loss of zero term giving random data
-* TODO Backspace mid string does not clean up shifted text
-* TODO Jump to end of line does not work should set to the number in last debug display
-* TODO If cursor at end of line, when go back it leaves custor displayed
-* TODO Fix NUM2STR. 
-* TODO Fix LEFT
-* TODO Fix RIGHT
-* TODO Fix 2SWAP
-* TODO Fix KEY
-* TODO Fix IS 
-
-* TODO fix saving more than a single block of file storage. Means to concate multiple blocks?
-
-* TODO Add to docs that looking up file name of id is just id BREAD 
-* TODO Add to docs that looking up file id by name just need to go through 1-32 and look for name
-
-* TODO Add word to call fill_display with a char
-* TODO New value type for signed and unsigned val. Add to maths. added DS_TYPE_SNUM need a word to convert type. SIGN/UNSIGN. Fix up <= and dot.
-* TODO Add FILL word - ( addr n char -- ) fills address for n long with char
-* TODO Add ERASE word - ( addr n -- ) fills address for n long with zero
-* TODO LSHIFT and RSHIFT for bit shifting
-* TODO Speed up screen updates - instead of writing whole screen detect what has changed? 
-* TODO Add no bank chip detection to format
-* TODO Add support for ELSE and ENDIF. IF THEN ELSE ENDIF   or IF THEN ENDIF. Or IF ... ELSE ... THEN
-* TODO Word to define lcd user character 0-3. Then word to output via emit etc
-
-* TODO need word to get file id by name
-* TODO need word to get file name by id
-
-* TODO setup a compiler
-* TODO Add a stack content viewer to callmonitor code
-* TODO Add the floating point maths code in
-* TODO CP/M screen clearing not working well
-* TODO CP/M keyboard entry not great
-* TODO Change circuit so that the storage cart is actually on port a and provides a full 5 chip pack. Then move sound to port b
-* TODO wire up a temp interface to the serial EEPROMS so I can test storage on the SC114 as I have the PIO and digital IO cards installed
-* TODO with the second PIO port hook up and debug the sound card
-* TODO PICK word to pick a value at a given value on stack and move to TOS
-* TODO Change NOTE to PLAY and use a stream of items on stack
-* TO TEST need word to report where cursor current at
-* TODO Take the vid out handshake lines and code up a Pico to handle display.
-* TODO Pico to handle display to have two way return of data
-* TODO Create a disk UI in native asm for robustness and speed?
-* TODO need words to report on hardware e.g. screen dims
-* TODO Extract all of the symbols in the symbol table to be available as words in FORTH, debug and asm above
-* TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs. FORGET and LIST use a scanner. Combine with main parser and have one for keyword and another for byte code
-* TODO Add a simple assembler feature like BBC Basic
 
 
 3rd Feb 2025

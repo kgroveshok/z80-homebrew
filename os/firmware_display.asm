@@ -14,7 +14,14 @@ info_panel:
 		ld hl, display_fb0
 		ld (display_fb_active), hl
 
-	call clear_display
+;	call clear_display
+
+	if BASE_CPM
+	ld a, '.'
+	else
+	ld a, 165
+	endif
+	call fill_display
 
 
 	ld a, display_row_3 + 5
@@ -39,6 +46,7 @@ info_panel:
 		ld (display_fb_active), hl
 	call update_display
 
+	pop hl
 
 	ret
 

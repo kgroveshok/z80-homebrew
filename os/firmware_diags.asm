@@ -63,6 +63,11 @@ config:
 		ld hl, 0
 		ld de, store_page
 	call storage_write_block	 ; save update
+	else
+
+	ld hl, .notav
+	ld de, .empty
+	call info_panel
 	endif
 
 
@@ -153,6 +158,11 @@ config:
 		ld hl, scratch
 		call config_fdir
 
+	else
+
+	ld hl, .notav
+	ld de, .empty
+	call info_panel
 
 	endif
 	ret
@@ -164,6 +174,11 @@ config:
 .selbank:
 
 	if STORAGE_SE
+	else
+
+	ld hl, .notav
+	ld de, .empty
+	call info_panel
 	endif
 	
 	ret
@@ -196,10 +211,17 @@ endif
 		ld hl, scratch
 		call config_fdir
 
+	else
+
+	ld hl, .notav
+	ld de, .empty
+	call info_panel
 
 	endif
 
 	ret
+.notav:    db "Feature not available",0
+.empty:    db "",0
 
 
 

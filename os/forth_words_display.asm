@@ -1,6 +1,26 @@
 
 ; | ## Display Words
 
+.INFO:
+
+	CWHEAD .ATP 78 "INFO" 4 WORD_FLAG_CODE
+; | INFO ( u1 u2 -- )  Use the top two strings on stack to fill in an info window over two lines. Causes a wait for key press to continue. | DONE
+		FORTH_DSP_VALUEHL
+
+		FORTH_DSP_POP
+
+		push hl
+
+		FORTH_DSP_VALUEHL
+
+		FORTH_DSP_POP
+
+		pop de
+
+		call info_panel
+
+
+		NEXTW
 .ATP:
 	CWHEAD .FB 78 "AT?" 3 WORD_FLAG_CODE
 ; | AT? ( -- c r )  Push to stack the current position of the next print | TO TEST

@@ -8,6 +8,7 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 
 * DONE BUG If a non-existing file extent/id is given as param to ERA, APPEND etc then the storage appears to be reformatted!
 * DONE BUG If an unknown uword is given for LIST then the system reboots
+* DONE add info page word. INFO word.
 
 
 * TODO fix saving more than a single block of file storage. Means to concate multiple blocks? Append is creating more blocks. But is it writing correctly? READ is picking up extra blocks but second block is corrupted. Is READ or APPEND broken?
@@ -469,7 +470,6 @@ TODO add a start up feature to bulk run one set of words after another. can use 
 
 TODO add dialog word
 TODO add menu word
-TODO add info page word
 TODO add other UI type words that could be useful
 TODO add a means to add binary based words and/or an assemlber
 

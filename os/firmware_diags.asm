@@ -29,25 +29,17 @@ config:
 	jr config
 
 .configmn:
-	dw .c3
-	dw .c2
-	dw .c2a
-	dw .c2b
-;	dw .c4
-	dw .m4
-	dw .m4b
-	dw .c1
+	dw prom_c3
+	dw prom_c2
+	dw prom_c2a
+	dw prom_c2b
+;	dw prom_c4
+	dw prom_m4
+	dw prom_m4b
+	dw prom_c1
 	dw 0
 	
 
-.c3: db "Add Dictionary To File",0
-.c2: db "Select Autoload File",0
-.c2a: db "Disable Autoload File", 0
-.c2b: db "Select Storage Bank",0
-.c4: db "Settings",0
-.m4:   db "Debug & Breakpoints On/Off",0
-.m4b:   db "Monitor",0
-.c1: db "Hardware Diags",0
 
 
 .disautoload:
@@ -65,8 +57,8 @@ config:
 	call storage_write_block	 ; save update
 	else
 
-	ld hl, .notav
-	ld de, .empty
+	ld hl, prom_notav
+	ld de, prom_empty
 	call info_panel
 	endif
 
@@ -160,8 +152,8 @@ config:
 
 	else
 
-	ld hl, .notav
-	ld de, .empty
+	ld hl, prom_notav
+	ld de, prom_empty
 	call info_panel
 
 	endif
@@ -176,8 +168,8 @@ config:
 	if STORAGE_SE
 	else
 
-	ld hl, .notav
-	ld de, .empty
+	ld hl, prom_notav
+	ld de, prom_empty
 	call info_panel
 	endif
 	
@@ -213,15 +205,13 @@ endif
 
 	else
 
-	ld hl, .notav
-	ld de, .empty
+	ld hl, prom_notav
+	ld de, prom_empty
 	call info_panel
 
 	endif
 
 	ret
-.notav:    db "Feature not available",0
-.empty:    db "",0
 
 
 

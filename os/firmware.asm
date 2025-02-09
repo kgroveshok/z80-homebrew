@@ -577,7 +577,7 @@ if display_cols == 20
 else
         ld a, display_row_1 +10 
 endif
-	ld de, bootmsg
+	ld de, prom_bootmsg
 	call str_at_display
 	call update_display
 
@@ -589,7 +589,7 @@ if display_cols == 20
 else
             LD   A, display_row_3+12
 endif
-	ld de, bootmsg1
+	ld de, prom_bootmsg1
 	call str_at_display
 	call update_display
 	call delay1s
@@ -614,8 +614,6 @@ ld (debug_mark+3),a
 		ret
 
 
-bootmsg:	db "z80-homebrew OS v1.5",0
-bootmsg1:	db "by Kevin Groves",0
 ;bootmsg2:	db "Firmware v0.1",0
 
 ; a 4x20 lcd
@@ -685,7 +683,7 @@ endif
 
 include "firmware_diags.asm"
 
-
+include "firmware_prompts.asm"
 
 
 ; eof

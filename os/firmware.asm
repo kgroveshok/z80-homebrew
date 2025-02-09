@@ -510,8 +510,10 @@ include "stackimbal.asm"
 
 hardware_init:
 
-		ld a, 0
-		ld (hardware_diag), a
+	
+
+		;ld a, 0
+		;ld (hardware_diag), a
 
 		; clear all the buffers
 

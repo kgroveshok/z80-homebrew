@@ -571,8 +571,8 @@ hardware_diags:
 
         call clear_display
 	call update_display
-	ld a, 1
-	ld (hardware_diag), a
+	;ld a, 1
+	;ld (hardware_diag), a
 .diloop:
 	ld a, display_row_1
 	ld c, 0

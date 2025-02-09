@@ -1268,6 +1268,7 @@ endif
 		FORTH_DSP_VALUEHL
 
 		push hl
+		FORTH_DSP_POP
 		pop bc
 
 ; Start format of scratch string
@@ -1313,10 +1314,12 @@ push hl   ; sacreifical push
 		DMARK "LSk"
 		CALLMONITOR
 	endif
-		cp WORD_SYS_END
-		jp z, .lunotfound
+		;cp WORD_SYS_END
+		;jp z, .lunotfound
+
+		; if we hit non uwords then gone too far
 		cp WORD_SYS_UWORD
-		jp nz, .ldouscan
+		jp nz, .lunotfound
 
 	if DEBUG_FORTH_WORDS
 		DMARK "LSu"
@@ -1413,7 +1416,7 @@ pop hl
 
 		; skip ld hl,
 		; then load the ptr
-
+; TODO use get from hl ptr
 		inc hl
 		ld e, (hl)
 		inc hl
@@ -1436,7 +1439,8 @@ pop hl
 .listl:         ld a,(hl)
 		cp 0
 		jr z, .lreplsp     ; replace zero with space
-		cp FORTH_END_BUFFER
+		;cp FORTH_END_BUFFER
+		cp ';'    ; No end buffer flag but the ';' will be a good sign of the end of definition
 		jr z, .listdone    ; at end of uword defination to close of scratch and finish
 	
 		; just copy this char as is then
@@ -1454,6 +1458,8 @@ pop hl
 ; close up uword def
 
 .listdone:
+		ld (de), a
+		inc de
 		ld a, 0
 		ld (de), a
 
@@ -1479,18 +1485,23 @@ pop hl
 	endif
 
 		
-		FORTH_DSP_POP
-		ld hl, .luno
-			
+;		FORTH_DSP_POP
+;		ld hl, .luno
+
+		NEXTW			
 
 .listpush:
+	if DEBUG_FORTH_WORDS
+		DMARK "LS>"
+		CALLMONITOR
+	endif
 		call forth_push_str
 
 
 
 		NEXTW
 
-.luno:    db "Not found",0
+;.luno:    db "Word not found",0
 
 
 

@@ -7,10 +7,11 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 ------------
 
 * DONE BUG If a non-existing file extent/id is given as param to ERA, APPEND etc then the storage appears to be reformatted!
+* DONE BUG If an unknown uword is given for LIST then the system reboots
 
 
+* TODO fix saving more than a single block of file storage. Means to concate multiple blocks? Append is creating more blocks. But is it writing correctly? READ is picking up extra blocks but second block is corrupted. Is READ or APPEND broken?
 * TODO Future bug? stack imbalance on storage_read. Needs a pop of de if no record found. Have added code watch for further issues
-* TODO BUG If an unknown uword is given for LIST then the system reboots
 
 * TODO Save auto run flags to block 0 on bank 1 and not on currently selected device
 * TODO Add a flag to block 0 to decide if the auto startup prompt is given and/or run
@@ -24,8 +25,8 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Add to start up a list of what storage labels are seen
 * TODO add ram test to the diags
 * TODO Hook up Pico and get it talking over SPI to enable networking
+* TODO BUG If : word is in caps it wont work. This could be connected with caps on LIST which only works if given as lcase.
 
-* TODO fix saving more than a single block of file storage. Means to concate multiple blocks?
 
 
 * TODO add more editing features 

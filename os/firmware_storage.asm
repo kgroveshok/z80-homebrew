@@ -496,6 +496,8 @@ storage_erase:
 			CALLMONITOR
 		endif
 	call storage_findnextid
+	call ishlzero
+	ret z
 
 	push hl
 
@@ -985,6 +987,10 @@ storage_read:
 ; hl - file id to locate
 ; de - pointer to (multi block) string to write
 
+.sa_notfound:
+	pop de
+	ret
+
 
 storage_append:
 	; hl -  file id to append to
@@ -1008,6 +1014,9 @@ storage_append:
 
 		ld hl, STORE_BLOCK_PHY
 		call storage_findnextid
+
+	call ishlzero
+	jr z, .sa_notfound
 
 	ld (store_tmppageid), hl
 
@@ -1049,6 +1058,8 @@ storage_append:
 
 		ld hl, STORE_BLOCK_PHY
 		call storage_findnextid
+	call ishlzero
+	jp z, .sa_notfound
 
 		; TODO handle no space left
 		

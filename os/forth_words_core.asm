@@ -1473,6 +1473,10 @@ pop hl
 
 .lunotfound:		 
 
+	if DEBUG_FORTH_WORDS
+		DMARK "LSn"
+		CALLMONITOR
+	endif
 
 		
 		FORTH_DSP_POP

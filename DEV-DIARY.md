@@ -6,9 +6,10 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 9th Feb 2025
 ------------
 
+* DONE BUG If a non-existing file extent/id is given as param to ERA, APPEND etc then the storage appears to be reformatted!
+
 
 * TODO Future bug? stack imbalance on storage_read. Needs a pop of de if no record found. Have added code watch for further issues
-* TODO BUG If a non-existing file extent/id is given as param to ERA, APPEND etc then the storage appears to be reformatted!
 * TODO BUG If an unknown uword is given for LIST then the system reboots
 
 * TODO Save auto run flags to block 0 on bank 1 and not on currently selected device

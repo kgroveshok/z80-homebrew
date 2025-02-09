@@ -32,13 +32,25 @@
 
 	call storage_read_block
 
+	call ishlzero
+	jr nz, .brfound
+
+	call forth_push_numhl
+	jr .brdone
+
+
+.brfound:
         ld hl, store_page+2
+
 		if DEBUG_FORTH_WORDS
 			DMARK "BR2"
 			CALLMONITOR
 		endif
+
 	call forth_push_str
 
+
+.brdone:
 
 		NEXTW
 .BWRITE:
@@ -670,6 +682,8 @@
 ; | OPEN ( n -- n )  Sets file id to point to first data page for subsequent READs. Pushes the max number of blocks for this file | DONE
 ; | | e.g.
 ; | | $01 OPEN $01 DO $01 READ . LOOP
+; | |
+; | | Will return with 255 blocks if the file does not exist
 
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "OPN"
@@ -698,6 +712,16 @@
 			
 		ld de, store_page      ; get block zero of file
 		call storage_read
+	call ishlzero
+	jr nz, .opfound
+
+	; file does not exist so indicate with 255 extents in use
+
+	ld a, 255
+	jr .skipopeneof
+
+
+.opfound:
 
 
 		ld a, (store_page+2)    ; max extents for this file

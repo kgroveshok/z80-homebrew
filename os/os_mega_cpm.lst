@@ -207,17 +207,17 @@
 0103			MALLOC_4: equ 0              ; mine pretty basic reuse and max of 250 chars  
 0103			  
 0103			if BASE_KEV   
-0103			stacksize: equ 512*2  
+0103			stacksize: equ 256  
 0103			  
-0103			STACK_RET_SIZE: equ 128  
-0103			STACK_LOOP_SIZE: equ 512  
+0103			STACK_RET_SIZE: equ 64  
+0103			STACK_LOOP_SIZE: equ 128  
 0103			STACK_DATA_SIZE: equ 512  
 0103			endif  
 0103			if BASE_SC114  
 0103			;tos:	equ 0f000h  
 0103			stacksize: equ 256  
 0103			STACK_RET_SIZE: equ 64  
-0103			STACK_LOOP_SIZE: equ 256  
+0103			STACK_LOOP_SIZE: equ 128  
 0103			STACK_DATA_SIZE: equ 256  
 0103			endif  
 0103			  
@@ -225,7 +225,7 @@
 0103			;tos:	equ 0f000h  
 0103			stacksize: equ 256  
 0103			STACK_RET_SIZE: equ 64  
-0103			STACK_LOOP_SIZE: equ 256  
+0103			STACK_LOOP_SIZE: equ 128  
 0103			STACK_DATA_SIZE: equ 256  
 0103			endif  
 0103			  
@@ -4507,8 +4507,8 @@
 0e06					 
 0e06					; swap input and last command buffers 
 0e06			 
-0e06 21 7e e6				ld hl, os_cli_cmd 
-0e09 11 7d e7				ld de, os_last_cmd 
+0e06 21 fe e6				ld hl, os_cli_cmd 
+0e09 11 fd e7				ld de, os_last_cmd 
 0e0c 06 ff				ld b, 255 
 0e0e 7e			.swap1:		ld a, (hl) 
 0e0f 4f					ld c,a 
@@ -4810,8 +4810,8 @@
 0f55 fe 05		.instr6:        cp KEY_UP      ; recall last command 
 0f57 20 0b				jr nz, .instrnew 
 0f59			 
-0f59 21 57 e3			ld hl, scratch 
-0f5c 11 7d e7			ld de, os_last_cmd 
+0f59 21 d7 e3			ld hl, scratch 
+0f5c 11 fd e7			ld de, os_last_cmd 
 0f5f cd 7d 0f			call strcpy 
 0f62 18 93				jr .instr1 
 0f64			 
@@ -5231,10 +5231,10 @@
 1057 cd dd 0f			call get_byte 
 105a			 
 105a			;	call fourehexhl 
-105a 32 8b e3			ld (scratch+52),a 
+105a 32 0b e4			ld (scratch+52),a 
 105d				 
-105d 21 89 e3			ld hl,scratch+50 
-1060 22 7a e6			ld (os_cur_ptr),hl 
+105d 21 09 e4			ld hl,scratch+50 
+1060 22 fa e6			ld (os_cur_ptr),hl 
 1063			 
 1063 c9				ret 
 1064			 
@@ -6064,16 +6064,16 @@
 1133 22 5a 5a		      ld    (free_list+2), HL 
 1136			 
 1136			      ; Insert first free block at bottom of heap, consumes entire heap 
-1136 21 39 e3		      ld    HL, heap_start+heap_size-4 
+1136 21 b9 e3		      ld    HL, heap_start+heap_size-4 
 1139 22 5d 5a		      ld    (heap_start), HL        ; Next block (end of free list) 
-113c 21 dc 88		      ld    HL, heap_size-4 
+113c 21 5c 89		      ld    HL, heap_size-4 
 113f 22 5f 5a		      ld    (heap_start+2), HL      ; Block size 
 1142			 
 1142			      ; Insert end of free list block at top of heap - two null words will 
 1142			      ; terminate the free list 
 1142 21 00 00		      ld    HL, 0 
-1145 22 3b e3		      ld    (heap_start+heap_size-2), HL 
-1148 22 39 e3		      ld    (heap_start+heap_size-4), HL 
+1145 22 bb e3		      ld    (heap_start+heap_size-2), HL 
+1148 22 b9 e3		      ld    (heap_start+heap_size-4), HL 
 114b			 
 114b e1			      pop   HL 
 114c			 
@@ -8036,7 +8036,7 @@
 134e			.debug_tog: 
 134e 21 95 13			ld hl, .menudebug 
 1351				 
-1351 3a 48 e3			ld a, (os_view_disable) 
+1351 3a c8 e3			ld a, (os_view_disable) 
 1354 fe 2a			cp '*' 
 1356 20 04			jr nz,.tdon  
 1358 3e 01			ld a, 1 
@@ -8052,7 +8052,7 @@
 1368 3e 2a			ld a, '*' 
 136a 18 02			jr .dtogset 
 136c 3e 00		.dtog0: ld a, 0 
-136e 32 48 e3		.dtogset:  ld (os_view_disable), a 
+136e 32 c8 e3		.dtogset:  ld (os_view_disable), a 
 1371 c3 4e 13			jp .debug_tog 
 1374			 
 1374			 
@@ -8106,7 +8106,7 @@
 13e0			 
 13e0			.diagedit: 
 13e0			 
-13e0 21 57 e3			ld hl, scratch 
+13e0 21 d7 e3			ld hl, scratch 
 13e3			;	ld bc, 250 
 13e3			;	ldir 
 13e3				; TODO ldir is not working strcpy may not get all the terms on the input line???? 
@@ -8127,11 +8127,11 @@
 13f4 16 ff			ld d, 255    ; TODO fix input_str to actually take note of max string input length 
 13f6 1e 28			ld e, 40 
 13f8			 
-13f8 21 57 e3			ld hl, scratch	 
+13f8 21 d7 e3			ld hl, scratch	 
 13fb cd b3 0c			call input_str 
 13fe			 
 13fe 3e 28			ld a, display_row_2 
-1400 11 57 e3			ld de, scratch 
+1400 11 d7 e3			ld de, scratch 
 1403 cd 6c 0a			call str_at_display 
 1406 cd 7c 0a			call update_display 
 1409			 
@@ -8144,16 +8144,16 @@
 140c f5				push af 
 140d e5				push hl 
 140e 7c				ld a,h 
-140f 21 5c e6			ld hl, os_word_scratch 
+140f 21 dc e6			ld hl, os_word_scratch 
 1412 cd 87 0f			call hexout 
 1415 e1				pop hl 
 1416 7d				ld a,l 
-1417 21 5e e6			ld hl, os_word_scratch+2 
+1417 21 de e6			ld hl, os_word_scratch+2 
 141a cd 87 0f			call hexout 
-141d 21 60 e6			ld hl, os_word_scratch+4 
+141d 21 e0 e6			ld hl, os_word_scratch+4 
 1420 3e 00			ld a,0 
 1422 77				ld (hl),a 
-1423 11 5c e6			ld de,os_word_scratch 
+1423 11 dc e6			ld de,os_word_scratch 
 1426 f1				pop af 
 1427 cd 6c 0a				call str_at_display 
 142a c9				ret 
@@ -8281,7 +8281,7 @@
 1488			 
 1488				; see if disabled 
 1488			 
-1488 3a 48 e3			ld a, (os_view_disable) 
+1488 3a c8 e3			ld a, (os_view_disable) 
 148b fe 2a			cp '*' 
 148d 20 02			jr nz, .bpsgo 
 148f f1				pop af 
@@ -8290,13 +8290,13 @@
 1491			.bpsgo: 
 1491 f1				pop af 
 1492 f5				push af 
-1493 22 44 e3			ld (os_view_hl), hl 
-1496 ed 53 42 e3		ld (os_view_de), de 
-149a ed 43 40 e3		ld (os_view_bc), bc 
+1493 22 c4 e3			ld (os_view_hl), hl 
+1496 ed 53 c2 e3		ld (os_view_de), de 
+149a ed 43 c0 e3		ld (os_view_bc), bc 
 149e e5				push hl 
 149f 6f				ld l, a 
 14a0 26 00			ld h, 0 
-14a2 22 46 e3			ld (os_view_af),hl 
+14a2 22 c6 e3			ld (os_view_af),hl 
 14a5			 
 14a5 21 b7 ed				ld hl, display_fb0 
 14a8 22 d2 eb				ld (display_fb_active), hl 
@@ -8305,7 +8305,7 @@
 14ac 3e 31			ld a, '1' 
 14ae fe 2a		.bps1:  cp '*' 
 14b0 20 03			jr nz, .bps1b 
-14b2 32 48 e3			ld (os_view_disable),a 
+14b2 32 c8 e3			ld (os_view_disable),a 
 14b5 fe 31		.bps1b:  cp '1' 
 14b7 20 14			jr nz, .bps2 
 14b9			 
@@ -8313,10 +8313,10 @@
 14b9			 
 14b9				 
 14b9			 
-14b9 3a 46 e3			ld a, (os_view_af) 
-14bc 2a 44 e3			ld hl, (os_view_hl) 
-14bf ed 5b 42 e3		ld de, (os_view_de) 
-14c3 ed 4b 40 e3		ld bc, (os_view_bc) 
+14b9 3a c6 e3			ld a, (os_view_af) 
+14bc 2a c4 e3			ld hl, (os_view_hl) 
+14bf ed 5b c2 e3		ld de, (os_view_de) 
+14c3 ed 4b c0 e3		ld bc, (os_view_bc) 
 14c7 cd 61 15			call display_reg_state 
 14ca c3 4d 15			jp .bpschk 
 14cd			 
@@ -8324,7 +8324,7 @@
 14cf 20 08			jr nz, .bps3 
 14d1				 
 14d1				; display hl 
-14d1 2a 44 e3			ld hl, (os_view_hl) 
+14d1 2a c4 e3			ld hl, (os_view_hl) 
 14d4 cd 4b 16			call display_dump_at_hl 
 14d7			 
 14d7 18 74			jr .bpschk 
@@ -8333,7 +8333,7 @@
 14db 20 08			jr nz, .bps4 
 14dd			 
 14dd			        ; display de 
-14dd 2a 42 e3			ld hl, (os_view_de) 
+14dd 2a c2 e3			ld hl, (os_view_de) 
 14e0 cd 4b 16			call display_dump_at_hl 
 14e3			 
 14e3 18 68			jr .bpschk 
@@ -8341,7 +8341,7 @@
 14e7 20 08			jr nz, .bps5 
 14e9			 
 14e9			        ; display bc 
-14e9 2a 40 e3			ld hl, (os_view_bc) 
+14e9 2a c0 e3			ld hl, (os_view_bc) 
 14ec cd 4b 16			call display_dump_at_hl 
 14ef			 
 14ef 18 5c			jr .bpschk 
@@ -8397,9 +8397,9 @@
 153d cd 7c 0a				call update_display 
 1540			 
 1540				;ld a, (os_view_af) 
-1540 2a 44 e3			ld hl, (os_view_hl) 
-1543 ed 5b 42 e3		ld de, (os_view_de) 
-1547 ed 4b 40 e3		ld bc, (os_view_bc) 
+1540 2a c4 e3			ld hl, (os_view_hl) 
+1543 ed 5b c2 e3		ld de, (os_view_de) 
+1547 ed 4b c0 e3		ld bc, (os_view_bc) 
 154b f1				pop af 
 154c c9				ret 
 154d			 
@@ -8551,7 +8551,7 @@
 164d c5				push bc 
 164e f5				push af 
 164f			 
-164f 22 7a e6			ld (os_cur_ptr),hl	 
+164f 22 fa e6			ld (os_cur_ptr),hl	 
 1652 cd 59 0a			call clear_display 
 1655 cd 61 19			call dumpcont 
 1658			;	call delay1s 
@@ -8580,7 +8580,7 @@
 165d			 
 165d			; boot messages 
 165d			 
-165d .. 00		prom_bootmsg:	db "z80-homebrew OS v1.5",0 
+165d .. 00		prom_bootmsg:	db "z80-homebrew OS v1.6",0 
 1672 .. 00		prom_bootmsg1:	db "by Kevin Groves",0 
 1682			 
 1682			 
@@ -8632,7 +8632,7 @@
 172e				; disable breakpoint by default 
 172e			 
 172e 3e 2a			ld a,'*' 
-1730 32 48 e3			ld (os_view_disable),a 
+1730 32 c8 e3			ld (os_view_disable),a 
 1733			 
 1733				; init hardware 
 1733			 
@@ -8733,22 +8733,22 @@
 1754 cd 6c 0a			call str_at_display 
 1757			 
 1757			; Or use heap_size word???? 
-1757 21 3d e3			ld hl, heap_end 
+1757 21 bd e3			ld hl, heap_end 
 175a 11 5d 5a			ld de, heap_start 
 175d ed 52			sbc hl, de 
 175f e5				push hl 
 1760 7c				ld a,h	         	 
-1761 21 5c e6			ld hl, os_word_scratch		; TODO do direct write to frame buffer instead and drop the str_at_display 
+1761 21 dc e6			ld hl, os_word_scratch		; TODO do direct write to frame buffer instead and drop the str_at_display 
 1764 cd 87 0f			call hexout 
 1767 e1			   	pop hl 
 1768			 
 1768 7d				ld a,l 
-1769 21 5e e6			ld hl, os_word_scratch+2 
+1769 21 de e6			ld hl, os_word_scratch+2 
 176c cd 87 0f			call hexout 
-176f 21 60 e6			ld hl, os_word_scratch+4 
+176f 21 e0 e6			ld hl, os_word_scratch+4 
 1772 3e 00			ld a, 0 
 1774 77				ld (hl),a 
-1775 11 5c e6			ld de, os_word_scratch 
+1775 11 dc e6			ld de, os_word_scratch 
 1778 3e 0d			ld a, display_row_1 + 13 
 177a cd 6c 0a			call str_at_display 
 177d cd 7c 0a			call update_display 
@@ -8759,24 +8759,24 @@
 1780			 
 1780				; init scratch input area for cli commands 
 1780			 
-1780 21 7e e6			ld hl, os_cli_cmd 
+1780 21 fe e6			ld hl, os_cli_cmd 
 1783 3e 00			ld a,0 
 1785 77				ld (hl),a 
 1786 23				inc hl 
 1787 77				ld (hl),a 
 1788			 
 1788 3e 00			ld a,0 
-178a 32 7d e7			ld (os_last_cmd),a	; current command in use to enable repeated use with an enter etc 
+178a 32 fd e7			ld (os_last_cmd),a	; current command in use to enable repeated use with an enter etc 
 178d			 
-178d 32 7a e6			ld (os_cur_ptr),a	; ptr to whatever is needed for this command 
-1790 32 7b e6			ld (os_cur_ptr+1),a	 
+178d 32 fa e6			ld (os_cur_ptr),a	; ptr to whatever is needed for this command 
+1790 32 fb e6			ld (os_cur_ptr+1),a	 
 1793			 
-1793 32 5c e6			ld (os_word_scratch),a	; byte or word being used in parsing for this command 
-1796 32 5d e6			ld (os_word_scratch+1),a	 
+1793 32 dc e6			ld (os_word_scratch),a	; byte or word being used in parsing for this command 
+1796 32 dd e6			ld (os_word_scratch+1),a	 
 1799				 
 1799			 
 1799				;ld a, kLCD_Line2        ; TODO prompt using direct screen line address. Correct this to frame buffer 
-1799 21 7e e6			ld hl, os_cli_cmd 
+1799 21 fe e6			ld hl, os_cli_cmd 
 179c			 
 179c 3e 00			ld a, 0		 ; init cli input 
 179e 77				ld (hl), a 
@@ -8796,7 +8796,7 @@
 17a3 16 ff			ld d, 255    ; TODO fix input_str to actually take note of max string input length 
 17a5 1e 28			ld e, 40 
 17a7			 
-17a7 21 7e e6			ld hl, os_cli_cmd 
+17a7 21 fe e6			ld hl, os_cli_cmd 
 17aa			 
 17aa				STACKFRAME OFF $fefe $9f9f 
 17aa				if DEBUG_STACK_IMB 
@@ -8843,8 +8843,8 @@
 17ad			 
 17ad				; copy input to last command 
 17ad			 
-17ad 21 7e e6			ld hl, os_cli_cmd 
-17b0 11 7d e7			ld de, os_last_cmd 
+17ad 21 fe e6			ld hl, os_cli_cmd 
+17b0 11 fd e7			ld de, os_last_cmd 
 17b3 01 ff 00			ld bc, 255 
 17b6 ed b0			ldir 
 17b8			 
@@ -8891,7 +8891,7 @@
 17be			endm 
 # End of macro STACKFRAME
 17be				; first time into the parser so pass over the current scratch pad 
-17be 21 7e e6			ld hl,os_cli_cmd 
+17be 21 fe e6			ld hl,os_cli_cmd 
 17c1				; tokenise the entered statement(s) in HL 
 17c1 cd 98 1e			call forthparse 
 17c4			        ; exec forth statements in top of return stack 
@@ -8936,7 +8936,7 @@
 17d8 cd 59 0a		        call clear_display 
 17db cd 7c 0a			call update_display		 
 17de			 
-17de 21 7e e6			ld hl, os_cli_cmd 
+17de 21 fe e6			ld hl, os_cli_cmd 
 17e1			 
 17e1 3e 00			ld a, 0		 ; init cli input 
 17e3 77				ld (hl), a 
@@ -8964,8 +8964,8 @@
 17fb .. 00		endprog: db "End prog...",0 
 1807			 
 1807			testenter2:   
-1807 21 89 e3			ld hl,scratch+50 
-180a 22 7a e6			ld (os_cur_ptr),hl 
+1807 21 09 e4			ld hl,scratch+50 
+180a 22 fa e6			ld (os_cur_ptr),hl 
 180d c3 a1 17			jp cli 
 1810			 
 1810			testenter:  
@@ -8980,7 +8980,7 @@
 1816			;	call atohex 
 1816			 
 1816			;	call fourehexhl 
-1816 32 89 e3			ld (scratch+50),a 
+1816 32 09 e4			ld (scratch+50),a 
 1819			 
 1819			 
 1819			 
@@ -8990,34 +8990,34 @@
 181c cd dd 0f			call get_byte 
 181f			 
 181f			;	call fourehexhl 
-181f 32 8b e3			ld (scratch+52),a 
+181f 32 0b e4			ld (scratch+52),a 
 1822				 
-1822 21 89 e3			ld hl,scratch+50 
-1825 22 7a e6			ld (os_cur_ptr),hl 
+1822 21 09 e4			ld hl,scratch+50 
+1825 22 fa e6			ld (os_cur_ptr),hl 
 1828 c3 a1 17			jp cli 
 182b			 
 182b			enter:	 
-182b 3a 5b e3			ld a,(scratch+4) 
+182b 3a db e3			ld a,(scratch+4) 
 182e fe 00			cp 0 
 1830 28 0c			jr z, .entercont 
 1832				; no, not a null term line so has an address to work out.... 
 1832			 
-1832 21 59 e3			ld hl,scratch+2 
+1832 21 d9 e3			ld hl,scratch+2 
 1835 cd 3d 10			call get_word_hl 
 1838			 
-1838 22 7a e6			ld (os_cur_ptr),hl	 
+1838 22 fa e6			ld (os_cur_ptr),hl	 
 183b c3 a1 17			jp cli 
 183e			 
 183e			 
 183e			.entercont:  
 183e			 
-183e 21 59 e3			ld hl, scratch+2 
+183e 21 d9 e3			ld hl, scratch+2 
 1841 cd dd 0f			call get_byte 
 1844			 
-1844 2a 7a e6		   	ld hl,(os_cur_ptr) 
+1844 2a fa e6		   	ld hl,(os_cur_ptr) 
 1847 77					ld (hl),a 
 1848 23					inc hl 
-1849 22 7a e6				ld (os_cur_ptr),hl 
+1849 22 fa e6				ld (os_cur_ptr),hl 
 184c				 
 184c			; get byte  
 184c			 
@@ -9041,18 +9041,18 @@
 185f 16 64			ld d, 100   ; max buffer size 
 1861 1e 0f			ld e, 15    ; input scroll area 
 1863 3e 00			ld a, 0     ; init string 
-1865 21 55 e5			ld hl, os_input 
+1865 21 d5 e5			ld hl, os_input 
 1868 77				ld (hl), a 
 1869 23				inc hl 
 186a 77				ld (hl), a 
-186b 21 55 e5			ld hl, os_input 
+186b 21 d5 e5			ld hl, os_input 
 186e 3e 01			ld a, 1     ; init string 
 1870 cd b3 0c			call input_str 
 1873			 
 1873 cd 59 0a		        call clear_display 
 1876 cd 7c 0a			call update_display		 
 1879			 
-1879 3a 55 e5			ld a, (os_input) 
+1879 3a d5 e5			ld a, (os_input) 
 187c cd db 10			call toUpper 
 187f fe 48		        cp 'H' 
 1881 28 6f		        jr z, .monhelp 
@@ -9078,21 +9078,21 @@
 189e			.moneditstart: 
 189e				; get starting address 
 189e			 
-189e 21 57 e5			ld hl,os_input+2 
+189e 21 d7 e5			ld hl,os_input+2 
 18a1 cd 3d 10			call get_word_hl 
 18a4			 
-18a4 22 7a e6			ld (os_cur_ptr),hl	 
+18a4 22 fa e6			ld (os_cur_ptr),hl	 
 18a7			 
 18a7 c3 4f 18			jp monitor 
 18aa			 
 18aa			.monedit: 
 18aa				; get byte to load 
 18aa			 
-18aa 21 57 e5			ld hl,os_input+2 
+18aa 21 d7 e5			ld hl,os_input+2 
 18ad cd dd 0f			call get_byte 
 18b0			 
 18b0				; get address to update 
-18b0 2a 7a e6			ld hl, (os_cur_ptr) 
+18b0 2a fa e6			ld hl, (os_cur_ptr) 
 18b3			 
 18b3				; update byte 
 18b3			 
@@ -9101,7 +9101,7 @@
 18b4				; move to next address and save it 
 18b4			 
 18b4 23				inc hl 
-18b5 22 7a e6			ld (os_cur_ptr),hl	 
+18b5 22 fa e6			ld (os_cur_ptr),hl	 
 18b8			 
 18b8 c3 4f 18			jp monitor 
 18bb			 
@@ -9129,10 +9129,10 @@
 1910 c3 4f 18			jp monitor 
 1913			 
 1913			.mondump:    
-1913 21 57 e5			ld hl,os_input+2 
+1913 21 d7 e5			ld hl,os_input+2 
 1916 cd 3d 10			call get_word_hl 
 1919			 
-1919 22 7a e6			ld (os_cur_ptr),hl	 
+1919 22 fa e6			ld (os_cur_ptr),hl	 
 191c cd 61 19			call dumpcont 
 191f 3e 78			ld a, display_row_4 
 1921 11 fb 17			ld de, endprog 
@@ -9163,16 +9163,16 @@
 1951			 
 1951			dump:	; see if we are cotinuing on from the last command by not uncluding any address 
 1951			 
-1951 3a 58 e3			ld a,(scratch+1) 
+1951 3a d8 e3			ld a,(scratch+1) 
 1954 fe 00			cp 0 
 1956 28 09			jr z, dumpcont 
 1958			 
 1958				; no, not a null term line so has an address to work out.... 
 1958			 
-1958 21 59 e3			ld hl,scratch+2 
+1958 21 d9 e3			ld hl,scratch+2 
 195b cd 3d 10			call get_word_hl 
 195e			 
-195e 22 7a e6			ld (os_cur_ptr),hl	 
+195e 22 fa e6			ld (os_cur_ptr),hl	 
 1961			 
 1961			 
 1961			 
@@ -9220,18 +9220,18 @@
 1994			endif 
 1994			 
 1994 cd 86 0c			call addatohl 
-1997 22 5c e6			ld (os_word_scratch),hl  		; save pos for later 
+1997 22 dc e6			ld (os_word_scratch),hl  		; save pos for later 
 199a			 
 199a			 
 199a			; display decoding address 
-199a 2a 7a e6		   	ld hl,(os_cur_ptr) 
+199a 2a fa e6		   	ld hl,(os_cur_ptr) 
 199d			 
 199d 7c				ld a,h 
 199e e1				pop hl 
 199f e5				push hl 
 19a0			;	ld hl, os_word_scratch		; TODO do direct write to frame buffer instead and drop the str_at_display 
 19a0 cd 87 0f			call hexout 
-19a3 2a 7a e6		   	ld hl,(os_cur_ptr) 
+19a3 2a fa e6		   	ld hl,(os_cur_ptr) 
 19a6			 
 19a6 7d				ld a,l 
 19a7 e1				pop hl 
@@ -9271,14 +9271,14 @@
 19b8 e5				push hl 
 19b9			 
 19b9			 
-19b9 2a 7a e6		   	ld hl,(os_cur_ptr) 
+19b9 2a fa e6		   	ld hl,(os_cur_ptr) 
 19bc 7e					ld a,(hl) 
 19bd			 
 19bd					; poke the ascii to display 
-19bd 2a 5c e6				ld hl,(os_word_scratch) 
+19bd 2a dc e6				ld hl,(os_word_scratch) 
 19c0 77					ld (hl),a 
 19c1 23					inc hl 
-19c2 22 5c e6				ld (os_word_scratch),hl 
+19c2 22 dc e6				ld (os_word_scratch),hl 
 19c5			 
 19c5					 
 19c5			 
@@ -9289,9 +9289,9 @@
 19c7 cd 87 0f				call hexout 
 19ca			 
 19ca					 
-19ca 2a 7a e6		   	ld hl,(os_cur_ptr) 
+19ca 2a fa e6		   	ld hl,(os_cur_ptr) 
 19cd 23				inc hl 
-19ce 22 7a e6		   	ld (os_cur_ptr),hl 
+19ce 22 fa e6		   	ld (os_cur_ptr),hl 
 19d1			 
 19d1 e1					pop hl 
 19d2 23					inc hl 
@@ -9319,12 +9319,12 @@
 19db			 
 19db			jump:	 
 19db			 
-19db 21 59 e3			ld hl,scratch+2 
+19db 21 d9 e3			ld hl,scratch+2 
 19de cd 3d 10			call get_word_hl 
 19e1				;ld hl,(scratch+2) 
 19e1				;call fourehexhl 
 19e1			 
-19e1 22 7a e6			ld (os_cur_ptr),hl	 
+19e1 22 fa e6			ld (os_cur_ptr),hl	 
 19e4			 
 19e4 e9				jp (hl) 
 19e5			 
@@ -9353,7 +9353,7 @@
 1a0d			;	call update_display 
 1a0d			 
 1a0d				; init scratch input area for testing 
-1a0d 21 57 e3			ld hl, scratch	 
+1a0d 21 d7 e3			ld hl, scratch	 
 1a10 3e 00			ld a,0 
 1a12 77				ld (hl),a 
 1a13			 
@@ -9378,7 +9378,7 @@
 1a2e			 
 1a2e 3e 79			ld a, kLCD_Line4+1	 ; TODO using direct screen line writes. Correct this to frame buffer 
 1a30 16 0a			ld d, 10 
-1a32 21 57 e3			ld hl, scratch	 
+1a32 21 d7 e3			ld hl, scratch	 
 1a35 cd b3 0c			call input_str 
 1a38			 
 1a38			;	call clear_display 
@@ -9391,13 +9391,13 @@
 1a40			;            CALL fLCD_Str       ;Display string pointed to by DE 
 1a40 3e 00		            LD   A, display_row_1 
 1a42			;            CALL fLCD_Pos       ;Position cursor to location in A 
-1a42 11 57 e3		            LD   DE, scratch 
+1a42 11 d7 e3		            LD   DE, scratch 
 1a45			;            CALL fLCD_Str       ;Display string pointed to by DE 
 1a45 cd 6c 0a				call str_at_display 
 1a48 cd 7c 0a			call update_display 
 1a4b			 
 1a4b 3e 00				ld a,0 
-1a4d 21 57 e3			ld hl, scratch 
+1a4d 21 d7 e3			ld hl, scratch 
 1a50 77				ld (hl),a 
 1a51			 
 1a51 00				nop 
@@ -9708,7 +9708,7 @@
 1ae2			 
 1ae2			 
 1ae2 f5				push af 
-1ae3 3a 48 e3			ld a, (os_view_disable) 
+1ae3 3a c8 e3			ld a, (os_view_disable) 
 1ae6 fe 2a			cp '*' 
 1ae8 28 34			jr z, .pskip2 
 1aea e5				push hl 
@@ -9716,17 +9716,17 @@
 1aec cd 59 0a			call clear_display 
 1aef e1			pop hl 
 1af0 7c				ld a,h 
-1af1 21 5c e6			ld hl, os_word_scratch 
+1af1 21 dc e6			ld hl, os_word_scratch 
 1af4 cd 87 0f			call hexout 
 1af7 e1				pop hl 
 1af8 7d				ld a,l 
-1af9 21 5e e6			ld hl, os_word_scratch+2 
+1af9 21 de e6			ld hl, os_word_scratch+2 
 1afc cd 87 0f			call hexout 
 1aff			 
-1aff 21 60 e6			ld hl, os_word_scratch+4 
+1aff 21 e0 e6			ld hl, os_word_scratch+4 
 1b02 3e 00			ld a,0 
 1b04 77				ld (hl),a 
-1b05 11 5c e6			ld de,os_word_scratch 
+1b05 11 dc e6			ld de,os_word_scratch 
 1b08 3e 28				ld a, display_row_2 
 1b0a cd 6c 0a				call str_at_display 
 1b0d 11 24 46			ld de, .push_num 
@@ -10393,7 +10393,7 @@
 1d62 e5				push hl 
 1d63 d5				push de 
 1d64 2a 06 eb			ld hl,(cli_loop_sp) 
-1d67 11 c0 e9			ld de, cli_loop_stack 
+1d67 11 40 ea			ld de, cli_loop_stack 
 1d6a cd a4 0c			call cmp16 
 1d6d da 5f 58			jp c, fault_loop_under 
 1d70 d1				pop de 
@@ -10414,7 +10414,7 @@
 1d7f e5				push hl 
 1d80 d5				push de 
 1d81 2a 06 eb			ld hl,(cli_loop_sp) 
-1d84 11 c0 e9			ld de, cli_loop_stack 
+1d84 11 40 ea			ld de, cli_loop_stack 
 1d87 cd a4 0c			call cmp16 
 1d8a da 5f 58			jp c, fault_loop_under 
 1d8d d1				pop de 
@@ -10436,7 +10436,7 @@
 1d94 e5				push hl 
 1d95 d5				push de 
 1d96 2a 04 eb			ld hl,(cli_data_sp) 
-1d99 11 be e8			ld de, cli_data_stack 
+1d99 11 3e e9			ld de, cli_data_stack 
 1d9c cd a4 0c			call cmp16 
 1d9f da 53 58			jp c, fault_dsp_under 
 1da2 d1				pop de 
@@ -10497,7 +10497,7 @@
 1dbf e5				push hl 
 1dc0 d5				push de 
 1dc1 2a 04 eb			ld hl,(cli_data_sp) 
-1dc4 11 be e8			ld de, cli_data_stack 
+1dc4 11 3e e9			ld de, cli_data_stack 
 1dc7 cd a4 0c			call cmp16 
 1dca da 53 58			jp c, fault_dsp_under 
 1dcd d1				pop de 
@@ -10606,7 +10606,7 @@
 1e01 23				inc hl 
 1e02 77				ld (hl),a 
 1e03			 
-1e03 21 be e8			ld hl, cli_data_stack 
+1e03 21 3e e9			ld hl, cli_data_stack 
 1e06 22 04 eb			ld (cli_data_sp), hl	 
 1e09				; set bottom of stack 
 1e09 3e 00			ld a,0 
@@ -10614,7 +10614,7 @@
 1e0c 23				inc hl 
 1e0d 77				ld (hl),a 
 1e0e			 
-1e0e 21 c0 e9			ld hl, cli_loop_stack 
+1e0e 21 40 ea			ld hl, cli_loop_stack 
 1e11 22 06 eb			ld (cli_loop_sp), hl	 
 1e14				; set bottom of stack 
 1e14 3e 00			ld a,0 
@@ -10657,7 +10657,7 @@
 1e2c				; set start of word list in start of ram - for use when creating user words 
 1e2c			 
 1e2c 21 4e 5a			ld hl, baseram 
-1e2f 22 54 e6			ld (os_last_new_uword), hl 
+1e2f 22 d4 e6			ld (os_last_new_uword), hl 
 1e32 cd d8 1d			call user_word_eol 
 1e35				 
 1e35			;		call display_data_sp 
@@ -10754,7 +10754,7 @@
 1e4a			;	inc hl  ; skip token null term  
 1e4a ed 4b 22 eb		ld bc,(cli_ptr)   ; move to next token to parse in the input stream 
 1e4e ed 5b 20 eb		ld de,(cli_origptr)   ; move to next token to parse in the input stream 
-1e52 2a 58 e6			ld hl,(os_tok_ptr)   ; move to next token to parse in the input stream 
+1e52 2a d8 e6			ld hl,(os_tok_ptr)   ; move to next token to parse in the input stream 
 1e55			if DEBUG_FORTH_PARSE_KEY 
 1e55				DMARK "}AA" 
 1e55				CALLMONITOR 
@@ -10789,7 +10789,7 @@
 1e58			; hl to point to the line to tokenise 
 1e58			 
 1e58			;	push hl 
-1e58 22 58 e6			ld (os_tok_ptr), hl  ; save ptr to string 
+1e58 22 d8 e6			ld (os_tok_ptr), hl  ; save ptr to string 
 1e5b			 
 1e5b			;	ld a,0		; string term on input 
 1e5b			;	call strlent 
@@ -10858,7 +10858,7 @@
 1e8e 3e 21			ld a, '!' 
 1e90 77				ld (hl),a 
 1e91			 
-1e91 2a 58 e6			ld hl,(os_tok_ptr) 
+1e91 2a d8 e6			ld hl,(os_tok_ptr) 
 1e94			         
 1e94			if DEBUG_FORTH_TOK 
 1e94						DMARK "Tc1" 
@@ -10888,7 +10888,7 @@
 1e98			; hl to point to the line to tokenise 
 1e98			 
 1e98			;	push hl 
-1e98 22 58 e6			ld (os_tok_ptr), hl  ; save ptr to string 
+1e98 22 d8 e6			ld (os_tok_ptr), hl  ; save ptr to string 
 1e9b			 
 1e9b			;	ld a,0		; string term on input 
 1e9b			;	call strlent 
@@ -10957,7 +10957,7 @@
 1ece 3e 21			ld a, '!' 
 1ed0 77				ld (hl),a 
 1ed1			 
-1ed1 2a 58 e6			ld hl,(os_tok_ptr) 
+1ed1 2a d8 e6			ld hl,(os_tok_ptr) 
 1ed4			         
 1ed4			if DEBUG_FORTH_TOK 
 1ed4						DMARK "TK1" 
@@ -11104,7 +11104,7 @@
 1edb			 
 1edb			 
 1edb			exec1: 
-1edb 22 58 e6			ld (os_tok_ptr), hl 
+1edb 22 d8 e6			ld (os_tok_ptr), hl 
 1ede			 
 1ede				; copy our PC to working vars  
 1ede 22 22 eb			ld (cli_ptr), hl 
@@ -11485,7 +11485,7 @@
 1f52			endm 
 # End of macro STACKFRAME
 1f52			 
-1f52 2a 58 e6		ld hl,(os_tok_ptr) 
+1f52 2a d8 e6		ld hl,(os_tok_ptr) 
 1f55 cd 4a 1c		call forth_apush 
 1f58			 
 1f58				STACKFRAMECHK ON $1efe $2f9f 
@@ -11515,7 +11515,7 @@
 1f58			endif 
 1f58			; move past token to next word 
 1f58			 
-1f58 2a 58 e6		ld hl, (os_tok_ptr) 
+1f58 2a d8 e6		ld hl, (os_tok_ptr) 
 1f5b 3e 00		ld a, 0 
 1f5d 01 ff 00		ld bc, 255     ; input buffer size 
 1f60 ed b1		cpir 
@@ -11986,7 +11986,7 @@
 1fd2			 
 1fd2			 
 1fd2 ed 5b 58 5a			ld de, (free_list )      
-1fd6 21 3d e3				ld hl, heap_end 
+1fd6 21 bd e3				ld hl, heap_end 
 1fd9			 
 1fd9 ed 52				sbc hl, de 
 1fdb			 
@@ -12549,7 +12549,7 @@
 20f0					; TODO Move past word token 
 20f0					; TODO get length of string up to the ';' 
 20f0			 
-20f0 2a 58 e6			ld hl, (os_tok_ptr) 
+20f0 2a d8 e6			ld hl, (os_tok_ptr) 
 20f3 23				inc hl 
 20f4 23				inc hl 
 20f5			 
@@ -12557,11 +12557,11 @@
 20f7 cd ef 10			call strlent 
 20fa			 
 20fa 7d				ld a,l 
-20fb 32 53 e3			ld (os_new_parse_len), a 
+20fb 32 d3 e3			ld (os_new_parse_len), a 
 20fe			 
 20fe			 
 20fe			if DEBUG_FORTH_UWORD 
-20fe ed 5b 58 e6		ld de, (os_tok_ptr) 
+20fe ed 5b d8 e6		ld de, (os_tok_ptr) 
 2102						DMARK ":01" 
 2102 f5				push af  
 2103 3a 17 21			ld a, (.dmark)  
@@ -12641,7 +12641,7 @@
 214e					; malloc the size 
 214e			 
 214e cd 4d 11				call malloc 
-2151 22 55 e3				ld (os_new_malloc), hl     ; save malloc start 
+2151 22 d5 e3				ld (os_new_malloc), hl     ; save malloc start 
 2154			 
 2154			;    db   1     ; user defined word  
 2154 3e 01				ld a, WORD_SYS_UWORD  
@@ -12659,12 +12659,12 @@
 215f			;    Setup dict word 
 215f			 
 215f 23				inc hl 
-2160 22 4f e3			ld (os_new_work_ptr), hl     ; save start of dict word  
+2160 22 cf e3			ld (os_new_work_ptr), hl     ; save start of dict word  
 2163			 
 2163				; 1. get length of dict word 
 2163			 
 2163			 
-2163 2a 58 e6			ld hl, (os_tok_ptr) 
+2163 2a d8 e6			ld hl, (os_tok_ptr) 
 2166 23				inc hl 
 2167 23				inc hl    ; position to start of dict word 
 2168 3e 00			ld a, 0 
@@ -12675,7 +12675,7 @@
 216e			 
 216e				; write length of dict word 
 216e			 
-216e ed 5b 4f e3		ld de, (os_new_work_ptr)   ; get dest for copy of word 
+216e ed 5b cf e3		ld de, (os_new_work_ptr)   ; get dest for copy of word 
 2172 1b				dec de 
 2173 eb				ex de, hl 
 2174 73				ld (hl), e 
@@ -12686,8 +12686,8 @@
 2176				; copy  
 2176 4d				ld c, l 
 2177 06 00			ld b, 0 
-2179 ed 5b 4f e3		ld de, (os_new_work_ptr)   ; get dest for copy of word 
-217d 2a 58 e6			ld hl, (os_tok_ptr) 
+2179 ed 5b cf e3		ld de, (os_new_work_ptr)   ; get dest for copy of word 
+217d 2a d8 e6			ld hl, (os_tok_ptr) 
 2180 23				inc hl 
 2181 23				inc hl    ; position to start of dict word 
 2182				 
@@ -12705,15 +12705,15 @@
 218c			 
 218c			 
 218c				; de now points to start of where the word body code should be placed 
-218c ed 53 4f e3		ld (os_new_work_ptr), de 
+218c ed 53 cf e3		ld (os_new_work_ptr), de 
 2190				; hl now points to the words to throw at forthexec which needs to be copied 
-2190 22 4d e3			ld (os_new_src_ptr), hl 
+2190 22 cd e3			ld (os_new_src_ptr), hl 
 2193			 
 2193				; TODO add 'call to forthexec' 
 2193			 
 2193			if DEBUG_FORTH_UWORD 
 2193 c5				push bc 
-2194 ed 4b 55 e3		ld bc, (os_new_malloc) 
+2194 ed 4b d5 e3		ld bc, (os_new_malloc) 
 2198						DMARK ":0x" 
 2198 f5				push af  
 2199 3a ad 21			ld a, (.dmark)  
@@ -12750,7 +12750,7 @@
 21b6 36 21			ld (hl), 021h     ; TODO get bytes poke "ld hl, " 
 21b8			 
 21b8 23				inc hl 
-21b9 22 49 e3			ld (os_new_exec_ptr),hl     ; save this location to poke with the address of the word buffer 
+21b9 22 c9 e3			ld (os_new_exec_ptr),hl     ; save this location to poke with the address of the word buffer 
 21bc 23				inc hl 
 21bd			 
 21bd 23				inc hl 
@@ -12794,14 +12794,14 @@
 21c7				; hl is now where we need to copy the word byte data to save this 
 21c7			 
 21c7 23				inc hl 
-21c8 22 4b e3			ld (os_new_exec), hl 
+21c8 22 cb e3			ld (os_new_exec), hl 
 21cb				 
 21cb				; copy definition 
 21cb			 
 21cb eb				ex de, hl 
 21cc			;	inc de    ; TODO BUG It appears the exec of a uword requires pc to be set 
 21cc			;	inc de    ; skip the PC for this parse 
-21cc 3a 53 e3			ld a, (os_new_parse_len) 
+21cc 3a d3 e3			ld a, (os_new_parse_len) 
 21cf 4f				ld c, a 
 21d0 06 00			ld b, 0 
 21d2 ed b0			ldir		 ; copy defintion 
@@ -12809,9 +12809,9 @@
 21d4			 
 21d4				; poke the address of where the new word bytes live for forthexec 
 21d4			 
-21d4 2a 49 e3			ld hl, (os_new_exec_ptr)     ; TODO this isnt correct 
+21d4 2a c9 e3			ld hl, (os_new_exec_ptr)     ; TODO this isnt correct 
 21d7			 
-21d7 ed 5b 4b e3		ld de, (os_new_exec)      
+21d7 ed 5b cb e3		ld de, (os_new_exec)      
 21db				 
 21db 73				ld (hl), e 
 21dc 23				inc hl 
@@ -12824,7 +12824,7 @@
 21de			 
 21de			if DEBUG_FORTH_UWORD 
 21de c5				push bc 
-21df ed 4b 55 e3		ld bc, (os_new_malloc) 
+21df ed 4b d5 e3		ld bc, (os_new_malloc) 
 21e3						DMARK ":0A" 
 21e3 f5				push af  
 21e4 3a f8 21			ld a, (.dmark)  
@@ -12846,7 +12846,7 @@
 2200			endif 
 2200			if DEBUG_FORTH_UWORD 
 2200 c5				push bc 
-2201 ed 4b 55 e3		ld bc, (os_new_malloc) 
+2201 ed 4b d5 e3		ld bc, (os_new_malloc) 
 2205 03				inc bc 
 2206 03				inc bc 
 2207 03				inc bc 
@@ -12879,19 +12879,19 @@
 222a			; update word dict linked list for new word 
 222a			 
 222a			 
-222a 2a 54 e6		ld hl, (os_last_new_uword)		; get the start of the last added uword 
+222a 2a d4 e6		ld hl, (os_last_new_uword)		; get the start of the last added uword 
 222d 23			inc hl     ; move to next work linked list ptr 
 222e			 
-222e ed 5b 55 e3	ld de, (os_new_malloc)		 ; new next word 
+222e ed 5b d5 e3	ld de, (os_new_malloc)		 ; new next word 
 2232 73			ld (hl), e 
 2233 23			inc hl 
 2234 72			ld (hl), d 
 2235			 
 2235			if DEBUG_FORTH_UWORD 
-2235 ed 4b 54 e6		ld bc, (os_last_new_uword)		; get the last word so we can check it worked in debug 
+2235 ed 4b d4 e6		ld bc, (os_last_new_uword)		; get the last word so we can check it worked in debug 
 2239			endif 
 2239			 
-2239 ed 53 54 e6	ld (os_last_new_uword), de      ; update last new uword ptr 
+2239 ed 53 d4 e6	ld (os_last_new_uword), de      ; update last new uword ptr 
 223d			 
 223d			 
 223d			if DEBUG_FORTH_UWORD 
@@ -12977,7 +12977,7 @@
 # End of macro FORTH_RSP_POP
 2283 e1					pop hl 
 2284			;		ex de,hl 
-2284 22 58 e6				ld (os_tok_ptr),hl 
+2284 22 d8 e6				ld (os_tok_ptr),hl 
 2287			 
 2287			if DEBUG_FORTH_UWORD 
 2287						DMARK "SCL" 
@@ -13456,7 +13456,7 @@
 2482			 
 2482			 
 2482 2a 04 eb			ld hl, (cli_data_sp) 
-2485 11 be e8			ld de, cli_data_stack 
+2485 11 3e e9			ld de, cli_data_stack 
 2488 ed 52			sbc hl,de 
 248a				 
 248a				; div by size of stack item 
@@ -13988,7 +13988,7 @@
 26c0 28 02				jr z, .bpset 
 26c2 3e 2a				ld a, '*' 
 26c4			 
-26c4 32 48 e3		.bpset:		ld (os_view_disable), a 
+26c4 32 c8 e3		.bpset:		ld (os_view_disable), a 
 26c7			 
 26c7			 
 26c7					NEXTW 
@@ -14052,7 +14052,7 @@
 # End of macro CALLMONITOR
 26f2					endif 
 26f2 3e 00				ld a, 0 
-26f4 32 48 e3				ld (os_view_disable), a 
+26f4 32 c8 e3				ld (os_view_disable), a 
 26f7			 
 26f7					CALLMONITOR 
 26f7 cd 87 14			call break_point_state  
@@ -14255,7 +14255,7 @@
 27c2			 
 27c2			; Start format of scratch string 
 27c2			 
-27c2 21 57 e3				ld hl, scratch 
+27c2 21 d7 e3				ld hl, scratch 
 27c5			 
 27c5 3e 3a				ld a, ':' 
 27c7 77					ld (hl),a 
@@ -14449,7 +14449,7 @@
 2894 e5					push hl 
 2895			 
 2895 23					inc hl 
-2896 11 59 e3				ld de, scratch+2 
+2896 11 d9 e3				ld de, scratch+2 
 2899 4f					ld c, a 
 289a 06 00				ld b, 0 
 289c			 
@@ -14582,7 +14582,7 @@
 291e			 
 291e			; now have def so clean up and push to stack 
 291e			 
-291e 21 57 e3				ld hl, scratch 
+291e 21 d7 e3				ld hl, scratch 
 2921				if DEBUG_FORTH_WORDS 
 2921					DMARK "Ltp" 
 2921 f5				push af  
@@ -15077,7 +15077,7 @@
 2a29			; | ( ( -- )  Start of comment | DONE 
 2a29			 
 2a29			 
-2a29 2a 58 e6				ld hl, ( os_tok_ptr) 
+2a29 2a d8 e6				ld hl, ( os_tok_ptr) 
 2a2c 11 70 2a			ld de, .closepar 
 2a2f					 
 2a2f					if DEBUG_FORTH_WORDS 
@@ -15121,7 +15121,7 @@
 # End of macro CALLMONITOR
 2a6a					endif 
 2a6a				; replace below with ) exec using tok_ptr 
-2a6a 22 58 e6			ld (os_tok_ptr), hl 
+2a6a 22 d8 e6			ld (os_tok_ptr), hl 
 2a6d c3 db 1e			jp exec1 
 2a70			 
 2a70 .. 00			.closepar:   db ")",0 
@@ -15195,7 +15195,7 @@
 # End of macro FORTH_DSP_POP
 2aac			 
 2aac 7d					ld a, l 
-2aad 21 7c e8				ld hl, os_var_array 
+2aad 21 fc e8				ld hl, os_var_array 
 2ab0 cd 86 0c				call addatohl 
 2ab3			 
 2ab3 cd e1 1a				call forth_push_numhl 
@@ -15933,7 +15933,7 @@
 2d98				; TODO get tok_ptr 
 2d98				; TODO consume toks until we get to THEN 
 2d98			 
-2d98 2a 58 e6			ld hl, (os_tok_ptr) 
+2d98 2a d8 e6			ld hl, (os_tok_ptr) 
 2d9b					if DEBUG_FORTH_WORDS 
 2d9b						DMARK "IF3" 
 2d9b f5				push af  
@@ -15996,7 +15996,7 @@
 # End of macro CALLMONITOR
 2df5					endif 
 2df5				; TODO replace below with ; exec using tok_ptr 
-2df5 22 58 e6			ld (os_tok_ptr), hl 
+2df5 22 d8 e6			ld (os_tok_ptr), hl 
 2df8 c3 db 1e			jp exec1 
 2dfb				NEXTW 
 2dfb c3 4a 1e			jp macro_next 
@@ -16131,7 +16131,7 @@
 2e95					endif 
 2e95			;  push pc to rsp stack past the DO 
 2e95			 
-2e95 2a 58 e6				ld hl, (os_tok_ptr) 
+2e95 2a d8 e6				ld hl, (os_tok_ptr) 
 2e98 23					inc hl   ; D 
 2e99 23					inc hl  ; O 
 2e9a 23					inc hl   ; null 
@@ -16326,7 +16326,7 @@
 2f77			 
 2f77					; init first round of I counter 
 2f77			 
-2f77 22 7c e6				ld (os_current_i), hl 
+2f77 22 fc e6				ld (os_current_i), hl 
 2f7a			 
 2f7a					if DEBUG_FORTH_WORDS 
 2f7a						DMARK "DO8" 
@@ -16509,7 +16509,7 @@
 302e			 
 302e					; set I counter 
 302e			 
-302e 22 7c e6				ld (os_current_i), hl 
+302e 22 fc e6				ld (os_current_i), hl 
 3031			 
 3031					if DEBUG_FORTH_WORDS 
 3031						DMARK "LPN" 
@@ -16598,7 +16598,7 @@
 308c				;inc hl 
 308c				;ld d, (hl) 
 308c				;ex de,hl 
-308c 22 58 e6			ld (os_tok_ptr), hl 
+308c 22 d8 e6			ld (os_tok_ptr), hl 
 308f					if DEBUG_FORTH_WORDS 
 308f						DMARK "LP<" 
 308f f5				push af  
@@ -16657,7 +16657,7 @@
 # End of macro CALLMONITOR
 30d3					endif 
 30d3			 
-30d3 2a 7c e6				ld hl,(os_current_i) 
+30d3 2a fc e6				ld hl,(os_current_i) 
 30d6 cd e1 1a				call forth_push_numhl 
 30d9			 
 30d9					NEXTW 
@@ -16839,7 +16839,7 @@
 318e			 
 318e					; set I counter 
 318e			 
-318e 22 7c e6				ld (os_current_i), hl 
+318e 22 fc e6				ld (os_current_i), hl 
 3191			 
 3191					 
 3191				FORTH_LOOP_NEXT 
@@ -16867,7 +16867,7 @@
 3198				;pop hl 
 3198			 
 3198			 
-3198 22 58 e6			ld (os_tok_ptr), hl 
+3198 22 d8 e6			ld (os_tok_ptr), hl 
 319b					if DEBUG_FORTH_WORDS 
 319b						DMARK "-L<" 
 319b f5				push af  
@@ -16931,7 +16931,7 @@
 # End of macro CALLMONITOR
 31e4					endif 
 31e4			 
-31e4 2a 58 e6				ld hl, (os_tok_ptr) 
+31e4 2a d8 e6				ld hl, (os_tok_ptr) 
 31e7 23					inc hl   ; R 
 31e8 23					inc hl  ; E 
 31e9 23					inc hl   ; P 
@@ -17100,7 +17100,7 @@
 3282				;pop hl 
 3282			 
 3282			 
-3282 22 58 e6			ld (os_tok_ptr), hl 
+3282 22 d8 e6			ld (os_tok_ptr), hl 
 3285					if DEBUG_FORTH_WORDS 
 3285						DMARK "UN<" 
 3285 f5				push af  
@@ -18944,12 +18944,12 @@
 3931			 
 3931					; TODO write to display 
 3931			 
-3931 32 55 e5				ld (os_input), a 
+3931 32 d5 e5				ld (os_input), a 
 3934 3e 00				ld a, 0 
-3936 32 56 e5				ld (os_input+1), a 
+3936 32 d6 e5				ld (os_input+1), a 
 3939					 
 3939 3a 40 eb				ld a, (f_cursor_ptr) 
-393c 11 55 e5				ld de, os_input 
+393c 11 d5 e5				ld de, os_input 
 393f cd 6c 0a				call str_at_display 
 3942			 
 3942			 
@@ -19127,7 +19127,7 @@
 39f3 5e				ld e, (hl) 
 39f4 23				inc hl 
 39f5 56				ld d, (hl) 
-39f6 21 57 e3			ld hl, scratch 
+39f6 21 d7 e3			ld hl, scratch 
 39f9			if DEBUG_FORTH_DOT 
 39f9				DMARK "DT1" 
 39f9				CALLMONITOR 
@@ -19362,7 +19362,7 @@
 3ac6				 
 3ac6					; save it for cdump 
 3ac6			 
-3ac6 22 7a e6				ld (os_cur_ptr),hl 
+3ac6 22 fa e6				ld (os_cur_ptr),hl 
 3ac9			 
 3ac9					; destroy value TOS 
 3ac9			 
@@ -19630,7 +19630,7 @@
 3bfd			;		pop hl 
 3bfd 4d					ld c, l 
 3bfe 06 00				ld b, 0 
-3c00 21 57 e3				ld hl, scratch  
+3c00 21 d7 e3				ld hl, scratch  
 3c03			 
 3c03					if DEBUG_FORTH_WORDS 
 3c03						DMARK "SP2" 
@@ -19659,7 +19659,7 @@
 3c25 10 fa				djnz .spaces1 
 3c27 3e 00				ld a,0 
 3c29 77					ld (hl),a 
-3c2a 21 57 e3				ld hl, scratch 
+3c2a 21 d7 e3				ld hl, scratch 
 3c2d					if DEBUG_FORTH_WORDS 
 3c2d						DMARK "SP3" 
 3c2d f5				push af  
@@ -19989,7 +19989,7 @@
 3d4b			 
 3d4b					; hl contains top most stack item 
 3d4b				 
-3d4b 11 57 e3				ld de, scratch 
+3d4b 11 d7 e3				ld de, scratch 
 3d4e			 
 3d4e			.mbuild: 
 3d4e			 
@@ -20040,7 +20040,7 @@
 3d7e			 
 3d7e				 
 3d7e					 
-3d7e 21 57 e3				ld hl, scratch 
+3d7e 21 d7 e3				ld hl, scratch 
 3d81			 
 3d81					if DEBUG_FORTH_WORDS 
 3d81						DMARK "MNx" 
@@ -20982,7 +20982,7 @@
 4175 06 00				ld b, 0 
 4177 4d					ld c, l 
 4178 e1					pop hl		 
-4179 11 57 e3				ld de, scratch	 
+4179 11 d7 e3				ld de, scratch	 
 417c					if DEBUG_FORTH_WORDS 
 417c						DMARK "CO1" 
 417c f5				push af  
@@ -21040,7 +21040,7 @@
 41c7			 
 41c7			 
 41c7			 
-41c7 21 57 e3				ld hl, scratch 
+41c7 21 d7 e3				ld hl, scratch 
 41ca					if DEBUG_FORTH_WORDS 
 41ca						DMARK "CO5" 
 41ca f5				push af  
@@ -21457,7 +21457,7 @@
 439e				endm  
 # End of macro CALLMONITOR
 439e					endif 
-439e 21 55 e5				ld hl, os_input 
+439e 21 d5 e5				ld hl, os_input 
 43a1 3e 00				ld a, 0 
 43a3 77					ld (hl),a 
 43a4 3a 40 eb				ld a,(f_cursor_ptr) 
@@ -21466,7 +21466,7 @@
 43ab 1e 28				ld e, 40 
 43ad cd b3 0c				call input_str 
 43b0					; TODO perhaps do a type check and wrap in quotes if not a number 
-43b0 21 55 e5				ld hl, os_input 
+43b0 21 d5 e5				ld hl, os_input 
 43b3					if DEBUG_FORTH_WORDS 
 43b3						DMARK "AC1" 
 43b3 f5				push af  
@@ -21559,7 +21559,7 @@
 4420 4d					ld c, l 
 4421			 
 4421 e1					pop hl 
-4422 11 55 e5				ld de, os_input 
+4422 11 d5 e5				ld de, os_input 
 4425					if DEBUG_FORTH_WORDS_KEY 
 4425						DMARK "EDc" 
 4425 f5				push af  
@@ -21582,7 +21582,7 @@
 4441 ed b0				ldir 
 4443			 
 4443			 
-4443 21 55 e5				ld hl, os_input 
+4443 21 d5 e5				ld hl, os_input 
 4446					;ld a, 0 
 4446					;ld (hl),a 
 4446 3a 40 eb				ld a,(f_cursor_ptr) 
@@ -21591,7 +21591,7 @@
 444d 1e 28				ld e, 40 
 444f cd b3 0c				call input_str 
 4452					; TODO perhaps do a type check and wrap in quotes if not a number 
-4452 21 55 e5				ld hl, os_input 
+4452 21 d5 e5				ld hl, os_input 
 4455					if DEBUG_FORTH_WORDS 
 4455						DMARK "ED1" 
 4455 f5				push af  
@@ -22263,7 +22263,7 @@
 45aa				;    jp user_dict_next   (NEXT) 
 45aa			        ;    <word code bytes> 
 45aa eb				ex de, hl 
-45ab 2a 58 e6			ld hl,(os_tok_ptr) 
+45ab 2a d8 e6			ld hl,(os_tok_ptr) 
 45ae				 
 45ae				FORTH_RSP_NEXT 
 45ae cd 88 1a			call macro_forth_rsp_next 
@@ -22293,7 +22293,7 @@
 45cd			 
 45cd			 
 45cd eb				ex de, hl 
-45ce 22 58 e6			ld (os_tok_ptr), hl 
+45ce 22 d8 e6			ld (os_tok_ptr), hl 
 45d1				 
 45d1				; Don't use next - Skips the first word in uword. 
 45d1			 
@@ -22350,7 +22350,7 @@
 4695 cd 2d 5a			call cin_wait 
 4698			 
 4698 3e 20			ld a, ' ' 
-469a 32 48 e3			ld (os_view_disable), a 
+469a 32 c8 e3			ld (os_view_disable), a 
 469d e1				pop hl 
 469e f1				pop af 
 469f d1				pop de	 
@@ -22367,7 +22367,7 @@
 46b2			 
 46b2				; see if disabled 
 46b2			 
-46b2 3a 48 e3			ld a, (os_view_disable) 
+46b2 3a c8 e3			ld a, (os_view_disable) 
 46b5 fe 2a			cp '*' 
 46b7 28 67			jr z, .skipdsp 
 46b9			 
@@ -22377,16 +22377,16 @@
 46bc cd 59 0a			call clear_display 
 46bf e1			pop hl 
 46c0 7c				ld a,h 
-46c1 21 5c e6			ld hl, os_word_scratch 
+46c1 21 dc e6			ld hl, os_word_scratch 
 46c4 cd 87 0f			call hexout 
 46c7 e1				pop hl 
 46c8 7d				ld a,l 
-46c9 21 5e e6			ld hl, os_word_scratch+2 
+46c9 21 de e6			ld hl, os_word_scratch+2 
 46cc cd 87 0f			call hexout 
-46cf 21 60 e6			ld hl, os_word_scratch+4 
+46cf 21 e0 e6			ld hl, os_word_scratch+4 
 46d2 3e 00			ld a,0 
 46d4 77				ld (hl),a 
-46d5 11 5c e6			ld de,os_word_scratch 
+46d5 11 dc e6			ld de,os_word_scratch 
 46d8 3e 28				ld a, display_row_2 
 46da cd 6c 0a				call str_at_display 
 46dd 11 37 46			ld de, .wordinhl 
@@ -22406,16 +22406,16 @@
 46f5 2a 04 eb			ld hl,(cli_data_sp) 
 46f8 e5				push hl 
 46f9 7c				ld a,h 
-46fa 21 5c e6			ld hl, os_word_scratch 
+46fa 21 dc e6			ld hl, os_word_scratch 
 46fd cd 87 0f			call hexout 
 4700 e1				pop hl 
 4701 7d				ld a,l 
-4702 21 5e e6			ld hl, os_word_scratch+2 
+4702 21 de e6			ld hl, os_word_scratch+2 
 4705 cd 87 0f			call hexout 
-4708 21 60 e6			ld hl, os_word_scratch+4 
+4708 21 e0 e6			ld hl, os_word_scratch+4 
 470b 3e 00			ld a,0 
 470d 77				ld (hl),a 
-470e 11 5c e6			ld de,os_word_scratch 
+470e 11 dc e6			ld de,os_word_scratch 
 4711 3e 33				ld a, display_row_2 + 11 
 4713 cd 6c 0a				call str_at_display 
 4716			 
@@ -22437,16 +22437,16 @@
 4726 cd 59 0a			call clear_display 
 4729 e1			pop hl 
 472a 7c				ld a,h 
-472b 21 5c e6			ld hl, os_word_scratch 
+472b 21 dc e6			ld hl, os_word_scratch 
 472e cd 87 0f			call hexout 
 4731 e1				pop hl 
 4732 7d				ld a,l 
-4733 21 5e e6			ld hl, os_word_scratch+2 
+4733 21 de e6			ld hl, os_word_scratch+2 
 4736 cd 87 0f			call hexout 
-4739 21 60 e6			ld hl, os_word_scratch+4 
+4739 21 e0 e6			ld hl, os_word_scratch+4 
 473c 3e 00			ld a,0 
 473e 77				ld (hl),a 
-473f 11 5c e6			ld de,os_word_scratch 
+473f 11 dc e6			ld de,os_word_scratch 
 4742 3e 28				ld a, display_row_2 
 4744 cd 6c 0a				call str_at_display 
 4747 11 6d 46			ld de, .push_malloc 
@@ -22462,16 +22462,16 @@
 4757 2a 04 eb			ld hl,(cli_data_sp) 
 475a e5				push hl 
 475b 7c				ld a,h 
-475c 21 5c e6			ld hl, os_word_scratch 
+475c 21 dc e6			ld hl, os_word_scratch 
 475f cd 87 0f			call hexout 
 4762 e1				pop hl 
 4763 7d				ld a,l 
-4764 21 5e e6			ld hl, os_word_scratch+2 
+4764 21 de e6			ld hl, os_word_scratch+2 
 4767 cd 87 0f			call hexout 
-476a 21 60 e6			ld hl, os_word_scratch+4 
+476a 21 e0 e6			ld hl, os_word_scratch+4 
 476d 3e 00			ld a,0 
 476f 77				ld (hl),a 
-4770 11 5c e6			ld de,os_word_scratch 
+4770 11 dc e6			ld de,os_word_scratch 
 4773 3e 33				ld a, display_row_2 + 11 
 4775 cd 6c 0a				call str_at_display 
 4778			 
@@ -22805,7 +22805,7 @@
 567b			forth_startup: 
 567b 21 84 47			ld hl, startcmds 
 567e 3e 00			ld a, 0 
-5680 32 7d e7			ld (os_last_cmd), a    ; tmp var to skip prompts if doing all 
+5680 32 fd e7			ld (os_last_cmd), a    ; tmp var to skip prompts if doing all 
 5683			 
 5683 e5			.start1:	push hl 
 5684 cd 59 0a			call clear_display 
@@ -22825,7 +22825,7 @@
 56a1 cd 7c 0a			call update_display 
 56a4			 
 56a4			 
-56a4 3a 7d e7			ld a, (os_last_cmd) 
+56a4 3a fd e7			ld a, (os_last_cmd) 
 56a7 fe 00			cp 0 
 56a9 28 05			jr z, .startprompt 
 56ab cd bf 09			call delay250ms 
@@ -22847,7 +22847,7 @@
 56c5 fe 23			cp '#' 
 56c7 20 07			jr nz, .startno 
 56c9 3e 01			ld a, 1 
-56cb 32 7d e7			ld (os_last_cmd),a 
+56cb 32 fd e7			ld (os_last_cmd),a 
 56ce 18 04			jr .startdo 
 56d0 fe 31		.startno:	cp '1' 
 56d2 28 3a			jr z,.startnxt  
@@ -22871,11 +22871,11 @@
 56e1 06 00			ld b,0 
 56e3 4d				ld c,l 
 56e4 e1				pop hl 
-56e5 11 57 e3			ld de, scratch 
+56e5 11 d7 e3			ld de, scratch 
 56e8 ed b0			ldir 
 56ea			 
 56ea			 
-56ea 21 57 e3			ld hl, scratch 
+56ea 21 d7 e3			ld hl, scratch 
 56ed cd 98 1e			call forthparse 
 56f0 cd d8 1e			call forthexec 
 56f3 cd ef 1d			call forthexec_cleanup 
@@ -22885,7 +22885,7 @@
 56fb			 
 56fb cd 7c 0a			call update_display		 
 56fe			 
-56fe 3a 7d e7			ld a, (os_last_cmd) 
+56fe 3a fd e7			ld a, (os_last_cmd) 
 5701 fe 00			cp 0 
 5703 20 09			jr nz, .startnxt 
 5705 cd 59 1a			call next_page_prompt 
@@ -22937,14 +22937,14 @@
 572f 3e 17			ld a, 23 
 5731 67				ld h, a 
 5732			 
-5732 22 3e e3			ld (chk_word), hl     ; the word we need to check against 
+5732 22 be e3			ld (chk_word), hl     ; the word we need to check against 
 5735			 
 5735			;	ld (chk_stund), hl	; stack points.... 
 5735 22 00 ef			ld (chk_stovr), hl 
 5738 22 02 eb			ld (chk_ret_und), hl 
 573b 22 c0 ea			ld (chk_ret_ovr), hl 
-573e 22 be e9			ld (chk_loop_ovr), hl 
-5741 22 bc e8			ld (chk_data_ovr), hl 
+573e 22 3e ea			ld (chk_loop_ovr), hl 
+5741 22 3c e9			ld (chk_data_ovr), hl 
 5744 c9				ret 
 5745				 
 5745			check_stacks: 
@@ -22966,7 +22966,7 @@
 5747			;	jp .chk_fault 
 5747			 
 5747 2a 00 ef		.chk_faulta: ld hl, (chk_stovr) 
-574a ed 5b 3e e3		ld de,(chk_word) 
+574a ed 5b be e3		ld de,(chk_word) 
 574e				if DEBUG_STK_FAULT 
 574e					DMARK "FAb" 
 574e					CALLMONITOR 
@@ -22977,7 +22977,7 @@
 5756 c3 a8 57			jp .chk_fault 
 5759			.chk_fault1:  
 5759 2a 02 eb			ld hl, (chk_ret_und) 
-575c ed 5b 3e e3		ld de,(chk_word) 
+575c ed 5b be e3		ld de,(chk_word) 
 5760				if DEBUG_STK_FAULT 
 5760					DMARK "FAU" 
 5760					CALLMONITOR 
@@ -22988,7 +22988,7 @@
 5769 c3 a8 57			jp .chk_fault 
 576c			.chk_fault2:  
 576c 2a c0 ea			ld hl, (chk_ret_ovr) 
-576f ed 5b 3e e3		ld de,(chk_word) 
+576f ed 5b be e3		ld de,(chk_word) 
 5773				if DEBUG_STK_FAULT 
 5773					DMARK "FA1" 
 5773					CALLMONITOR 
@@ -22998,8 +22998,8 @@
 5779 11 12 58			ld de, sfaultro 
 577c c3 a8 57			jp .chk_fault 
 577f			.chk_fault3:  
-577f 2a be e9			ld hl, (chk_loop_ovr) 
-5782 ed 5b 3e e3		ld de,(chk_word) 
+577f 2a 3e ea			ld hl, (chk_loop_ovr) 
+5782 ed 5b be e3		ld de,(chk_word) 
 5786				if DEBUG_STK_FAULT 
 5786					DMARK "FA2" 
 5786					CALLMONITOR 
@@ -23009,8 +23009,8 @@
 578c 11 2c 58			ld de, sfaultlo 
 578f c3 a8 57			jp .chk_fault 
 5792			.chk_fault4:  
-5792 2a bc e8			ld hl, (chk_data_ovr) 
-5795 ed 5b 3e e3		ld de,(chk_word) 
+5792 2a 3c e9			ld hl, (chk_data_ovr) 
+5795 ed 5b be e3		ld de,(chk_word) 
 5799				if DEBUG_STK_FAULT 
 5799					DMARK "FA3" 
 5799					CALLMONITOR 

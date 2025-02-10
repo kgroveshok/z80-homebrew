@@ -79,6 +79,37 @@ Various storage words for both high level file access as well as direct block ac
 Through the use of the CONFIG word it is possible to select a file to be executed at boot time and load word definitions into memory.
 
 
+
+There are a few low level words if you want to write your own file system handler. See BREAD, BWRITE and BUPD in the word list.
+
+
+Alternativly using the high level file system words provide a more conveient means to access data and code (using CONFIG to enable auto run of stored code).
+
+
+Bank 1 would normally default. Using "$02 bank" for example will change to the second bank of storage. Initially each bank will need to be initialised with the 'format' word.
+
+
+A default label will be assigned and it can be changed with the 'label' word: "MyCode" label
+
+
+Creating a new file:      "myfile" create
+
+The file ID used for all file words later is pushed to stack. It is possible to obtain the ID when needing such a number later by using the GETID word to look up the file name
+and return the ID.
+
+
+Once the file has been created it is possible to add data to it via the 'append' word: "a line to add" $01 append
+
+
+There is no need to close files as such. There is a word 'record' which provides a random access to the created files. For a sequential read use the 'open' word to set the
+file record number to the first one and then each use of the 'read' word to retrieve and push each record to stack until the 'eof' word reports as true or using the counter that 'open' reports.
+
+
+
+
+
+
+
 Words
 =====
 
@@ -95,7 +126,7 @@ The board has an auto start-up process that loads extra words. These include som
 
 * sw - Hello world
 * ga - A simple number guessing game
-* svv - A screen saver
+* ssv - A screen saver
 
 Look in the file ![forth_autostart.asm](os/forth_autostart.asm) source file for the definitions.
 
@@ -112,9 +143,7 @@ Restrictions
 Bugs
 ====
 
-Oh boy, a heck of a lot of bugs. Currently have some spurious stack under/over flows. Have added checks for stack corruption but not getting
-everything. Most likely due to little to no constraint checks on things. Need to add guards around as much as possible to provide clues
-to where such faults lie. 
+Oh boy, possibly a heck of a lot of bugs. Little sanity checking so watch out. 
 
 There is a built-in reg state display. It is enabled by default and at various break points (see firmware.asm defines) the current reg 
 state can be seen with options (via 1-9) dumps of 16bit reg pointers. Use '0' to step to the next point. All breakpoints can be
@@ -131,7 +160,7 @@ Using '#' will launch a full featured monitor.
    U xx        Load byte into address and increment to next
 
 
-Holding down a key at boot will halt at the end of the splash screen. Releasing the key will display a hardware/system diags screen.
+Holding down a key at boot will halt at the end of the splash screen. Releasing the key will display a hardware/system diags screen. Can also get to that point with the use of the CONFIG word.
 
 
 

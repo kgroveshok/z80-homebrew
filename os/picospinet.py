@@ -25,7 +25,7 @@
 #
 # All clocked in data from client to the server (z80) to be pushed to stack on the z80
 
-from machine import Pin, SoftSPI
+from machine import Pin
 import time
 
 DI=Pin(0,mode=Pin.IN)      #pico pin 21  eprom 5
@@ -55,6 +55,7 @@ def clockbyteout(byte):
 
 
         while(SCLK.value() ) ;    # wait for high to low to clock out
+        time.sleep(0.025)
         while(!SCLK.value() ) ;    # wait for low to high clock out and move on
 
         #time.sleep(0.025)
@@ -75,6 +76,7 @@ def clockbytein():
 #        SCLK.low()
         while SCLK.value() :
                 pass
+        #time.sleep(0.025)
         print("clock low")
         bit=DI.value()
         if bit  :
@@ -87,7 +89,7 @@ def clockbytein():
 
     print(b)
 
-        
+    return b 
 
 
 def writebyte(byte,addressh,addressl):
@@ -168,13 +170,27 @@ def readbyte(addressh,addressl):
     print("ce high")
 
 
+fromserver=""
+gotcmd=False
 while(1):
     if CE.value() == 0 :
         # chip has been selected
 
         # test data
         a=clockbytein()
-        print( a )        
+        if a == 13:
+            gotcmd=True
+        else:
+            fromserver=fromserver+a
+
+    # code here for buffering data in and out
+
+    if gotcmd:
+        print("Exec command: "+fromserver)
+        fromserver=""
+
+        gotcmd=False
 
 
+# eof
 

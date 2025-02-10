@@ -127,14 +127,13 @@ strncpy:   db ": strncpy $00 scratch 2! $02 scratch 2! do $00 scratch 2@ i + @ $
 
 start1:     	db ": bpon $0000 bp ;",0
 start2:     	db ": bpoff $0001 bp ;",0
-;start3:         db ": dirlist ir cls drop dup $00 > if $01 do .> BL .> .> BL .> .> BL .> loop then nop ;",0
-start3b:         db ": dla dir cls drop dup $00 > if $01 do $08 i at . $01 i at . $04 i at . loop then nop ;",0
+start3b:         db ": dla dir cls drop dup $00 > if $01 do $08 $04 at . $01 $04 at . $04 $04 at . $23 $04 at accept drop scroll loop then nop ;",0
 start3c:         db ": dirlist dir cls drop dup $00 > if $01 do \"/\" .> .> \"Ext:\" .> .> \"Id: \" .> .>  loop then nop ;",0
 
 
 ; a handy word to list items on the stack
 
-list:            db ": more cls repeat scroll $01 $04 at depth . $0a $04 at .> accept drop depth 0= not until nop ;",0
+list:            db ": more cls repeat scroll $01 $04 at depth . $0a $04 at .> $01 $01 at accept drop depth 0= not until nop ;",0
 
 
 ; test stack 

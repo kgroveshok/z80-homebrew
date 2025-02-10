@@ -1,11 +1,74 @@
 
 ; | ## Fixed Storage Words
 
+.RECORD:
+ 
+	CWHEAD .BREAD 38 "RECORD" 6 WORD_FLAG_CODE
+; | RECORD ( u id -- s ) With the current bank, read record number u from file id and push to stack  | DONE
+
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "REC"
+			CALLMONITOR
+		endif
+
+		FORTH_DSP_VALUEHL
+
+		push hl    ; id
+
+		FORTH_DSP_POP
+
+		FORTH_DSP_VALUEHL
+
+		FORTH_DSP_POP
+
+		pop de     ; get file id
+
+		; e = file id
+		; l = file extent
+
+
+		; construct request to access file extent
+
+;		ld a, e
+		ld h, e
+		
+		
+		
+
+		; e has id
+
+	ld de, store_page
+		if DEBUG_FORTH_WORDS
+			DMARK "REr"
+			CALLMONITOR
+		endif
+		call storage_read
+	call ishlzero
+	jr z, .recnotfound
+
+
+		if DEBUG_FORTH_WORDS
+			DMARK "REe"
+			CALLMONITOR
+		endif
+	call forth_push_str
+
+		NEXTW
+
+.recnotfound:
+		if DEBUG_FORTH_WORDS
+			DMARK "REf"
+			CALLMONITOR
+		endif
+	ld hl, 255
+	call forth_push_numhl
+	NEXTW
+
 
 .BREAD:
  
 	CWHEAD .BWRITE 38 "BREAD" 5 WORD_FLAG_CODE
-; | BREAD ( u -- u ) With the current bank, read a block from block address u (1-512) and push to stack  | DONE
+; | BREAD ( u -- u ) Lowlevel storage word. With the current bank, read a block from block address u (1-512) and push to stack  | DONE
 	
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "BRD"
@@ -55,7 +118,7 @@
 		NEXTW
 .BWRITE:
 	CWHEAD .BUPD 38 "BWRITE" 6 WORD_FLAG_CODE
-; | BWRITE ( s u -- ) With the current bank, write the string s to address u | DONE
+; | BWRITE ( s u -- ) Lowlevel storage word. With the current bank, write the string s to address u | DONE
 
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "BWR"
@@ -121,7 +184,7 @@
 
 .BUPD:
 	CWHEAD .BYID 38 "BUPD" 4 WORD_FLAG_CODE
-; | BUPD ( u -- ) Write the contents of the current file system storage buffer directly to address u | DONE
+; | BUPD ( u -- ) Lowlevel storage word. Write the contents of the current file system storage buffer directly to address u | DONE
 ; | | Coupled with the use of the BREAD, BWRITE and STOREPAGE words it is possible to implement a direct
 ; | | or completely different file system structure.
 
@@ -182,9 +245,21 @@
 ;
 ;		NEXTW
 ;.BYNAME:
-;	CWHEAD .DIR 38 "BYNAME" 6 WORD_FLAG_CODE
-;; > BYNAME ( s -- u ) Get the file ID in the current BANK of the file named s > TODO
-;		NEXTW
+	CWHEAD .DIR 38 "GETID" 5 WORD_FLAG_CODE
+; | GETID ( s -- u ) Get the file ID in the current BANK of the file named s | DONE
+
+		; get pointer to file name to seek
+
+		FORTH_DSP_VALUEHL
+
+
+		call storage_getid 
+
+		FORTH_DSP_POP
+
+		call forth_push_numhl
+
+		NEXTW
 ;
 .DIR:
 	CWHEAD .SAVE 38 "DIR" 3 WORD_FLAG_CODE

@@ -36,6 +36,88 @@
 ;       - to end of block data
 ;
 
+; Get ID for the file named in pointer held HL
+; Returns ID in HL = 255 if no file found
+
+storage_getid:
+
+	ld (store_tmp1), hl
+
+	if DEBUG_STORESE
+		DMARK "SGI"
+		CALLMONITOR
+	endif
+	; get block 0 and set counter for number of files to scan
+
+	call storage_get_block_0
+
+	ld a, (store_page)
+	ld b, a
+
+	; get extent 0 of each file id
+
+	if DEBUG_STORESE
+		DMARK "SGc"
+		CALLMONITOR
+	endif
+.getloop:	ld h, b
+		ld l, 0
+		push bc
+
+		ld de, store_page
+	if DEBUG_STORESE
+		DMARK "SGr"
+		CALLMONITOR
+	endif
+		call storage_read
+		call ishlzero
+		jr z, .gap
+		
+		; have a file name read. Is it one we want.
+
+		ld hl, (store_tmp1)
+		ld de, store_page+3   ; file name
+
+	if DEBUG_STORESE
+		DMARK "SGc"
+		CALLMONITOR
+	endif
+		call strcmp
+		jr nz, .gap   ; not this one
+
+	        pop bc
+
+		ld h, 0
+		ld l, b
+		jr .getdone
+			
+
+
+
+.gap:
+	if DEBUG_STORESE
+		DMARK "SGg"
+		CALLMONITOR
+	endif
+
+		pop bc
+		djnz .getloop
+		ld hl, 255
+.getdone:
+
+	if DEBUG_STORESE
+		DMARK "SGe"
+		CALLMONITOR
+	endif
+
+	ret
+
+
+
+
+
+
+
 
 ; Read Block
 ; ----------

@@ -9,10 +9,12 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE BUG If a non-existing file extent/id is given as param to ERA, APPEND etc then the storage appears to be reformatted!
 * DONE BUG If an unknown uword is given for LIST then the system reboots
 * DONE add info page word. INFO word.
+* DONE ERA is causing a reformat even for valid id. Now fine
+* DONE Add high level RECORD word that allows loading of a specific file extent from storage
+* DONE Added GETID to get the file id by name
 
+* TODO fix saving more than a single block of file storage. Means to concate multiple blocks? Append is creating more blocks. But is it writing correctly? READ is picking up extra blocks but second block is corrupted. Is READ or APPEND broken? APPEND might be OK. So check READ
 
-* TODO ERA is causing a reformat even for valid id
-* TODO fix saving more than a single block of file storage. Means to concate multiple blocks? Append is creating more blocks. But is it writing correctly? READ is picking up extra blocks but second block is corrupted. Is READ or APPEND broken?
 * TODO Future bug? stack imbalance on storage_read. Needs a pop of de if no record found. Have added code watch for further issues
 
 * TODO Save auto run flags to block 0 on bank 1 and not on currently selected device. Need a function to load from block 0 into hardware_config and then repoint all menu options to load and save them.

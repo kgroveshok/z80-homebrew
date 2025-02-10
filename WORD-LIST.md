@@ -352,6 +352,9 @@ Also refer to the auto start list examples as these contain extra words created 
 ## Display Words
 
 
+### INFO ( u1 u2 -- )  Use the top two strings on stack to fill in an info window over two lines. Causes a wait for key press to continue. | DONE
+
+
 ### AT? ( -- c r )  Push to stack the current position of the next print | TO TEST
 
 
@@ -523,19 +526,25 @@ Also refer to the auto start list examples as these contain extra words created 
 ## Fixed Storage Words
 
 
-### BREAD ( u -- u ) With the current bank, read a block from block address u (1-512) and push to stack  | DONE
+### RECORD ( u id -- s ) With the current bank, read record number u from file id and push to stack  | DONE
 
 
-### BWRITE ( s u -- ) With the current bank, write the string s to address u | DONE
+### BREAD ( u -- u ) Lowlevel storage word. With the current bank, read a block from block address u (1-512) and push to stack  | DONE
 
 
-### BUPD ( u -- ) Write the contents of the current file system storage buffer directly to address u | DONE
+### BWRITE ( s u -- ) Lowlevel storage word. With the current bank, write the string s to address u | DONE
+
+
+### BUPD ( u -- ) Lowlevel storage word. Write the contents of the current file system storage buffer directly to address u | DONE
 
 
  Coupled with the use of the BREAD, BWRITE and STOREPAGE words it is possible to implement a direct
 
 
  or completely different file system structure.
+
+
+### GETID ( s -- u ) Get the file ID in the current BANK of the file named s | DONE
 
 
 ### DIR ( u -- lab id ... c t ) Using bank number u push directory entries from persistent storage as w with count u  | DONE
@@ -602,6 +611,12 @@ Also refer to the auto start list examples as these contain extra words created 
 
 
  $01 OPEN $01 DO $01 READ . LOOP
+
+
+
+
+
+ Will return with 255 blocks if the file does not exist
 
 
 ### READ ( n -- n  )  Reads next page of file id and push to stack | DONE
@@ -826,6 +841,9 @@ Also refer to the auto start list examples as these contain extra words created 
 ### CARTDEV ( u1 -- ) Select cart device 1-8 (Disables BANK). Set to zero to disable devices. |  DONE
 
 
+### INFO ( u1 u2 -- )  Use the top two strings on stack to fill in an info window over two lines. Causes a wait for key press to continue. | DONE
+
+
 ### FB ( u -- ) Select frame buffer ID u (1-3)  |  DONE
 
 
@@ -940,13 +958,19 @@ Also refer to the auto start list examples as these contain extra words created 
 ### RND ( u1 u2 -- u ) Generate a random number no lower than u1 and no higher than u2 and push to stack | DONE
 
 
-### BREAD ( u -- u ) With the current bank, read a block from block address u (1-512) and push to stack  | DONE
+### RECORD ( u id -- s ) With the current bank, read record number u from file id and push to stack  | DONE
 
 
-### BWRITE ( s u -- ) With the current bank, write the string s to address u | DONE
+### BREAD ( u -- u ) Lowlevel storage word. With the current bank, read a block from block address u (1-512) and push to stack  | DONE
 
 
-### BUPD ( u -- ) Write the contents of the current file system storage buffer directly to address u | DONE
+### BWRITE ( s u -- ) Lowlevel storage word. With the current bank, write the string s to address u | DONE
+
+
+### BUPD ( u -- ) Lowlevel storage word. Write the contents of the current file system storage buffer directly to address u | DONE
+
+
+### GETID ( s -- u ) Get the file ID in the current BANK of the file named s | DONE
 
 
 ### DIR ( u -- lab id ... c t ) Using bank number u push directory entries from persistent storage as w with count u  | DONE
@@ -1112,6 +1136,9 @@ Also refer to the auto start list examples as these contain extra words created 
 
 
 ## Fixed Storage Words
+
+
+
 
 
 ### LABELS (  -- b n .... c  )  Pushes each storage bank labels (n) along with id (b) onto the stack giving count (c) of banks  | TO TEST

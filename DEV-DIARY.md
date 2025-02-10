@@ -12,6 +12,7 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE ERA is causing a reformat even for valid id. Now fine
 * DONE Add high level RECORD word that allows loading of a specific file extent from storage
 * DONE Added GETID to get the file id by name
+* DONE reduce some of the stack sizes, loops and ret might be a bit too big. Then extend the main data stack
 
 * TODO fix saving more than a single block of file storage. Means to concate multiple blocks? Append is creating more blocks. But is it writing correctly? READ is picking up extra blocks but second block is corrupted. Is READ or APPEND broken? APPEND might be OK. So check READ
 
@@ -55,7 +56,6 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 Nice to haves:
 
 
-* TODO reduce some of the stack sizes, loops and ret might be a bit too big. Then extend the main data stack
 * TODO Alt T is duplicated }. Free to reuse
 * TODO Alt H is duplicated |. Free to reuse
 * TODO Alt U, O, P, 5, 7, 8, 9, Enter are free

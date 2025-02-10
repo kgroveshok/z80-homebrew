@@ -88,17 +88,17 @@ MALLOC_3: equ 0           ; really broke
 MALLOC_4: equ 0              ; mine pretty basic reuse and max of 250 chars
 
 if BASE_KEV 
-stacksize: equ 512*2
+stacksize: equ 256
 
-STACK_RET_SIZE: equ 128
-STACK_LOOP_SIZE: equ 512
+STACK_RET_SIZE: equ 64
+STACK_LOOP_SIZE: equ 128
 STACK_DATA_SIZE: equ 512
 endif
 if BASE_SC114
 ;tos:	equ 0f000h
 stacksize: equ 256
 STACK_RET_SIZE: equ 64
-STACK_LOOP_SIZE: equ 256
+STACK_LOOP_SIZE: equ 128
 STACK_DATA_SIZE: equ 256
 endif
 
@@ -106,7 +106,7 @@ if BASE_CPM
 ;tos:	equ 0f000h
 stacksize: equ 256
 STACK_RET_SIZE: equ 64
-STACK_LOOP_SIZE: equ 256
+STACK_LOOP_SIZE: equ 128
 STACK_DATA_SIZE: equ 256
 endif
 

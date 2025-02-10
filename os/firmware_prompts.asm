@@ -2,7 +2,7 @@
 
 ; boot messages
 
-prom_bootmsg:	db "z80-homebrew OS v1.5",0
+prom_bootmsg:	db "z80-homebrew OS v1.6",0
 prom_bootmsg1:	db "by Kevin Groves",0
 
 

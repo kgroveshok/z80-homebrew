@@ -46,6 +46,7 @@ Current Specification/Feature Set
    - RP Pico using SPI for extra features such as wifi network support
    - GPIO on the 8 pins (TODO) and independant control use of SPI bus
 * Feature to load a user dictionary from file storage at boot time
+* Highlevel and low level storage words
 * Hardware abstraction layers to allow for common entry points and drivers for different keyboards, screens, etc
 * Multiple selectable frame buffer support (currently three)
 * Built-in Forth OS (inspired by Jupiter Ace). Language defintion and progress etc in ![FORTH.md](FORTH.md)
@@ -95,6 +96,7 @@ Stress testing FORTH OS
 
 
 [https://youtu.be/hWfx7d5nqZw]
+
 
 
 

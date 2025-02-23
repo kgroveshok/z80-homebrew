@@ -298,7 +298,8 @@ store_tmp2: equ store_tmp1 - 2        ; temp pointer holders during ops
 store_tmp3: equ store_tmp2 - 2        ; temp pointer holders during ops
 store_tmpid: equ store_tmp3 - 1		; page temp id
 store_tmpext: equ store_tmpid - 1		; file extent temp
-store_openext: equ store_tmpext - 1		; file extent of current opened file for read
+store_readcont: equ store_tmpid - 1		; If current read results in an overflow buffer to next record flag it up
+store_openext: equ store_readcont - 1		; file extent of current opened file for read
 store_openmaxext: equ store_openext - 1		; max extent of current opened file for read
 store_filecache: equ store_openmaxext-2   ;  TODO (using just one for now)  file id + extent count cache * 5
 store_tmppageid: equ store_filecache-2    ; phyical page id temp

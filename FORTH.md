@@ -98,13 +98,14 @@ The file ID used for all file words later is pushed to stack. It is possible to 
 and return the ID.
 
 
-Once the file has been created it is possible to add data to it via the 'append' word: "a line to add" $01 append
+Once the file has been created it is possible to add data to it via the 'APPEND' word: "a line to add" $01 append
 
 
-There is no need to close files as such. There is a word 'record' which provides a random access to the created files. For a sequential read use the 'open' word to set the
-file record number to the first one and then each use of the 'read' word to retrieve and push each record to stack until the 'eof' word reports as true or using the counter that 'open' reports.
+There is no need to close files as such. There is a word 'record' which provides a random access to the created files. For a sequential read use the 'OPEN' word to set the
+file record number to the first one and then each use of the 'READ' word to retrieve and push each record to stack until the 'EOF' word reports as true or using the counter that 'open' reports.
 
 
+As such, only one open file for reading is possible, but it is possible to APPEND to multiple output files.
 
 
 

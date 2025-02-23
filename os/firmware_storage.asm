@@ -1065,6 +1065,19 @@ storage_read:
 	endif
 	call storage_read_block
 
+	; if this a continuation read???
+
+	ld hl, (store_readbuf)     ; current buffer to load in to
+
+	ld a, STORE_BLOCK_PHY-1
+	call addatohl
+	ld a,(hl)
+	cp 0
+	jr z, .markiscont
+	ld a, 255
+
+.markiscont:
+	ld (store_readcont), a
 
 	; only short reads enabled
 

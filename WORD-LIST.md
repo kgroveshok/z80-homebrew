@@ -619,13 +619,13 @@ Also refer to the auto start list examples as these contain extra words created 
  Will return with 255 blocks if the file does not exist
 
 
-### READ ( n -- n  )  Reads next page of file id and push to stack | DONE
+### READ ( -- n  )  Reads next page of current file id and push to stack | DONE
 
 
  e.g.
 
 
- $01 OPEN $01 DO $01 READ . LOOP
+ $01 OPEN $01 DO READ . LOOP
 
 
 
@@ -652,13 +652,13 @@ Also refer to the auto start list examples as these contain extra words created 
  enable the code to automatically read futher blocks if full. It is BUGGY so don't use for now.
 
 
-### EOF ( n -- u )  Returns EOF logical state of file id n - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | DONE
+### EOF ( -- u )  Returns EOF logical state of current open file id | DONE
 
 
  e.g.
 
 
- $01 OPEN REPEAT $01 READ $01 EOF $00 IF LOOP
+ $01 OPEN REPEAT READ EOF $00 IF LOOP
 
 
 ### FORMAT (  --  )  Formats the current bank selected (NO PROMPT!) | DONE
@@ -1033,10 +1033,10 @@ Also refer to the auto start list examples as these contain extra words created 
 ### OPEN ( n -- n )  Sets file id to point to first data page for subsequent READs. Pushes the max number of blocks for this file | DONE
 
 
-### READ ( n -- n  )  Reads next page of file id and push to stack | DONE
+### READ ( -- n  )  Reads next page of current file id and push to stack | DONE
 
 
-### EOF ( n -- u )  Returns EOF logical state of file id n - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | DONE
+### EOF ( -- u )  Returns EOF logical state of current open file id | DONE
 
 
 ### FORMAT (  --  )  Formats the current bank selected (NO PROMPT!) | DONE

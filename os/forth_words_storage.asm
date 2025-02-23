@@ -777,7 +777,10 @@
 		ld h, l
 		ld l, 0
 
-		ld (store_filecache), hl
+		; store file id
+
+		ld a, h
+		ld (store_filecache), a
 
 	if DEBUG_STORESE
 		DMARK "OPN"
@@ -824,9 +827,9 @@
 	       NEXTW
 .READ:
 	CWHEAD .EOF 88 "READ" 4 WORD_FLAG_CODE
-; | READ ( n -- n  )  Reads next page of file id and push to stack | DONE
+; | READ ( -- n  )  Reads next page of current file id and push to stack | DONE
 ; | | e.g.
-; | | $01 OPEN $01 DO $01 READ . LOOP
+; | | $01 OPEN $01 DO READ . LOOP
 ; | |
 ; | | As this word only reads one 64 byte block in at a time, if the APPEND word has created extra blocks for the excess, this READ
 ; | | word is unaware so the long string needs to be joined if the string is a full. A single block read might be what you want,
@@ -847,21 +850,27 @@
 		; push the block to stack
 		; save the block id to stream
 
-		call storage_clear_page
 
-		FORTH_DSP_VALUEHL
+		call .testeof
+		ld a, 1
+		cp l
+		jp z, .ateof
+
+
+;		FORTH_DSP_VALUEHL
 
 ;		push hl
 
-	if DEBUG_STORESE
-		DMARK "REA"
-		CALLMONITOR
-	endif
-		FORTH_DSP_POP
+;	if DEBUG_STORESE
+;		DMARK "REA"
+;		CALLMONITOR
+;	endif
+;		FORTH_DSP_POP
 
 ;		pop hl
 	
-		ld h,l
+		ld a, (store_filecache)
+		ld h,a
 
 		ld a, (store_openext)
 		ld l, a
@@ -869,6 +878,7 @@
 		cp 0
 		jp z, .ateof     ; dont read past eof
 
+		call storage_clear_page
 
 		ld de, store_page
 	if DEBUG_STORESE
@@ -923,8 +933,8 @@
 
 	       NEXTW
 .ateof:
-		ld hl, .showeof
-		call forth_push_str
+	;	ld hl, .showeof
+	;	call forth_push_str
 .readeof:	ld a, 0
 		ld (store_openext), a
 
@@ -935,14 +945,14 @@
 	endif
 	       NEXTW
 
-.showeof:   db "eof", 0
+;.showeof:   db "eof", 0
 
 
 .EOF:
 	CWHEAD .FORMAT 89 "EOF" 3 WORD_FLAG_CODE
-; | EOF ( n -- u )  Returns EOF logical state of file id n - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | DONE
+; | EOF ( -- u )  Returns EOF logical state of current open file id | DONE
 ; | | e.g.
-; | | $01 OPEN REPEAT $01 READ $01 EOF $00 IF LOOP
+; | | $01 OPEN REPEAT READ EOF $00 IF LOOP
 		; TODO if current block id for stream is zero then push true else false
 
 		if DEBUG_FORTH_WORDS_KEY
@@ -952,8 +962,14 @@
 
 		; TODO handlue multiple file streams
 
-		FORTH_DSP_POP     ; for now just get rid of stream id
+;		FORTH_iDSP_POP     ; for now just get rid of stream id
+		call .testeof
+		call forth_push_numhl
 
+
+	       NEXTW
+
+.testeof:
 		ld l, 1
 		ld a, (store_openmaxext)
 		cp 0
@@ -963,10 +979,10 @@
 		jr  z, .eofdone
 		ld l, 0
 .eofdone:	ld h, 0
-		call forth_push_numhl
+		ret
 
 
-	       NEXTW
+
 
 .FORMAT:
 	CWHEAD .LABEL 89 "FORMAT" 6 WORD_FLAG_CODE
@@ -1119,7 +1135,9 @@
 .SCONST1:
 	CWHEAD .SCONST2 89 "FILEID" 6 WORD_FLAG_CODE
 ; | FILEID (  -- u1  )  Pushes currently open file ID to stack | DONE
-		ld hl, (store_filecache)
+		ld a, (store_filecache)
+		ld h, 0
+		ld l, a
 		call forth_push_numhl
 		NEXTW
 .SCONST2:
@@ -1127,15 +1145,25 @@
 ; | FILEEXT (  -- u1  )  Pushes the currently read file extent of the file to stack | DONE
 		ld a, (store_openext)
 		ld h, 0
-		ld a, l
+		ld l, a
 		call forth_push_numhl
 		NEXTW
 .SCONST3:
-	CWHEAD .ENDSTORAGE 89 "FILEMAX" 7 WORD_FLAG_CODE
+	CWHEAD .SCONSTS4 89 "FILEMAX" 7 WORD_FLAG_CODE
 ; | FILEMAXEXT (  -- u1  )  Pushes the maximum file extent of the currenlty open file to stack | DONE
 		ld a, (store_openmaxext)
 		ld h, 0
-		ld a, l
+		ld l, a
+		call forth_push_numhl
+		NEXTW
+.SCONST4:
+	CWHEAD .ENDSTORAGE 89 "READCONT" 8 WORD_FLAG_CODE
+; | READCONT (  -- u1  )  Pushes the READ continuation flag to stack | DONE
+; | | If the most recent READ results in a full buffer load then this flag is set and will indicate that
+; | | a further read should, if applicable, be CONCAT to the previous read.
+		ld a, (store_readcont)
+		ld h, 0
+		ld l, a
 		call forth_push_numhl
 		NEXTW
 .ENDSTORAGE:

@@ -628,6 +628,30 @@ Also refer to the auto start list examples as these contain extra words created 
  $01 OPEN $01 DO $01 READ . LOOP
 
 
+
+
+
+ As this word only reads one 64 byte block in at a time, if the APPEND word has created extra blocks for the excess, this READ
+
+
+ word is unaware so the long string needs to be joined if the string is a full. A single block read might be what you want,
+
+
+ but if not then writing a word to join blocks will be required. The upshot is a full string will be 62 bytes as the first
+
+
+ two bytes contain the file id and extent.
+
+
+ 
+
+
+ Note: There is a flag that enables/disables long block reads called 'store_longread' and a poke of a non-zero value will
+
+
+ enable the code to automatically read futher blocks if full. It is BUGGY so don't use for now.
+
+
 ### EOF ( n -- u )  Returns EOF logical state of file id n - CURRENTLY n IS IGNORED AND ONLY ONE STREAM IS SUPPORTED | DONE
 
 
@@ -647,6 +671,15 @@ Also refer to the auto start list examples as these contain extra words created 
 
 
 ### LABELS (  -- b n .... c  )  Pushes each storage bank labels (n) along with id (b) onto the stack giving count (c) of banks  | TO TEST
+
+
+### FILEID (  -- u1  )  Pushes currently open file ID to stack | DONE
+
+
+### FILEEXT (  -- u1  )  Pushes the currently read file extent of the file to stack | DONE
+
+
+### FILEMAXEXT (  -- u1  )  Pushes the maximum file extent of the currenlty open file to stack | DONE
 
 
 ## String Words
@@ -694,7 +727,7 @@ Also refer to the auto start list examples as these contain extra words created 
 ### FIND ( s c -- s u ) Search the string s for the char c and push the position of the first occurance to TOS | DONE
 
 
-### COUNT (  u1 -- u2 ) Push the length of the string on TOS | DONE
+### COUNT (  str -- str u1 ) Push the length of the string str on TOS as u1 | DONE
 
 
 ### CHAR ( u -- n ) Get the ascii value of the first character of the string on the stack | DONE
@@ -1015,6 +1048,15 @@ Also refer to the auto start list examples as these contain extra words created 
 ### STOREPAGE ( -- addr )  Pushes the address of the file system record buffer to stack for direct access  | DONE
 
 
+### FILEID (  -- u1  )  Pushes currently open file ID to stack | DONE
+
+
+### FILEEXT (  -- u1  )  Pushes the currently read file extent of the file to stack | DONE
+
+
+### FILEMAXEXT (  -- u1  )  Pushes the maximum file extent of the currenlty open file to stack | DONE
+
+
 ### PTR ( -- addr ) Low level push pointer to the value on TOS | DONE
 
 
@@ -1042,7 +1084,7 @@ Also refer to the auto start list examples as these contain extra words created 
 ### FIND ( s c -- s u ) Search the string s for the char c and push the position of the first occurance to TOS | DONE
 
 
-### COUNT (  u1 -- u2 ) Push the length of the string on TOS | DONE
+### COUNT (  str -- str u1 ) Push the length of the string str on TOS as u1 | DONE
 
 
 ### CHAR ( u -- n ) Get the ascii value of the first character of the string on the stack | DONE
@@ -1136,6 +1178,9 @@ Also refer to the auto start list examples as these contain extra words created 
 
 
 ## Fixed Storage Words
+
+
+
 
 
 

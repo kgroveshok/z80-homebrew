@@ -521,20 +521,25 @@
 
 .LEN:
 	CWHEAD .CHAR 56 "COUNT" 5 WORD_FLAG_CODE
-; | COUNT (  u1 -- u2 ) Push the length of the string on TOS | DONE
+; | COUNT (  str -- str u1 ) Push the length of the string str on TOS as u1 | DONE
 
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "CNT"
 			CALLMONITOR
 		endif
 ; TODO check string type
-		FORTH_DSP
-		;v5FORTH_DSP_VALUE
+		FORTH_DSP_VALUE
 
-		inc hl
 
-		ld a, 0
-		call strlent
+		if DEBUG_FORTH_WORDS
+			DMARK "CN?"
+			CALLMONITOR
+		endif
+		call strlenz
+		if DEBUG_FORTH_WORDS
+			DMARK "CNl"
+			CALLMONITOR
+		endif
 
 		call forth_push_numhl
 

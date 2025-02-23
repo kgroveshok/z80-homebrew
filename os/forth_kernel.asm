@@ -138,6 +138,9 @@ forth_init:
 	ld a, 1
 	ld (cli_autodisplay), a
 
+	; if storage is in use disable long reads for now
+	ld a, 0
+	ld (store_longread), a
 
 
 	; show start up screen

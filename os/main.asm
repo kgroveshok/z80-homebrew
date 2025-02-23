@@ -23,7 +23,7 @@ endif
 	jp coldstart     ; rst 0 - cold boot
 
 
-.buildtime: db   "Build: 00/00/00 00:00:00",0
+buildtime: db   "Build: 00/00/00 00:00:00",0
 
 
 ;        nop 
@@ -111,10 +111,12 @@ coldstart:
 
 	call delay1s
 	ld a, display_row_3+8
-	ld de, .buildtime
+	ld de, buildtime
 	call str_at_display
 	call update_display
 
+	call delay1s
+	call delay1s
 	call delay1s
 
 	; detect if any keys are held down to enable breakpoints at start up

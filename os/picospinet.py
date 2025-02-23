@@ -18,6 +18,12 @@
 #    01 - Ask client to clk out buffered data until zero term appears on stream
 #    02 - Tell client to receive data to act on
 #
+# use groups of pi pins to connect multiple machines and have the pi as hub
+#
+#
+# have protocol of from to comms packet with 0 for internet????
+
+#
 #
 # Commands to send to client:
 #    ATD<user>:<password>@<ip>  - Connect to a host with options user, password and IP

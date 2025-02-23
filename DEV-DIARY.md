@@ -3,18 +3,11 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 ------------------------------------------------
 
 
-9th Feb 2025
-------------
+23rd Feb 2025
+-------------
 
-* DONE BUG If a non-existing file extent/id is given as param to ERA, APPEND etc then the storage appears to be reformatted!
-* DONE BUG If an unknown uword is given for LIST then the system reboots
-* DONE add info page word. INFO word.
-* DONE ERA is causing a reformat even for valid id. Now fine
-* DONE Add high level RECORD word that allows loading of a specific file extent from storage
-* DONE Added GETID to get the file id by name
-* DONE reduce some of the stack sizes, loops and ret might be a bit too big. Then extend the main data stack
-
-* TODO fix saving more than a single block of file storage. Means to concate multiple blocks? Append is creating more blocks. But is it writing correctly? READ is picking up extra blocks but second block is corrupted. Is READ or APPEND broken? APPEND might be OK. So check READ
+* TODO Add some constants such as current file open id and file ext that can be used for better data manipluation
+* TODO As READ is now only loading one block in at a time, will need to look at the auto code load and have that concat long lines together
 
 * TODO Future bug? stack imbalance on storage_read. Needs a pop of de if no record found. Have added code watch for further issues
 
@@ -29,7 +22,7 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Saved setting to select words to auto load from storage
 * TODO Add to start up a list of what storage labels are seen
 * TODO add ram test to the diags
-* TODO Hook up Pico and get it talking over SPI to enable networking
+* TODO Hook up Pico and get it talking over SPI to enable networking. If using SPI + CE then can have Pico being hub for a few z80 machines to network together
 * TODO BUG If : word is in caps it wont work. This could be connected with caps on LIST which only works if given as lcase.
 
 
@@ -52,6 +45,22 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Fix IS 
 
 
+* TODO in dla handle empty dir
+* TODO read ext concat is the problem
+* TODO uword not exact match pulls wrong code
+* TODO file select to auto run
+* TODO file select to view
+* TODO file select to copy to del
+* TODO rename file
+* TODO delete record
+* TODO file editor
+* TODO ui to call config
+* TODO backup and restore of banks to network
+* TODO change size to fsize?
+* TODO bl word causing reboot
+* TODO do random quotes from file as example code
+* TODO ui join files ui
+* TODO add file description
 
 Nice to haves:
 
@@ -64,7 +73,6 @@ Nice to haves:
 * TODO Do a nice FORTH primer with the hardware. Screen shots and all...
 * TODO New case design
 * TODO Add to docs that looking up file name of id is just id BREAD 
-* TODO Add to docs that looking up file id by name just need to go through 1-32 and look for name
 * TODO Create a disk UI in native asm for robustness and speed? Have some config routines for this now. Expand on them
 * TODO Add word to call fill_display with a char
 * TODO Add FILL word - ( addr n char -- ) fills address for n long with char
@@ -96,6 +104,21 @@ Nice to haves:
 * TODO Extract all of the symbols in the symbol table to be available as words in FORTH, debug and asm above
 * TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs. FORGET and LIST use a scanner. Combine with main parser and have one for keyword and another for byte code
 * TODO Add a simple assembler feature like BBC Basic
+
+9th Feb 2025
+------------
+
+* DONE BUG If a non-existing file extent/id is given as param to ERA, APPEND etc then the storage appears to be reformatted!
+* DONE BUG If an unknown uword is given for LIST then the system reboots
+* DONE add info page word. INFO word.
+* DONE ERA is causing a reformat even for valid id. Now fine
+* DONE Add high level RECORD word that allows loading of a specific file extent from storage
+* DONE Added GETID to get the file id by name
+* DONE reduce some of the stack sizes, loops and ret might be a bit too big. Then extend the main data stack
+* DONE fix saving more than a single block of file storage. Means to concate multiple blocks? Append is creating more blocks. But is it writing correctly? READ is picking up extra blocks but second block is corrupted. Is READ or APPEND broken? APPEND might be OK. So check READ. It is READ that is broken. Have decided to leave READ as by block, with user deciding if it is worth CONCAT records together.
+
+
+
 
 
 5th Feb 2025

@@ -32,6 +32,7 @@ startcmds:
 
 	; start up words that are actually useful
 
+	dw longread
 	dw clrstack
 	dw type
 	dw stest
@@ -112,6 +113,13 @@ startcmds:
 ;	dw keybs
 	db 0, 0	
 
+
+; Long read
+; e.g. $01 lread
+;
+; TODO need some constants
+
+longread:   db ": lread read repeat count $3e = if ; ", 0
 
 ; clear stack 
 

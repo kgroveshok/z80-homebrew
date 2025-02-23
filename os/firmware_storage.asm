@@ -1021,6 +1021,9 @@ storage_create:
 	ret
 
 storage_read:
+
+
+
 	push de
 
 ; TODO BUG the above push is it popped before the RET Z?
@@ -1031,15 +1034,20 @@ storage_read:
 
 	ld e, h
 	ld d, l
+
+.srext:
+	ld (store_readptr), hl     ; save the current extent to load
+	ld (store_readbuf), de     ; save the current buffer to load in to
+
 	ld hl, STORE_BLOCK_PHY
 	if DEBUG_STORESE
-		DMARK "SRE"
+		DMARK "sre"
 		CALLMONITOR
 	endif
 	call storage_findnextid
 
 	if DEBUG_STORESE
-		DMARK "SRf"
+		DMARK "srf"
 		CALLMONITOR
 	endif
 	call ishlzero
@@ -1052,16 +1060,105 @@ storage_read:
 	pop de   ; get storage
 	push de
 	if DEBUG_STORESE
-		DMARK "SRg"
+		DMARK "srg"
 		CALLMONITOR
 	endif
 	call storage_read_block
 
 
+	; only short reads enabled
+
+	ld a, (store_longread)
+	cp 0
+	jp z, .readdone
+
 ; TODO if block has no zeros then need to read next block 
+; this code appears to be very buggy. Have added above a flag to disable/enable the following code for later debug
+; check last byte of physical block.
+; if not zero then the next block needs to be loaded
 
 
-		
+	ld hl, (store_readbuf)     ; current buffer to load in to
+
+	ld a, STORE_BLOCK_PHY-1
+	call addatohl
+	;dec hl
+	ld a,(hl)
+	if DEBUG_STORESE
+		DMARK "sr?"
+		CALLMONITOR
+	endif
+	cp 0
+	jp z, .readdone
+
+	; last byte is not zero so there is more in the next extent. Load it on the end.	
+
+	inc hl
+
+	ld (store_readbuf), hl     ; save the current buffer to load in to
+
+	ld de, (store_readptr)     ; save the current extent to load
+
+	ex de, hl
+
+	; next ext
+
+	inc hl
+	ld  (store_readptr), hl     ; save the current extent to load
+
+	if DEBUG_STORESE
+		DMARK "sF2"
+		CALLMONITOR
+	endif
+
+	; get and load block
+
+	call storage_findnextid
+
+	if DEBUG_STORESE
+		DMARK "sf2"
+		CALLMONITOR
+	endif
+	call ishlzero
+;	ld a, l
+;	add h
+;	cp 0
+	jp z,.sr_fail			; block not found so EOF
+	
+	call storage_read_block
+
+	; on a continuation block, we now have the file id and ext in the middle of the block
+	; we need to pull everything back 
+
+	ld de, (store_readbuf)     ; current buffer to nudge into
+	ld hl, (store_readbuf)     ; current buffer where data actually exists
+	inc hl
+	inc hl     ; skip id and ext
+	ld bc, STORE_BLOCK_PHY
+	if DEBUG_STORESE
+		DMARK "SR<"
+		CALLMONITOR
+	endif
+	ldir     ; copy data
+
+	; move the pointer back and pretend we have a full buffer for next recheck
+
+	dec de
+	dec de
+
+; TODO do pop below now short circuit loop?????
+	pop bc     ; get rid of spare de on stack
+	if DEBUG_STORESE
+		DMARK "SR>"
+		CALLMONITOR
+	endif
+	jp .srext
+
+
+
+
+
+.readdone:		
 	pop hl 		 ; return start of data to show as not EOF
 	inc hl   ; past file id
 	inc hl   ; past ext
@@ -1288,7 +1385,7 @@ storage_clear_page:
 	ld (hl), a
 
 	ld de, store_page+1
-	ld bc, STORE_BLOCK_PHY
+	ld bc, STORE_BLOCK_LOG
 
 	ldir
 	

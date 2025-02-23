@@ -825,6 +825,14 @@
 ; | READ ( n -- n  )  Reads next page of file id and push to stack | DONE
 ; | | e.g.
 ; | | $01 OPEN $01 DO $01 READ . LOOP
+; | |
+; | | As this word only reads one 64 byte block in at a time, if the APPEND word has created extra blocks for the excess, this READ
+; | | word is unaware so the long string needs to be joined if the string is a full. A single block read might be what you want,
+; | | but if not then writing a word to join blocks will be required. The upshot is a full string will be 62 bytes as the first
+; | | two bytes contain the file id and extent.
+; | | 
+; | | Note: There is a flag that enables/disables long block reads called 'store_longread' and a poke of a non-zero value will
+; | | enable the code to automatically read futher blocks if full. It is BUGGY so don't use for now.
 
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "REA"
@@ -837,6 +845,7 @@
 		; push the block to stack
 		; save the block id to stream
 
+		call storage_clear_page
 
 		FORTH_DSP_VALUEHL
 
@@ -1030,7 +1039,7 @@
 
 	       NEXTW
 .LABELS:
-	CWHEAD .ENDSTORAGE 89 "LABELS" 6 WORD_FLAG_CODE
+	CWHEAD .SCONST1 89 "LABELS" 6 WORD_FLAG_CODE
 ; | LABELS (  -- b n .... c  )  Pushes each storage bank labels (n) along with id (b) onto the stack giving count (c) of banks  | TO TEST
 		; 
 
@@ -1105,5 +1114,27 @@
 
 	       NEXTW
 
+.SCONST1:
+	CWHEAD .SCONST2 89 "FILEID" 6 WORD_FLAG_CODE
+; | FILEID (  -- u1  )  Pushes currently open file ID to stack | DONE
+		ld hl, (store_filecache)
+		call forth_push_numhl
+		NEXTW
+.SCONST2:
+	CWHEAD .SCONST3 89 "FILEEXT" 7 WORD_FLAG_CODE
+; | FILEEXT (  -- u1  )  Pushes the currently read file extent of the file to stack | DONE
+		ld a, (store_openext)
+		ld h, 0
+		ld a, l
+		call forth_push_numhl
+		NEXTW
+.SCONST3:
+	CWHEAD .ENDSTORAGE 89 "FILEMAX" 7 WORD_FLAG_CODE
+; | FILEMAXEXT (  -- u1  )  Pushes the maximum file extent of the currenlty open file to stack | DONE
+		ld a, (store_openmaxext)
+		ld h, 0
+		ld a, l
+		call forth_push_numhl
+		NEXTW
 .ENDSTORAGE:
 ; eof

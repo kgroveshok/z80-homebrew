@@ -286,18 +286,21 @@ iErrorVer:  equ iErrorReg - 1              ;Verify error flag
 
 store_bank_active: equ iErrorVer - (5 + 8 ) 		; TODO not used.  indicator of which storage banks are available to use 5 on board and 8 in cart
 
-STORE_BLOCK_LOG:  equ   255      ; TODO remove.... Logical block size   
+STORE_BLOCK_LOG:  equ   280      ; TODO remove.... Logical block size   
 
-store_page: equ store_bank_active-STORE_BLOCK_PHY            ; page size for eeprom
+store_page: equ store_bank_active-STORE_BLOCK_LOG            ; bigger than page size for eeprom so we can join multiple blocks if they are continuation records
 ;?????store_ffpage: equ store_page-STORE_BLOCK_LOG            ; page size for eeprom?????
-store_tmp1: equ store_page - 2      ; temp pointer holders during ops
+store_readptr: equ store_page-2       ; tracks the file extent during storage_read of continuation blocks
+store_readbuf: equ store_readptr-2       ; tracks the position for the buffer during storage_read of continuation blocks
+store_longread: equ store_readbuf -1 ;   if zero then only read one block. If not zero then do a read for as long as required
+store_tmp1: equ store_longread - 2      ; temp pointer holders during ops
 store_tmp2: equ store_tmp1 - 2        ; temp pointer holders during ops
 store_tmp3: equ store_tmp2 - 2        ; temp pointer holders during ops
 store_tmpid: equ store_tmp3 - 1		; page temp id
 store_tmpext: equ store_tmpid - 1		; file extent temp
 store_openext: equ store_tmpext - 1		; file extent of current opened file for read
 store_openmaxext: equ store_openext - 1		; max extent of current opened file for read
-store_filecache: equ store_openmaxext-(2*5)   ;  TODO (using just one for now)  file id + extent count cache * 5
+store_filecache: equ store_openmaxext-2   ;  TODO (using just one for now)  file id + extent count cache * 5
 store_tmppageid: equ store_filecache-2    ; phyical page id temp
 ;
 ; spi vars

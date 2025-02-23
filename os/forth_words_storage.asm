@@ -777,6 +777,8 @@
 		ld h, l
 		ld l, 0
 
+		ld (store_filecache), hl
+
 	if DEBUG_STORESE
 		DMARK "OPN"
 		CALLMONITOR

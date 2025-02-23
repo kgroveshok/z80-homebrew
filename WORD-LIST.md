@@ -682,6 +682,15 @@ Also refer to the auto start list examples as these contain extra words created 
 ### FILEMAXEXT (  -- u1  )  Pushes the maximum file extent of the currenlty open file to stack | DONE
 
 
+### READCONT (  -- u1  )  Pushes the READ continuation flag to stack | DONE
+
+
+ If the most recent READ results in a full buffer load then this flag is set and will indicate that
+
+
+ a further read should, if applicable, be CONCAT to the previous read.
+
+
 ## String Words
 
 
@@ -1055,6 +1064,9 @@ Also refer to the auto start list examples as these contain extra words created 
 
 
 ### FILEMAXEXT (  -- u1  )  Pushes the maximum file extent of the currenlty open file to stack | DONE
+
+
+### READCONT (  -- u1  )  Pushes the READ continuation flag to stack | DONE
 
 
 ### PTR ( -- addr ) Low level push pointer to the value on TOS | DONE

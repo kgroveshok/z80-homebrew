@@ -1149,7 +1149,7 @@
 		call forth_push_numhl
 		NEXTW
 .SCONST3:
-	CWHEAD .SCONSTS4 89 "FILEMAX" 7 WORD_FLAG_CODE
+	CWHEAD .SCONST4 89 "FILEMAX" 7 WORD_FLAG_CODE
 ; | FILEMAXEXT (  -- u1  )  Pushes the maximum file extent of the currenlty open file to stack | DONE
 		ld a, (store_openmaxext)
 		ld h, 0

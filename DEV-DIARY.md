@@ -8,9 +8,10 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 
 * DONE Crash on READ past EOF
 * DONE Add some constants such as current file open id and file ext that can be used for better data manipluation
-* TODO As READ is now only loading one block in at a time, will need to look at the auto code load and have that concat long lines together
+* DONE As READ is now only loading one block in at a time, will need to look at the auto code load and have that concat long lines together. Added LREAD to autostart.
 
 * TODO BUG swap of string and number leaves string ptr being left as number. Not swapping var type?
+* TODO Add LREAD support to the autostart exec
 
 * TODO Future bug? stack imbalance on storage_read. Needs a pop of de if no record found. Have added code watch for further issues
 

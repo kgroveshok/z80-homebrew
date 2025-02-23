@@ -1023,7 +1023,6 @@ storage_create:
 storage_read:
 
 
-
 	push de
 
 ; TODO BUG the above push is it popped before the RET Z?
@@ -1058,6 +1057,7 @@ storage_read:
 
 	; hl contains page number to load
 	pop de   ; get storage
+	ld (store_readbuf), de     ; current buffer to load in to
 	push de
 	if DEBUG_STORESE
 		DMARK "srg"
@@ -1079,6 +1079,10 @@ storage_read:
 .markiscont:
 	ld (store_readcont), a
 
+	if DEBUG_STORESE
+		DMARK "srC"
+		CALLMONITOR
+	endif
 	; only short reads enabled
 
 	ld a, (store_longread)

@@ -115,8 +115,7 @@ startcmds:
 
 
 ; Long read of currently open file
-; TODO to finish
-longread:   db ": lread read repeat count $3e = if read concat ; ", 0
+longread:   db ": lread read repeat readcont if read concat then readcont until nop ; ", 0
 
 ; clear stack 
 

@@ -1055,6 +1055,11 @@ storage_read:
 ;	cp 0
 	jr z,.sr_fail			; block not found so EOF
 
+	; save current address for use by higher level words etc
+
+	ld (store_openaddr),hl
+
+
 	; hl contains page number to load
 	pop de   ; get storage
 	ld (store_readbuf), de     ; current buffer to load in to
@@ -1142,6 +1147,10 @@ storage_read:
 ;	cp 0
 	jp z,.sr_fail			; block not found so EOF
 	
+	; save current address for use by higher level words etc
+
+	ld (store_openaddr),hl
+
 	call storage_read_block
 
 	; on a continuation block, we now have the file id and ext in the middle of the block

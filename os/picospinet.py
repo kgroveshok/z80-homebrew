@@ -34,10 +34,10 @@
 from machine import Pin
 import time
 
-DI=Pin(0,mode=Pin.IN)      #pico pin 21  eprom 5
-DO=Pin(1,mode=Pin.OUT)    # pico pin 22   eprom 2
-SCLK=Pin(2,mode=Pin.IN)   # pico pin 24  eprom 6
-CE=Pin(3,mode=Pin.IN)     # pico pin 25  eprom 1
+DI=Pin(2,mode=Pin.IN)      #pico pin 1
+DO=Pin(1,mode=Pin.OUT)    # pico pin 2
+SCLK=Pin(0,mode=Pin.IN)   # pico pin 4
+CE=Pin(3,mode=Pin.IN)     # pico pin 5
 
 READ=1   # ; Read data from memory array beginning at selected address
 WRITE=2  #;  Write data to memory array beginning at selected address
@@ -60,9 +60,11 @@ def clockbyteout(byte):
         #time.sleep(0.025)
 
 
-        while(SCLK.value() ) ;    # wait for high to low to clock out
-        time.sleep(0.025)
-        while(!SCLK.value() ) ;    # wait for low to high clock out and move on
+        while(SCLK.value() ):
+            pass     # wait for high to low to clock out
+        #time.sleep(0.025)
+        while( not SCLK.value() ):
+            pass # wait for low to high clock out and move on
 
         #time.sleep(0.025)
         #print("clock low")
@@ -72,10 +74,11 @@ def clockbytein():
     b=""
     for n in range(7,-1,-1):
         #SCLK.high()
+        #print("clock is low")
         while not SCLK.value() :
-                print("clock is low")
+                
                 pass
-        print("clock high")
+        #print("clock high")
 
         #print("clock low")
         bit=DI.value()
@@ -83,14 +86,14 @@ def clockbytein():
         while SCLK.value() :
                 pass
         #time.sleep(0.025)
-        print("clock low")
+        #print("clock low")
         bit=DI.value()
         if bit  :
-            print( " bit "+str(n)+" is high   1")
+        #    print( " bit "+str(n)+" is high   1")
             b=b+"1"
-            
+        #    
         else:
-            print( " bit "+str(n)+" is low 0")
+        #    print( " bit "+str(n)+" is low 0")
             b=b+"0"
 
     print(b)
@@ -178,24 +181,37 @@ def readbyte(addressh,addressl):
 
 fromserver=""
 gotcmd=False
+celast=False
 while(1):
+    cenow=CE.value() 
+    if cenow != celast:
+        celast=cenow
+            
+        if celast == 0 :
+            print( "CE low")
+        else:
+            print( "CE high")
+        
     if CE.value() == 0 :
+        print( "CE low")
+        a=clockbytein()
+        print(a)
         # chip has been selected
 
         # test data
-        a=clockbytein()
-        if a == 13:
-            gotcmd=True
-        else:
-            fromserver=fromserver+a
-
+        
+     #   if a == 13:
+      #      gotcmd=True
+      #  else:
+#            fromserver=fromserver+a
+    
     # code here for buffering data in and out
 
-    if gotcmd:
-        print("Exec command: "+fromserver)
-        fromserver=""
+    #if gotcmd:
+     #   print("Exec command: "+fromserver)
+      #  fromserver=""
 
-        gotcmd=False
+      #  gotcmd=False
 
 
 # eof

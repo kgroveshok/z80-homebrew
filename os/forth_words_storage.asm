@@ -1157,6 +1157,12 @@
 		call forth_push_numhl
 		NEXTW
 .SCONST4:
+	CWHEAD .SCONST5 89 "FILEADDR" 8 WORD_FLAG_CODE
+; | FILEADDR (  -- u1  )  Pushes the address of the block accessed for the currenlty open file to stack | DONE
+		ld hl, (store_openaddr)
+		call forth_push_numhl
+		NEXTW
+.SCONST5:
 	CWHEAD .ENDSTORAGE 89 "READCONT" 8 WORD_FLAG_CODE
 ; | READCONT (  -- u1  )  Pushes the READ continuation flag to stack | DONE
 ; | | If the most recent READ results in a full buffer load then this flag is set and will indicate that

@@ -682,6 +682,9 @@ Also refer to the auto start list examples as these contain extra words created 
 ### FILEMAXEXT (  -- u1  )  Pushes the maximum file extent of the currenlty open file to stack | DONE
 
 
+### FILEADDR (  -- u1  )  Pushes the address of the block accessed for the currenlty open file to stack | DONE
+
+
 ### READCONT (  -- u1  )  Pushes the READ continuation flag to stack | DONE
 
 
@@ -1064,6 +1067,9 @@ Also refer to the auto start list examples as these contain extra words created 
 
 
 ### FILEMAXEXT (  -- u1  )  Pushes the maximum file extent of the currenlty open file to stack | DONE
+
+
+### FILEADDR (  -- u1  )  Pushes the address of the block accessed for the currenlty open file to stack | DONE
 
 
 ### READCONT (  -- u1  )  Pushes the READ continuation flag to stack | DONE

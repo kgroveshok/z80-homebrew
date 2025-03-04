@@ -3,33 +3,24 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 ------------------------------------------------
 
 
-23rd Feb 2025
--------------
+4th Mar 2025
+------------
 
-* DONE Crash on READ past EOF
-* DONE Add some constants such as current file open id and file ext that can be used for better data manipluation
-* DONE As READ is now only loading one block in at a time, will need to look at the auto code load and have that concat long lines together. Added LREAD to autostart.
 
 * TODO BUG swap of string and number leaves string ptr being left as number. Not swapping var type?
-* TODO Add LREAD support to the autostart exec
+* TODO CART not setting correct CE lines as shown by tests with picospinet.py
+* TODO Hook up Pico and get it talking over SPI to enable networking. If using SPI + CE then can have Pico being hub for a few z80 machines to network together
+
+
 
 * TODO Future bug? stack imbalance on storage_read. Needs a pop of de if no record found. Have added code watch for further issues
 
 * TODO Save auto run flags to block 0 on bank 1 and not on currently selected device. Need a function to load from block 0 into hardware_config and then repoint all menu options to load and save them.
 * TODO Add a flag to block 0 to decide if the auto startup prompt is given and/or run
 
-* TODO Conslidate all prompts into a single file to allow for removing duplicates and may even localisation
-* TODO Add scroll down indicator to menu code
 * TODO Stop menu scrolling past last item
-* TODO Cant use special chars in quoted strings??? Why? Emit works for the char code.
-* TODO Saved setting to enable/disable auto start
-* TODO Saved setting to select words to auto load from storage
 * TODO Add to start up a list of what storage labels are seen
-* TODO add ram test to the diags
-* TODO Hook up Pico and get it talking over SPI to enable networking. If using SPI + CE then can have Pico being hub for a few z80 machines to network together
 * TODO BUG If : word is in caps it wont work. This could be connected with caps on LIST which only works if given as lcase.
-
-
 
 * TODO add more editing features 
 * TODO fix editor bugs
@@ -48,8 +39,6 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Fix KEY
 * TODO Fix IS 
 
-
-* TODO in dla handle empty dir
 * TODO read ext concat is the problem
 * TODO uword not exact match pulls wrong code
 * TODO file select to auto run
@@ -69,6 +58,14 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 Nice to haves:
 
 
+* TODO Add LREAD support to the autostart exec
+* TODO Conslidate all prompts into a single file to allow for removing duplicates and may even localisation
+* TODO Add scroll down indicator to menu code
+* TODO Cant use special chars in quoted strings??? Why? Emit works for the char code.
+* TODO Saved setting to enable/disable auto start
+* TODO Saved setting to select words to auto load from storage
+* TODO add ram test to the diags
+* TODO in dla handle empty dir
 * TODO Alt T is duplicated }. Free to reuse
 * TODO Alt H is duplicated |. Free to reuse
 * TODO Alt U, O, P, 5, 7, 8, 9, Enter are free
@@ -108,6 +105,15 @@ Nice to haves:
 * TODO Extract all of the symbols in the symbol table to be available as words in FORTH, debug and asm above
 * TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs. FORGET and LIST use a scanner. Combine with main parser and have one for keyword and another for byte code
 * TODO Add a simple assembler feature like BBC Basic
+
+23rd Feb 2025
+-------------
+
+* DONE Crash on READ past EOF
+* DONE Add some constants such as current file open id and file ext that can be used for better data manipluation
+* DONE As READ is now only loading one block in at a time, will need to look at the auto code load and have that concat long lines together. Added LREAD to autostart.
+* DONE added access to the current block READ so can use with BUPD
+
 
 9th Feb 2025
 ------------

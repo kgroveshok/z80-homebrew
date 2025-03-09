@@ -22135,8 +22135,12 @@ c56c			;		pop hl   ; u2 - addr
 c56c			 
 c56c					; TODO Send SPI byte 
 c56c			 
+c56c					push hl 
+c56c					call spi_ce_low 
+c56c					pop hl 
 c56c					ld a, l 
 c56c					call spi_send_byte 
+c56c					call spi_ce_high 
 c56c			 
 c56c					NEXTW 
 c56c			 

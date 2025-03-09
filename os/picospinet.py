@@ -89,14 +89,14 @@ def clockbytein():
         #print("clock low")
         bit=DI.value()
         if bit  :
-        #    print( " bit "+str(n)+" is high   1")
+            print( " bit "+str(n)+" is high   1")
             b=b+"1"
         #    
         else:
-        #    print( " bit "+str(n)+" is low 0")
+            print( " bit "+str(n)+" is low 0")
             b=b+"0"
 
-    print(b)
+    #print(b)
 
     return b 
 
@@ -183,14 +183,14 @@ fromserver=""
 gotcmd=False
 celast=False
 while(1):
-    cenow=CE.value() 
-    if cenow != celast:
-        celast=cenow
+    #cenow=CE.value() 
+    #if cenow != celast:
+    #    celast=cenow
             
-        if celast == 0 :
-            print( "CE low")
-        else:
-            print( "CE high")
+    #if cenow == 0 :
+    #        print( "CE low")
+    #else:
+    #        print( "CE high")
         
     if CE.value() == 0 :
         print( "CE low")

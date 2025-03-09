@@ -6,12 +6,15 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 4th Mar 2025
 ------------
 
+* DONE CART not setting correct CE lines as shown by tests with picospinet.py. Helps if you use the correct word CARTDEV not CART
+
+
+* TODO Hook up Pico and get it talking over SPI to enable networking. If using SPI + CE then can have Pico being hub for a few z80 machines to network together. CE is working now but clock isnt handshaking correctly. Each SPIO seems to send a single bit...
+
+
+
 
 * TODO BUG swap of string and number leaves string ptr being left as number. Not swapping var type?
-* TODO CART not setting correct CE lines as shown by tests with picospinet.py
-* TODO Hook up Pico and get it talking over SPI to enable networking. If using SPI + CE then can have Pico being hub for a few z80 machines to network together
-
-
 
 * TODO Future bug? stack imbalance on storage_read. Needs a pop of de if no record found. Have added code watch for further issues
 

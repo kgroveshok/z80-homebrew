@@ -22145,8 +22145,12 @@
 4677			 
 4677					; TODO Send SPI byte 
 4677			 
+4677					push hl 
+4677					call spi_ce_low 
+4677					pop hl 
 4677					ld a, l 
 4677					call spi_send_byte 
+4677					call spi_ce_high 
 4677			 
 4677					NEXTW 
 4677			 

@@ -164,8 +164,12 @@ if STORAGE_SE
 
 		; TODO Send SPI byte
 
+;		push hl
+;		call spi_ce_low
+;		pop hl
 		ld a, l
 		call spi_send_byte
+;		call spi_ce_high
 
 		NEXTW
 

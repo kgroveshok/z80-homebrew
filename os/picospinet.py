@@ -24,6 +24,24 @@
 # have protocol of from to comms packet with 0 for internet????
 
 
+
+# Sample sample FORTH code to send data
+
+# clock out a string on stack
+#
+
+# : clkstro count $01 do i $01 substr spio done $00 spio ; 
+
+# clock in a string to SCRATCHPAD
+
+# : clkstri scratchpad $01 - repeat $01 + dup dup spii ! @ $00 = until ; 
+
+# : send spicel $01 spio clkstro spiceh ;
+# : listen spicel $02 spio spii $00 clkstro spiceh ;
+# : sendstr spicel $03 spio spio clkstro spiceh ;
+# : getstr spicel $04 spio clkstri spiceh ;
+
+
 # Network protocol
 #
 # cmd dest len <packet>
@@ -78,7 +96,11 @@ CMD_TIME=9
 CMD_TZ=10
 # 10 Set current timezone for NTP
 
+CMD_WIFI=11
+# 11 <SSID> <PASS>  Send SSID and password to configure Wifi
 
+CMD_LANSTATUS=12
+# 12 Request current LAN status, IP, datetime etc
 
 
 # server (ff node) commands
@@ -101,6 +123,132 @@ CE=Pin(3,mode=Pin.IN)     # pico pin 5
 
 #READ=1   # ; Read data from memory array beginning at selected address
 #WRITE=2  #;  Write data to memory array beginning at selected address
+
+
+# Wifi support routines for the pico w
+# Wifi card setup
+#https://peppe8o.com/getting-started-with-wifi-on-raspberry-pi-pico-w-and-micropython/
+from time import sleep
+from time import ticks_ms, ticks_diff
+import framebuf,sys
+import os
+import json
+import network
+import socket
+
+
+WifiSSID=""
+WifiPass=""
+
+
+
+def saveSetttings:
+        settings = [ WifiSSID, WifiPass ] 
+   
+        print( "Saving wifi settings") # STRIP
+        print(settings)
+        with open('/spinet-wifi.json', "w") as file_write:
+            json.dump(settings, file_write)
+        file_write.close()
+
+def loadSettings:
+    try:
+        f = open( "/spinet-wifi.json","r" )
+        print( "Loading wifi settings") # STRIP
+        p = f.read()
+        sett=json.loads(p)
+        print(sett)
+
+        WifiSSID= sett[1]
+        WifiPass= sett[2]
+    except:
+        saveSettings()
+
+wlan=None
+connection=None
+connectretries=5
+
+def connect():
+   # wlan = network.WLAN(network.STA_IF)
+   # wlan.active(True)
+   # wlan.connect(SSIDWifi, passwordWifi)
+   pass
+
+try:
+#if True:
+  import network
+  import urequests
+  #import socket
+  import struct
+  import ntptime
+# actually check if any of the wifi functions are present. If so then we have wifi!
+  wlan = network.WLAN(network.STA_IF)
+  print(wlan)
+except :
+    hasWifi = False
+
+def wifistatus():
+    return wlan.isconnected()
+        
+        
+# See: https://docs.python.org/3/library/time.html#time.struct_time
+tm_year = 0
+tm_mon = 1 # range [1, 12]
+tm_mday = 2 # range [1, 31]
+tm_hour = 3 # range [0, 23]
+tm_min = 4 # range [0, 59]
+tm_sec = 5 # range [0, 61] in strftime() description
+tm_wday = 6 # range 8[0, 6] Monday = 0
+tm_yday = 7 # range [0, 366]
+tm_isdst = 8 # 0, 1 or -1 
+tm_tmzone = 'Europe/London' # default (set in dst_data.json) abbreviation of timezone name
+timezone_set = False
+#tm_tmzone_dst = "WET0WEST,M3.5.0/1,M10.5.0"
+time_is_set=False
+# Timezone and dst data are in external file "dst_data.json"
+# See: https://www.epochconverter.com/
+# The "start" and "end" values are for timezone "Europe/Portugal"
+dst = None # See setup()
+
+tm_gmtoff = 0 # offset east of GMT in seconds
+# added '- tm_gmtoff' to subtract 1 hour = 3600 seconds to get GMT + 1 for Portugal
+NTP_DELTA = 2208988800 - tm_gmtoff # mod by @PaulskPt.
+# modified to use Portugues ntp host
+ntphost = "uk.pool.ntp.org" # mod by @PaulskPt
+#dim = {1:31, 2:28, 3:31, 4:30, 5:31, 6:30, 7:31, 8:31, 9:30, 10:31, 11:30, 12:31}
+
+
+ntp_retries=5
+def settime():
+    #global lastUpdate
+    #global time_is_set
+    global ntp_retries
+
+    if not wlan.isconnected():
+        if connectretries>0:
+            wlan.active(True)
+            usessid=WifiSSID
+            #.replace(" ","")
+            usepass=WifiPass.replace(" ","")
+            wlan.connect(usessid, usepass)        
+            #wifiStatus(wlan.isconnected())
+            if not wlan.isconnected():
+                connectretries=connectretries-1
+    if wlan.isconnected() and not time_is_set :
+            #ntp_set_time()
+            try:
+                print("Trying NTP Set time") # STRIP
+                ntptime.settime()
+                time_is_set=True
+                print("NTP Set time") # STRIP
+            except Exception as E:
+                print(E)
+                ntp_retries=ntp_retries-1
+                print( "NTP retries %d" % ntp_retries) # STRIP
+                if ntp_retries == 0:
+                    time_is_set=True
+                    print( "Too many NTP tries. SKipping") # STRIP
+                sleep(1)
 
 
 def clockbyteout(byte):
@@ -243,12 +391,34 @@ def clockbytein():
  #   print("ce high")
 
 
+
+# clock in a zero term string from a node
+
+def clockinzs:
+    s=""
+    cond=True
+    while cond:
+        b=clockbytein()
+        if b == 0:
+            cond=False
+        else:
+            print(chr(b))
+            s=s+chr(b)
+
+    return s
+
+
+
+loadSettings()
+settime()
+
 fromserver=""
 gotcmd=False
 celast=False
 node_1=0
 node_1_buff="Hi!"
 node_1_cmd=""
+node_1_strings=[]
 curCmd=0
 while(1):
     #cenow=CE.value() 
@@ -271,22 +441,32 @@ while(1):
             print("Cmd: "+str(node_1))
             curCmd=node_1
             
-            
+        if curCmd == CMD_WIFI:
+            print( "Setting Wifi...")
+            WifiSSID=clockinzs()
+            print( "Set Wifi SSID to "+WifiSSID)
+            WifiPass=clockinzs()
+            print( "Set Wifi password to "+WifiPass)
+            saveSettings()
+            settime()
+
+
 
         if curCmd == CMD_SEND:
             dest_node=clockbytein()
             print( "Sending string to node "+str(dest_node)+"...")
-            cond=True
-            node_1_cmd=""
-            while cond:
-                b=clockbytein()
-                if b == 0:
-                    cond=False
-                else:
-                    print(chr(b))
-                    node_1_cmd=node_1_cmd+chr(b)
-                
-            # save string to node's buffer list
+            node_1_cmd=clockinzs() 
+            # TODO save string to node's buffer list
+           
+            if dest_node == 255 :   # Tell the server to do something
+                if "GET" == node_1_cmd[:3]:    # look up something on the lan
+                    
+                        blob = urequests.get(node_1_cmd[5:])
+                        node_1_buff=blob.text
+                        print(blob.reason) # STRIP
+                        print(blob.text) # STRIP
+                        blob.close()
+
             
             
             
@@ -297,18 +477,32 @@ while(1):
             if len(node_1_buff) > 0:
                 clockbyteout(1)
                 for i,c in enumerate(node_1_buff):
+                    print(ord(c))
                     clockbyteout(ord(c))
+                    if i > 40:
+                        # TODO limit to getting 40 chars for testing. Need to do in max string
+                        # length blocks when live which is 250 chars
+                        break
                 clockbyteout(0)
             else:
                 clockbyteout(0)
             
             
         if curCmd == CMD_STORE:
-            print( "Node wants to store a string...")
+            ix=clockbytein()
+            print( "Node wants to store a string in "+str(ix)+"...")
+            s=clockinzs()
+            print("String: "+s)
+            node_1_strings[ix]=s
             
             
         if curCmd == CMD_GET:
-            print( "Node wants to a string from store...")
+            ix=clockbytein()
+            print( "Node wants to a string from store "+str(ix)+"...")
+            for i,c in enumerate(node_1_strings[ix]):
+                    print(ord(c))
+                    clockbyteout(ord(c))
+            clockbyteout(0)
             
             
         curCmd = 0

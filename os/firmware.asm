@@ -308,7 +308,8 @@ store_tmppageid: equ store_filecache-2    ; phyical page id temp
 ; spi vars
 
 
-spi_cartdev: equ store_tmppageid - 1      ; holds bit mask to send to portb (ext spi) devices
+spi_clktime: equ store_tmppageid - 1      ; holds the number of ms that happens between spi clock pulses
+spi_cartdev: equ spi_clktime - 1      ; holds bit mask to send to portb (ext spi) devices
 spi_cartdev2: equ spi_cartdev - 1      ; holds bit mask to send to portb's shift reg devices
 spi_portbyte: equ spi_cartdev2 - 1      ; holds bit mask to send to spi bus 
 spi_device: equ spi_portbyte - 1    ; bit mask to send to porta (eeproms) devices

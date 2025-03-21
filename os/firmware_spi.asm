@@ -27,6 +27,19 @@ SPI_CE_HIGH:  equ 255
 
 
 
+;  Perform SCLK wait pulse
+
+spi_clk:
+	push af
+	ld a, (spi_clktime)
+	cp 0
+	jr z, .scskip
+	call aDelayInMS
+.scskip:
+	pop af
+	ret
+
+
 
 ; TODO store port id for spi device ie dev c
 ; TODO store pin for SO
@@ -79,10 +92,12 @@ spi_send_byte:
 	set SPI_SCLK,a
 	out (storage_adata),a
 	nop
+	call spi_clk
 	; then low
 	res SPI_SCLK,a
 	out (storage_adata),a
 	nop
+	call spi_clk
 	djnz .ssb1
 
 	ld (spi_portbyte),a
@@ -103,6 +118,7 @@ spi_read_byte:
 	set SPI_SCLK,a
 	out (storage_adata),a
 	nop
+	call spi_clk
 
     ; read DO 
 
@@ -116,12 +132,14 @@ spi_read_byte:
 	res SPI_SCLK,a
 	out (storage_adata),a
 	nop
+	call spi_clk
     
 
 	; clock bit high
 	set SPI_SCLK,a
 	out (storage_adata),a
 	nop
+	call spi_clk
 
     ; read DO 
 
@@ -135,11 +153,13 @@ spi_read_byte:
 	res SPI_SCLK,a
 	out (storage_adata),a
 	nop
+	call spi_clk
 
 	; clock bit high
 	set SPI_SCLK,a
 	out (storage_adata),a
 	nop
+	call spi_clk
 
 
     ; read DO 
@@ -154,10 +174,12 @@ spi_read_byte:
 	res SPI_SCLK,a
 	out (storage_adata),a
 	nop
+	call spi_clk
 	; clock bit high
 	set SPI_SCLK,a
 	out (storage_adata),a
 	nop
+	call spi_clk
 
     ; read DO 
 
@@ -171,10 +193,12 @@ spi_read_byte:
 	res SPI_SCLK,a
 	out (storage_adata),a
 	nop
+	call spi_clk
 	; clock bit high
 	set SPI_SCLK,a
 	out (storage_adata),a
 	nop
+	call spi_clk
 
     ; read DO 
 
@@ -188,10 +212,12 @@ spi_read_byte:
 	res SPI_SCLK,a
 	out (storage_adata),a
 	nop
+	call spi_clk
 	; clock bit high
 	set SPI_SCLK,a
 	out (storage_adata),a
 	nop
+	call spi_clk
 
     ; read DO 
 
@@ -205,10 +231,12 @@ spi_read_byte:
 	res SPI_SCLK,a
 	out (storage_adata),a
 	nop
+	call spi_clk
 	; clock bit high
 	set SPI_SCLK,a
 	out (storage_adata),a
 	nop
+	call spi_clk
 
     ; read DO 
 
@@ -222,10 +250,12 @@ spi_read_byte:
 	res SPI_SCLK,a
 	out (storage_adata),a
 	nop
+	call spi_clk
 	; clock bit high
 	set SPI_SCLK,a
 	out (storage_adata),a
 	nop
+	call spi_clk
 
     ; read DO 
 
@@ -239,6 +269,7 @@ spi_read_byte:
 	res SPI_SCLK,a
 	out (storage_adata),a
 	nop
+	call spi_clk
 
 
 	ld (spi_portbyte),a

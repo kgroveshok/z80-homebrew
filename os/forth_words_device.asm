@@ -260,6 +260,11 @@ if STORAGE_SE
 			CALLMONITOR
 		endif
 
+		; set default SPI clk pulse time as disabled for BANK use
+
+		ld a, 0
+		ld (spi_clktime), a
+
 		NEXTW
 
 .CARTDEV:
@@ -331,6 +336,11 @@ if STORAGE_SE
 			DMARK "CD2"
 			CALLMONITOR
 		endif
+
+		; set default SPI clk pulse time as 10ms for CARTDEV use
+
+		ld a, $0a
+		ld (spi_clktime), a
 		NEXTW
 endif
 

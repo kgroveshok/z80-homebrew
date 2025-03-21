@@ -63,6 +63,14 @@ storage_bctl: equ Device_C+3     ; device c port b
 
 storage_init:
 
+
+		; set default SPI clk pulse time as disabled
+
+		ld a, 0
+		ld (spi_clktime), a
+
+		; init hardware
+
             LD   A, 11001111b
             OUT  (storage_actl), A  ;Port A = PIO 'control' mode
             LD   A, 00000000b
@@ -75,8 +83,8 @@ storage_init:
             LD   A, 00000000b
             OUT  (storage_bctl),A   ;Port A = all lines are outputs
 
-	; set all external spi devices off
-	ld a, 0
+	; set all external spi devices off 
+	ld a, 255
 	ld (spi_device), a
 	ld (spi_cartdev), a
 

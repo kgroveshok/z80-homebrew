@@ -23,24 +23,84 @@
 #
 # have protocol of from to comms packet with 0 for internet????
 
+
+# Network protocol
 #
+# cmd dest len <packet>
+
+CMD_SEND=1
+# Send message to node 1-4 - node ff is ext
+# 01 <node> <zero term packet>
 #
-# Commands to send to client:
-#    ATD<user>:<password>@<ip>  - Connect to a host with options user, password and IP
-#    D<string> - Send a string to the client
+# will add the zero term packet to the receive buffer of the node
+# if the node is ff then it is taken as a server command
+# adds the zero term packet as a file on local storage with rec_<dest id>_<src id>_<seq>.txt
+
+CMD_LISTEN=2
+# Listen for message to receive
+# 02  ->
+#  <source node id> or 00 if no data waiting
+#  if >0 then clock in <zero term packet>
+
+CMD_STORE=3
+# Store string
+# 03 <low> <high> <zero term packet>
 #
+#   stores the zero term packet as a file on local storage with store_<node id>_<address>.txt
+
+CMD_GET=4
+# Get store
+# 04 <low> <high> clock in <zero term packet>
+#
+# gets the zero term packet as a file on local storage with store_<node id>_<address>.txt
+
+CMD_CLRALL=5
+# clear receive buffer 
+#
+# 05
+#
+# delets all rec_<node id>_*.txt
+
+CMD_NEXT=6
+# 06 next buffer
+# removes most recent rec_<node id>_*.txt 
+
+
+CMD_UNIXTS=7
+# 07   get unix time stamp
+
+CMD_DATE=8
+# 08 get current date
+
+CMD_TIME=9
+# 09 get current time
+
+CMD_TZ=10
+# 10 Set current timezone for NTP
+
+
+
+
+# server (ff node) commands
+#
+# URL <url>    - wget on the url and places ascii version in new next buffer
+# SEND <ip> <address>  - sends the contents of the string at storage address to ip
+# READ <ip> <address>  - gets the contents of the string on ip and saves to storage address
+
 # All clocked in data from client to the server (z80) to be pushed to stack on the z80
 
 from machine import Pin
 import time
+
+# just one node for now
 
 DI=Pin(2,mode=Pin.IN)      #pico pin 1
 DO=Pin(1,mode=Pin.OUT)    # pico pin 2
 SCLK=Pin(0,mode=Pin.IN)   # pico pin 4
 CE=Pin(3,mode=Pin.IN)     # pico pin 5
 
-READ=1   # ; Read data from memory array beginning at selected address
-WRITE=2  #;  Write data to memory array beginning at selected address
+#READ=1   # ; Read data from memory array beginning at selected address
+#WRITE=2  #;  Write data to memory array beginning at selected address
 
 
 def clockbyteout(byte):
@@ -72,6 +132,7 @@ def clockbyteout(byte):
 def clockbytein():
    # msb first
     b=""
+    a=0
     for n in range(7,-1,-1):
         #SCLK.high()
         #print("clock is low")
@@ -89,113 +150,168 @@ def clockbytein():
         #print("clock low")
         bit=DI.value()
         if bit  :
-            print( " bit "+str(n)+" is high   1")
+     #       print( " bit "+str(n)+" is high   1")
             b=b+"1"
+            a=(a<< 1 ) +1
+            
         #    
         else:
-            print( " bit "+str(n)+" is low 0")
+      #      print( " bit "+str(n)+" is low 0")
             b=b+"0"
+            a=(a<< 1 ) 
 
     #print(b)
 
-    return b 
+    return a
 
 
-def writebyte(byte,addressh,addressl):
-       
-    #; initi write mode
+#def writebyte(byte,addressh,addressl):
+ #      
+  #  #; initi write mode
     #;
-    #;CS low
+  #  #;CS low
     #
 
-    print("* write "+str(byte)+" to "+str(addressl))
-    CE.low()
-    print("ce low")
-    #;clock out wren instruction
+  #  print("* write "+str(byte)+" to "+str(addressl))
+  #  CE.low()
+  #  print("ce low")
+  #  #;clock out wren instruction##
 
-    print("* wren")
-    clockbyteout(WREN)
+    #print("* wren")
+    #clockbyteout(WREN)
 
     #;cs high to enable write latch
 
-    CE.high()
+  #  CE.high()
 
-    print("ce high")
+  #  print("ce high")
     #;
     #; intial write data
     #;
     #; cs low
     #
 
-    CE.low()
+  #  CE.low()
     #print("ce low")
 
     #; clock out write instruction
     #
-    print("* write")
-    clockbyteout(WRITE)
+ #   print("* write")
+ #   clockbyteout(WRITE)
 
     #; clock out address (depending on address size)
     #
-    print("* address")
-    clockbyteout(addressh)
-    clockbyteout(addressl)
+#    print("* address")
+#    clockbyteout(addressh)
+#    clockbyteout(addressl)
 
     #; clock out byte(s) for page
 
-    print("* data")
-    clockbyteout(byte)
+ #   print("* data")
+#    clockbyteout(byte)
 
-    CE.high()
-    print("ce high")
+#    CE.high()
+#    print("ce high")
 
 
-def readbyte(addressh,addressl):
-    print("read "+str(addressl))
+#def readbyte(addressh,addressl):
+ #   print("read "+str(addressl))
        
     #; initi write mode
     #;
     #;CS low
     #
 
-    CE.low()
+ #   CE.low()
     #print("ce low")
     #;clock out read instruction
-
-    clockbyteout(READ)
+#
+#    clockbyteout(READ)
 
 
     #; clock out address (depending on address size)
     #
 
-    clockbyteout(addressh)
-    clockbyteout(addressl)
+ #   clockbyteout(addressh)
+ #   clockbyteout(addressl)
 
     #; clock in byte(s) for page
 
-    clockbytein()
+ #   clockbytein()
 
-    CE.high()
-    print("ce high")
+ #   CE.high()
+ #   print("ce high")
 
 
 fromserver=""
 gotcmd=False
 celast=False
+node_1=0
+node_1_buff="Hi!"
+node_1_cmd=""
+curCmd=0
 while(1):
     #cenow=CE.value() 
     #if cenow != celast:
     #    celast=cenow
+    #        
+    #    if cenow == 0 :
+    #            print( "CE low... Clock-in byte")
+#   #             a=clockbytein()
+    #            #print(a)
+    #    else:
+    #            print( "CE high")
             
-    #if cenow == 0 :
-    #        print( "CE low")
-    #else:
-    #        print( "CE high")
-        
     if CE.value() == 0 :
-        print( "CE low")
-        a=clockbytein()
-        print(a)
+    #    print( "CE low")
+    
+        # no command is in progress so see if we have one
+        if curCmd == 0:
+            node_1=clockbytein()
+            print("Cmd: "+str(node_1))
+            curCmd=node_1
+            
+            
+
+        if curCmd == CMD_SEND:
+            dest_node=clockbytein()
+            print( "Sending string to node "+str(dest_node)+"...")
+            cond=True
+            node_1_cmd=""
+            while cond:
+                b=clockbytein()
+                if b == 0:
+                    cond=False
+                else:
+                    print(chr(b))
+                    node_1_cmd=node_1_cmd+chr(b)
+                
+            # save string to node's buffer list
+            
+            
+            
+            
+        if curCmd == CMD_LISTEN:
+            print( "Node is listening...")
+            
+            if len(node_1_buff) > 0:
+                clockbyteout(1)
+                for i,c in enumerate(node_1_buff):
+                    clockbyteout(ord(c))
+                clockbyteout(0)
+            else:
+                clockbyteout(0)
+            
+            
+        if curCmd == CMD_STORE:
+            print( "Node wants to store a string...")
+            
+            
+        if curCmd == CMD_GET:
+            print( "Node wants to a string from store...")
+            
+            
+        curCmd = 0
         # chip has been selected
 
         # test data

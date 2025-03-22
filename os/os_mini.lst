@@ -837,9 +837,9 @@
 0034 cd 15 0d				call clear_display  
 0037			  
 0037			  
-0037 cd 23 6a				call lcd_init		; lcd hardware first as some screen functions called during key_init e.g. cursor shapes  
+0037 cd c5 6a				call lcd_init		; lcd hardware first as some screen functions called during key_init e.g. cursor shapes  
 003a			  
-003a cd 6c 6b			call key_init  
+003a cd 0e 6c			call key_init  
 003d cd fb 01			call storage_init  
 0040			  
 0040				; setup malloc functions  
@@ -4387,7 +4387,7 @@
 0d38			update_display: 
 0d38 e5				push hl 
 0d39 2a 55 fd			ld hl, (display_fb_active) 
-0d3c cd 42 6a			call write_display 
+0d3c cd e4 6a			call write_display 
 0d3f e1				pop hl 
 0d40 c9				ret 
 0d41			 
@@ -4470,7 +4470,7 @@
 0d4c			 
 0d4c			if BASE_KEV 
 0d4c			 
-0d4c cd f7 6b		.mbounce:	call cin 
+0d4c cd 99 6c		.mbounce:	call cin 
 0d4f fe 00				cp 0 
 0d51 20 f9				jr nz, .mbounce 
 0d53			endif 
@@ -4562,7 +4562,7 @@
 0dc0			 
 0dc0					; handle key 
 0dc0			 
-0dc0 cd e6 6b				call cin_wait 
+0dc0 cd 88 6c				call cin_wait 
 0dc3			 
 0dc3 fe 05				cp KEY_UP 
 0dc5 28 2b				jr z, .mgoup 
@@ -5407,7 +5407,7 @@
 0fee					; wait 
 0fee				 
 0fee					; TODO loop without wait to flash the cursor and char under cursor	 
-0fee cd f7 6b				call cin    ; _wait 
+0fee cd 99 6c				call cin    ; _wait 
 0ff1			 
 0ff1 fe 00				cp 0 
 0ff3 ca a7 0f				jp z, .is1 
@@ -5795,11 +5795,11 @@
 11c2			 
 11c2					; display entered text 
 11c2 3a ad fe				ld a,(input_at_pos) 
-11c5 cd 15 6b		            	CALL fLCD_Pos       ;Position cursor to location in A 
+11c5 cd b7 6b		            	CALL fLCD_Pos       ;Position cursor to location in A 
 11c8 ed 5b b0 fe	            	LD   de, (input_start) 
-11cc cd 1d 6b		            	CALL fLCD_Str       ;Display string pointed to by DE 
+11cc cd bf 6b		            	CALL fLCD_Str       ;Display string pointed to by DE 
 11cf			 
-11cf cd f7 6b				call cin 
+11cf cd 99 6c				call cin 
 11d2 fe 00				cp 0 
 11d4 28 e4				jr z, .instr1 
 11d6			 
@@ -9558,7 +9558,7 @@
 1991 11 b0 1e		        ld de, endprg 
 1994 cd 28 0d			call str_at_display 
 1997 cd 38 0d			call update_display 
-199a cd e6 6b			call cin_wait 
+199a cd 88 6c			call cin_wait 
 199d			 
 199d c3 ed 18			jp .bps1 
 19a0			 
@@ -9802,7 +9802,7 @@
 1b8c			 
 1b8c				; detect if any keys are held down to enable breakpoints at start up 
 1b8c			 
-1b8c cd f7 6b			call cin  
+1b8c cd 99 6c			call cin  
 1b8f fe 00			cp 0 
 1b91 28 03			jr z, .nokeys 
 1b93			 
@@ -9879,9 +9879,9 @@
 1ba2			 
 1ba2				if STARTUP_ENABLE 
 1ba2					if STORAGE_SE 
-1ba2 cd 28 69					call forth_autoload 
+1ba2 cd ca 69					call forth_autoload 
 1ba5					endif 
-1ba5 cd 37 66				call forth_startup 
+1ba5 cd d9 66				call forth_startup 
 1ba8			 
 1ba8			 
 1ba8				endif 
@@ -10581,7 +10581,7 @@
 1eb8 11 b0 1e		        ld de, endprg 
 1ebb cd 28 0d			call str_at_display 
 1ebe cd 38 0d			call update_display 
-1ec1 cd e6 6b			call cin_wait 
+1ec1 cd 88 6c			call cin_wait 
 1ec4 c1				pop bc 
 1ec5 f1				pop af 
 1ec6 d1				pop de 
@@ -10693,7 +10693,7 @@
 1ec9			 
 1ec9			macro_forth_dsp_next: 
 1ec9				if DEBUG_FORTH_STACK_GUARD 
-1ec9 cd 01 67				call check_stacks 
+1ec9 cd a3 67				call check_stacks 
 1ecc				endif 
 1ecc e5				push hl 
 1ecd d5				push de 
@@ -10711,7 +10711,7 @@
 1edb d1				pop de 
 1edc e1				pop hl 
 1edd				if DEBUG_FORTH_STACK_GUARD 
-1edd cd 01 67				call check_stacks 
+1edd cd a3 67				call check_stacks 
 1ee0				endif 
 1ee0 c9				ret 
 1ee1			 
@@ -10724,7 +10724,7 @@
 1ee1			 
 1ee1			macro_forth_rsp_next: 
 1ee1				if DEBUG_FORTH_STACK_GUARD 
-1ee1 cd 01 67				call check_stacks 
+1ee1 cd a3 67				call check_stacks 
 1ee4				endif 
 1ee4 e5				push hl 
 1ee5 d5				push de 
@@ -10739,7 +10739,7 @@
 1ef2 d1				pop de 
 1ef3 e1				pop hl 
 1ef4				if DEBUG_FORTH_STACK_GUARD 
-1ef4 cd 01 67				call check_stacks 
+1ef4 cd a3 67				call check_stacks 
 1ef7				endif 
 1ef7 c9				ret 
 1ef8			 
@@ -10777,14 +10777,14 @@
 1f02			macro_forth_rsp_pop: 
 1f02				if DEBUG_FORTH_STACK_GUARD 
 1f02			;		DMARK "RPP" 
-1f02 cd 01 67				call check_stacks 
+1f02 cd a3 67				call check_stacks 
 1f05					FORTH_CHK_RSP_UNDER 
 1f05 e5				push hl 
 1f06 d5				push de 
 1f07 2a b3 fb			ld hl,(cli_ret_sp) 
 1f0a 11 6d fb			ld de, cli_ret_stack 
 1f0d cd 67 0f			call cmp16 
-1f10 da 15 68			jp c, fault_rsp_under 
+1f10 da b7 68			jp c, fault_rsp_under 
 1f13 d1				pop de 
 1f14 e1				pop hl 
 1f15				endm 
@@ -10821,14 +10821,14 @@
 1f1e				; do stack underflow checks 
 1f1e e1				pop hl 
 1f1f				if DEBUG_FORTH_STACK_GUARD 
-1f1f cd 01 67				call check_stacks 
+1f1f cd a3 67				call check_stacks 
 1f22					FORTH_CHK_RSP_UNDER 
 1f22 e5				push hl 
 1f23 d5				push de 
 1f24 2a b3 fb			ld hl,(cli_ret_sp) 
 1f27 11 6d fb			ld de, cli_ret_stack 
 1f2a cd 67 0f			call cmp16 
-1f2d da 15 68			jp c, fault_rsp_under 
+1f2d da b7 68			jp c, fault_rsp_under 
 1f30 d1				pop de 
 1f31 e1				pop hl 
 1f32				endm 
@@ -11471,7 +11471,7 @@
 2162			 
 2162			macro_forth_loop_next: 
 2162				if DEBUG_FORTH_STACK_GUARD 
-2162 cd 01 67				call check_stacks 
+2162 cd a3 67				call check_stacks 
 2165				endif 
 2165 e5				push hl 
 2166 d5				push de 
@@ -11505,7 +11505,7 @@
 218f d1				pop de    ; been reversed so save a swap on restore 
 2190 e1				pop hl 
 2191				if DEBUG_FORTH_STACK_GUARD 
-2191 cd 01 67				call check_stacks 
+2191 cd a3 67				call check_stacks 
 2194				endif 
 2194 c9				ret 
 2195			 
@@ -11547,14 +11547,14 @@
 21b7 f1			.pastdmark: pop af  
 21b8			endm  
 # End of macro DMARK
-21b8 cd 01 67				call check_stacks 
+21b8 cd a3 67				call check_stacks 
 21bb					FORTH_CHK_LOOP_UNDER 
 21bb e5				push hl 
 21bc d5				push de 
 21bd 2a b1 fb			ld hl,(cli_loop_sp) 
 21c0 11 eb fa			ld de, cli_loop_stack 
 21c3 cd 67 0f			call cmp16 
-21c6 da 1b 68			jp c, fault_loop_under 
+21c6 da bd 68			jp c, fault_loop_under 
 21c9 d1				pop de 
 21ca e1				pop hl 
 21cb				endm 
@@ -11568,14 +11568,14 @@
 21d4				; TODO do stack underflow checks 
 21d4 e1				pop hl 
 21d5				if DEBUG_FORTH_STACK_GUARD 
-21d5 cd 01 67				call check_stacks 
+21d5 cd a3 67				call check_stacks 
 21d8					FORTH_CHK_LOOP_UNDER 
 21d8 e5				push hl 
 21d9 d5				push de 
 21da 2a b1 fb			ld hl,(cli_loop_sp) 
 21dd 11 eb fa			ld de, cli_loop_stack 
 21e0 cd 67 0f			call cmp16 
-21e3 da 1b 68			jp c, fault_loop_under 
+21e3 da bd 68			jp c, fault_loop_under 
 21e6 d1				pop de 
 21e7 e1				pop hl 
 21e8				endm 
@@ -11590,14 +11590,14 @@
 21ea				; release malloc data 
 21ea			 
 21ea				if DEBUG_FORTH_STACK_GUARD 
-21ea cd 01 67				call check_stacks 
+21ea cd a3 67				call check_stacks 
 21ed					FORTH_CHK_DSP_UNDER 
 21ed e5				push hl 
 21ee d5				push de 
 21ef 2a af fb			ld hl,(cli_data_sp) 
 21f2 11 e9 f8			ld de, cli_data_stack 
 21f5 cd 67 0f			call cmp16 
-21f8 da 0f 68			jp c, fault_dsp_under 
+21f8 da b1 68			jp c, fault_dsp_under 
 21fb d1				pop de 
 21fc e1				pop hl 
 21fd				endm 
@@ -11651,14 +11651,14 @@
 2212 22 af fb			ld (cli_data_sp), hl 
 2215			 
 2215				if DEBUG_FORTH_STACK_GUARD 
-2215 cd 01 67				call check_stacks 
+2215 cd a3 67				call check_stacks 
 2218					FORTH_CHK_DSP_UNDER 
 2218 e5				push hl 
 2219 d5				push de 
 221a 2a af fb			ld hl,(cli_data_sp) 
 221d 11 e9 f8			ld de, cli_data_stack 
 2220 cd 67 0f			call cmp16 
-2223 da 0f 68			jp c, fault_dsp_under 
+2223 da b1 68			jp c, fault_dsp_under 
 2226 d1				pop de 
 2227 e1				pop hl 
 2228				endm 
@@ -11753,7 +11753,7 @@
 224e			forth_warmstart: 
 224e				; setup stack over/under flow checks 
 224e				if DEBUG_FORTH_STACK_GUARD 
-224e cd e7 66				call chk_stk_init 
+224e cd 89 67				call chk_stk_init 
 2251				endif 
 2251			 
 2251				; init stack pointers  - * these stacks go upwards *  
@@ -22580,7 +22580,7 @@
 # End of macro CALLMONITOR
 47cc					endif 
 47cc			; TODO currently waits 
-47cc cd f7 6b				call cin 
+47cc cd 99 6c				call cin 
 47cf					;call cin_wait 
 47cf 6f					ld l, a 
 47d0 26 00				ld h, 0 
@@ -22617,7 +22617,7 @@
 47fe				endm  
 # End of macro CALLMONITOR
 47fe					endif 
-47fe cd e6 6b				call cin_wait 
+47fe cd 88 6c				call cin_wait 
 4801 6f					ld l, a 
 4802 26 00				ld h, 0 
 4804 cd 3a 1f				call forth_push_numhl 
@@ -25977,7 +25977,7 @@
 5602 cd 28 0d			call str_at_display 
 5605 cd 38 0d			call update_display 
 5608				;call break_point_state 
-5608 cd e6 6b			call cin_wait 
+5608 cd 88 6c			call cin_wait 
 560b			 
 560b 3e 20			ld a, ' ' 
 560d 32 73 f3			ld (os_view_disable), a 
@@ -26148,2007 +26148,2018 @@
 56f7			 
 56f7				; start up words that are actually useful 
 56f7			 
-56f7 57 57			dw longread 
-56f9 9e 57			dw clrstack 
-56fb d1 57			dw type 
-56fd c1 59			dw stest 
-56ff f5 57			dw strncpy 
-5701 57 59			dw list 
-5703 56 58			dw start1 
-5705 68 58			dw start2 
-5707			;	dw start3 
-5707 7b 58			dw start3b 
-5709 f7 58			dw start3c 
-570b			 
-570b				; (unit) testing words 
-570b			 
-570b 38 5a			dw mtesta 
-570d ed 5a			dw mtestb 
-570f 90 5b			dw mtestc 
-5711 45 5c			dw mtestd 
-5713 e9 5c			dw mteste 
-5715			 
-5715				; demo/game words 
-5715			 
-5715 f5 63		        dw game3w 
-5717 23 64		        dw game3p 
-5719 41 64		        dw game3sc 
-571b 72 64		        dw game3vsi 
-571d 9e 64		        dw game3vs 
-571f				 
-571f e8 61			dw game2b 
-5721 56 62			dw game2bf 
-5723 a0 62			dw game2mba 
-5725 36 63			dw game2mbas 
-5727 78 63			dw game2mb 
-5729			 
-5729 a9 5e			dw game1 
-572b ba 5e			dw game1a 
-572d 1c 5f			dw game1b 
-572f 51 5f			dw game1c 
-5731 87 5f			dw game1d 
-5733 b8 5f			dw game1s 
-5735 cc 5f			dw game1t 
-5737 e1 5f			dw game1f 
-5739 15 60			dw game1z 
-573b 59 60			dw game1zz 
-573d			 
-573d 9f 5d			dw test5 
-573f d7 5d			dw test6 
-5741 0f 5e			dw test7 
-5743 23 5e			dw test8 
-5745 4f 5e			dw test9 
-5747 65 5e			dw test10 
-5749				 
-5749 30 61		        dw ssv5 
-574b 14 61		        dw ssv4 
-574d f8 60		        dw ssv3 
-574f c2 60		        dw ssv2 
-5751 49 61		        dw ssv1 
-5753 91 61		        dw ssv1cpm 
-5755			;	dw keyup 
-5755			;	dw keydown 
-5755			;	dw keyleft 
-5755			;	dw keyright 
-5755			;	dw 	keyf1 
-5755			;	dw keyf2 
-5755			;	dw keyf3 
-5755			;	dw keyf4 
-5755			;	dw keyf5 
-5755			;	dw keyf6 
-5755			;	dw keyf7 
-5755			;	dw keyf8 
-5755			;	dw keyf9 
-5755			;	dw keyf10 
-5755			;	dw keyf11 
-5755			;	dw keyf12 
-5755			;	dw keytab 
-5755			;	dw keycr 
-5755			;	dw keyhome 
-5755			;	dw keyend 
-5755			;	dw keybs 
-5755 00 00			db 0, 0	 
-5757			 
-5757			 
-5757			; Long read of currently open file 
-5757 .. 00		longread:   db ": lread read repeat readcont if read concat then readcont until nop ; ", 0 
-579e			 
-579e			; clear stack  
-579e			 
-579e .. 00		clrstack:  db ": clrstk depth ?dup if $01 do drop loop then nop ;", 0 
-57d1			 
-57d1			; type ( addr count - ) 
-57d1 .. 00		type:     db ": type $00 do dup i + @ emit loop ;", 0 
-57f5			 
-57f5			; some direct memory words 
-57f5			; strncpy ( len t f -- t ) 
-57f5			 
-57f5 .. 00		strncpy:   db ": strncpy $00 scratch 2! $02 scratch 2! do $00 scratch 2@ i + @ $02 scratch 2@ i + ! loop nop  ;",0 
-5856			 
-5856 .. 00		start1:     	db ": bpon $0000 bp ;",0 
-5868 .. 00		start2:     	db ": bpoff $0001 bp ;",0 
-587b .. 00		start3b:         db ": dla dir cls drop dup $00 > if $01 do $08 $04 at . $01 $04 at . $04 $04 at . $23 $04 at accept drop scroll loop then nop ;",0 
-58f7 .. 00		start3c:         db ": dirlist dir cls drop dup $00 > if $01 do \"/\" .> .> \"Ext:\" .> .> \"Id: \" .> .>  loop then nop ;",0 
-5957			 
-5957			 
-5957			; a handy word to list items on the stack 
-5957			 
-5957 .. 00		list:            db ": more cls repeat scroll $01 $04 at depth . $0a $04 at .> $01 $01 at accept drop depth 0= not until nop ;",0 
-59c1			 
-59c1			 
-59c1			; test stack  
-59c1			; rnd8 stest 
-59c1			 
-59c1 .. 00		stest:   db ": stest cls  v0! v0@ $00 do rnd8 $01 $01 at i . $01 pause loop v0@ $00 do drop $12 $01 at depth . $01 pause loop nop ;",0  
-5a38			 
-5a38			; random malloc and free cycles 
-5a38			 
-5a38 .. 00		mtesta:      db ": mtesta $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . rnd8 dup $13 $01 at . malloc heap $1f $01 at . $1f $02 at . $01 pause free $01 until nop ;", 0 
-5aed			 
-5aed			; fixed malloc and free cycles 
-5aed			 
-5aed .. 00		mtestb:      db ": mtestb $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . $80 malloc heap $1f $01 at . $1f $02 at . $01 pause free $01 until nop ;", 0 
-5b90			 
-5b90			; fixed double string push and drop cycle  
-5b90			 
-5b90 .. 00		mtestc:      db ": mtestc $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . $80 spaces $2f spaces  heap $1f $01 at . $1f $02 at . $01 pause drop drop $01 until nop ; ", 0 
-5c45			 
-5c45			; consistent fixed string push and drop cycle  
-5c45			 
-5c45 .. 00		mtestd:      db ": mtestd $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . $80 spaces heap $1f $01 at . $1f $02 at . $01 pause drop $01 until nop ; ", 0 
-5ce9			 
-5ce9 .. 00		mteste:      db ": mteste $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . rnd8 dup spaces $0f $02 at . heap $1f $01 at . $1f $02 at . $01 pause drop $01 until nop ; ", 0 
-5d9f			 
-5d9f			;test1:		db ": aa 1 2 3 ;", 0 
-5d9f			;test2:     	db "111 aa 888 999",0 
-5d9f			;test3:     	db ": bb 77 ;",0 
-5d9f			;test4:     	db "$02 $01 do i . loop bb",0 
-5d9f			 
-5d9f .. 00		test5:     	db ": hline $13 $00 do i $01 at 1 . i $04 at 1 . loop nop ;",0 
-5dd7 .. 00		test6:     	db ": vline $04 $01 do $00 i at 1 . $13 i at 1 . loop nop ;",0 
-5e0f .. 00		test7:     	db ": box hline vline ;",0 
-5e23 .. 00		test8:     	db ": world cls box $03 $03 at Hello-World! . ;",0 
-5e4f .. 00		test9:     	db ": sw $01 adsp world ;",0 
-5e65 .. 00		test10:     	db ": fw $00 adsp world draw $05 pause ;",0 
-5e8a .. 00		test11:     	db "hello create .",0 
-5e99 .. 00		test12:     	db "hello2 create .",0 
-5ea9			 
-5ea9			;mmtest1:     	db "cls $0001 $0008 MIN . $0002 pause",0 
-5ea9			;mmtest2:     	db "cls $0101 $0008 MIN . $0002 pause",0 
-5ea9			;mmtest3:     	db "cls $0001 $0008 MAX . $0002 pause",0 
-5ea9			;mmtest4:     	db "cls $0101 $0008 MAX . $0002 pause",0 
-5ea9			;mmtest5:     	db "cls $0001 $0001 MIN . $0002 pause",0 
-5ea9			;mmtest6:     	db "cls $0001 $0001 MAX . $0002 pause",0 
-5ea9			 
-5ea9			;iftest1:     	db "$0001 IF cls .",0 
-5ea9			;iftest2:     	db "$0000 IF cls .",0 
-5ea9			;iftest3:     	db "$0002 $0003 - IF cls .",0 
-5ea9			;looptest1:     	db "$0003 $0001 do i . loop 8",0 
-5ea9			;looptest2:     	db "$0003 $0001 do i . $0001 pause loop 8",0 
-5ea9			 
-5ea9			;ifthtest1:     	db "$0001 IF is-true . $0005 pause THEN next-word . $0005 pause",0 
-5ea9			;ifthtest2:     	db "$0000 IF is-true . $0005 pause THEN next-word . $0005 pause",0 
-5ea9			;ifthtest3:     	db "$0002 $0003 - IF is-true . $0005 pause THEN next-word . $0005 pause",0 
-5ea9			 
-5ea9			 
-5ea9			 
-5ea9			; a small guess the number game 
-5ea9			 
-5ea9 .. 00		game1:          db ": gsn rnd8 v1! ;",0 
-5eba .. 00		game1a:          db ": gs $00 $00 at Enter-a-number .- $00 $02 at between-1-and-255 .- $00 $03 at accept str2num v2! ;",0 
-5f1c			 
-5f1c .. 00		game1b:          db ": gcb v2@ v1@ < if $00 $00 at Too-low! .- $01 then ;",0 
-5f51 .. 00		game1c:          db ": gcc v2@ v1@ > if $00 $00 at Too-high! .- $01 then ;",0 
-5f87 .. 00		game1d:          db ": gcd v2@ v1@ = if $00 $00 at Yes! .- $00 then ;",0 
-5fb8 .. 00		game1s:          db ": gck gcb gcc gcd ;",0 
-5fcc .. 00		game1t:          db ": sc v3@ $01 + v3! ;",0 
-5fe1 .. 00		game1f:          db ": fsc v3@ cls $01 $01 at You-Took .- $02 $03 at . ;",0 
-6015 .. 00		game1z:         db ": ga $00 v3! gsn repeat cls gs cls gck $02 pause sc until fsc nop ;",0 
-6059			 
-6059			; Using 'ga' save a high score across multiple runs using external storage 
-6059			 
-6059 .. 00		game1zz:         db ": gas ga $01 bank $80 bread $01 $04 at Prev-Score .> storepage ptr $02 + dup 2@ . v3@ swap 2! $80 bupd ;",0 
-60c2			 
-60c2			 
-60c2			;game2r:          db ": m2r rnd8 v1! ;  ",0, 0, 0, FORTH_END_BUFFER 
-60c2			;game2b1:          db ": m2b1 $1f $00 do i v2@ at rnd8 $30 < if A . then loop nop ;  ",0, 0, 0, FORTH_END_BUFFER 
-60c2			;game2b2:          db ": m2b cls $04 $01 do i v2! m2b1 loop ;  ",0, 0, 0, FORTH_END_BUFFER 
-60c2			 
-60c2			; simple screen saver to test code memory reuse to destruction 
-60c2			 
-60c2 .. 00		ssv2:            db ": ssvchr $2a $2d rnd dup $2c = if drop $20 then nop ;",0 
-60f8 .. 00		ssv3:            db ": ssvposx $01 $27 rnd v0! ;",0 
-6114 .. 00		ssv4:            db ": ssvposy $01 $05 rnd v1! ;",0 
-6130 .. 00		ssv5:            db ": ssvt ssvposx ssvposy ;",0 
-6149 .. 00		ssv1:          db ": ssv cls repeat ssvposx ssvposy v0@ v1@ at ssvchr emit $01 until nop ;",0 
-6191 .. 00		ssv1cpm:          db ": ssvcpm cls repeat ssvposx ssvposy v0@ v1@ at ssvchr emit $01 pausems $01 until nop ;",0 
-61e8			;ssv1:          db ": ssv cls repeat ssvt v0@ v1@ at ssvchr emit $01 until nop ;",0 
-61e8			;ssv1:          db ": ssv ssvposx ssvposy at ssvchr ;",0 
-61e8			;ssv1:            db ": ssv repeat ssvpos rnd8 $10 if               $01 until nop ;",0 
-61e8			;ssv2:            db ": ssvchr v0! v1! at? ;",0 
-61e8			;ssv5:            db ": ssvt ssvposx ssvposy v0@ .> v1@ .> ;",0 
-61e8			;ssv2:            db ": ssvchr $2a $2d rnd  ;",0 
-61e8			 
-61e8			 
-61e8			 
-61e8			; minesweeper/battleship finding game 
-61e8			; draws a game board of random ship/mine positions 
-61e8			; user enters coords to see if it hits on 
-61e8			; game ends when all are hit 
-61e8			; when hit or miss says how many may be in the area 
-61e8			 
-61e8			; setup the game board and then hide it 
-61e8 .. 00		game2b:          db ": mbsetup $02 fb cls $04 $01 do i v2! $10 $01 do i v2@ at rnd8 $30 < if A . then loop loop $05 pause $01 fb ;",0 
-6256 .. 00		game2bf:         db ": mbsetupf cls $04 $01 do i v2! $10 $01 do i v2@ at \"+\" . loop loop nop ;",0 
-62a0			; prompt for where to target 
-62a0 .. 00		game2mba:        db ": mbp $12 $04 at Turns .> v3@ . $12 $03 at Score .> v0@ . $12 $01 at Enter-X-__ .- $1a $01 at accept $12 $02 at Enter-Y-__ .- $1a $02 at accept nop ;", 0  
-6336 .. 00		game2mbas:        db ": mbsv str2num v2! str2num v1! nop ;", 0  
-635b			; TODO see if the entered coords hits or misses pushes char hit of miss 
-635b .. 00		game2mbht:      db ": mbckht nop ;",0 
-636a .. 00		game2mbms:      db ": mbcms nop ;",0 
-6378			; TODO how many might be near by 
-6378 .. 00		game2mb:          db ": mb $00 v0! $00 v3! mbsetup mbsetupf repeat mbp mbsv $02 fb mbckht mbcms v1@ v2@ at@ $01 fb v1@ v2@ at emit $01 until nop ;",0 
-63f5			 
-63f5			; Game 3 
-63f5			 
-63f5			; Vert scroller ski game - avoid the trees! 
-63f5			 
-63f5			; v0 score (ie turns) 
-63f5			; v1 player pos 
-63f5			; v2 left wall 
-63f5			; v3 right wall 
-63f5			 
-63f5			; Draw side walls randomly 
-63f5			 
-63f5 .. 00		game3w:   db ": vsw v2@ $04 at \"|\" . v3@ $04 at \"|\" . nop ;", 0 
-6423			 
-6423			; Draw player 
-6423 .. 00		game3p:   db ": vsp v1@ $01 at \"V\" . nop ; ", 0 
-6441			 
-6441			; TODO Get Key 
-6441			 
-6441			; TODO Move left right 
-6441			 
-6441			; scroll and move walls a bit 
-6441			 
-6441 .. 00		game3sc:  db ": vsscl v2@ $01 + v2! v3@ $01 - v3! scroll nop ;", 0 
-6472			 
-6472			; main game loop 
-6472			 
-6472 .. 00		game3vsi:    db ": vsi $00 v0! $01 v2! $12 v3! $06 v1! nop ;",0 
-649e .. 00		game3vs:    db ": vs vsi repeat vsw vsp vsscl $05 pause scroll $01 until nop ;",0 
-64dd			 
-64dd			; key board defs 
-64dd			 
-64dd .. 00		keyup:       db ": keyup $05 ;",0 
-64eb .. 00		keydown:       db ": keydown $0a ;",0 
-64fb .. 00		keyleft:       db ": keyleft $0b ;",0 
-650b .. 00		keyright:       db ": keyright $0c ;",0 
-651c .. 00		keyf1:       db ": keyf1 $10 ;",0 
-652a .. 00		keyf2:       db ": keyf2 $11 ;",0 
-6538 .. 00		keyf3:       db ": keyf3 $12 ;",0 
-6546 .. 00		keyf4:       db ": keyf4 $13 ;",0 
-6554 .. 00		keyf5:       db ": keyf5 $14 ;",0 
-6562 .. 00		keyf6:       db ": keyf6 $15 ;",0 
-6570 .. 00		keyf7:       db ": keyf7 $16 ;",0 
-657e .. 00		keyf8:       db ": keyf8 $17 ;",0 
-658c .. 00		keyf9:       db ": keyf9 $18 ;",0 
-659a .. 00		keyf10:       db ": keyf10 $19 ;",0 
-65a9 .. 00		keyf11:       db ": keyf11 $1a ;",0 
-65b8 .. 00		keyf12:       db ": keyf12 $1b ;",0 
-65c7			 
-65c7 .. 00		keytab:       db ": keytab $09 ;",0 
-65d6 .. 00		keycr:       db ": keycr $0d ;",0 
-65e4 .. 00		keyhome:       db ": keyhome $0e ;",0 
-65f4 .. 00		keyend:       db ": keyend $0f ;",0 
-6603 .. 00		keybs:       db ": keybs $08 ;",0 
-6611			 
-6611			   
-6611			 
-6611			 
-6611			 
-6611			; eof 
+56f7 5d 57		    dw spi1 
+56f9 85 57		    dw spi2 
+56fb bd 57		    dw spi3 
+56fd			 
+56fd			 
+56fd f9 57			dw longread 
+56ff 40 58			dw clrstack 
+5701 73 58			dw type 
+5703 63 5a			dw stest 
+5705 97 58			dw strncpy 
+5707 f9 59			dw list 
+5709 f8 58			dw start1 
+570b 0a 59			dw start2 
+570d			;	dw start3 
+570d 1d 59			dw start3b 
+570f 99 59			dw start3c 
+5711			 
+5711				; (unit) testing words 
+5711			 
+5711 da 5a			dw mtesta 
+5713 8f 5b			dw mtestb 
+5715 32 5c			dw mtestc 
+5717 e7 5c			dw mtestd 
+5719 8b 5d			dw mteste 
+571b			 
+571b				; demo/game words 
+571b			 
+571b 97 64		        dw game3w 
+571d c5 64		        dw game3p 
+571f e3 64		        dw game3sc 
+5721 14 65		        dw game3vsi 
+5723 40 65		        dw game3vs 
+5725				 
+5725 8a 62			dw game2b 
+5727 f8 62			dw game2bf 
+5729 42 63			dw game2mba 
+572b d8 63			dw game2mbas 
+572d 1a 64			dw game2mb 
+572f			 
+572f 4b 5f			dw game1 
+5731 5c 5f			dw game1a 
+5733 be 5f			dw game1b 
+5735 f3 5f			dw game1c 
+5737 29 60			dw game1d 
+5739 5a 60			dw game1s 
+573b 6e 60			dw game1t 
+573d 83 60			dw game1f 
+573f b7 60			dw game1z 
+5741 fb 60			dw game1zz 
+5743			 
+5743 41 5e			dw test5 
+5745 79 5e			dw test6 
+5747 b1 5e			dw test7 
+5749 c5 5e			dw test8 
+574b f1 5e			dw test9 
+574d 07 5f			dw test10 
+574f				 
+574f d2 61		        dw ssv5 
+5751 b6 61		        dw ssv4 
+5753 9a 61		        dw ssv3 
+5755 64 61		        dw ssv2 
+5757 eb 61		        dw ssv1 
+5759 33 62		        dw ssv1cpm 
+575b			;	dw keyup 
+575b			;	dw keydown 
+575b			;	dw keyleft 
+575b			;	dw keyright 
+575b			;	dw 	keyf1 
+575b			;	dw keyf2 
+575b			;	dw keyf3 
+575b			;	dw keyf4 
+575b			;	dw keyf5 
+575b			;	dw keyf6 
+575b			;	dw keyf7 
+575b			;	dw keyf8 
+575b			;	dw keyf9 
+575b			;	dw keyf10 
+575b			;	dw keyf11 
+575b			;	dw keyf12 
+575b			;	dw keytab 
+575b			;	dw keycr 
+575b			;	dw keyhome 
+575b			;	dw keyend 
+575b			;	dw keybs 
+575b 00 00			db 0, 0	 
+575d			 
+575d			; SPI Net support words 
+575d			 
+575d			 
+575d .. 00		spi1:       db ": clkstro $00 do dup i + @ spio loop ; ",0 
+5785 .. 00		spi2:       db ": send spicel $01 spio spio ptr count clkstro spiceh ; ",0 
+57bd .. 00		spi3:       db ": storestr spicel $03 spio spio ptr count clkstro spiceh ; ", 0 
+57f9			 
+57f9			; Long read of currently open file 
+57f9 .. 00		longread:   db ": lread read repeat readcont if read concat then readcont until nop ; ", 0 
+5840			 
+5840			; clear stack  
+5840			 
+5840 .. 00		clrstack:  db ": clrstk depth ?dup if $01 do drop loop then nop ;", 0 
+5873			 
+5873			; type ( addr count - ) 
+5873 .. 00		type:     db ": type $00 do dup i + @ emit loop ;", 0 
+5897			 
+5897			; some direct memory words 
+5897			; strncpy ( len t f -- t ) 
+5897			 
+5897 .. 00		strncpy:   db ": strncpy $00 scratch 2! $02 scratch 2! do $00 scratch 2@ i + @ $02 scratch 2@ i + ! loop nop  ;",0 
+58f8			 
+58f8 .. 00		start1:     	db ": bpon $0000 bp ;",0 
+590a .. 00		start2:     	db ": bpoff $0001 bp ;",0 
+591d .. 00		start3b:         db ": dla dir cls drop dup $00 > if $01 do $08 $04 at . $01 $04 at . $04 $04 at . $23 $04 at accept drop scroll loop then nop ;",0 
+5999 .. 00		start3c:         db ": dirlist dir cls drop dup $00 > if $01 do \"/\" .> .> \"Ext:\" .> .> \"Id: \" .> .>  loop then nop ;",0 
+59f9			 
+59f9			 
+59f9			; a handy word to list items on the stack 
+59f9			 
+59f9 .. 00		list:            db ": more cls repeat scroll $01 $04 at depth . $0a $04 at .> $01 $01 at accept drop depth 0= not until nop ;",0 
+5a63			 
+5a63			 
+5a63			; test stack  
+5a63			; rnd8 stest 
+5a63			 
+5a63 .. 00		stest:   db ": stest cls  v0! v0@ $00 do rnd8 $01 $01 at i . $01 pause loop v0@ $00 do drop $12 $01 at depth . $01 pause loop nop ;",0  
+5ada			 
+5ada			; random malloc and free cycles 
+5ada			 
+5ada .. 00		mtesta:      db ": mtesta $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . rnd8 dup $13 $01 at . malloc heap $1f $01 at . $1f $02 at . $01 pause free $01 until nop ;", 0 
+5b8f			 
+5b8f			; fixed malloc and free cycles 
+5b8f			 
+5b8f .. 00		mtestb:      db ": mtestb $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . $80 malloc heap $1f $01 at . $1f $02 at . $01 pause free $01 until nop ;", 0 
+5c32			 
+5c32			; fixed double string push and drop cycle  
+5c32			 
+5c32 .. 00		mtestc:      db ": mtestc $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . $80 spaces $2f spaces  heap $1f $01 at . $1f $02 at . $01 pause drop drop $01 until nop ; ", 0 
+5ce7			 
+5ce7			; consistent fixed string push and drop cycle  
+5ce7			 
+5ce7 .. 00		mtestd:      db ": mtestd $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . $80 spaces heap $1f $01 at . $1f $02 at . $01 pause drop $01 until nop ; ", 0 
+5d8b			 
+5d8b .. 00		mteste:      db ": mteste $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . rnd8 dup spaces $0f $02 at . heap $1f $01 at . $1f $02 at . $01 pause drop $01 until nop ; ", 0 
+5e41			 
+5e41			;test1:		db ": aa 1 2 3 ;", 0 
+5e41			;test2:     	db "111 aa 888 999",0 
+5e41			;test3:     	db ": bb 77 ;",0 
+5e41			;test4:     	db "$02 $01 do i . loop bb",0 
+5e41			 
+5e41 .. 00		test5:     	db ": hline $13 $00 do i $01 at 1 . i $04 at 1 . loop nop ;",0 
+5e79 .. 00		test6:     	db ": vline $04 $01 do $00 i at 1 . $13 i at 1 . loop nop ;",0 
+5eb1 .. 00		test7:     	db ": box hline vline ;",0 
+5ec5 .. 00		test8:     	db ": world cls box $03 $03 at Hello-World! . ;",0 
+5ef1 .. 00		test9:     	db ": sw $01 adsp world ;",0 
+5f07 .. 00		test10:     	db ": fw $00 adsp world draw $05 pause ;",0 
+5f2c .. 00		test11:     	db "hello create .",0 
+5f3b .. 00		test12:     	db "hello2 create .",0 
+5f4b			 
+5f4b			;mmtest1:     	db "cls $0001 $0008 MIN . $0002 pause",0 
+5f4b			;mmtest2:     	db "cls $0101 $0008 MIN . $0002 pause",0 
+5f4b			;mmtest3:     	db "cls $0001 $0008 MAX . $0002 pause",0 
+5f4b			;mmtest4:     	db "cls $0101 $0008 MAX . $0002 pause",0 
+5f4b			;mmtest5:     	db "cls $0001 $0001 MIN . $0002 pause",0 
+5f4b			;mmtest6:     	db "cls $0001 $0001 MAX . $0002 pause",0 
+5f4b			 
+5f4b			;iftest1:     	db "$0001 IF cls .",0 
+5f4b			;iftest2:     	db "$0000 IF cls .",0 
+5f4b			;iftest3:     	db "$0002 $0003 - IF cls .",0 
+5f4b			;looptest1:     	db "$0003 $0001 do i . loop 8",0 
+5f4b			;looptest2:     	db "$0003 $0001 do i . $0001 pause loop 8",0 
+5f4b			 
+5f4b			;ifthtest1:     	db "$0001 IF is-true . $0005 pause THEN next-word . $0005 pause",0 
+5f4b			;ifthtest2:     	db "$0000 IF is-true . $0005 pause THEN next-word . $0005 pause",0 
+5f4b			;ifthtest3:     	db "$0002 $0003 - IF is-true . $0005 pause THEN next-word . $0005 pause",0 
+5f4b			 
+5f4b			 
+5f4b			 
+5f4b			; a small guess the number game 
+5f4b			 
+5f4b .. 00		game1:          db ": gsn rnd8 v1! ;",0 
+5f5c .. 00		game1a:          db ": gs $00 $00 at Enter-a-number .- $00 $02 at between-1-and-255 .- $00 $03 at accept str2num v2! ;",0 
+5fbe			 
+5fbe .. 00		game1b:          db ": gcb v2@ v1@ < if $00 $00 at Too-low! .- $01 then ;",0 
+5ff3 .. 00		game1c:          db ": gcc v2@ v1@ > if $00 $00 at Too-high! .- $01 then ;",0 
+6029 .. 00		game1d:          db ": gcd v2@ v1@ = if $00 $00 at Yes! .- $00 then ;",0 
+605a .. 00		game1s:          db ": gck gcb gcc gcd ;",0 
+606e .. 00		game1t:          db ": sc v3@ $01 + v3! ;",0 
+6083 .. 00		game1f:          db ": fsc v3@ cls $01 $01 at You-Took .- $02 $03 at . ;",0 
+60b7 .. 00		game1z:         db ": ga $00 v3! gsn repeat cls gs cls gck $02 pause sc until fsc nop ;",0 
+60fb			 
+60fb			; Using 'ga' save a high score across multiple runs using external storage 
+60fb			 
+60fb .. 00		game1zz:         db ": gas ga $01 bank $80 bread $01 $04 at Prev-Score .> storepage ptr $02 + dup 2@ . v3@ swap 2! $80 bupd ;",0 
+6164			 
+6164			 
+6164			;game2r:          db ": m2r rnd8 v1! ;  ",0, 0, 0, FORTH_END_BUFFER 
+6164			;game2b1:          db ": m2b1 $1f $00 do i v2@ at rnd8 $30 < if A . then loop nop ;  ",0, 0, 0, FORTH_END_BUFFER 
+6164			;game2b2:          db ": m2b cls $04 $01 do i v2! m2b1 loop ;  ",0, 0, 0, FORTH_END_BUFFER 
+6164			 
+6164			; simple screen saver to test code memory reuse to destruction 
+6164			 
+6164 .. 00		ssv2:            db ": ssvchr $2a $2d rnd dup $2c = if drop $20 then nop ;",0 
+619a .. 00		ssv3:            db ": ssvposx $01 $27 rnd v0! ;",0 
+61b6 .. 00		ssv4:            db ": ssvposy $01 $05 rnd v1! ;",0 
+61d2 .. 00		ssv5:            db ": ssvt ssvposx ssvposy ;",0 
+61eb .. 00		ssv1:          db ": ssv cls repeat ssvposx ssvposy v0@ v1@ at ssvchr emit $01 until nop ;",0 
+6233 .. 00		ssv1cpm:          db ": ssvcpm cls repeat ssvposx ssvposy v0@ v1@ at ssvchr emit $01 pausems $01 until nop ;",0 
+628a			;ssv1:          db ": ssv cls repeat ssvt v0@ v1@ at ssvchr emit $01 until nop ;",0 
+628a			;ssv1:          db ": ssv ssvposx ssvposy at ssvchr ;",0 
+628a			;ssv1:            db ": ssv repeat ssvpos rnd8 $10 if               $01 until nop ;",0 
+628a			;ssv2:            db ": ssvchr v0! v1! at? ;",0 
+628a			;ssv5:            db ": ssvt ssvposx ssvposy v0@ .> v1@ .> ;",0 
+628a			;ssv2:            db ": ssvchr $2a $2d rnd  ;",0 
+628a			 
+628a			 
+628a			 
+628a			; minesweeper/battleship finding game 
+628a			; draws a game board of random ship/mine positions 
+628a			; user enters coords to see if it hits on 
+628a			; game ends when all are hit 
+628a			; when hit or miss says how many may be in the area 
+628a			 
+628a			; setup the game board and then hide it 
+628a .. 00		game2b:          db ": mbsetup $02 fb cls $04 $01 do i v2! $10 $01 do i v2@ at rnd8 $30 < if A . then loop loop $05 pause $01 fb ;",0 
+62f8 .. 00		game2bf:         db ": mbsetupf cls $04 $01 do i v2! $10 $01 do i v2@ at \"+\" . loop loop nop ;",0 
+6342			; prompt for where to target 
+6342 .. 00		game2mba:        db ": mbp $12 $04 at Turns .> v3@ . $12 $03 at Score .> v0@ . $12 $01 at Enter-X-__ .- $1a $01 at accept $12 $02 at Enter-Y-__ .- $1a $02 at accept nop ;", 0  
+63d8 .. 00		game2mbas:        db ": mbsv str2num v2! str2num v1! nop ;", 0  
+63fd			; TODO see if the entered coords hits or misses pushes char hit of miss 
+63fd .. 00		game2mbht:      db ": mbckht nop ;",0 
+640c .. 00		game2mbms:      db ": mbcms nop ;",0 
+641a			; TODO how many might be near by 
+641a .. 00		game2mb:          db ": mb $00 v0! $00 v3! mbsetup mbsetupf repeat mbp mbsv $02 fb mbckht mbcms v1@ v2@ at@ $01 fb v1@ v2@ at emit $01 until nop ;",0 
+6497			 
+6497			; Game 3 
+6497			 
+6497			; Vert scroller ski game - avoid the trees! 
+6497			 
+6497			; v0 score (ie turns) 
+6497			; v1 player pos 
+6497			; v2 left wall 
+6497			; v3 right wall 
+6497			 
+6497			; Draw side walls randomly 
+6497			 
+6497 .. 00		game3w:   db ": vsw v2@ $04 at \"|\" . v3@ $04 at \"|\" . nop ;", 0 
+64c5			 
+64c5			; Draw player 
+64c5 .. 00		game3p:   db ": vsp v1@ $01 at \"V\" . nop ; ", 0 
+64e3			 
+64e3			; TODO Get Key 
+64e3			 
+64e3			; TODO Move left right 
+64e3			 
+64e3			; scroll and move walls a bit 
+64e3			 
+64e3 .. 00		game3sc:  db ": vsscl v2@ $01 + v2! v3@ $01 - v3! scroll nop ;", 0 
+6514			 
+6514			; main game loop 
+6514			 
+6514 .. 00		game3vsi:    db ": vsi $00 v0! $01 v2! $12 v3! $06 v1! nop ;",0 
+6540 .. 00		game3vs:    db ": vs vsi repeat vsw vsp vsscl $05 pause scroll $01 until nop ;",0 
+657f			 
+657f			; key board defs 
+657f			 
+657f .. 00		keyup:       db ": keyup $05 ;",0 
+658d .. 00		keydown:       db ": keydown $0a ;",0 
+659d .. 00		keyleft:       db ": keyleft $0b ;",0 
+65ad .. 00		keyright:       db ": keyright $0c ;",0 
+65be .. 00		keyf1:       db ": keyf1 $10 ;",0 
+65cc .. 00		keyf2:       db ": keyf2 $11 ;",0 
+65da .. 00		keyf3:       db ": keyf3 $12 ;",0 
+65e8 .. 00		keyf4:       db ": keyf4 $13 ;",0 
+65f6 .. 00		keyf5:       db ": keyf5 $14 ;",0 
+6604 .. 00		keyf6:       db ": keyf6 $15 ;",0 
+6612 .. 00		keyf7:       db ": keyf7 $16 ;",0 
+6620 .. 00		keyf8:       db ": keyf8 $17 ;",0 
+662e .. 00		keyf9:       db ": keyf9 $18 ;",0 
+663c .. 00		keyf10:       db ": keyf10 $19 ;",0 
+664b .. 00		keyf11:       db ": keyf11 $1a ;",0 
+665a .. 00		keyf12:       db ": keyf12 $1b ;",0 
+6669			 
+6669 .. 00		keytab:       db ": keytab $09 ;",0 
+6678 .. 00		keycr:       db ": keycr $0d ;",0 
+6686 .. 00		keyhome:       db ": keyhome $0e ;",0 
+6696 .. 00		keyend:       db ": keyend $0f ;",0 
+66a5 .. 00		keybs:       db ": keybs $08 ;",0 
+66b3			 
+66b3			   
+66b3			 
+66b3			 
+66b3			 
+66b3			; eof 
 # End of file forth_autostart.asm
-6611			 
-6611 .. 00		sprompt1: db "Startup load...",0 
-6621 .. 00		sprompt2: db "Run? 1=No *=End #=All",0 
-6637			 
-6637			 
-6637			 
-6637			 
-6637			forth_startup: 
-6637 21 f7 56			ld hl, startcmds 
-663a 3e 00			ld a, 0 
-663c 32 a8 f7			ld (os_last_cmd), a    ; tmp var to skip prompts if doing all 
-663f			 
-663f e5			.start1:	push hl 
-6640 cd 15 0d			call clear_display 
-6643 11 11 66			ld de, sprompt1 
-6646 3e 00		        ld a, display_row_1 
-6648 cd 28 0d			call str_at_display 
-664b 11 21 66			ld de, sprompt2 
-664e 3e 14		        ld a, display_row_2 
-6650 cd 28 0d			call str_at_display 
-6653 e1				pop hl 
-6654 e5				push hl 
-6655 5e				ld e,(hl) 
-6656 23				inc hl 
-6657 56				ld d,(hl) 
-6658 3e 28		        ld a, display_row_3 
-665a cd 28 0d			call str_at_display 
-665d cd 38 0d			call update_display 
-6660			 
-6660			 
-6660 3a a8 f7			ld a, (os_last_cmd) 
-6663 fe 00			cp 0 
-6665 28 05			jr z, .startprompt 
-6667 cd 86 0c			call delay250ms 
-666a 18 24			jr .startdo 
-666c				 
-666c				 
-666c			 
-666c			.startprompt: 
-666c			 
-666c 3e 4f			ld a,display_row_4 + display_cols - 1 
-666e 11 b0 1e		        ld de, endprg 
-6671 cd 28 0d			call str_at_display 
-6674 cd 38 0d			call update_display 
-6677 cd 92 0c			call delay1s 
-667a cd e6 6b			call cin_wait 
-667d						 
-667d fe 2a			cp '*' 
-667f 28 5e			jr z, .startupend1 
-6681 fe 23			cp '#' 
-6683 20 07			jr nz, .startno 
-6685 3e 01			ld a, 1 
-6687 32 a8 f7			ld (os_last_cmd),a 
-668a 18 04			jr .startdo 
-668c fe 31		.startno:	cp '1' 
-668e 28 3a			jr z,.startnxt  
-6690			 
-6690				; exec startup line 
-6690			.startdo:	 
-6690 e1				pop hl 
-6691 e5				push hl 
-6692				 
-6692 5e				ld e,(hl) 
-6693 23				inc hl 
-6694 56				ld d,(hl) 
-6695 eb				ex de,hl 
-6696			 
-6696 e5				push hl 
-6697			 
-6697 3e 00			ld a, 0 
-6699				;ld a, FORTH_END_BUFFER 
-6699 cd b2 13			call strlent 
-669c 23				inc hl   ; include zero term to copy 
-669d 06 00			ld b,0 
-669f 4d				ld c,l 
-66a0 e1				pop hl 
-66a1 11 82 f3			ld de, scratch 
-66a4 ed b0			ldir 
-66a6			 
-66a6			 
-66a6 21 82 f3			ld hl, scratch 
-66a9 cd f6 22			call forthparse 
-66ac cd 36 23			call forthexec 
-66af cd 48 22			call forthexec_cleanup 
-66b2			 
-66b2 3e 3c			ld a, display_row_4 
-66b4 11 54 1c			ld de, endprog 
-66b7			 
-66b7 cd 38 0d			call update_display		 
-66ba			 
-66ba 3a a8 f7			ld a, (os_last_cmd) 
-66bd fe 00			cp 0 
-66bf 20 09			jr nz, .startnxt 
-66c1 cd b2 1e			call next_page_prompt 
-66c4 cd 15 0d		        call clear_display 
-66c7 cd 38 0d			call update_display		 
-66ca			 
-66ca				; move onto next startup line? 
-66ca			.startnxt: 
-66ca			 
-66ca cd 86 0c			call delay250ms 
-66cd e1				pop hl 
-66ce			 
-66ce 23				inc hl 
-66cf 23				inc hl 
-66d0			 
-66d0 e5				push hl 
-66d1 5e				ld e, (hl) 
-66d2 23				inc hl 
-66d3 56				ld d, (hl) 
-66d4 e1				pop hl 
-66d5				; TODO replace 0 test 
-66d5			 
-66d5 eb				ex de, hl 
-66d6 cd 72 0f			call ishlzero 
-66d9			;	ld a,e 
-66d9			;	add d 
-66d9			;	cp 0    ; any left to do? 
-66d9 eb				ex de, hl 
-66da c2 3f 66			jp nz, .start1 
-66dd 18 01			jr .startupend 
-66df			 
-66df e1			.startupend1: pop hl 
-66e0			.startupend: 
-66e0			 
-66e0 cd 15 0d			call clear_display 
-66e3 cd 38 0d			call update_display 
-66e6 c9				ret 
-66e7			 
-66e7			 
-66e7			; stack over and underflow checks 
-66e7			 
-66e7			; init the words to detect the under/overflow 
-66e7			 
-66e7			chk_stk_init: 
-66e7				; a vague random number to check so we dont get any "lucky" hits 
-66e7 3e 2d			ld a, 45 
-66e9 6f				ld l, a 
-66ea 00				nop 
-66eb 3e 17			ld a, 23 
-66ed 67				ld h, a 
-66ee			 
-66ee 22 69 f3			ld (chk_word), hl     ; the word we need to check against 
-66f1			 
-66f1			;	ld (chk_stund), hl	; stack points.... 
-66f1 22 fd fe			ld (chk_stovr), hl 
-66f4 22 ad fb			ld (chk_ret_und), hl 
-66f7 22 6b fb			ld (chk_ret_ovr), hl 
-66fa 22 e9 fa			ld (chk_loop_ovr), hl 
-66fd 22 e7 f8			ld (chk_data_ovr), hl 
-6700 c9				ret 
-6701				 
-6701			check_stacks: 
-6701				; check all stack words 
-6701			 
-6701 e5				push hl 
-6702 d5				push de 
-6703			 
-6703			;	ld de,(chk_word) 
-6703			;	ld hl, (chk_stund)	; stack points.... 
-6703			;	if DEBUG_STK_FAULT 
-6703			;		DMARK "FAa" 
-6703			;		CALLMONITOR 
-6703			;	endif 
-6703			;	call cmp16 
-6703			;	jp z, .chk_faulta 
-6703			; 
-6703			;	ld de, sfaultsu 
-6703			;	jp .chk_fault 
-6703			 
-6703 2a fd fe		.chk_faulta: ld hl, (chk_stovr) 
-6706 ed 5b 69 f3		ld de,(chk_word) 
-670a				if DEBUG_STK_FAULT 
-670a					DMARK "FAb" 
-670a					CALLMONITOR 
-670a				endif 
-670a cd 67 0f			call cmp16 
-670d 28 06			jr z, .chk_fault1 
-670f 11 b0 67			ld de, sfaultso 
-6712 c3 64 67			jp .chk_fault 
-6715			.chk_fault1:  
-6715 2a ad fb			ld hl, (chk_ret_und) 
-6718 ed 5b 69 f3		ld de,(chk_word) 
-671c				if DEBUG_STK_FAULT 
-671c					DMARK "FAU" 
-671c					CALLMONITOR 
-671c				endif 
-671c cd 67 0f			call cmp16 
-671f ca 28 67			jp z, .chk_fault2 
-6722 11 c0 67			ld de, sfaultru 
-6725 c3 64 67			jp .chk_fault 
-6728			.chk_fault2:  
-6728 2a 6b fb			ld hl, (chk_ret_ovr) 
-672b ed 5b 69 f3		ld de,(chk_word) 
-672f				if DEBUG_STK_FAULT 
-672f					DMARK "FA1" 
-672f					CALLMONITOR 
-672f				endif 
-672f cd 67 0f			call cmp16 
-6732 ca 3b 67			jp z, .chk_fault3 
-6735 11 ce 67			ld de, sfaultro 
-6738 c3 64 67			jp .chk_fault 
-673b			.chk_fault3:  
-673b 2a e9 fa			ld hl, (chk_loop_ovr) 
-673e ed 5b 69 f3		ld de,(chk_word) 
-6742				if DEBUG_STK_FAULT 
-6742					DMARK "FA2" 
-6742					CALLMONITOR 
-6742				endif 
-6742 cd 67 0f			call cmp16 
-6745 ca 4e 67			jp z, .chk_fault4 
-6748 11 e8 67			ld de, sfaultlo 
-674b c3 64 67			jp .chk_fault 
-674e			.chk_fault4:  
-674e 2a e7 f8			ld hl, (chk_data_ovr) 
-6751 ed 5b 69 f3		ld de,(chk_word) 
-6755				if DEBUG_STK_FAULT 
-6755					DMARK "FA3" 
-6755					CALLMONITOR 
-6755				endif 
-6755 cd 67 0f			call cmp16 
-6758 ca 61 67			jp z, .chk_fault5 
-675b 11 02 68			ld de, sfaultdo 
-675e c3 64 67			jp .chk_fault 
-6761			 
-6761			 
-6761			.chk_fault5:  
-6761 d1				pop de 
-6762 e1				pop hl 
-6763			 
-6763 c9				ret 
-6764			 
-6764 cd 15 0d		.chk_fault: 	call clear_display 
-6767 3e 14				ld a, display_row_2 
-6769 cd 28 0d				call str_at_display 
-676c 11 92 67				   ld de, .stackfault 
-676f 3e 00				ld a, display_row_1 
-6771 cd 28 0d				call str_at_display 
-6774 11 b4 fe				    ld de, debug_mark 
-6777 3e 11				ld a, display_row_1+17 
-6779 cd 28 0d				call str_at_display 
-677c cd 38 0d				call update_display 
-677f			 
-677f				; prompt before entering montior for investigating issue 
-677f			 
-677f 3e 3c			ld a, display_row_4 
-6781 11 54 1c			ld de, endprog 
-6784			 
-6784 cd 38 0d			call update_display		 
-6787			 
-6787 cd b2 1e			call next_page_prompt 
-678a			 
-678a d1				pop de 
-678b e1				pop hl 
-678c cd a8 1c				call monitor 
-678f c3 9f 1b				jp warmstart 
-6792					;jp 0 
-6792					;halt 
-6792			 
-6792			 
-6792			 
-6792 .. 00		.stackfault: 	db "Stack fault:",0 
-679f			 
-679f .. 00		sfaultsu: 	db	"Stack under flow",0 
-67b0 .. 00		sfaultso: 	db	"Stack over flow",0 
-67c0 .. 00		sfaultru:	db "RTS underflow",0 
-67ce .. 00		sfaultro:	db "RTS overflow/LS underflow", 0 
-67e8 .. 00		sfaultlo:	db "LS overflow/DTS underflow", 0 
-6802 .. 00		sfaultdo:	db "DTS overflow", 0 
-680f			 
-680f			 
-680f			fault_dsp_under: 
-680f 11 21 68			ld de, .dsp_under 
-6812 c3 d1 68			jp .show_fault 
-6815			 
-6815			fault_rsp_under: 
-6815 11 2f 68			ld de, .rsp_under 
-6818 c3 d1 68			jp .show_fault 
-681b			fault_loop_under: 
-681b 11 3d 68			ld de, .loop_under 
-681e c3 d1 68			jp .show_fault 
+66b3			 
+66b3 .. 00		sprompt1: db "Startup load...",0 
+66c3 .. 00		sprompt2: db "Run? 1=No *=End #=All",0 
+66d9			 
+66d9			 
+66d9			 
+66d9			 
+66d9			forth_startup: 
+66d9 21 f7 56			ld hl, startcmds 
+66dc 3e 00			ld a, 0 
+66de 32 a8 f7			ld (os_last_cmd), a    ; tmp var to skip prompts if doing all 
+66e1			 
+66e1 e5			.start1:	push hl 
+66e2 cd 15 0d			call clear_display 
+66e5 11 b3 66			ld de, sprompt1 
+66e8 3e 00		        ld a, display_row_1 
+66ea cd 28 0d			call str_at_display 
+66ed 11 c3 66			ld de, sprompt2 
+66f0 3e 14		        ld a, display_row_2 
+66f2 cd 28 0d			call str_at_display 
+66f5 e1				pop hl 
+66f6 e5				push hl 
+66f7 5e				ld e,(hl) 
+66f8 23				inc hl 
+66f9 56				ld d,(hl) 
+66fa 3e 28		        ld a, display_row_3 
+66fc cd 28 0d			call str_at_display 
+66ff cd 38 0d			call update_display 
+6702			 
+6702			 
+6702 3a a8 f7			ld a, (os_last_cmd) 
+6705 fe 00			cp 0 
+6707 28 05			jr z, .startprompt 
+6709 cd 86 0c			call delay250ms 
+670c 18 24			jr .startdo 
+670e				 
+670e				 
+670e			 
+670e			.startprompt: 
+670e			 
+670e 3e 4f			ld a,display_row_4 + display_cols - 1 
+6710 11 b0 1e		        ld de, endprg 
+6713 cd 28 0d			call str_at_display 
+6716 cd 38 0d			call update_display 
+6719 cd 92 0c			call delay1s 
+671c cd 88 6c			call cin_wait 
+671f						 
+671f fe 2a			cp '*' 
+6721 28 5e			jr z, .startupend1 
+6723 fe 23			cp '#' 
+6725 20 07			jr nz, .startno 
+6727 3e 01			ld a, 1 
+6729 32 a8 f7			ld (os_last_cmd),a 
+672c 18 04			jr .startdo 
+672e fe 31		.startno:	cp '1' 
+6730 28 3a			jr z,.startnxt  
+6732			 
+6732				; exec startup line 
+6732			.startdo:	 
+6732 e1				pop hl 
+6733 e5				push hl 
+6734				 
+6734 5e				ld e,(hl) 
+6735 23				inc hl 
+6736 56				ld d,(hl) 
+6737 eb				ex de,hl 
+6738			 
+6738 e5				push hl 
+6739			 
+6739 3e 00			ld a, 0 
+673b				;ld a, FORTH_END_BUFFER 
+673b cd b2 13			call strlent 
+673e 23				inc hl   ; include zero term to copy 
+673f 06 00			ld b,0 
+6741 4d				ld c,l 
+6742 e1				pop hl 
+6743 11 82 f3			ld de, scratch 
+6746 ed b0			ldir 
+6748			 
+6748			 
+6748 21 82 f3			ld hl, scratch 
+674b cd f6 22			call forthparse 
+674e cd 36 23			call forthexec 
+6751 cd 48 22			call forthexec_cleanup 
+6754			 
+6754 3e 3c			ld a, display_row_4 
+6756 11 54 1c			ld de, endprog 
+6759			 
+6759 cd 38 0d			call update_display		 
+675c			 
+675c 3a a8 f7			ld a, (os_last_cmd) 
+675f fe 00			cp 0 
+6761 20 09			jr nz, .startnxt 
+6763 cd b2 1e			call next_page_prompt 
+6766 cd 15 0d		        call clear_display 
+6769 cd 38 0d			call update_display		 
+676c			 
+676c				; move onto next startup line? 
+676c			.startnxt: 
+676c			 
+676c cd 86 0c			call delay250ms 
+676f e1				pop hl 
+6770			 
+6770 23				inc hl 
+6771 23				inc hl 
+6772			 
+6772 e5				push hl 
+6773 5e				ld e, (hl) 
+6774 23				inc hl 
+6775 56				ld d, (hl) 
+6776 e1				pop hl 
+6777				; TODO replace 0 test 
+6777			 
+6777 eb				ex de, hl 
+6778 cd 72 0f			call ishlzero 
+677b			;	ld a,e 
+677b			;	add d 
+677b			;	cp 0    ; any left to do? 
+677b eb				ex de, hl 
+677c c2 e1 66			jp nz, .start1 
+677f 18 01			jr .startupend 
+6781			 
+6781 e1			.startupend1: pop hl 
+6782			.startupend: 
+6782			 
+6782 cd 15 0d			call clear_display 
+6785 cd 38 0d			call update_display 
+6788 c9				ret 
+6789			 
+6789			 
+6789			; stack over and underflow checks 
+6789			 
+6789			; init the words to detect the under/overflow 
+6789			 
+6789			chk_stk_init: 
+6789				; a vague random number to check so we dont get any "lucky" hits 
+6789 3e 2d			ld a, 45 
+678b 6f				ld l, a 
+678c 00				nop 
+678d 3e 17			ld a, 23 
+678f 67				ld h, a 
+6790			 
+6790 22 69 f3			ld (chk_word), hl     ; the word we need to check against 
+6793			 
+6793			;	ld (chk_stund), hl	; stack points.... 
+6793 22 fd fe			ld (chk_stovr), hl 
+6796 22 ad fb			ld (chk_ret_und), hl 
+6799 22 6b fb			ld (chk_ret_ovr), hl 
+679c 22 e9 fa			ld (chk_loop_ovr), hl 
+679f 22 e7 f8			ld (chk_data_ovr), hl 
+67a2 c9				ret 
+67a3				 
+67a3			check_stacks: 
+67a3				; check all stack words 
+67a3			 
+67a3 e5				push hl 
+67a4 d5				push de 
+67a5			 
+67a5			;	ld de,(chk_word) 
+67a5			;	ld hl, (chk_stund)	; stack points.... 
+67a5			;	if DEBUG_STK_FAULT 
+67a5			;		DMARK "FAa" 
+67a5			;		CALLMONITOR 
+67a5			;	endif 
+67a5			;	call cmp16 
+67a5			;	jp z, .chk_faulta 
+67a5			; 
+67a5			;	ld de, sfaultsu 
+67a5			;	jp .chk_fault 
+67a5			 
+67a5 2a fd fe		.chk_faulta: ld hl, (chk_stovr) 
+67a8 ed 5b 69 f3		ld de,(chk_word) 
+67ac				if DEBUG_STK_FAULT 
+67ac					DMARK "FAb" 
+67ac					CALLMONITOR 
+67ac				endif 
+67ac cd 67 0f			call cmp16 
+67af 28 06			jr z, .chk_fault1 
+67b1 11 52 68			ld de, sfaultso 
+67b4 c3 06 68			jp .chk_fault 
+67b7			.chk_fault1:  
+67b7 2a ad fb			ld hl, (chk_ret_und) 
+67ba ed 5b 69 f3		ld de,(chk_word) 
+67be				if DEBUG_STK_FAULT 
+67be					DMARK "FAU" 
+67be					CALLMONITOR 
+67be				endif 
+67be cd 67 0f			call cmp16 
+67c1 ca ca 67			jp z, .chk_fault2 
+67c4 11 62 68			ld de, sfaultru 
+67c7 c3 06 68			jp .chk_fault 
+67ca			.chk_fault2:  
+67ca 2a 6b fb			ld hl, (chk_ret_ovr) 
+67cd ed 5b 69 f3		ld de,(chk_word) 
+67d1				if DEBUG_STK_FAULT 
+67d1					DMARK "FA1" 
+67d1					CALLMONITOR 
+67d1				endif 
+67d1 cd 67 0f			call cmp16 
+67d4 ca dd 67			jp z, .chk_fault3 
+67d7 11 70 68			ld de, sfaultro 
+67da c3 06 68			jp .chk_fault 
+67dd			.chk_fault3:  
+67dd 2a e9 fa			ld hl, (chk_loop_ovr) 
+67e0 ed 5b 69 f3		ld de,(chk_word) 
+67e4				if DEBUG_STK_FAULT 
+67e4					DMARK "FA2" 
+67e4					CALLMONITOR 
+67e4				endif 
+67e4 cd 67 0f			call cmp16 
+67e7 ca f0 67			jp z, .chk_fault4 
+67ea 11 8a 68			ld de, sfaultlo 
+67ed c3 06 68			jp .chk_fault 
+67f0			.chk_fault4:  
+67f0 2a e7 f8			ld hl, (chk_data_ovr) 
+67f3 ed 5b 69 f3		ld de,(chk_word) 
+67f7				if DEBUG_STK_FAULT 
+67f7					DMARK "FA3" 
+67f7					CALLMONITOR 
+67f7				endif 
+67f7 cd 67 0f			call cmp16 
+67fa ca 03 68			jp z, .chk_fault5 
+67fd 11 a4 68			ld de, sfaultdo 
+6800 c3 06 68			jp .chk_fault 
+6803			 
+6803			 
+6803			.chk_fault5:  
+6803 d1				pop de 
+6804 e1				pop hl 
+6805			 
+6805 c9				ret 
+6806			 
+6806 cd 15 0d		.chk_fault: 	call clear_display 
+6809 3e 14				ld a, display_row_2 
+680b cd 28 0d				call str_at_display 
+680e 11 34 68				   ld de, .stackfault 
+6811 3e 00				ld a, display_row_1 
+6813 cd 28 0d				call str_at_display 
+6816 11 b4 fe				    ld de, debug_mark 
+6819 3e 11				ld a, display_row_1+17 
+681b cd 28 0d				call str_at_display 
+681e cd 38 0d				call update_display 
 6821			 
-6821 .. 00		.dsp_under: db "DSP Underflow",0 
-682f .. 00		.rsp_under: db "RSP Underflow",0 
-683d .. 00		.loop_under: db "LOOP Underflow",0 
-684c			 
-684c			 
-684c d5			type_faultn: 	push de 
-684d e5					push hl 
-684e cd 15 0d				call clear_display 
-6851 11 78 68				   ld de, .typefaultn 
-6854 3e 00				ld a, display_row_1 
-6856 cd 28 0d				call str_at_display 
-6859 11 b4 fe				    ld de, debug_mark 
-685c 3e 11				ld a, display_row_1+17 
-685e cd 28 0d				call str_at_display 
-6861 cd 38 0d				call update_display 
-6864			 
-6864				; prompt before entering montior for investigating issue 
-6864			 
-6864 3e 3c			ld a, display_row_4 
-6866 11 54 1c			ld de, endprog 
-6869			 
-6869 cd 38 0d			call update_display		 
-686c			 
-686c cd b2 1e			call next_page_prompt 
-686f			 
-686f e5					push hl 
-6870 d5					push de 
-6871 cd a8 1c				call monitor 
-6874 c3 9f 1b				jp warmstart 
-6877 76					halt 
-6878			 
-6878			 
-6878 .. 00		.typefaultn: db "NUM Type Expected TOS!",0 
-688f			 
-688f d5			type_faults: 	push de 
-6890 e5					push hl 
-6891 cd 15 0d				call clear_display 
-6894 11 ba 68				   ld de, .typefaults 
-6897 3e 00				ld a, display_row_1 
-6899 cd 28 0d				call str_at_display 
-689c 11 b4 fe				    ld de, debug_mark 
-689f 3e 11				ld a, display_row_1+17 
-68a1 cd 28 0d				call str_at_display 
-68a4 cd 38 0d				call update_display 
-68a7			 
-68a7				; prompt before entering montior for investigating issue 
-68a7			 
-68a7 3e 3c			ld a, display_row_4 
-68a9 11 54 1c			ld de, endprog 
-68ac			 
-68ac cd 38 0d			call update_display		 
-68af			 
-68af cd b2 1e			call next_page_prompt 
-68b2			 
-68b2 e1					pop hl 
-68b3 d1					pop de 
-68b4 cd a8 1c				call monitor 
-68b7 c3 9f 1b				jp warmstart 
-68ba			 
-68ba			 
-68ba .. 00		.typefaults: db "STR Type Expected TOS!",0 
-68d1			 
-68d1			.show_fault: 	 
-68d1 d5					push de 
-68d2 cd 15 0d				call clear_display 
-68d5 d1					pop de 
-68d6 3e 00				ld a, display_row_1 
-68d8 cd 28 0d				call str_at_display 
-68db 11 b4 fe				    ld de, debug_mark 
-68de 3e 11				ld a, display_row_1+17 
-68e0 cd 28 0d				call str_at_display 
-68e3 cd 38 0d				call update_display 
-68e6			 
-68e6				; prompt before entering montior for investigating issue 
-68e6			 
-68e6 3e 3c			ld a, display_row_4 
-68e8 11 54 1c			ld de, endprog 
-68eb			 
-68eb cd 38 0d			call update_display		 
+6821				; prompt before entering montior for investigating issue 
+6821			 
+6821 3e 3c			ld a, display_row_4 
+6823 11 54 1c			ld de, endprog 
+6826			 
+6826 cd 38 0d			call update_display		 
+6829			 
+6829 cd b2 1e			call next_page_prompt 
+682c			 
+682c d1				pop de 
+682d e1				pop hl 
+682e cd a8 1c				call monitor 
+6831 c3 9f 1b				jp warmstart 
+6834					;jp 0 
+6834					;halt 
+6834			 
+6834			 
+6834			 
+6834 .. 00		.stackfault: 	db "Stack fault:",0 
+6841			 
+6841 .. 00		sfaultsu: 	db	"Stack under flow",0 
+6852 .. 00		sfaultso: 	db	"Stack over flow",0 
+6862 .. 00		sfaultru:	db "RTS underflow",0 
+6870 .. 00		sfaultro:	db "RTS overflow/LS underflow", 0 
+688a .. 00		sfaultlo:	db "LS overflow/DTS underflow", 0 
+68a4 .. 00		sfaultdo:	db "DTS overflow", 0 
+68b1			 
+68b1			 
+68b1			fault_dsp_under: 
+68b1 11 c3 68			ld de, .dsp_under 
+68b4 c3 73 69			jp .show_fault 
+68b7			 
+68b7			fault_rsp_under: 
+68b7 11 d1 68			ld de, .rsp_under 
+68ba c3 73 69			jp .show_fault 
+68bd			fault_loop_under: 
+68bd 11 df 68			ld de, .loop_under 
+68c0 c3 73 69			jp .show_fault 
+68c3			 
+68c3 .. 00		.dsp_under: db "DSP Underflow",0 
+68d1 .. 00		.rsp_under: db "RSP Underflow",0 
+68df .. 00		.loop_under: db "LOOP Underflow",0 
 68ee			 
-68ee cd b2 1e			call next_page_prompt 
-68f1			 
-68f1 e1					pop hl 
-68f2 d1					pop de 
-68f3 cd a8 1c				call monitor 
-68f6			; do a dump to cli and not warmstart so we preserve all of the uwords.  
-68f6			; TODO Make optional fault restart to cli or warm boot? 
-68f6					;jp warmstart 
-68f6 c3 fa 1b				jp cli 
-68f9 76					halt 
-68fa			 
-68fa			; handle the auto run of code from files in storage 
-68fa			 
-68fa			 
-68fa			if STORAGE_SE 
-68fa			 
-68fa .. 00		sprompt3: db "Loading from start-up file?:",0 
-6917 .. 00		sprompt4: db "(Y=Any key/N=No)",0 
-6928			 
-6928			 
-6928			forth_autoload: 
-6928			 
-6928				; load block 0 of store 1 
-6928				 
-6928 3e fe			ld a, $fe      ; bit 0 clear 
-692a 32 ed fb			ld (spi_device), a 
-692d			 
-692d cd ca 04			call storage_get_block_0 
-6930			 
-6930 3a 28 fc			ld a, (store_page+STORE_0_AUTOFILE) 
-6933			 
-6933 fe 00			cp 0 
-6935 c8				ret z     ; auto start not enabled 
-6936			 
-6936 cd 15 0d			call clear_display 
-6939			 
-6939				; set bank 
-6939			 
-6939 3a 2a fc				ld a, (store_page+STORE_0_BANKRUN) 
-693c 32 ed fb				ld (spi_device), a 
-693f			 
-693f				; get file id to load from and get the file name to display 
-693f			 
-693f 3a 2b fc				ld a, (store_page+STORE_0_FILERUN) 
-6942			 
-6942 2e 00				ld l, 0 
-6944 67					ld h, a 
-6945 11 07 fc				ld de, store_page 
-6948			 
-6948					if DEBUG_FORTH_WORDS 
-6948						DMARK "ASp" 
-6948 f5				push af  
-6949 3a 5d 69			ld a, (.dmark)  
-694c 32 b4 fe			ld (debug_mark),a  
-694f 3a 5e 69			ld a, (.dmark+1)  
-6952 32 b5 fe			ld (debug_mark+1),a  
-6955 3a 5f 69			ld a, (.dmark+2)  
-6958 32 b6 fe			ld (debug_mark+2),a  
-695b 18 03			jr .pastdmark  
-695d ..			.dmark: db "ASp"  
-6960 f1			.pastdmark: pop af  
-6961			endm  
-# End of macro DMARK
-6961						CALLMONITOR 
-6961 cd c6 18			call break_point_state  
-6964				endm  
-# End of macro CALLMONITOR
-6964					endif 
-6964 cd 72 09				call storage_read 
-6967			 
-6967					if DEBUG_FORTH_WORDS 
-6967						DMARK "ASr" 
-6967 f5				push af  
-6968 3a 7c 69			ld a, (.dmark)  
-696b 32 b4 fe			ld (debug_mark),a  
-696e 3a 7d 69			ld a, (.dmark+1)  
-6971 32 b5 fe			ld (debug_mark+1),a  
-6974 3a 7e 69			ld a, (.dmark+2)  
-6977 32 b6 fe			ld (debug_mark+2),a  
-697a 18 03			jr .pastdmark  
-697c ..			.dmark: db "ASr"  
-697f f1			.pastdmark: pop af  
-6980			endm  
-# End of macro DMARK
-6980						CALLMONITOR 
-6980 cd c6 18			call break_point_state  
-6983				endm  
-# End of macro CALLMONITOR
-6983					endif 
-6983			 
-6983 cd 72 0f				call ishlzero 
-6986 c8					ret z             ; file not found 
-6987			 
-6987 3e 1e				ld a, display_row_2 + 10 
-6989 11 0a fc				ld de, store_page+3 
-698c cd 28 0d				call str_at_display 
-698f				 
-698f			; 
-698f			 
-698f 3e 05			ld a, display_row_1+5 
-6991 11 fa 68			ld de, sprompt3 
-6994 cd 28 0d			call str_at_display 
-6997 3e 37			ld a, display_row_3+15 
-6999 11 17 69			ld de, sprompt4 
-699c cd 28 0d			call str_at_display 
-699f			 
-699f cd 38 0d			call update_display 
-69a2			 
-69a2 cd e6 6b			call cin_wait 
-69a5 fe 6e			cp 'n' 
-69a7 c8				ret z 
-69a8 fe 4e			cp 'N' 
-69aa c8				ret z 
-69ab			 
-69ab cd 92 0c			call delay1s 
-69ae			 
-69ae 3a 09 fc			ld a, (store_page+2) 
-69b1 32 f6 fb			ld (store_openmaxext), a    ; save count of ext 
-69b4 3e 01			ld a, 1  
-69b6 32 f7 fb			ld (store_openext), a    ; save count of ext 
-69b9			 
-69b9			.autof:  
-69b9 6f				ld l , a 
-69ba				 
-69ba 3a 07 fc			ld a, (store_page) 
-69bd 67				ld h, a	 
-69be 11 07 fc			ld de, store_page 
-69c1					if DEBUG_FORTH_WORDS 
-69c1						DMARK "ASl" 
-69c1 f5				push af  
-69c2 3a d6 69			ld a, (.dmark)  
-69c5 32 b4 fe			ld (debug_mark),a  
-69c8 3a d7 69			ld a, (.dmark+1)  
-69cb 32 b5 fe			ld (debug_mark+1),a  
-69ce 3a d8 69			ld a, (.dmark+2)  
-69d1 32 b6 fe			ld (debug_mark+2),a  
-69d4 18 03			jr .pastdmark  
-69d6 ..			.dmark: db "ASl"  
-69d9 f1			.pastdmark: pop af  
-69da			endm  
-# End of macro DMARK
-69da						CALLMONITOR 
-69da cd c6 18			call break_point_state  
-69dd				endm  
-# End of macro CALLMONITOR
-69dd					endif 
-69dd cd 72 09				call storage_read 
-69e0 cd 72 0f			call ishlzero 
-69e3 c8				ret z 
-69e4			;	jr z, .autoend 
+68ee			 
+68ee d5			type_faultn: 	push de 
+68ef e5					push hl 
+68f0 cd 15 0d				call clear_display 
+68f3 11 1a 69				   ld de, .typefaultn 
+68f6 3e 00				ld a, display_row_1 
+68f8 cd 28 0d				call str_at_display 
+68fb 11 b4 fe				    ld de, debug_mark 
+68fe 3e 11				ld a, display_row_1+17 
+6900 cd 28 0d				call str_at_display 
+6903 cd 38 0d				call update_display 
+6906			 
+6906				; prompt before entering montior for investigating issue 
+6906			 
+6906 3e 3c			ld a, display_row_4 
+6908 11 54 1c			ld de, endprog 
+690b			 
+690b cd 38 0d			call update_display		 
+690e			 
+690e cd b2 1e			call next_page_prompt 
+6911			 
+6911 e5					push hl 
+6912 d5					push de 
+6913 cd a8 1c				call monitor 
+6916 c3 9f 1b				jp warmstart 
+6919 76					halt 
+691a			 
+691a			 
+691a .. 00		.typefaultn: db "NUM Type Expected TOS!",0 
+6931			 
+6931 d5			type_faults: 	push de 
+6932 e5					push hl 
+6933 cd 15 0d				call clear_display 
+6936 11 5c 69				   ld de, .typefaults 
+6939 3e 00				ld a, display_row_1 
+693b cd 28 0d				call str_at_display 
+693e 11 b4 fe				    ld de, debug_mark 
+6941 3e 11				ld a, display_row_1+17 
+6943 cd 28 0d				call str_at_display 
+6946 cd 38 0d				call update_display 
+6949			 
+6949				; prompt before entering montior for investigating issue 
+6949			 
+6949 3e 3c			ld a, display_row_4 
+694b 11 54 1c			ld de, endprog 
+694e			 
+694e cd 38 0d			call update_display		 
+6951			 
+6951 cd b2 1e			call next_page_prompt 
+6954			 
+6954 e1					pop hl 
+6955 d1					pop de 
+6956 cd a8 1c				call monitor 
+6959 c3 9f 1b				jp warmstart 
+695c			 
+695c			 
+695c .. 00		.typefaults: db "STR Type Expected TOS!",0 
+6973			 
+6973			.show_fault: 	 
+6973 d5					push de 
+6974 cd 15 0d				call clear_display 
+6977 d1					pop de 
+6978 3e 00				ld a, display_row_1 
+697a cd 28 0d				call str_at_display 
+697d 11 b4 fe				    ld de, debug_mark 
+6980 3e 11				ld a, display_row_1+17 
+6982 cd 28 0d				call str_at_display 
+6985 cd 38 0d				call update_display 
+6988			 
+6988				; prompt before entering montior for investigating issue 
+6988			 
+6988 3e 3c			ld a, display_row_4 
+698a 11 54 1c			ld de, endprog 
+698d			 
+698d cd 38 0d			call update_display		 
+6990			 
+6990 cd b2 1e			call next_page_prompt 
+6993			 
+6993 e1					pop hl 
+6994 d1					pop de 
+6995 cd a8 1c				call monitor 
+6998			; do a dump to cli and not warmstart so we preserve all of the uwords.  
+6998			; TODO Make optional fault restart to cli or warm boot? 
+6998					;jp warmstart 
+6998 c3 fa 1b				jp cli 
+699b 76					halt 
+699c			 
+699c			; handle the auto run of code from files in storage 
+699c			 
+699c			 
+699c			if STORAGE_SE 
+699c			 
+699c .. 00		sprompt3: db "Loading from start-up file?:",0 
+69b9 .. 00		sprompt4: db "(Y=Any key/N=No)",0 
+69ca			 
+69ca			 
+69ca			forth_autoload: 
+69ca			 
+69ca				; load block 0 of store 1 
+69ca				 
+69ca 3e fe			ld a, $fe      ; bit 0 clear 
+69cc 32 ed fb			ld (spi_device), a 
+69cf			 
+69cf cd ca 04			call storage_get_block_0 
+69d2			 
+69d2 3a 28 fc			ld a, (store_page+STORE_0_AUTOFILE) 
+69d5			 
+69d5 fe 00			cp 0 
+69d7 c8				ret z     ; auto start not enabled 
+69d8			 
+69d8 cd 15 0d			call clear_display 
+69db			 
+69db				; set bank 
+69db			 
+69db 3a 2a fc				ld a, (store_page+STORE_0_BANKRUN) 
+69de 32 ed fb				ld (spi_device), a 
+69e1			 
+69e1				; get file id to load from and get the file name to display 
+69e1			 
+69e1 3a 2b fc				ld a, (store_page+STORE_0_FILERUN) 
 69e4			 
-69e4					if DEBUG_FORTH_WORDS 
-69e4						DMARK "ASc" 
-69e4 f5				push af  
-69e5 3a f9 69			ld a, (.dmark)  
-69e8 32 b4 fe			ld (debug_mark),a  
-69eb 3a fa 69			ld a, (.dmark+1)  
-69ee 32 b5 fe			ld (debug_mark+1),a  
-69f1 3a fb 69			ld a, (.dmark+2)  
-69f4 32 b6 fe			ld (debug_mark+2),a  
-69f7 18 03			jr .pastdmark  
-69f9 ..			.dmark: db "ASc"  
-69fc f1			.pastdmark: pop af  
-69fd			endm  
+69e4 2e 00				ld l, 0 
+69e6 67					ld h, a 
+69e7 11 07 fc				ld de, store_page 
+69ea			 
+69ea					if DEBUG_FORTH_WORDS 
+69ea						DMARK "ASp" 
+69ea f5				push af  
+69eb 3a ff 69			ld a, (.dmark)  
+69ee 32 b4 fe			ld (debug_mark),a  
+69f1 3a 00 6a			ld a, (.dmark+1)  
+69f4 32 b5 fe			ld (debug_mark+1),a  
+69f7 3a 01 6a			ld a, (.dmark+2)  
+69fa 32 b6 fe			ld (debug_mark+2),a  
+69fd 18 03			jr .pastdmark  
+69ff ..			.dmark: db "ASp"  
+6a02 f1			.pastdmark: pop af  
+6a03			endm  
 # End of macro DMARK
-69fd						CALLMONITOR 
-69fd cd c6 18			call break_point_state  
-6a00				endm  
+6a03						CALLMONITOR 
+6a03 cd c6 18			call break_point_state  
+6a06				endm  
 # End of macro CALLMONITOR
-6a00					endif 
-6a00 11 09 fc			ld de, store_page+2 
-6a03 3e 3c			ld a, display_row_4 
-6a05 cd 28 0d			call str_at_display 
-6a08			 
-6a08 cd 38 0d			call update_display 
-6a0b cd 86 0c			call delay250ms 
-6a0e			 
-6a0e			 
-6a0e			 
-6a0e 21 09 fc			ld hl, store_page+2 
-6a11 cd f6 22			call forthparse 
-6a14 cd 36 23			call forthexec 
-6a17 cd 48 22			call forthexec_cleanup 
-6a1a			 
-6a1a				 
-6a1a 3a f7 fb			ld a, (store_openext) 
-6a1d 3c				inc a 
-6a1e 32 f7 fb			ld (store_openext), a    ; save count of ext 
-6a21			 
-6a21 18 96			jr .autof 
-6a23			;.autofdone: 
-6a23			; 
-6a23			;		if DEBUG_FORTH_WORDS 
-6a23			;			DMARK "ASx" 
-6a23			;			CALLMONITOR 
-6a23			;		endif 
-6a23			;;	call clear_display 
-6a23			;	ret 
-6a23			 
-6a23			 
-6a23			 
-6a23			endif 
-6a23			 
-6a23			 
-6a23			; eof 
+6a06					endif 
+6a06 cd 72 09				call storage_read 
+6a09			 
+6a09					if DEBUG_FORTH_WORDS 
+6a09						DMARK "ASr" 
+6a09 f5				push af  
+6a0a 3a 1e 6a			ld a, (.dmark)  
+6a0d 32 b4 fe			ld (debug_mark),a  
+6a10 3a 1f 6a			ld a, (.dmark+1)  
+6a13 32 b5 fe			ld (debug_mark+1),a  
+6a16 3a 20 6a			ld a, (.dmark+2)  
+6a19 32 b6 fe			ld (debug_mark+2),a  
+6a1c 18 03			jr .pastdmark  
+6a1e ..			.dmark: db "ASr"  
+6a21 f1			.pastdmark: pop af  
+6a22			endm  
+# End of macro DMARK
+6a22						CALLMONITOR 
+6a22 cd c6 18			call break_point_state  
+6a25				endm  
+# End of macro CALLMONITOR
+6a25					endif 
+6a25			 
+6a25 cd 72 0f				call ishlzero 
+6a28 c8					ret z             ; file not found 
+6a29			 
+6a29 3e 1e				ld a, display_row_2 + 10 
+6a2b 11 0a fc				ld de, store_page+3 
+6a2e cd 28 0d				call str_at_display 
+6a31				 
+6a31			; 
+6a31			 
+6a31 3e 05			ld a, display_row_1+5 
+6a33 11 9c 69			ld de, sprompt3 
+6a36 cd 28 0d			call str_at_display 
+6a39 3e 37			ld a, display_row_3+15 
+6a3b 11 b9 69			ld de, sprompt4 
+6a3e cd 28 0d			call str_at_display 
+6a41			 
+6a41 cd 38 0d			call update_display 
+6a44			 
+6a44 cd 88 6c			call cin_wait 
+6a47 fe 6e			cp 'n' 
+6a49 c8				ret z 
+6a4a fe 4e			cp 'N' 
+6a4c c8				ret z 
+6a4d			 
+6a4d cd 92 0c			call delay1s 
+6a50			 
+6a50 3a 09 fc			ld a, (store_page+2) 
+6a53 32 f6 fb			ld (store_openmaxext), a    ; save count of ext 
+6a56 3e 01			ld a, 1  
+6a58 32 f7 fb			ld (store_openext), a    ; save count of ext 
+6a5b			 
+6a5b			.autof:  
+6a5b 6f				ld l , a 
+6a5c				 
+6a5c 3a 07 fc			ld a, (store_page) 
+6a5f 67				ld h, a	 
+6a60 11 07 fc			ld de, store_page 
+6a63					if DEBUG_FORTH_WORDS 
+6a63						DMARK "ASl" 
+6a63 f5				push af  
+6a64 3a 78 6a			ld a, (.dmark)  
+6a67 32 b4 fe			ld (debug_mark),a  
+6a6a 3a 79 6a			ld a, (.dmark+1)  
+6a6d 32 b5 fe			ld (debug_mark+1),a  
+6a70 3a 7a 6a			ld a, (.dmark+2)  
+6a73 32 b6 fe			ld (debug_mark+2),a  
+6a76 18 03			jr .pastdmark  
+6a78 ..			.dmark: db "ASl"  
+6a7b f1			.pastdmark: pop af  
+6a7c			endm  
+# End of macro DMARK
+6a7c						CALLMONITOR 
+6a7c cd c6 18			call break_point_state  
+6a7f				endm  
+# End of macro CALLMONITOR
+6a7f					endif 
+6a7f cd 72 09				call storage_read 
+6a82 cd 72 0f			call ishlzero 
+6a85 c8				ret z 
+6a86			;	jr z, .autoend 
+6a86			 
+6a86					if DEBUG_FORTH_WORDS 
+6a86						DMARK "ASc" 
+6a86 f5				push af  
+6a87 3a 9b 6a			ld a, (.dmark)  
+6a8a 32 b4 fe			ld (debug_mark),a  
+6a8d 3a 9c 6a			ld a, (.dmark+1)  
+6a90 32 b5 fe			ld (debug_mark+1),a  
+6a93 3a 9d 6a			ld a, (.dmark+2)  
+6a96 32 b6 fe			ld (debug_mark+2),a  
+6a99 18 03			jr .pastdmark  
+6a9b ..			.dmark: db "ASc"  
+6a9e f1			.pastdmark: pop af  
+6a9f			endm  
+# End of macro DMARK
+6a9f						CALLMONITOR 
+6a9f cd c6 18			call break_point_state  
+6aa2				endm  
+# End of macro CALLMONITOR
+6aa2					endif 
+6aa2 11 09 fc			ld de, store_page+2 
+6aa5 3e 3c			ld a, display_row_4 
+6aa7 cd 28 0d			call str_at_display 
+6aaa			 
+6aaa cd 38 0d			call update_display 
+6aad cd 86 0c			call delay250ms 
+6ab0			 
+6ab0			 
+6ab0			 
+6ab0 21 09 fc			ld hl, store_page+2 
+6ab3 cd f6 22			call forthparse 
+6ab6 cd 36 23			call forthexec 
+6ab9 cd 48 22			call forthexec_cleanup 
+6abc			 
+6abc				 
+6abc 3a f7 fb			ld a, (store_openext) 
+6abf 3c				inc a 
+6ac0 32 f7 fb			ld (store_openext), a    ; save count of ext 
+6ac3			 
+6ac3 18 96			jr .autof 
+6ac5			;.autofdone: 
+6ac5			; 
+6ac5			;		if DEBUG_FORTH_WORDS 
+6ac5			;			DMARK "ASx" 
+6ac5			;			CALLMONITOR 
+6ac5			;		endif 
+6ac5			;;	call clear_display 
+6ac5			;	ret 
+6ac5			 
+6ac5			 
+6ac5			 
+6ac5			endif 
+6ac5			 
+6ac5			 
+6ac5			; eof 
 # End of file forth_kernel.asm
-6a23			;include "nascombasic.asm" 
-6a23			 
-6a23			 
-6a23			; find out where the code ends if loaded into RAM (for SC114) 
-6a23			;endofcode:  
-6a23			;	nop 
-6a23			 
-6a23			 
-6a23			; eof 
-6a23			 
+6ac5			;include "nascombasic.asm" 
+6ac5			 
+6ac5			 
+6ac5			; find out where the code ends if loaded into RAM (for SC114) 
+6ac5			;endofcode:  
+6ac5			;	nop 
+6ac5			 
+6ac5			 
+6ac5			; eof 
+6ac5			 
 # End of file main.asm
-6a23			include "firmware_lcd_4x20.asm" 
-6a23			; **********************************************************************  
-6a23			; **  Alphanumeric LCD example                  by Stephen C Cousins  **  
-6a23			; **********************************************************************  
-6a23			;  
-6a23			; **  Written as a Small Computer Monitor App  
-6a23			; **  www.scc.me.uk  
-6a23			;  
-6a23			; History  
-6a23			; 2018-05-20  v0.2.0  SCC  Example for LiNC80 SBC1 only  
-6a23			; 2018-06-28  v0.3.0  SCC  Added support for RC2014 and Z280RC  
-6a23			; 2019-09-14  v0.4.0  SCC  Added support for SC129 digital I/O module  
-6a23			;  
-6a23			; **********************************************************************  
-6a23			;  
-6a23			; This program is an example of one of the methods of interfacing an   
-6a23			; alphanumeric LCD module.   
-6a23			;  
-6a23			; In this example the display is connected to either a Z80 PIO or a   
-6a23			; simple 8-bit output port.   
-6a23			;  
-6a23			; This interfacing method uses 4-bit data mode and uses time delays  
-6a23			; rather than polling the display's ready status. As a result the   
-6a23			; interface only requires 6 simple output lines:  
-6a23			;   Output bit 0 = not used  
-6a23			;   Output bit 1 = not used  
-6a23			;   Output bit 2 = RS         High = data, Low = instruction  
-6a23			;   Output bit 3 = E          Active high  
-6a23			;   Output bit 4 = DB4  
-6a23			;   Output bit 5 = DB5  
-6a23			;   Output bit 6 = DB6  
-6a23			;   Output bit 7 = DB7  
-6a23			; Display's R/W is connected to 0v so it is always in write mode  
-6a23			;  
-6a23			; This set up should work with any system supporting the RC2014 bus  
-6a23			  
-6a23			; To set up PIO port A in mode 3 (control) using LiNC80 as example  
-6a23			;   I/O address 0x1A = 0b11001111 (0xCF)   Select mode 3 (control)  
-6a23			;   I/O address 0x1A = 0b00000000 (0x00)   All pins are output  
-6a23			;  
-6a23			; **********************************************************************  
-6a23			  
-6a23			; **********************************************************************  
-6a23			; **  Constants  
-6a23			; **********************************************************************  
-6a23			; LCD constants required by LCD support module  
-6a23			kLCDPrt:    EQU kDataReg       ;LCD port is the PIO port A data reg  
-6a23			kLCDBitRS:  EQU 2              ;Port bit for LCD RS signal  
-6a23			kLCDBitE:   EQU 3              ;Port bit for LCD E signal  
-6a23			kLCDWidth:  EQU display_cols             ;Width in characters  
-6a23			  
-6a23			; **********************************************************************  
-6a23			; **  Code library usage  
-6a23			; **********************************************************************  
-6a23			  
-6a23			; send character to current cursor position  
-6a23			; wraps and/or scrolls screen automatically  
-6a23			  
-6a23			  
-6a23			lcd_init:  
-6a23			  
-6a23			; SCMonAPI functions used  
-6a23			  
-6a23			; Alphanumeric LCD functions used  
-6a23			; no need to specify specific functions for this module  
-6a23			  
-6a23 3e cf		            LD   A, 11001111b  
-6a25 d3 c2		            OUT  (kContReg), A  ;Port A = PIO 'control' mode  
-6a27 3e 00		            LD   A, 00000000b  
-6a29 d3 c2		            OUT  (kContReg),A   ;Port A = all lines are outputs  
-6a2b			  
-6a2b			; Initialise alphanumeric LCD module  
-6a2b cd a4 6a		            CALL fLCD_Init      ;Initialise LCD module  
-6a2e			  
-6a2e c9				ret  
-6a2f			  
-6a2f			;  
-6a2f			;;  
-6a2f			; lcd functions  
-6a2f			;  
-6a2f			;  
-6a2f			  
-6a2f			; what is at cursor position   
-6a2f			  
-6a2f			;get_cursor:	ld de, (cursor_row)   ;  row + col  
-6a2f			;		call curptr  
-6a2f			;		ret  
-6a2f			  
-6a2f			  
-6a2f			; take current custor pos in de (d=row,e=col) and return a pointer to the frame buffer  
-6a2f			  
-6a2f			curptr:  
-6a2f c5				push bc  
-6a30 21 4a fe			ld hl, display_fb0  
-6a33			cpr:	  
-6a33				; loop for cursor whole row  
-6a33 0e 14			ld c, display_cols  
-6a35 23			cpr1:	inc hl  
-6a36 0d				dec c  
-6a37 20 fc			jr nz, cpr1  
-6a39 05				dec b  
-6a3a 20 f7			jr nz, cpr  
-6a3c			  
-6a3c				; add col	  
-6a3c			  
-6a3c 23			cpr2:	inc hl  
-6a3d 1d				dec e  
-6a3e 20 fc			jr nz, cpr2  
-6a40			  
-6a40 c1				pop bc  
-6a41 c9				ret  
-6a42				  
-6a42			  
-6a42			  
-6a42			  
-6a42			  
-6a42			; write the frame buffer given in hl to hardware   
-6a42 22 52 fd		write_display: ld (display_write_tmp), hl 	   
-6a45 3e 00			ld a, kLCD_Line1  
-6a47 cd 15 6b		            CALL fLCD_Pos       ;Position cursor to location in A  
-6a4a 06 14			ld b, display_cols  
-6a4c ed 5b 52 fd		ld de, (display_write_tmp)  
-6a50 cd 9c 6a			call write_len_string  
-6a53				  
-6a53				  
-6a53 2a 52 fd			ld hl, (display_write_tmp)  
-6a56 11 14 00			ld de, display_cols  
-6a59 19				add hl,de  
-6a5a 22 52 fd			ld (display_write_tmp),hl  
-6a5d			  
-6a5d				  
-6a5d 3e 40			ld a, kLCD_Line2  
-6a5f cd 15 6b		            CALL fLCD_Pos       ;Position cursor to location in A  
-6a62 06 14			ld b, display_cols  
-6a64 ed 5b 52 fd		ld de, (display_write_tmp)  
-6a68 cd 9c 6a			call write_len_string  
-6a6b				  
-6a6b 2a 52 fd			ld hl, (display_write_tmp)  
-6a6e 11 14 00			ld de, display_cols  
-6a71 19				add hl,de  
-6a72 22 52 fd			ld (display_write_tmp),hl  
-6a75			  
-6a75				  
-6a75 3e 14			ld a, kLCD_Line3  
-6a77 cd 15 6b		            CALL fLCD_Pos       ;Position cursor to location in A  
-6a7a 06 14			ld b, display_cols  
-6a7c ed 5b 52 fd		ld de, (display_write_tmp)  
-6a80 cd 9c 6a			call write_len_string  
-6a83				  
-6a83 2a 52 fd			ld hl, (display_write_tmp)  
-6a86 11 14 00			ld de, display_cols  
-6a89 19				add hl,de  
-6a8a 22 52 fd			ld (display_write_tmp),hl  
-6a8d			  
-6a8d				  
-6a8d 3e 54			ld a, kLCD_Line4  
-6a8f cd 15 6b		            CALL fLCD_Pos       ;Position cursor to location in A  
-6a92 06 14			ld b, display_cols  
-6a94 ed 5b 52 fd		ld de, (display_write_tmp)  
-6a98 cd 9c 6a			call write_len_string  
-6a9b c9					ret  
-6a9c				  
-6a9c				; write out a fixed length string given in b from de  
-6a9c			  
-6a9c 1a			write_len_string:   LD   A, (DE)        ;Get character from string  
-6a9d cd ee 6a		            CALL fLCD_Data      ;Write character to display  
-6aa0 13				inc de  
-6aa1 10 f9			djnz write_len_string  
-6aa3 c9				ret  
-6aa4			  
-6aa4			; Some other things to do  
-6aa4			;            LD   A, kLCD_Clear ;Display clear  
-6aa4			;            LD   A, kLCD_Blink ;Display on with blinking block cursor  
-6aa4			;            LD   A, kLCD_Under ;Display on with underscore cursor  
-6aa4			;            LD   A, kLCD_On     ;Display on with no cursor  
-6aa4			;            ;LD   A, kLCD_Off   ;Display off  
-6aa4			;            CALL fLCD_Inst      ;Send instruction to display  
-6aa4			;  
-6aa4			;  
-6aa4			;            halt  
-6aa4			;  
-6aa4			;  
-6aa4			;MsgHello:   DB  "Hello World!",0  
-6aa4			;MsgLiNC80:   DB  "From my Z80-homebrew",0  
-6aa4			  
-6aa4			; Custom characters 5 pixels wide by 8 pixels high  
-6aa4			; Up to 8 custom characters can be defined  
-6aa4			;BitMaps:      
-6aa4			;; Character 0x00 = Battery icon  
-6aa4			;            DB  01110b  
-6aa4			;            DB  11011b  
-6aa4			;            DB  10001b  
-6aa4			;            DB  10001b  
-6aa4			;            DB  11111b  
-6aa4			;            DB  11111b  
-6aa4			;            DB  11111b  
-6aa4			;            DB  11111b  
-6aa4			;; Character 0x01 = Bluetooth icon  
-6aa4			;            DB  01100b  
-6aa4			;            DB  01010b  
-6aa4			;            DB  11100b  
-6aa4			;            DB  01000b  
-6aa4			;            DB  11100b  
-6aa4			;            DB  01010b  
-6aa4			;            DB  01100b  
-6aa4			;            DB  00000b  
-6aa4			;  
-6aa4			  
-6aa4			  
-6aa4			; **********************************************************************  
-6aa4			; **  Alphanumeric LCD support                  by Stephen C Cousins  **  
-6aa4			; **********************************************************************  
-6aa4			;  
-6aa4			; **  Written as a Small Computer Monitor App   
-6aa4			; **  Version 0.1 SCC 2018-05-16  
-6aa4			; **  www.scc.me.uk  
-6aa4			;  
-6aa4			; **********************************************************************  
-6aa4			;  
-6aa4			; This module provides support for alphanumeric LCD modules using with  
-6aa4			; *  HD44780 (or compatible) controller  
-6aa4			; *  5 x 7 pixel fonts  
-6aa4			; *  Up to 80 characters in total (eg. 4 lines of 20 characters)  
-6aa4			; *  Interface via six digital outputs to the display (see below)  
-6aa4			;  
-6aa4			; LCD module pinout:  
-6aa4			;   1  Vss   0v supply  
-6aa4			;   2  Vdd   5v supply  
-6aa4			;   3  Vo    LCD input voltage (near zero volts via potentiometer)  
-6aa4			;   4  RS    High = data, Low = instruction  
-6aa4			;   5  R/W   High = Read, Low = Write  
-6aa4			;   6  E     Enable signal (active high)  
-6aa4			;   7  DB0   Data bit 0  
-6aa4			;   8  DB1   Data bit 1  
-6aa4			;   9  DB2   Data bit 2  
-6aa4			;  10  DB3   Data bit 3  
-6aa4			;  11  DB4   Data bit 4  
-6aa4			;  12  DB5   Data bit 5  
-6aa4			;  13  DB6   Data bit 6  
-6aa4			;  14  DB7   Data bit 7  
-6aa4			;  15  A     Backlight anode (+)  
-6aa4			;  16  K     Backlight cathode (-)  
-6aa4			;  
-6aa4			; This interfacing method uses 4-bit data mode and uses time delays  
-6aa4			; rather than polling the display's ready status. As a result the   
-6aa4			; interface only requires 6 simple output lines:  
-6aa4			;   LCD E   = Microcomputer output port bit <kLCDBitE>  
-6aa4			;   LCD RS  = Microcomputer output port bit <kLCDBitRS>  
-6aa4			;   LCD DB4 = Microcomputer output port bit 4  
-6aa4			;   LCD DB5 = Microcomputer output port bit 5  
-6aa4			;   LCD DB6 = Microcomputer output port bit 6  
-6aa4			;   LCD DB7 = Microcomputer output port bit 7  
-6aa4			; Display's R/W is connected to 0v so it is always in write mode  
-6aa4			; All 6 connections must be on the same port address <kLCDPrt>  
-6aa4			; This method also allows a decent length of cable from micro to LCD  
-6aa4			;  
-6aa4			; **********************************************************************  
-6aa4			;  
-6aa4			; To include the code for any given function provided by this module,   
-6aa4			; add the appropriate #REQUIRES <FunctionName> statement at the top of   
-6aa4			; the parent source file.  
-6aa4			; For example:  #REQUIRES   uHexPrefix  
-6aa4			;  
-6aa4			; Also #INCLUDE this file at some point after the #REQUIRES statements  
-6aa4			; in the parent source file.  
-6aa4			; For example:  #INCLUDE    ..\_CodeLibrary\Utilities.asm  
-6aa4			;  
-6aa4			; These are the function names provided by this module:  
-6aa4			; fLCD_Init                     ;Initialise LCD  
-6aa4			; fLCD_Inst                     ;Send instruction to LCD  
-6aa4			; fLCD_Data                     ;Send data byte to LCD  
-6aa4			; fLCD_Pos                      ;Position cursor  
-6aa4			; fLCD_Str                      ;Display string  
-6aa4			; fLCD_Def                      ;Define custom character  
-6aa4			;  
-6aa4			; **********************************************************************  
-6aa4			;  
-6aa4			; Requires SCMonAPI.asm to also be included in the project  
-6aa4			;  
-6aa4			  
-6aa4			  
-6aa4			; **********************************************************************  
-6aa4			; **  Constants  
-6aa4			; **********************************************************************  
-6aa4			  
-6aa4			; Constants that must be defined externally  
-6aa4			;kLCDPrt:   EQU 0xc0           ;Port address used for LCD  
-6aa4			;kLCDBitRS: EQU 2              ;Port bit for LCD RS signal  
-6aa4			;kLCDBitE:  EQU 3              ;Port bit for LCD E signal  
-6aa4			;kLCDWidth: EQU 20             ;Width in characters  
-6aa4			  
-6aa4			; general line offsets in any frame buffer  
-6aa4			  
-6aa4			  
-6aa4			display_row_1: equ 0  
-6aa4			display_row_2: equ display_row_1+display_cols  
-6aa4			display_row_3: equ display_row_2 + display_cols  
-6aa4			display_row_4: equ display_row_3 + display_cols  
-6aa4			;display_row_4_eol:   
-6aa4			  
-6aa4			  
-6aa4			; Cursor position values for the start of each line  
-6aa4			kLCD_Line1: EQU 0x00   
-6aa4			kLCD_Line2: EQU 0x40    
-6aa4			kLCD_Line3: EQU kLCD_Line1+kLCDWidth  
-6aa4			kLCD_Line4: EQU kLCD_Line2+kLCDWidth   
-6aa4			  
-6aa4			; Instructions to send as A register to fLCD_Inst  
-6aa4			kLCD_Clear: EQU 00000001b     ;LCD clear  
-6aa4			kLCD_Off:   EQU 00001000b     ;LCD off  
-6aa4			kLCD_On:    EQU 00001100b     ;LCD on, no cursor or blink  
-6aa4			kLCD_Under: EQU 00001110b     ;LCD on, cursor = underscore  
-6aa4			kLCD_Blink: EQU 00001101b     ;LCD on, cursor = blink block  
-6aa4			kLCD_Both:  EQU 00001111b     ;LCD on, cursor = under+blink  
-6aa4			  
-6aa4			; Constants used by this code module  
-6aa4			kLCD_Clr:   EQU 00000001b     ;LCD command: Clear display  
-6aa4			kLCD_Pos:   EQU 10000000b     ;LCD command: Position cursor  
-6aa4			kLCD_Def:   EQU 01000000b     ;LCD command: Define character  
-6aa4			  
-6aa4			  
-6aa4			  
-6aa4			; **********************************************************************  
-6aa4			; **  LCD support functions  
-6aa4			; **********************************************************************  
-6aa4			  
-6aa4			; Initialise alphanumeric LCD module  
-6aa4			; LCD control register codes:  
-6aa4			;   DL   0 = 4-bit mode        1 = 8-bit mode  
-6aa4			;   N    0 = 1-line mode       1 = 2-line mode  
-6aa4			;   F    0 = Font 5 x 8        1 = Font 5 x 11  
-6aa4			;   D    0 = Display off       1 = Display on  
-6aa4			;   C    0 = Cursor off        1 = Cursor on  
-6aa4			;   B    0 = Blinking off      1 = Blinking on  
-6aa4			;   ID   0 = Decrement mode    1 = Increment mode  
-6aa4			;   SH   0 = Entire shift off  1 = Entire shift on  
-6aa4 3e 28		fLCD_Init:  LD   A, 40  
-6aa6 cd 5b 6b		            CALL LCDDelay       ;Delay 40ms after power up  
-6aa9			; For reliable reset set 8-bit mode - 3 times  
-6aa9 cd 45 6b		            CALL WrFn8bit       ;Function = 8-bit mode  
-6aac cd 45 6b		            CALL WrFn8bit       ;Function = 8-bit mode  
-6aaf cd 45 6b		            CALL WrFn8bit       ;Function = 8-bit mode  
-6ab2			; Set 4-bit mode  
-6ab2 cd 41 6b		            CALL WrFn4bit       ;Function = 4-bit mode  
-6ab5 cd 59 6b		            CALL LCDDelay1      ;Delay 37 us or more  
-6ab8			; Function set  
-6ab8 3e 28		            LD   A, 00101000b  ;Control reg:  0  0  1  DL N  F  x  x  
-6aba cd cd 6a		            CALL fLCD_Inst      ;2 line, display on  
-6abd			; Display On/Off control  
-6abd 3e 0c		            LD   A, 00001100b  ;Control reg:  0  0  0  0  1  D  C  B   
-6abf cd cd 6a		            CALL fLCD_Inst      ;Display on, cursor on, blink off  
-6ac2			; Display Clear  
-6ac2 3e 01		            LD   A, 00000001b  ;Control reg:  0  0  0  0  0  0  0  1  
-6ac4 cd cd 6a		            CALL fLCD_Inst      ;Clear display  
-6ac7			; Entry mode  
-6ac7 3e 06		            LD   A, 00000110b  ;Control reg:  0  0  0  0  0  1  ID SH  
-6ac9 cd cd 6a		            CALL fLCD_Inst      ;Increment mode, shift off  
-6acc			; Display module now initialised  
-6acc c9			            RET  
-6acd			; ok to here  
+6ac5			include "firmware_lcd_4x20.asm" 
+6ac5			; **********************************************************************  
+6ac5			; **  Alphanumeric LCD example                  by Stephen C Cousins  **  
+6ac5			; **********************************************************************  
+6ac5			;  
+6ac5			; **  Written as a Small Computer Monitor App  
+6ac5			; **  www.scc.me.uk  
+6ac5			;  
+6ac5			; History  
+6ac5			; 2018-05-20  v0.2.0  SCC  Example for LiNC80 SBC1 only  
+6ac5			; 2018-06-28  v0.3.0  SCC  Added support for RC2014 and Z280RC  
+6ac5			; 2019-09-14  v0.4.0  SCC  Added support for SC129 digital I/O module  
+6ac5			;  
+6ac5			; **********************************************************************  
+6ac5			;  
+6ac5			; This program is an example of one of the methods of interfacing an   
+6ac5			; alphanumeric LCD module.   
+6ac5			;  
+6ac5			; In this example the display is connected to either a Z80 PIO or a   
+6ac5			; simple 8-bit output port.   
+6ac5			;  
+6ac5			; This interfacing method uses 4-bit data mode and uses time delays  
+6ac5			; rather than polling the display's ready status. As a result the   
+6ac5			; interface only requires 6 simple output lines:  
+6ac5			;   Output bit 0 = not used  
+6ac5			;   Output bit 1 = not used  
+6ac5			;   Output bit 2 = RS         High = data, Low = instruction  
+6ac5			;   Output bit 3 = E          Active high  
+6ac5			;   Output bit 4 = DB4  
+6ac5			;   Output bit 5 = DB5  
+6ac5			;   Output bit 6 = DB6  
+6ac5			;   Output bit 7 = DB7  
+6ac5			; Display's R/W is connected to 0v so it is always in write mode  
+6ac5			;  
+6ac5			; This set up should work with any system supporting the RC2014 bus  
+6ac5			  
+6ac5			; To set up PIO port A in mode 3 (control) using LiNC80 as example  
+6ac5			;   I/O address 0x1A = 0b11001111 (0xCF)   Select mode 3 (control)  
+6ac5			;   I/O address 0x1A = 0b00000000 (0x00)   All pins are output  
+6ac5			;  
+6ac5			; **********************************************************************  
+6ac5			  
+6ac5			; **********************************************************************  
+6ac5			; **  Constants  
+6ac5			; **********************************************************************  
+6ac5			; LCD constants required by LCD support module  
+6ac5			kLCDPrt:    EQU kDataReg       ;LCD port is the PIO port A data reg  
+6ac5			kLCDBitRS:  EQU 2              ;Port bit for LCD RS signal  
+6ac5			kLCDBitE:   EQU 3              ;Port bit for LCD E signal  
+6ac5			kLCDWidth:  EQU display_cols             ;Width in characters  
+6ac5			  
+6ac5			; **********************************************************************  
+6ac5			; **  Code library usage  
+6ac5			; **********************************************************************  
+6ac5			  
+6ac5			; send character to current cursor position  
+6ac5			; wraps and/or scrolls screen automatically  
+6ac5			  
+6ac5			  
+6ac5			lcd_init:  
+6ac5			  
+6ac5			; SCMonAPI functions used  
+6ac5			  
+6ac5			; Alphanumeric LCD functions used  
+6ac5			; no need to specify specific functions for this module  
+6ac5			  
+6ac5 3e cf		            LD   A, 11001111b  
+6ac7 d3 c2		            OUT  (kContReg), A  ;Port A = PIO 'control' mode  
+6ac9 3e 00		            LD   A, 00000000b  
+6acb d3 c2		            OUT  (kContReg),A   ;Port A = all lines are outputs  
 6acd			  
-6acd			; Write instruction to LCD  
-6acd			;   On entry: A = Instruction byte to be written  
-6acd			;   On exit:  AF BC DE HL IX IY I AF' BC' DE' HL' preserved  
-6acd f5			fLCD_Inst:  PUSH AF  
-6ace f5			            PUSH AF  
-6acf cd e1 6a		            CALL Wr4bits       ;Write bits 4 to 7 of instruction  
-6ad2 f1			            POP  AF  
-6ad3 17			            RLA                 ;Rotate bits 0-3 into bits 4-7...  
-6ad4 17			            RLA  
-6ad5 17			            RLA  
-6ad6 17			            RLA  
-6ad7 cd e1 6a		            CALL Wr4bits       ;Write bits 0 to 3 of instruction  
-6ada 3e 02		            LD   A, 2  
-6adc cd 5b 6b		            CALL LCDDelay       ;Delay 2 ms to complete   
-6adf f1			            POP  AF  
-6ae0 c9			            RET  
-6ae1 e6 f0		Wr4bits:   AND  0xF0           ;Mask so we only have D4 to D7  
-6ae3 d3 c0		            OUT  (kLCDPrt), A   ;Output with E=Low and RS=Low  
-6ae5 cb df		            SET  kLCDBitE, A  
-6ae7 d3 c0		            OUT  (kLCDPrt), A   ;Output with E=High and RS=Low  
-6ae9 cb 9f		            RES  kLCDBitE, A  
-6aeb d3 c0		            OUT  (kLCDPrt), A   ;Output with E=Low and RS=Low  
-6aed c9			            RET  
-6aee			  
-6aee			  
-6aee			; Write data to LCD  
-6aee			;   On entry: A = Data byte to be written  
-6aee			;   On exit:  AF BC DE HL IX IY I AF' BC' DE' HL' preserved  
-6aee f5			fLCD_Data:  PUSH AF  
-6aef f5			            PUSH AF  
-6af0 cd 02 6b		            CALL Wr4bitsa       ;Write bits 4 to 7 of data byte  
-6af3 f1			            POP  AF  
-6af4 17			            RLA                 ;Rotate bits 0-3 into bits 4-7...  
-6af5 17			            RLA  
-6af6 17			            RLA  
-6af7 17			            RLA  
-6af8 cd 02 6b		            CALL Wr4bitsa       ;Write bits 0 to 3 of data byte  
-6afb 3e 96		            LD   A, 150  
-6afd 3d			Wait:      DEC  A              ;Wait a while to allow data   
-6afe 20 fd		            JR   NZ, Wait      ;  write to complete  
-6b00 f1			            POP  AF  
-6b01 c9			            RET  
-6b02 e6 f0		Wr4bitsa:   AND  0xF0           ;Mask so we only have D4 to D7  
-6b04 cb d7		            SET  kLCDBitRS, A  
-6b06 d3 c0		            OUT  (kLCDPrt), A   ;Output with E=Low and RS=High  
-6b08 cb df		            SET  kLCDBitE, A  
-6b0a d3 c0		            OUT  (kLCDPrt), A   ;Output with E=High and RS=High  
-6b0c cb 9f		            RES  kLCDBitE, A  
-6b0e d3 c0		            OUT  (kLCDPrt), A   ;Output with E=Low and RS=High  
-6b10 cb 97		            RES  kLCDBitRS, A  
-6b12 d3 c0		            OUT  (kLCDPrt), A   ;Output with E=Low and RS=Low  
-6b14 c9			            RET  
-6b15			  
-6b15			  
-6b15			; Position cursor to specified location  
-6b15			;   On entry: A = Cursor position  
-6b15			;   On exit:  AF BC DE HL IX IY I AF' BC' DE' HL' preserved  
-6b15 f5			fLCD_Pos:   PUSH AF  
-6b16 f6 80		            OR   kLCD_Pos       ;Prepare position cursor instruction  
-6b18 cd cd 6a		            CALL fLCD_Inst      ;Write instruction to LCD  
-6b1b f1			            POP  AF  
-6b1c c9			            RET  
-6b1d			  
-6b1d			  
-6b1d			; Output text string to LCD  
-6b1d			;   On entry: DE = Pointer to null terminated text string  
-6b1d			;   On exit:  BC HL IX IY I AF' BC' DE' HL' preserved  
-6b1d 1a			fLCD_Str:   LD   A, (DE)        ;Get character from string  
-6b1e b7			            OR   A              ;Null terminator?  
-6b1f c8			            RET  Z              ;Yes, so finished  
-6b20 cd ee 6a		            CALL fLCD_Data      ;Write character to display  
-6b23 13			            INC  DE             ;Point to next character  
-6b24 18 f7		            JR   fLCD_Str       ;Repeat  
-6b26 c9					ret  
-6b27			  
-6b27			; Define custom character  
-6b27			;   On entry: A = Character number (0 to 7)  
-6b27			;             DE = Pointer to character bitmap data  
-6b27			;   On exit:  A = Next character number  
-6b27			;             DE = Next location following bitmap  
-6b27			;             BC HL IX IY I AF' BC' DE' HL' preserved  
-6b27			; Character is   
-6b27 c5			fLCD_Def:   PUSH BC  
-6b28 f5			            PUSH AF  
-6b29 07			            RLCA                ;Calculate location  
-6b2a 07			            RLCA                ;  for bitmap data  
-6b2b 07			            RLCA                ;  = 8 x CharacterNumber  
-6b2c f6 40		            OR   kLCD_Def       ;Prepare define character instruction  
-6b2e cd cd 6a		            CALL fLCD_Inst      ;Write instruction to LCD  
-6b31 06 00		            LD   B, 0  
-6b33 1a			Loop:      LD   A, (DE)        ;Get byte from bitmap  
-6b34 cd ee 6a		            CALL fLCD_Data      ;Write byte to display  
-6b37 13			            INC  DE             ;Point to next byte  
-6b38 04			            INC  B              ;Count bytes  
-6b39 cb 58		            BIT  3, B           ;Finish all 8 bytes?  
-6b3b 28 f6		            JR   Z, Loop       ;No, so repeat  
-6b3d f1			            POP  AF  
-6b3e 3c			            INC  A              ;Increment character number  
-6b3f c1			            POP  BC  
-6b40 c9			            RET  
-6b41			  
-6b41			  
-6b41			; **********************************************************************  
-6b41			; **  Private functions  
-6b41			; **********************************************************************  
-6b41			  
-6b41			; Write function to LCD  
-6b41			;   On entry: A = Function byte to be written  
-6b41			;   On exit:  AF BC DE HL IX IY I AF' BC' DE' HL' preserved  
-6b41 3e 20		WrFn4bit:   LD   A, 00100000b  ;4-bit mode  
-6b43 18 02		            JR   WrFunc  
-6b45 3e 30		WrFn8bit:   LD   A, 00110000b  ;8-bit mode  
-6b47 f5			WrFunc:     PUSH AF  
-6b48 d3 c0		            OUT  (kLCDPrt), A   ;Output with E=Low and RS=Low  
-6b4a cb df		            SET  kLCDBitE, A  
-6b4c d3 c0		            OUT  (kLCDPrt), A   ;Output with E=High and RS=Low  
-6b4e cb 9f		            RES  kLCDBitE, A  
-6b50 d3 c0		            OUT  (kLCDPrt), A   ;Output with E=Low and RS=Low  
-6b52 3e 05		            LD   A, 5  
-6b54 cd 5b 6b		            CALL LCDDelay       ;Delay 5 ms to complete  
-6b57 f1			            POP  AF  
-6b58 c9			            RET  
-6b59			  
-6b59			  
-6b59			; Delay in milliseconds  
-6b59			;   On entry: A = Number of milliseconds delay  
-6b59			;   On exit:  AF BC DE HL IX IY I AF' BC' DE' HL' preserved  
-6b59 3e 01		LCDDelay1:  LD   A, 1           ;Delay by 1 ms  
-6b5b d5			LCDDelay:   PUSH DE  
-6b5c 5f			            LD   E, A           ;Delay by 'A' ms  
-6b5d 16 00		            LD   D, 0  
-6b5f cd 77 0c		            CALL aDelayInMS  
-6b62 d1			            POP  DE  
-6b63 c9			            RET  
-6b64			  
-6b64			  
-6b64			  
-6b64			  
-6b64			; eof  
-6b64			  
+6acd			; Initialise alphanumeric LCD module  
+6acd cd 46 6b		            CALL fLCD_Init      ;Initialise LCD module  
+6ad0			  
+6ad0 c9				ret  
+6ad1			  
+6ad1			;  
+6ad1			;;  
+6ad1			; lcd functions  
+6ad1			;  
+6ad1			;  
+6ad1			  
+6ad1			; what is at cursor position   
+6ad1			  
+6ad1			;get_cursor:	ld de, (cursor_row)   ;  row + col  
+6ad1			;		call curptr  
+6ad1			;		ret  
+6ad1			  
+6ad1			  
+6ad1			; take current custor pos in de (d=row,e=col) and return a pointer to the frame buffer  
+6ad1			  
+6ad1			curptr:  
+6ad1 c5				push bc  
+6ad2 21 4a fe			ld hl, display_fb0  
+6ad5			cpr:	  
+6ad5				; loop for cursor whole row  
+6ad5 0e 14			ld c, display_cols  
+6ad7 23			cpr1:	inc hl  
+6ad8 0d				dec c  
+6ad9 20 fc			jr nz, cpr1  
+6adb 05				dec b  
+6adc 20 f7			jr nz, cpr  
+6ade			  
+6ade				; add col	  
+6ade			  
+6ade 23			cpr2:	inc hl  
+6adf 1d				dec e  
+6ae0 20 fc			jr nz, cpr2  
+6ae2			  
+6ae2 c1				pop bc  
+6ae3 c9				ret  
+6ae4				  
+6ae4			  
+6ae4			  
+6ae4			  
+6ae4			  
+6ae4			; write the frame buffer given in hl to hardware   
+6ae4 22 52 fd		write_display: ld (display_write_tmp), hl 	   
+6ae7 3e 00			ld a, kLCD_Line1  
+6ae9 cd b7 6b		            CALL fLCD_Pos       ;Position cursor to location in A  
+6aec 06 14			ld b, display_cols  
+6aee ed 5b 52 fd		ld de, (display_write_tmp)  
+6af2 cd 3e 6b			call write_len_string  
+6af5				  
+6af5				  
+6af5 2a 52 fd			ld hl, (display_write_tmp)  
+6af8 11 14 00			ld de, display_cols  
+6afb 19				add hl,de  
+6afc 22 52 fd			ld (display_write_tmp),hl  
+6aff			  
+6aff				  
+6aff 3e 40			ld a, kLCD_Line2  
+6b01 cd b7 6b		            CALL fLCD_Pos       ;Position cursor to location in A  
+6b04 06 14			ld b, display_cols  
+6b06 ed 5b 52 fd		ld de, (display_write_tmp)  
+6b0a cd 3e 6b			call write_len_string  
+6b0d				  
+6b0d 2a 52 fd			ld hl, (display_write_tmp)  
+6b10 11 14 00			ld de, display_cols  
+6b13 19				add hl,de  
+6b14 22 52 fd			ld (display_write_tmp),hl  
+6b17			  
+6b17				  
+6b17 3e 14			ld a, kLCD_Line3  
+6b19 cd b7 6b		            CALL fLCD_Pos       ;Position cursor to location in A  
+6b1c 06 14			ld b, display_cols  
+6b1e ed 5b 52 fd		ld de, (display_write_tmp)  
+6b22 cd 3e 6b			call write_len_string  
+6b25				  
+6b25 2a 52 fd			ld hl, (display_write_tmp)  
+6b28 11 14 00			ld de, display_cols  
+6b2b 19				add hl,de  
+6b2c 22 52 fd			ld (display_write_tmp),hl  
+6b2f			  
+6b2f				  
+6b2f 3e 54			ld a, kLCD_Line4  
+6b31 cd b7 6b		            CALL fLCD_Pos       ;Position cursor to location in A  
+6b34 06 14			ld b, display_cols  
+6b36 ed 5b 52 fd		ld de, (display_write_tmp)  
+6b3a cd 3e 6b			call write_len_string  
+6b3d c9					ret  
+6b3e				  
+6b3e				; write out a fixed length string given in b from de  
+6b3e			  
+6b3e 1a			write_len_string:   LD   A, (DE)        ;Get character from string  
+6b3f cd 90 6b		            CALL fLCD_Data      ;Write character to display  
+6b42 13				inc de  
+6b43 10 f9			djnz write_len_string  
+6b45 c9				ret  
+6b46			  
+6b46			; Some other things to do  
+6b46			;            LD   A, kLCD_Clear ;Display clear  
+6b46			;            LD   A, kLCD_Blink ;Display on with blinking block cursor  
+6b46			;            LD   A, kLCD_Under ;Display on with underscore cursor  
+6b46			;            LD   A, kLCD_On     ;Display on with no cursor  
+6b46			;            ;LD   A, kLCD_Off   ;Display off  
+6b46			;            CALL fLCD_Inst      ;Send instruction to display  
+6b46			;  
+6b46			;  
+6b46			;            halt  
+6b46			;  
+6b46			;  
+6b46			;MsgHello:   DB  "Hello World!",0  
+6b46			;MsgLiNC80:   DB  "From my Z80-homebrew",0  
+6b46			  
+6b46			; Custom characters 5 pixels wide by 8 pixels high  
+6b46			; Up to 8 custom characters can be defined  
+6b46			;BitMaps:      
+6b46			;; Character 0x00 = Battery icon  
+6b46			;            DB  01110b  
+6b46			;            DB  11011b  
+6b46			;            DB  10001b  
+6b46			;            DB  10001b  
+6b46			;            DB  11111b  
+6b46			;            DB  11111b  
+6b46			;            DB  11111b  
+6b46			;            DB  11111b  
+6b46			;; Character 0x01 = Bluetooth icon  
+6b46			;            DB  01100b  
+6b46			;            DB  01010b  
+6b46			;            DB  11100b  
+6b46			;            DB  01000b  
+6b46			;            DB  11100b  
+6b46			;            DB  01010b  
+6b46			;            DB  01100b  
+6b46			;            DB  00000b  
+6b46			;  
+6b46			  
+6b46			  
+6b46			; **********************************************************************  
+6b46			; **  Alphanumeric LCD support                  by Stephen C Cousins  **  
+6b46			; **********************************************************************  
+6b46			;  
+6b46			; **  Written as a Small Computer Monitor App   
+6b46			; **  Version 0.1 SCC 2018-05-16  
+6b46			; **  www.scc.me.uk  
+6b46			;  
+6b46			; **********************************************************************  
+6b46			;  
+6b46			; This module provides support for alphanumeric LCD modules using with  
+6b46			; *  HD44780 (or compatible) controller  
+6b46			; *  5 x 7 pixel fonts  
+6b46			; *  Up to 80 characters in total (eg. 4 lines of 20 characters)  
+6b46			; *  Interface via six digital outputs to the display (see below)  
+6b46			;  
+6b46			; LCD module pinout:  
+6b46			;   1  Vss   0v supply  
+6b46			;   2  Vdd   5v supply  
+6b46			;   3  Vo    LCD input voltage (near zero volts via potentiometer)  
+6b46			;   4  RS    High = data, Low = instruction  
+6b46			;   5  R/W   High = Read, Low = Write  
+6b46			;   6  E     Enable signal (active high)  
+6b46			;   7  DB0   Data bit 0  
+6b46			;   8  DB1   Data bit 1  
+6b46			;   9  DB2   Data bit 2  
+6b46			;  10  DB3   Data bit 3  
+6b46			;  11  DB4   Data bit 4  
+6b46			;  12  DB5   Data bit 5  
+6b46			;  13  DB6   Data bit 6  
+6b46			;  14  DB7   Data bit 7  
+6b46			;  15  A     Backlight anode (+)  
+6b46			;  16  K     Backlight cathode (-)  
+6b46			;  
+6b46			; This interfacing method uses 4-bit data mode and uses time delays  
+6b46			; rather than polling the display's ready status. As a result the   
+6b46			; interface only requires 6 simple output lines:  
+6b46			;   LCD E   = Microcomputer output port bit <kLCDBitE>  
+6b46			;   LCD RS  = Microcomputer output port bit <kLCDBitRS>  
+6b46			;   LCD DB4 = Microcomputer output port bit 4  
+6b46			;   LCD DB5 = Microcomputer output port bit 5  
+6b46			;   LCD DB6 = Microcomputer output port bit 6  
+6b46			;   LCD DB7 = Microcomputer output port bit 7  
+6b46			; Display's R/W is connected to 0v so it is always in write mode  
+6b46			; All 6 connections must be on the same port address <kLCDPrt>  
+6b46			; This method also allows a decent length of cable from micro to LCD  
+6b46			;  
+6b46			; **********************************************************************  
+6b46			;  
+6b46			; To include the code for any given function provided by this module,   
+6b46			; add the appropriate #REQUIRES <FunctionName> statement at the top of   
+6b46			; the parent source file.  
+6b46			; For example:  #REQUIRES   uHexPrefix  
+6b46			;  
+6b46			; Also #INCLUDE this file at some point after the #REQUIRES statements  
+6b46			; in the parent source file.  
+6b46			; For example:  #INCLUDE    ..\_CodeLibrary\Utilities.asm  
+6b46			;  
+6b46			; These are the function names provided by this module:  
+6b46			; fLCD_Init                     ;Initialise LCD  
+6b46			; fLCD_Inst                     ;Send instruction to LCD  
+6b46			; fLCD_Data                     ;Send data byte to LCD  
+6b46			; fLCD_Pos                      ;Position cursor  
+6b46			; fLCD_Str                      ;Display string  
+6b46			; fLCD_Def                      ;Define custom character  
+6b46			;  
+6b46			; **********************************************************************  
+6b46			;  
+6b46			; Requires SCMonAPI.asm to also be included in the project  
+6b46			;  
+6b46			  
+6b46			  
+6b46			; **********************************************************************  
+6b46			; **  Constants  
+6b46			; **********************************************************************  
+6b46			  
+6b46			; Constants that must be defined externally  
+6b46			;kLCDPrt:   EQU 0xc0           ;Port address used for LCD  
+6b46			;kLCDBitRS: EQU 2              ;Port bit for LCD RS signal  
+6b46			;kLCDBitE:  EQU 3              ;Port bit for LCD E signal  
+6b46			;kLCDWidth: EQU 20             ;Width in characters  
+6b46			  
+6b46			; general line offsets in any frame buffer  
+6b46			  
+6b46			  
+6b46			display_row_1: equ 0  
+6b46			display_row_2: equ display_row_1+display_cols  
+6b46			display_row_3: equ display_row_2 + display_cols  
+6b46			display_row_4: equ display_row_3 + display_cols  
+6b46			;display_row_4_eol:   
+6b46			  
+6b46			  
+6b46			; Cursor position values for the start of each line  
+6b46			kLCD_Line1: EQU 0x00   
+6b46			kLCD_Line2: EQU 0x40    
+6b46			kLCD_Line3: EQU kLCD_Line1+kLCDWidth  
+6b46			kLCD_Line4: EQU kLCD_Line2+kLCDWidth   
+6b46			  
+6b46			; Instructions to send as A register to fLCD_Inst  
+6b46			kLCD_Clear: EQU 00000001b     ;LCD clear  
+6b46			kLCD_Off:   EQU 00001000b     ;LCD off  
+6b46			kLCD_On:    EQU 00001100b     ;LCD on, no cursor or blink  
+6b46			kLCD_Under: EQU 00001110b     ;LCD on, cursor = underscore  
+6b46			kLCD_Blink: EQU 00001101b     ;LCD on, cursor = blink block  
+6b46			kLCD_Both:  EQU 00001111b     ;LCD on, cursor = under+blink  
+6b46			  
+6b46			; Constants used by this code module  
+6b46			kLCD_Clr:   EQU 00000001b     ;LCD command: Clear display  
+6b46			kLCD_Pos:   EQU 10000000b     ;LCD command: Position cursor  
+6b46			kLCD_Def:   EQU 01000000b     ;LCD command: Define character  
+6b46			  
+6b46			  
+6b46			  
+6b46			; **********************************************************************  
+6b46			; **  LCD support functions  
+6b46			; **********************************************************************  
+6b46			  
+6b46			; Initialise alphanumeric LCD module  
+6b46			; LCD control register codes:  
+6b46			;   DL   0 = 4-bit mode        1 = 8-bit mode  
+6b46			;   N    0 = 1-line mode       1 = 2-line mode  
+6b46			;   F    0 = Font 5 x 8        1 = Font 5 x 11  
+6b46			;   D    0 = Display off       1 = Display on  
+6b46			;   C    0 = Cursor off        1 = Cursor on  
+6b46			;   B    0 = Blinking off      1 = Blinking on  
+6b46			;   ID   0 = Decrement mode    1 = Increment mode  
+6b46			;   SH   0 = Entire shift off  1 = Entire shift on  
+6b46 3e 28		fLCD_Init:  LD   A, 40  
+6b48 cd fd 6b		            CALL LCDDelay       ;Delay 40ms after power up  
+6b4b			; For reliable reset set 8-bit mode - 3 times  
+6b4b cd e7 6b		            CALL WrFn8bit       ;Function = 8-bit mode  
+6b4e cd e7 6b		            CALL WrFn8bit       ;Function = 8-bit mode  
+6b51 cd e7 6b		            CALL WrFn8bit       ;Function = 8-bit mode  
+6b54			; Set 4-bit mode  
+6b54 cd e3 6b		            CALL WrFn4bit       ;Function = 4-bit mode  
+6b57 cd fb 6b		            CALL LCDDelay1      ;Delay 37 us or more  
+6b5a			; Function set  
+6b5a 3e 28		            LD   A, 00101000b  ;Control reg:  0  0  1  DL N  F  x  x  
+6b5c cd 6f 6b		            CALL fLCD_Inst      ;2 line, display on  
+6b5f			; Display On/Off control  
+6b5f 3e 0c		            LD   A, 00001100b  ;Control reg:  0  0  0  0  1  D  C  B   
+6b61 cd 6f 6b		            CALL fLCD_Inst      ;Display on, cursor on, blink off  
+6b64			; Display Clear  
+6b64 3e 01		            LD   A, 00000001b  ;Control reg:  0  0  0  0  0  0  0  1  
+6b66 cd 6f 6b		            CALL fLCD_Inst      ;Clear display  
+6b69			; Entry mode  
+6b69 3e 06		            LD   A, 00000110b  ;Control reg:  0  0  0  0  0  1  ID SH  
+6b6b cd 6f 6b		            CALL fLCD_Inst      ;Increment mode, shift off  
+6b6e			; Display module now initialised  
+6b6e c9			            RET  
+6b6f			; ok to here  
+6b6f			  
+6b6f			; Write instruction to LCD  
+6b6f			;   On entry: A = Instruction byte to be written  
+6b6f			;   On exit:  AF BC DE HL IX IY I AF' BC' DE' HL' preserved  
+6b6f f5			fLCD_Inst:  PUSH AF  
+6b70 f5			            PUSH AF  
+6b71 cd 83 6b		            CALL Wr4bits       ;Write bits 4 to 7 of instruction  
+6b74 f1			            POP  AF  
+6b75 17			            RLA                 ;Rotate bits 0-3 into bits 4-7...  
+6b76 17			            RLA  
+6b77 17			            RLA  
+6b78 17			            RLA  
+6b79 cd 83 6b		            CALL Wr4bits       ;Write bits 0 to 3 of instruction  
+6b7c 3e 02		            LD   A, 2  
+6b7e cd fd 6b		            CALL LCDDelay       ;Delay 2 ms to complete   
+6b81 f1			            POP  AF  
+6b82 c9			            RET  
+6b83 e6 f0		Wr4bits:   AND  0xF0           ;Mask so we only have D4 to D7  
+6b85 d3 c0		            OUT  (kLCDPrt), A   ;Output with E=Low and RS=Low  
+6b87 cb df		            SET  kLCDBitE, A  
+6b89 d3 c0		            OUT  (kLCDPrt), A   ;Output with E=High and RS=Low  
+6b8b cb 9f		            RES  kLCDBitE, A  
+6b8d d3 c0		            OUT  (kLCDPrt), A   ;Output with E=Low and RS=Low  
+6b8f c9			            RET  
+6b90			  
+6b90			  
+6b90			; Write data to LCD  
+6b90			;   On entry: A = Data byte to be written  
+6b90			;   On exit:  AF BC DE HL IX IY I AF' BC' DE' HL' preserved  
+6b90 f5			fLCD_Data:  PUSH AF  
+6b91 f5			            PUSH AF  
+6b92 cd a4 6b		            CALL Wr4bitsa       ;Write bits 4 to 7 of data byte  
+6b95 f1			            POP  AF  
+6b96 17			            RLA                 ;Rotate bits 0-3 into bits 4-7...  
+6b97 17			            RLA  
+6b98 17			            RLA  
+6b99 17			            RLA  
+6b9a cd a4 6b		            CALL Wr4bitsa       ;Write bits 0 to 3 of data byte  
+6b9d 3e 96		            LD   A, 150  
+6b9f 3d			Wait:      DEC  A              ;Wait a while to allow data   
+6ba0 20 fd		            JR   NZ, Wait      ;  write to complete  
+6ba2 f1			            POP  AF  
+6ba3 c9			            RET  
+6ba4 e6 f0		Wr4bitsa:   AND  0xF0           ;Mask so we only have D4 to D7  
+6ba6 cb d7		            SET  kLCDBitRS, A  
+6ba8 d3 c0		            OUT  (kLCDPrt), A   ;Output with E=Low and RS=High  
+6baa cb df		            SET  kLCDBitE, A  
+6bac d3 c0		            OUT  (kLCDPrt), A   ;Output with E=High and RS=High  
+6bae cb 9f		            RES  kLCDBitE, A  
+6bb0 d3 c0		            OUT  (kLCDPrt), A   ;Output with E=Low and RS=High  
+6bb2 cb 97		            RES  kLCDBitRS, A  
+6bb4 d3 c0		            OUT  (kLCDPrt), A   ;Output with E=Low and RS=Low  
+6bb6 c9			            RET  
+6bb7			  
+6bb7			  
+6bb7			; Position cursor to specified location  
+6bb7			;   On entry: A = Cursor position  
+6bb7			;   On exit:  AF BC DE HL IX IY I AF' BC' DE' HL' preserved  
+6bb7 f5			fLCD_Pos:   PUSH AF  
+6bb8 f6 80		            OR   kLCD_Pos       ;Prepare position cursor instruction  
+6bba cd 6f 6b		            CALL fLCD_Inst      ;Write instruction to LCD  
+6bbd f1			            POP  AF  
+6bbe c9			            RET  
+6bbf			  
+6bbf			  
+6bbf			; Output text string to LCD  
+6bbf			;   On entry: DE = Pointer to null terminated text string  
+6bbf			;   On exit:  BC HL IX IY I AF' BC' DE' HL' preserved  
+6bbf 1a			fLCD_Str:   LD   A, (DE)        ;Get character from string  
+6bc0 b7			            OR   A              ;Null terminator?  
+6bc1 c8			            RET  Z              ;Yes, so finished  
+6bc2 cd 90 6b		            CALL fLCD_Data      ;Write character to display  
+6bc5 13			            INC  DE             ;Point to next character  
+6bc6 18 f7		            JR   fLCD_Str       ;Repeat  
+6bc8 c9					ret  
+6bc9			  
+6bc9			; Define custom character  
+6bc9			;   On entry: A = Character number (0 to 7)  
+6bc9			;             DE = Pointer to character bitmap data  
+6bc9			;   On exit:  A = Next character number  
+6bc9			;             DE = Next location following bitmap  
+6bc9			;             BC HL IX IY I AF' BC' DE' HL' preserved  
+6bc9			; Character is   
+6bc9 c5			fLCD_Def:   PUSH BC  
+6bca f5			            PUSH AF  
+6bcb 07			            RLCA                ;Calculate location  
+6bcc 07			            RLCA                ;  for bitmap data  
+6bcd 07			            RLCA                ;  = 8 x CharacterNumber  
+6bce f6 40		            OR   kLCD_Def       ;Prepare define character instruction  
+6bd0 cd 6f 6b		            CALL fLCD_Inst      ;Write instruction to LCD  
+6bd3 06 00		            LD   B, 0  
+6bd5 1a			Loop:      LD   A, (DE)        ;Get byte from bitmap  
+6bd6 cd 90 6b		            CALL fLCD_Data      ;Write byte to display  
+6bd9 13			            INC  DE             ;Point to next byte  
+6bda 04			            INC  B              ;Count bytes  
+6bdb cb 58		            BIT  3, B           ;Finish all 8 bytes?  
+6bdd 28 f6		            JR   Z, Loop       ;No, so repeat  
+6bdf f1			            POP  AF  
+6be0 3c			            INC  A              ;Increment character number  
+6be1 c1			            POP  BC  
+6be2 c9			            RET  
+6be3			  
+6be3			  
+6be3			; **********************************************************************  
+6be3			; **  Private functions  
+6be3			; **********************************************************************  
+6be3			  
+6be3			; Write function to LCD  
+6be3			;   On entry: A = Function byte to be written  
+6be3			;   On exit:  AF BC DE HL IX IY I AF' BC' DE' HL' preserved  
+6be3 3e 20		WrFn4bit:   LD   A, 00100000b  ;4-bit mode  
+6be5 18 02		            JR   WrFunc  
+6be7 3e 30		WrFn8bit:   LD   A, 00110000b  ;8-bit mode  
+6be9 f5			WrFunc:     PUSH AF  
+6bea d3 c0		            OUT  (kLCDPrt), A   ;Output with E=Low and RS=Low  
+6bec cb df		            SET  kLCDBitE, A  
+6bee d3 c0		            OUT  (kLCDPrt), A   ;Output with E=High and RS=Low  
+6bf0 cb 9f		            RES  kLCDBitE, A  
+6bf2 d3 c0		            OUT  (kLCDPrt), A   ;Output with E=Low and RS=Low  
+6bf4 3e 05		            LD   A, 5  
+6bf6 cd fd 6b		            CALL LCDDelay       ;Delay 5 ms to complete  
+6bf9 f1			            POP  AF  
+6bfa c9			            RET  
+6bfb			  
+6bfb			  
+6bfb			; Delay in milliseconds  
+6bfb			;   On entry: A = Number of milliseconds delay  
+6bfb			;   On exit:  AF BC DE HL IX IY I AF' BC' DE' HL' preserved  
+6bfb 3e 01		LCDDelay1:  LD   A, 1           ;Delay by 1 ms  
+6bfd d5			LCDDelay:   PUSH DE  
+6bfe 5f			            LD   E, A           ;Delay by 'A' ms  
+6bff 16 00		            LD   D, 0  
+6c01 cd 77 0c		            CALL aDelayInMS  
+6c04 d1			            POP  DE  
+6c05 c9			            RET  
+6c06			  
+6c06			  
+6c06			  
+6c06			  
+6c06			; eof  
+6c06			  
 # End of file firmware_lcd_4x20.asm
-6b64			include "firmware_key_4x4.asm" 
-6b64			  
-6b64			  
-6b64			; bit mask for each scan column and row for teing the matrix  
-6b64			  
-6b64			; out   
-6b64 80 40 20 10	key_row_bitmask:    db 128, 64, 32, 16  
-6b68			; in  
-6b68 01 02 04 08	key_col_bitmask:    db 1, 2, 4, 8  
-6b6c			  
-6b6c			; row/col to character map  
-6b6c			  
-6b6c			; char, state use   123xxsss   - bit 8,7,6 this key selects specified state, s is this key is member of that state  
-6b6c			;    
-6b6c			  
-6b6c			; physical key matrix map to face of key  
-6b6c			  
-6b6c			  
-6b6c			;      	1	2	3	A  
-6b6c			;   	abc”	def&	ghi$	s1  
-6b6c			;			  
-6b6c			;	4	5	6	B  
-6b6c			; 	jkl,	mno.	pqr:	s2  
-6b6c			;			  
-6b6c			; 	7	8	9	C  
-6b6c			;	stu;	vwx@	yz?!	s3  
-6b6c			;			  
-6b6c			; 	*	0	#	D  
-6b6c			; 	shift lck '	Space < >	Enter ( )	s4  
-6b6c			;       tab bs 		  
-6b6c			  
-6b6c			  
-6b6c			  
-6b6c			  
-6b6c			key_init:  
-6b6c			  
-6b6c			; SCMonAPI functions used  
-6b6c			  
-6b6c			; Alphanumeric LCD functions used  
-6b6c			; no need to specify specific functions for this module  
-6b6c			  
-6b6c			  
-6b6c 3e cf		            LD   A, 11001111b  
-6b6e d3 c3		            OUT  (portbctl), A  ;Port A = PIO 'control' mode  
-6b70			;            LD   A, 00000000b  
-6b70 3e 0f		            LD   A, 00001111b  
-6b72 d3 c3		            OUT  (portbctl),A   ;Port A = all lines are outputs  
-6b74			  
-6b74			  
-6b74				; TODO Configure cursor shapes  
-6b74			  
-6b74				; Load cursor shapes   
-6b74 3e 01		            LD   A, 1           ;First character to define (0 to 7)  
-6b76 11 86 6b		            LD   DE, .cursor_shapes    ;Pointer to start of bitmap data  
-6b79 06 02		            LD   B, 2           ;Number of characters to define  
-6b7b cd 27 6b		.DefLoop:   CALL fLCD_Def       ;Define custom character  
-6b7e 10 fb		            DJNZ .DefLoop       ;Repeat for each character  
-6b80			  
-6b80 3e 01				ld a, 1  
-6b82 32 4d fd			ld (cursor_shape),a  
-6b85 c9				ret  
-6b86			  
-6b86			; Custom characters for cursor shapes 5 pixels wide by 8 pixels high  
-6b86			; Up to 8 custom characters can be defined  
-6b86			.cursor_shapes:      
-6b86			;; Character 0x00 = Normal  
-6b86 1f			            DB  11111b  
-6b87 1f			            DB  11111b  
-6b88 1f			            DB  11111b  
-6b89 1f			            DB  11111b  
-6b8a 1f			            DB  11111b  
-6b8b 1f			            DB  11111b  
-6b8c 1f			            DB  11111b  
-6b8d 1f			            DB  11111b  
-6b8e			;; Character 0x01 = Modifier  
-6b8e 1f			            DB  11111b  
-6b8f 1b			            DB  11011b  
-6b90 1b			            DB  11011b  
-6b91 1b			            DB  11011b  
-6b92 1b			            DB  11011b  
-6b93 1f			            DB  11111b  
-6b94 1b			            DB  11011b  
-6b95 1f			            DB  11111b  
-6b96			  
-6b96			  
-6b96			  
-6b96			  
-6b96			; Display custom character 0  
-6b96			;            LD   A, kLCD_Line1+14  
-6b96			;            CALL fLCD_Pos       ;Position cursor to location in A  
-6b96			;            LD   A, 0  
-6b96			;            CALL fLCD_Data      ;Write character in A at cursor  
-6b96			  
-6b96			; Display custom character 1  
-6b96			;            LD   A, kLCD_Line2+14  
-6b96			;            CALL fLCD_Pos      ;Position cursor to location in A  
-6b96			;            LD   A, 1  
-6b96			;            CALL fLCD_Data     ;Write character in A at cursor  
-6b96			  
-6b96			; keyboard scanning   
-6b96			  
-6b96			  
-6b96			; key_rows: equ 4  
-6b96			; key_cols: equ 4  
-6b96			; keyscan_table: edu ( tos-stacksize-(key_rows*key_cols))  
-6b96			  
-6b96			; key_scanr: equ key_row_bitmask  
-6b96			; key_scanc: equ key_col_bitmask  
-6b96			  
-6b96			; key_char_map: equ key_map  
-6b96			  
-6b96			  
-6b96			  
-6b96			; character in from keyboard  
-6b96			  
-6b96 ..			.matrix_to_char: db "D#0*C987B654A321"  
-6ba6			  
-6ba6			  
-6ba6			; map the physical key to a char dependant on state  
-6ba6			  
-6ba6			.key_map_fa:   
-6ba6			  
-6ba6 ..					db 'D'  
-6ba7 0d					db KEY_CR    ; cr  
-6ba8 ..					db ' '  
-6ba9 04					db  KEY_SHIFTLOCK   ; TODO Shift lock  
-6baa ..					db 'C'  
-6bab ..					db 'y'  
-6bac ..					db 'v'  
-6bad ..					db 's'  
-6bae ..					db 'B'  
-6baf ..					db 'p'  
-6bb0 ..					db 'm'  
-6bb1 ..					db 'j'  
-6bb2 ..					db 'A'  
-6bb3 ..					db 'g'  
-6bb4 ..					db 'd'  
-6bb5 ..					db 'a'  
-6bb6			  
-6bb6			.key_map_fb:  
-6bb6			  
-6bb6 ..					db 'A'  
-6bb7 ..					db '+'   
-6bb8 ..					db '<'  
-6bb9 ..					db  "'"    
-6bba			  
-6bba ..					db 'A'  
-6bbb ..					db 'z'  
-6bbc ..					db 'w'  
-6bbd ..					db 't'  
-6bbe ..					db 'A'  
-6bbf ..					db 'q'  
-6bc0 ..					db 'n'  
-6bc1 ..					db 'k'  
-6bc2 ..					db 'A'  
-6bc3 ..					db 'h'  
-6bc4 ..					db 'e'  
-6bc5 ..			 		db 'b'  
-6bc6			  
-6bc6			.key_map_fc:   
-6bc6			  
-6bc6			  
-6bc6 ..					db 'A'  
-6bc7 ..					db '-'   
-6bc8 ..					db '>'  
-6bc9 ..					db  '='   	  
-6bca ..					db 'A'  
-6bcb ..					db '?'  
-6bcc ..					db 'x'  
-6bcd ..					db 'u'  
-6bce ..					db 'A'  
-6bcf ..					db 'r'  
-6bd0 ..					db 'o'  
-6bd1 ..					db 'l'  
-6bd2 ..					db 'A'  
-6bd3 ..					db 'i'  
-6bd4 ..					db 'f'  
-6bd5 ..					db 'c'  
-6bd6			  
-6bd6				  
-6bd6			.key_map_fd:  
-6bd6			  
-6bd6 ..					db 'A'  
-6bd7 ..					db '/'   
-6bd8 ..					db '%'   
-6bd9 08					db KEY_BS  ; back space  
-6bda ..					db 'A'  
-6bdb ..					db '!'  
-6bdc ..					db '@'  
-6bdd ..					db ';'  
-6bde ..					db 'A'  
-6bdf ..					db ':'  
-6be0 ..					db '.'  
-6be1 ..					db ','  
-6be2 ..					db 'A'  
-6be3 ..					db '$'  
-6be4 ..					db '&'  
-6be5 ..				 	db '"'  
-6be6			  
-6be6					  
-6be6				  
-6be6			  
-6be6			; add cin and cin_wait  
-6be6			  
-6be6 cd f7 6b		cin_wait: 	call cin  
-6be9 fe 00			cp 0  
-6beb 28 f9			jr z, cin_wait   ; block until key press  
-6bed			  
-6bed f5				push af   ; save key pressed  
-6bee			  
-6bee cd f7 6b		.cin_wait1:	call cin  
-6bf1 fe 00			cp 0  
-6bf3 20 f9			jr nz, .cin_wait1  	; wait for key release  
-6bf5			  
-6bf5 f1				pop af   ; get key  
-6bf6 c9				ret  
-6bf7			  
-6bf7			  
-6bf7 cd 08 6c		cin: 	call .mtoc  
-6bfa			  
-6bfa				; no key held  
-6bfa fe 00			cp 0  
-6bfc c8				ret z  
-6bfd			  
-6bfd				; stop key bounce  
-6bfd			  
-6bfd			;	ld (key_held),a		 ; save it  
-6bfd 47				ld b, a  
-6bfe			  
-6bfe c5			.cina1:	push bc  
-6bff cd 08 6c			call .mtoc  
-6c02 c1				pop bc  
-6c03 b8				cp b  
-6c04 28 f8			jr z, .cina1  
-6c06 78				ld a,b		  
-6c07 c9				ret  
-6c08			  
-6c08			; detect keyboard modifier key press and apply new overlay to the face key held  
-6c08			; hl is the key modifer flag, de map to apply to key_face_held and store in key_actual_pressed  
-6c08			  
-6c08			;.cin_map_modifier:   
-6c08			;	ld a, (hl)  
-6c08			;	and 255  
-6c08			;	ret NZ		; modifier key not flagged  
-6c08			;  
-6c08			;	; get key face  
-6c08			;  
-6c08			;	ld b,(key_face_held)  
-6c08			;  
-6c08			;	ld b, key_cols * key_rows  
-6c08			;  
-6c08			;	push de  
-6c08			;	pop hl  
-6c08			;  
-6c08			;.mmod1: ld a,(hl)   ; get map test  
-6c08			;	cp b  
-6c08			;	jr z, .mmod2  
-6c08			;  
-6c08			;  
-6c08			;  
-6c08			;.mmod2: inc hl    ;   
-6c08			;  
-6c08			;	  
-6c08			;  
-6c08			;	  
-6c08			;  
-6c08			;	ld hl,key_actual_pressed  
-6c08			;	ld (hl),a,  
-6c08			;	ret  
-6c08			  
-6c08				  
-6c08			  
-6c08			; map matrix key held to char on face of key  
-6c08			  
-6c08			.mtoc:  
-6c08			  
-6c08			  
-6c08				; TODO optimise the code....  
-6c08			  
-6c08			; scan keyboard row 1  
-6c08 3e 80			ld a, 128  
-6c0a 21 d3 fe			ld hl, keyscan_table  
-6c0d cd ef 6c			call .rowscan  
-6c10			  
-6c10				   
-6c10			  
-6c10 3e 40			ld a, 64  
-6c12 21 d7 fe			ld hl, keyscan_table+key_cols  
-6c15 cd ef 6c			call .rowscan  
-6c18			  
-6c18			  
-6c18			  
-6c18			  
-6c18 3e 20			ld a, 32  
-6c1a 21 db fe			ld hl, keyscan_table+(key_cols*2)  
-6c1d cd ef 6c			call .rowscan  
-6c20			  
-6c20			  
-6c20			  
-6c20 3e 10			ld a, 16  
-6c22 21 df fe			ld hl, keyscan_table+(key_cols*3)  
-6c25 cd ef 6c			call .rowscan  
+6c06			include "firmware_key_4x4.asm" 
+6c06			  
+6c06			  
+6c06			; bit mask for each scan column and row for teing the matrix  
+6c06			  
+6c06			; out   
+6c06 80 40 20 10	key_row_bitmask:    db 128, 64, 32, 16  
+6c0a			; in  
+6c0a 01 02 04 08	key_col_bitmask:    db 1, 2, 4, 8  
+6c0e			  
+6c0e			; row/col to character map  
+6c0e			  
+6c0e			; char, state use   123xxsss   - bit 8,7,6 this key selects specified state, s is this key is member of that state  
+6c0e			;    
+6c0e			  
+6c0e			; physical key matrix map to face of key  
+6c0e			  
+6c0e			  
+6c0e			;      	1	2	3	A  
+6c0e			;   	abc”	def&	ghi$	s1  
+6c0e			;			  
+6c0e			;	4	5	6	B  
+6c0e			; 	jkl,	mno.	pqr:	s2  
+6c0e			;			  
+6c0e			; 	7	8	9	C  
+6c0e			;	stu;	vwx@	yz?!	s3  
+6c0e			;			  
+6c0e			; 	*	0	#	D  
+6c0e			; 	shift lck '	Space < >	Enter ( )	s4  
+6c0e			;       tab bs 		  
+6c0e			  
+6c0e			  
+6c0e			  
+6c0e			  
+6c0e			key_init:  
+6c0e			  
+6c0e			; SCMonAPI functions used  
+6c0e			  
+6c0e			; Alphanumeric LCD functions used  
+6c0e			; no need to specify specific functions for this module  
+6c0e			  
+6c0e			  
+6c0e 3e cf		            LD   A, 11001111b  
+6c10 d3 c3		            OUT  (portbctl), A  ;Port A = PIO 'control' mode  
+6c12			;            LD   A, 00000000b  
+6c12 3e 0f		            LD   A, 00001111b  
+6c14 d3 c3		            OUT  (portbctl),A   ;Port A = all lines are outputs  
+6c16			  
+6c16			  
+6c16				; TODO Configure cursor shapes  
+6c16			  
+6c16				; Load cursor shapes   
+6c16 3e 01		            LD   A, 1           ;First character to define (0 to 7)  
+6c18 11 28 6c		            LD   DE, .cursor_shapes    ;Pointer to start of bitmap data  
+6c1b 06 02		            LD   B, 2           ;Number of characters to define  
+6c1d cd c9 6b		.DefLoop:   CALL fLCD_Def       ;Define custom character  
+6c20 10 fb		            DJNZ .DefLoop       ;Repeat for each character  
+6c22			  
+6c22 3e 01				ld a, 1  
+6c24 32 4d fd			ld (cursor_shape),a  
+6c27 c9				ret  
 6c28			  
-6c28			  
-6c28				; flag if key D is held down and remove from reporting  
-6c28 01 d6 6b			ld bc, .key_map_fd    
-6c2b 21 d3 fe			ld hl, keyscan_table  
-6c2e 11 c5 fe			ld de, key_fd  
-6c31 cd 81 6c			call .key_shift_hold  
-6c34 fe ff			cp 255  
-6c36 28 33			jr z, .cinmap  
-6c38				; flag if key C is held down and remove from reporting  
-6c38 01 c6 6b			ld bc, .key_map_fc    
-6c3b 21 d7 fe			ld hl, keyscan_table+key_cols  
-6c3e 11 c6 fe			ld de, key_fc  
-6c41 cd 81 6c			call .key_shift_hold  
-6c44 fe ff			cp 255  
-6c46 28 23			jr z, .cinmap  
-6c48				; flag if key B is held down and remove from reporting  
-6c48 01 b6 6b			ld bc, .key_map_fb    
-6c4b 21 db fe			ld hl, keyscan_table+(key_cols*2)  
-6c4e 11 c7 fe			ld de, key_fb  
-6c51 cd 81 6c			call .key_shift_hold  
-6c54 fe ff			cp 255  
-6c56 28 13			jr z, .cinmap  
-6c58				; flag if key A is held down and remove from reporting  
-6c58 01 a6 6b			ld bc, .key_map_fa    
-6c5b 21 df fe			ld hl, keyscan_table+(key_cols*3)  
-6c5e 11 c8 fe			ld de, key_fa  
-6c61 cd 81 6c			call .key_shift_hold  
-6c64 fe ff			cp 255  
-6c66 28 03			jr z, .cinmap  
+6c28			; Custom characters for cursor shapes 5 pixels wide by 8 pixels high  
+6c28			; Up to 8 custom characters can be defined  
+6c28			.cursor_shapes:      
+6c28			;; Character 0x00 = Normal  
+6c28 1f			            DB  11111b  
+6c29 1f			            DB  11111b  
+6c2a 1f			            DB  11111b  
+6c2b 1f			            DB  11111b  
+6c2c 1f			            DB  11111b  
+6c2d 1f			            DB  11111b  
+6c2e 1f			            DB  11111b  
+6c2f 1f			            DB  11111b  
+6c30			;; Character 0x01 = Modifier  
+6c30 1f			            DB  11111b  
+6c31 1b			            DB  11011b  
+6c32 1b			            DB  11011b  
+6c33 1b			            DB  11011b  
+6c34 1b			            DB  11011b  
+6c35 1f			            DB  11111b  
+6c36 1b			            DB  11011b  
+6c37 1f			            DB  11111b  
+6c38			  
+6c38			  
+6c38			  
+6c38			  
+6c38			; Display custom character 0  
+6c38			;            LD   A, kLCD_Line1+14  
+6c38			;            CALL fLCD_Pos       ;Position cursor to location in A  
+6c38			;            LD   A, 0  
+6c38			;            CALL fLCD_Data      ;Write character in A at cursor  
+6c38			  
+6c38			; Display custom character 1  
+6c38			;            LD   A, kLCD_Line2+14  
+6c38			;            CALL fLCD_Pos      ;Position cursor to location in A  
+6c38			;            LD   A, 1  
+6c38			;            CALL fLCD_Data     ;Write character in A at cursor  
+6c38			  
+6c38			; keyboard scanning   
+6c38			  
+6c38			  
+6c38			; key_rows: equ 4  
+6c38			; key_cols: equ 4  
+6c38			; keyscan_table: edu ( tos-stacksize-(key_rows*key_cols))  
+6c38			  
+6c38			; key_scanr: equ key_row_bitmask  
+6c38			; key_scanc: equ key_col_bitmask  
+6c38			  
+6c38			; key_char_map: equ key_map  
+6c38			  
+6c38			  
+6c38			  
+6c38			; character in from keyboard  
+6c38			  
+6c38 ..			.matrix_to_char: db "D#0*C987B654A321"  
+6c48			  
+6c48			  
+6c48			; map the physical key to a char dependant on state  
+6c48			  
+6c48			.key_map_fa:   
+6c48			  
+6c48 ..					db 'D'  
+6c49 0d					db KEY_CR    ; cr  
+6c4a ..					db ' '  
+6c4b 04					db  KEY_SHIFTLOCK   ; TODO Shift lock  
+6c4c ..					db 'C'  
+6c4d ..					db 'y'  
+6c4e ..					db 'v'  
+6c4f ..					db 's'  
+6c50 ..					db 'B'  
+6c51 ..					db 'p'  
+6c52 ..					db 'm'  
+6c53 ..					db 'j'  
+6c54 ..					db 'A'  
+6c55 ..					db 'g'  
+6c56 ..					db 'd'  
+6c57 ..					db 'a'  
+6c58			  
+6c58			.key_map_fb:  
+6c58			  
+6c58 ..					db 'A'  
+6c59 ..					db '+'   
+6c5a ..					db '<'  
+6c5b ..					db  "'"    
+6c5c			  
+6c5c ..					db 'A'  
+6c5d ..					db 'z'  
+6c5e ..					db 'w'  
+6c5f ..					db 't'  
+6c60 ..					db 'A'  
+6c61 ..					db 'q'  
+6c62 ..					db 'n'  
+6c63 ..					db 'k'  
+6c64 ..					db 'A'  
+6c65 ..					db 'h'  
+6c66 ..					db 'e'  
+6c67 ..			 		db 'b'  
 6c68			  
-6c68 11 96 6b			ld de, .matrix_to_char  
-6c6b			  
-6c6b			  
-6c6b			.cinmap:   
-6c6b				if DEBUG_KEY  
-6c6b			            LD   A, kLCD_Line4  
-6c6b			            CALL fLCD_Pos       ;Position cursor to location in A  
-6c6b					push de  
-6c6b			            LD   DE, keyscan_table  
-6c6b			            CALL fLCD_Str       ;Display string pointed to by DE  
-6c6b					pop de  
-6c6b				endif  
-6c6b			  
-6c6b				; scan key matrix table for any held key  
-6c6b			  
-6c6b				; de holds either the default matrix or one selected above  
-6c6b			  
-6c6b 21 d3 fe			ld hl, keyscan_table  
-6c6e 06 10			ld b,key_cols*key_rows  
-6c70			  
-6c70 7e			.cin1:	ld a,(hl)  
-6c71 fe 23			cp '#'  
-6c73 28 08			jr z, .cinhit  
-6c75 23				inc hl  
-6c76 13				inc de  
-6c77 05				dec b  
-6c78 20 f6			jr nz, .cin1  
-6c7a				; no key found held  
-6c7a 3e 00			ld a,0  
-6c7c c9				ret  
-6c7d d5			.cinhit: push de  
-6c7e e1				pop hl  
-6c7f 7e				ld a,(hl)  
-6c80 c9				ret  
-6c81			  
-6c81			; flag a control key is held   
-6c81			; hl is key pin, de is flag indicator  
-6c81			  
-6c81			.key_shift_hold:  
-6c81 c5				push bc  
-6c82 3e 01			ld a, 1  
-6c84 32 4d fd			ld (cursor_shape),a  
-6c87 06 00			ld b, 0  
-6c89 7e				ld a, (hl)  
-6c8a fe 2e			cp '.'  
-6c8c 28 0a			jr z, .key_shift1  
-6c8e 06 ff			ld b, 255  
-6c90 3e 2b			ld a, '+'    ; hide key from later scans  
-6c92 77				ld (hl),a  
-6c93 3e 02			ld a, 2  
-6c95 32 4d fd			ld (cursor_shape),a  
-6c98			.key_shift1:  
-6c98				; write flag indicator  
-6c98 78				ld a,b  
-6c99 12				ld (de),a  
-6c9a			  
-6c9a d1				pop de    ; de now holds the key map ptr  
-6c9b c9				ret  
+6c68			.key_map_fc:   
+6c68			  
+6c68			  
+6c68 ..					db 'A'  
+6c69 ..					db '-'   
+6c6a ..					db '>'  
+6c6b ..					db  '='   	  
+6c6c ..					db 'A'  
+6c6d ..					db '?'  
+6c6e ..					db 'x'  
+6c6f ..					db 'u'  
+6c70 ..					db 'A'  
+6c71 ..					db 'r'  
+6c72 ..					db 'o'  
+6c73 ..					db 'l'  
+6c74 ..					db 'A'  
+6c75 ..					db 'i'  
+6c76 ..					db 'f'  
+6c77 ..					db 'c'  
+6c78			  
+6c78				  
+6c78			.key_map_fd:  
+6c78			  
+6c78 ..					db 'A'  
+6c79 ..					db '/'   
+6c7a ..					db '%'   
+6c7b 08					db KEY_BS  ; back space  
+6c7c ..					db 'A'  
+6c7d ..					db '!'  
+6c7e ..					db '@'  
+6c7f ..					db ';'  
+6c80 ..					db 'A'  
+6c81 ..					db ':'  
+6c82 ..					db '.'  
+6c83 ..					db ','  
+6c84 ..					db 'A'  
+6c85 ..					db '$'  
+6c86 ..					db '&'  
+6c87 ..				 	db '"'  
+6c88			  
+6c88					  
+6c88				  
+6c88			  
+6c88			; add cin and cin_wait  
+6c88			  
+6c88 cd 99 6c		cin_wait: 	call cin  
+6c8b fe 00			cp 0  
+6c8d 28 f9			jr z, cin_wait   ; block until key press  
+6c8f			  
+6c8f f5				push af   ; save key pressed  
+6c90			  
+6c90 cd 99 6c		.cin_wait1:	call cin  
+6c93 fe 00			cp 0  
+6c95 20 f9			jr nz, .cin_wait1  	; wait for key release  
+6c97			  
+6c97 f1				pop af   ; get key  
+6c98 c9				ret  
+6c99			  
+6c99			  
+6c99 cd aa 6c		cin: 	call .mtoc  
 6c9c			  
-6c9c				  
-6c9c				  
-6c9c			  
-6c9c			  
-6c9c			  
-6c9c			  
-6c9c			  
-6c9c			  
-6c9c			  
-6c9c			  
-6c9c			  
-6c9c			  
-6c9c c9				ret  
-6c9d			  
-6c9d			;	push hl  
-6c9d			;	push de  
-6c9d			;	push bc  
-6c9d			;	call keyscan  
-6c9d			;	; map key matrix to ascii value of key face  
-6c9d			;  
-6c9d			;	ld hl, key_face_map  
-6c9d			;	ld de, keyscan_table  
-6c9d			;  
-6c9d			;	; get how many keys to look at  
-6c9d			;	ld b, keyscan_table_len  
-6c9d			;	  
-6c9d			;  
-6c9d			;	; at this stage fall out on first key hit  
-6c9d			;	; TODO handle multiple key press  
-6c9d			;  
-6c9d			;map1:	ld a,(hl)  
-6c9d			;	cp '#'  
-6c9d			;	jr z, keyhit  
-6c9d			;	inc hl  
-6c9d			;	inc de  
-6c9d			;	dec b  
-6c9d			;	jr nz, map1  
-6c9d			;nohit:	ld a, 0  
-6c9d			;	jr keydone  
-6c9d			;keyhit: push de  
-6c9d			;	pop hl  
-6c9d			;	ld a,(hl)  
-6c9d			;keydone:  
-6c9d			;	push bc  
-6c9d			;	push de  
-6c9d			; 	push hl  
-6c9d			;	ret   
-6c9d			;  
-6c9d			  
-6c9d			  
-6c9d			  
-6c9d			  
-6c9d			; scan physical key matrix  
-6c9d			  
-6c9d			  
-6c9d			;keyscan:  
-6c9d			;  
-6c9d			;; for each key_row use keyscanr bit mask for out  
-6c9d			;; then read in for keyscanc bitmask  
-6c9d			;; save result of row scan to keyscantable  
-6c9d			;  
-6c9d			;; scan keyboard row 1  
-6c9d			;  
-6c9d			;	ld b, key_rows  
-6c9d			;	ld hl, key_scanr  
-6c9d			;	ld de, keyscan_table  
-6c9d			;  
-6c9d			;rowloop:  
-6c9d			;  
-6c9d			;	ld a,(hl)		; out bit mask to energise keyboard row  
-6c9d			;	call rowscan  
-6c9d			;	inc hl  
-6c9d			;	dec b  
-6c9d			;	jr nz, rowloop  
-6c9d			;  
-6c9d			;	ret  
-6c9d			;  
-6c9d			;  
-6c9d			;; pass a out bitmask, b row number  
-6c9d			;arowscan:   
-6c9d			;	push bc  
-6c9d			;  
-6c9d			;	ld d, b  
-6c9d			;  
-6c9d			;	; calculate buffer location for this row  
-6c9d			;  
-6c9d			;	ld hl, keyscan_table	  
-6c9d			;kbufr:  ld e, key_cols  
-6c9d			;kbufc:	inc hl  
-6c9d			;	dec e  
-6c9d			;	jr nz, kbufc  
-6c9d			;	dec d  
-6c9d			;	jr nz, kbufr  
-6c9d			;  
-6c9d			;	; energise row and read columns  
-6c9d			;  
-6c9d			;	out (portbdata),a  
-6c9d			;	in a,(portbdata)  
-6c9d			;	ld c,a  
-6c9d			;  
-6c9d			;  
-6c9d			;	; save buffer loc  
-6c9d			;  
-6c9d			;	ld (keybufptr), hl  
-6c9d			;  
-6c9d			;	ld hl, key_scanc  
-6c9d			;	ld d, key_cols  
-6c9d			;  
-6c9d			;	; for each column check each bit mask  
-6c9d			;  
-6c9d			;colloop:  
-6c9d			;	  
-6c9d			;  
-6c9d			;	; reset flags for the row   
-6c9d			;  
-6c9d			;	ld b,'.'  
-6c9d			;	and (hl)  
-6c9d			;	jr z, maskskip  
-6c9d			;	ld b,'#'  
-6c9d			;maskskip:  
-6c9d			;	; save  key state  
-6c9d			;	push hl  
-6c9d			;	ld hl, (keybufptr)  
-6c9d			;	ld (hl), b  
-6c9d			;	inc hl  
-6c9d			;	ld (keybufptr), hl  
-6c9d			;  
-6c9d			;	; move to next bit mask  
-6c9d			;	pop hl  
-6c9d			;	inc hl  
-6c9d			;  
-6c9d			;	dec d  
-6c9d			;	jr nz, colloop  
-6c9d			;  
-6c9d			;	ret  
-6c9d			;  
-6c9d			;  
-6c9d			;;  
-6c9d			; lcd functions  
-6c9d			;  
-6c9d			;  
-6c9d			  
-6c9d			;if DEBUG_KEY_MATRIX  
-6c9d			  
-6c9d			; test function to display hardware view of matrix state  
-6c9d			  
-6c9d			matrix:  
-6c9d			  
-6c9d			  
-6c9d			  
-6c9d			; scan keyboard row 1  
-6c9d 3e 80			ld a, 128  
-6c9f 21 f8 fe			ld hl, keyscan_table_row1  
-6ca2 cd ef 6c			call .rowscan  
-6ca5			  
-6ca5 3e 40			ld a, 64  
-6ca7 21 f3 fe			ld hl, keyscan_table_row2  
-6caa cd ef 6c			call .rowscan  
-6cad			  
-6cad 3e 20			ld a, 32  
-6caf 21 ee fe			ld hl, keyscan_table_row3  
-6cb2 cd ef 6c			call .rowscan  
-6cb5			  
-6cb5 3e 10			ld a, 16  
-6cb7 21 e9 fe			ld hl, keyscan_table_row4  
-6cba cd ef 6c			call .rowscan  
-6cbd			  
-6cbd			; Display text on first line  
-6cbd 3e 00		            LD   A, kLCD_Line1  
-6cbf cd 15 6b		            CALL fLCD_Pos       ;Position cursor to location in A  
-6cc2 11 f8 fe		            LD   DE, keyscan_table_row1  
-6cc5			            ;LD   DE, MsgHello  
-6cc5 cd 1d 6b		            CALL fLCD_Str       ;Display string pointed to by DE  
-6cc8			  
-6cc8			; Display text on second line  
-6cc8 3e 40		            LD   A, kLCD_Line2  
-6cca cd 15 6b		            CALL fLCD_Pos       ;Position cursor to location in A  
-6ccd 11 f3 fe		            LD   DE, keyscan_table_row2  
-6cd0 cd 1d 6b		            CALL fLCD_Str       ;Display string pointed to by DE  
-6cd3 3e 14		            LD   A, kLCD_Line3  
-6cd5 cd 15 6b		            CALL fLCD_Pos       ;Position cursor to location in A  
-6cd8 11 ee fe		            LD   DE, keyscan_table_row3  
-6cdb cd 1d 6b		            CALL fLCD_Str       ;Display string pointed to by DE  
-6cde 3e 54		            LD   A, kLCD_Line4  
-6ce0 cd 15 6b		            CALL fLCD_Pos       ;Position cursor to location in A  
-6ce3 11 e9 fe		            LD   DE, keyscan_table_row4  
-6ce6 cd 1d 6b		            CALL fLCD_Str       ;Display string pointed to by DE  
-6ce9			  
-6ce9 cd 86 0c			call delay250ms  
-6cec c3 9d 6c			jp matrix  
-6cef			  
-6cef			; pass de as row display flags  
-6cef			.rowscan:   
-6cef d3 c1			out (portbdata),a  
-6cf1 db c1			in a,(portbdata)  
-6cf3 4f				ld c,a  
-6cf4				; reset flags for the row   
-6cf4 06 2e			ld b,'.'  
-6cf6 e6 01			and 1  
-6cf8 28 02			jr z, .p1on  
-6cfa 06 23			ld b,'#'  
-6cfc			.p1on:  
-6cfc 70				ld (hl), b  
-6cfd 23				inc hl  
-6cfe			  
-6cfe 06 2e			ld b,'.'  
-6d00 79				ld a,c  
-6d01 e6 02			and 2  
-6d03			;	bit 0,a  
-6d03 28 02			jr z, .p2on  
-6d05 06 23			ld b,'#'  
-6d07			.p2on:  
-6d07 70				ld (hl), b  
-6d08 23				inc hl  
-6d09			;  
-6d09 06 2e			ld b,'.'  
-6d0b 79				ld a,c  
-6d0c e6 04			and 4  
-6d0e			;;	bit 0,a  
-6d0e 28 02			jr z, .p3on  
-6d10 06 23			ld b,'#'  
-6d12			.p3on:  
-6d12 70				ld (hl), b  
-6d13 23				inc hl  
-6d14			;;  
-6d14 06 2e			ld b,'.'  
-6d16			;;	bit 0,a  
-6d16 79				ld a,c  
-6d17 e6 08			and 8  
-6d19 28 02			jr z, .p4on  
-6d1b 06 23			ld b,'#'  
-6d1d			.p4on:  
-6d1d 70				ld (hl), b  
-6d1e 23				inc hl  
-6d1f			  
-6d1f			; zero term  
-6d1f 06 00			ld b,0  
-6d21 70				ld (hl), b  
-6d22			  
-6d22 c9			.rscandone: ret  
+6c9c				; no key held  
+6c9c fe 00			cp 0  
+6c9e c8				ret z  
+6c9f			  
+6c9f				; stop key bounce  
+6c9f			  
+6c9f			;	ld (key_held),a		 ; save it  
+6c9f 47				ld b, a  
+6ca0			  
+6ca0 c5			.cina1:	push bc  
+6ca1 cd aa 6c			call .mtoc  
+6ca4 c1				pop bc  
+6ca5 b8				cp b  
+6ca6 28 f8			jr z, .cina1  
+6ca8 78				ld a,b		  
+6ca9 c9				ret  
+6caa			  
+6caa			; detect keyboard modifier key press and apply new overlay to the face key held  
+6caa			; hl is the key modifer flag, de map to apply to key_face_held and store in key_actual_pressed  
+6caa			  
+6caa			;.cin_map_modifier:   
+6caa			;	ld a, (hl)  
+6caa			;	and 255  
+6caa			;	ret NZ		; modifier key not flagged  
+6caa			;  
+6caa			;	; get key face  
+6caa			;  
+6caa			;	ld b,(key_face_held)  
+6caa			;  
+6caa			;	ld b, key_cols * key_rows  
+6caa			;  
+6caa			;	push de  
+6caa			;	pop hl  
+6caa			;  
+6caa			;.mmod1: ld a,(hl)   ; get map test  
+6caa			;	cp b  
+6caa			;	jr z, .mmod2  
+6caa			;  
+6caa			;  
+6caa			;  
+6caa			;.mmod2: inc hl    ;   
+6caa			;  
+6caa			;	  
+6caa			;  
+6caa			;	  
+6caa			;  
+6caa			;	ld hl,key_actual_pressed  
+6caa			;	ld (hl),a,  
+6caa			;	ret  
+6caa			  
+6caa				  
+6caa			  
+6caa			; map matrix key held to char on face of key  
+6caa			  
+6caa			.mtoc:  
+6caa			  
+6caa			  
+6caa				; TODO optimise the code....  
+6caa			  
+6caa			; scan keyboard row 1  
+6caa 3e 80			ld a, 128  
+6cac 21 d3 fe			ld hl, keyscan_table  
+6caf cd 91 6d			call .rowscan  
+6cb2			  
+6cb2				   
+6cb2			  
+6cb2 3e 40			ld a, 64  
+6cb4 21 d7 fe			ld hl, keyscan_table+key_cols  
+6cb7 cd 91 6d			call .rowscan  
+6cba			  
+6cba			  
+6cba			  
+6cba			  
+6cba 3e 20			ld a, 32  
+6cbc 21 db fe			ld hl, keyscan_table+(key_cols*2)  
+6cbf cd 91 6d			call .rowscan  
+6cc2			  
+6cc2			  
+6cc2			  
+6cc2 3e 10			ld a, 16  
+6cc4 21 df fe			ld hl, keyscan_table+(key_cols*3)  
+6cc7 cd 91 6d			call .rowscan  
+6cca			  
+6cca			  
+6cca				; flag if key D is held down and remove from reporting  
+6cca 01 78 6c			ld bc, .key_map_fd    
+6ccd 21 d3 fe			ld hl, keyscan_table  
+6cd0 11 c5 fe			ld de, key_fd  
+6cd3 cd 23 6d			call .key_shift_hold  
+6cd6 fe ff			cp 255  
+6cd8 28 33			jr z, .cinmap  
+6cda				; flag if key C is held down and remove from reporting  
+6cda 01 68 6c			ld bc, .key_map_fc    
+6cdd 21 d7 fe			ld hl, keyscan_table+key_cols  
+6ce0 11 c6 fe			ld de, key_fc  
+6ce3 cd 23 6d			call .key_shift_hold  
+6ce6 fe ff			cp 255  
+6ce8 28 23			jr z, .cinmap  
+6cea				; flag if key B is held down and remove from reporting  
+6cea 01 58 6c			ld bc, .key_map_fb    
+6ced 21 db fe			ld hl, keyscan_table+(key_cols*2)  
+6cf0 11 c7 fe			ld de, key_fb  
+6cf3 cd 23 6d			call .key_shift_hold  
+6cf6 fe ff			cp 255  
+6cf8 28 13			jr z, .cinmap  
+6cfa				; flag if key A is held down and remove from reporting  
+6cfa 01 48 6c			ld bc, .key_map_fa    
+6cfd 21 df fe			ld hl, keyscan_table+(key_cols*3)  
+6d00 11 c8 fe			ld de, key_fa  
+6d03 cd 23 6d			call .key_shift_hold  
+6d06 fe ff			cp 255  
+6d08 28 03			jr z, .cinmap  
+6d0a			  
+6d0a 11 38 6c			ld de, .matrix_to_char  
+6d0d			  
+6d0d			  
+6d0d			.cinmap:   
+6d0d				if DEBUG_KEY  
+6d0d			            LD   A, kLCD_Line4  
+6d0d			            CALL fLCD_Pos       ;Position cursor to location in A  
+6d0d					push de  
+6d0d			            LD   DE, keyscan_table  
+6d0d			            CALL fLCD_Str       ;Display string pointed to by DE  
+6d0d					pop de  
+6d0d				endif  
+6d0d			  
+6d0d				; scan key matrix table for any held key  
+6d0d			  
+6d0d				; de holds either the default matrix or one selected above  
+6d0d			  
+6d0d 21 d3 fe			ld hl, keyscan_table  
+6d10 06 10			ld b,key_cols*key_rows  
+6d12			  
+6d12 7e			.cin1:	ld a,(hl)  
+6d13 fe 23			cp '#'  
+6d15 28 08			jr z, .cinhit  
+6d17 23				inc hl  
+6d18 13				inc de  
+6d19 05				dec b  
+6d1a 20 f6			jr nz, .cin1  
+6d1c				; no key found held  
+6d1c 3e 00			ld a,0  
+6d1e c9				ret  
+6d1f d5			.cinhit: push de  
+6d20 e1				pop hl  
+6d21 7e				ld a,(hl)  
+6d22 c9				ret  
 6d23			  
+6d23			; flag a control key is held   
+6d23			; hl is key pin, de is flag indicator  
 6d23			  
-6d23			  
-6d23			;endif  
-6d23			  
-6d23			  
-6d23			; eof  
+6d23			.key_shift_hold:  
+6d23 c5				push bc  
+6d24 3e 01			ld a, 1  
+6d26 32 4d fd			ld (cursor_shape),a  
+6d29 06 00			ld b, 0  
+6d2b 7e				ld a, (hl)  
+6d2c fe 2e			cp '.'  
+6d2e 28 0a			jr z, .key_shift1  
+6d30 06 ff			ld b, 255  
+6d32 3e 2b			ld a, '+'    ; hide key from later scans  
+6d34 77				ld (hl),a  
+6d35 3e 02			ld a, 2  
+6d37 32 4d fd			ld (cursor_shape),a  
+6d3a			.key_shift1:  
+6d3a				; write flag indicator  
+6d3a 78				ld a,b  
+6d3b 12				ld (de),a  
+6d3c			  
+6d3c d1				pop de    ; de now holds the key map ptr  
+6d3d c9				ret  
+6d3e			  
+6d3e				  
+6d3e				  
+6d3e			  
+6d3e			  
+6d3e			  
+6d3e			  
+6d3e			  
+6d3e			  
+6d3e			  
+6d3e			  
+6d3e			  
+6d3e			  
+6d3e c9				ret  
+6d3f			  
+6d3f			;	push hl  
+6d3f			;	push de  
+6d3f			;	push bc  
+6d3f			;	call keyscan  
+6d3f			;	; map key matrix to ascii value of key face  
+6d3f			;  
+6d3f			;	ld hl, key_face_map  
+6d3f			;	ld de, keyscan_table  
+6d3f			;  
+6d3f			;	; get how many keys to look at  
+6d3f			;	ld b, keyscan_table_len  
+6d3f			;	  
+6d3f			;  
+6d3f			;	; at this stage fall out on first key hit  
+6d3f			;	; TODO handle multiple key press  
+6d3f			;  
+6d3f			;map1:	ld a,(hl)  
+6d3f			;	cp '#'  
+6d3f			;	jr z, keyhit  
+6d3f			;	inc hl  
+6d3f			;	inc de  
+6d3f			;	dec b  
+6d3f			;	jr nz, map1  
+6d3f			;nohit:	ld a, 0  
+6d3f			;	jr keydone  
+6d3f			;keyhit: push de  
+6d3f			;	pop hl  
+6d3f			;	ld a,(hl)  
+6d3f			;keydone:  
+6d3f			;	push bc  
+6d3f			;	push de  
+6d3f			; 	push hl  
+6d3f			;	ret   
+6d3f			;  
+6d3f			  
+6d3f			  
+6d3f			  
+6d3f			  
+6d3f			; scan physical key matrix  
+6d3f			  
+6d3f			  
+6d3f			;keyscan:  
+6d3f			;  
+6d3f			;; for each key_row use keyscanr bit mask for out  
+6d3f			;; then read in for keyscanc bitmask  
+6d3f			;; save result of row scan to keyscantable  
+6d3f			;  
+6d3f			;; scan keyboard row 1  
+6d3f			;  
+6d3f			;	ld b, key_rows  
+6d3f			;	ld hl, key_scanr  
+6d3f			;	ld de, keyscan_table  
+6d3f			;  
+6d3f			;rowloop:  
+6d3f			;  
+6d3f			;	ld a,(hl)		; out bit mask to energise keyboard row  
+6d3f			;	call rowscan  
+6d3f			;	inc hl  
+6d3f			;	dec b  
+6d3f			;	jr nz, rowloop  
+6d3f			;  
+6d3f			;	ret  
+6d3f			;  
+6d3f			;  
+6d3f			;; pass a out bitmask, b row number  
+6d3f			;arowscan:   
+6d3f			;	push bc  
+6d3f			;  
+6d3f			;	ld d, b  
+6d3f			;  
+6d3f			;	; calculate buffer location for this row  
+6d3f			;  
+6d3f			;	ld hl, keyscan_table	  
+6d3f			;kbufr:  ld e, key_cols  
+6d3f			;kbufc:	inc hl  
+6d3f			;	dec e  
+6d3f			;	jr nz, kbufc  
+6d3f			;	dec d  
+6d3f			;	jr nz, kbufr  
+6d3f			;  
+6d3f			;	; energise row and read columns  
+6d3f			;  
+6d3f			;	out (portbdata),a  
+6d3f			;	in a,(portbdata)  
+6d3f			;	ld c,a  
+6d3f			;  
+6d3f			;  
+6d3f			;	; save buffer loc  
+6d3f			;  
+6d3f			;	ld (keybufptr), hl  
+6d3f			;  
+6d3f			;	ld hl, key_scanc  
+6d3f			;	ld d, key_cols  
+6d3f			;  
+6d3f			;	; for each column check each bit mask  
+6d3f			;  
+6d3f			;colloop:  
+6d3f			;	  
+6d3f			;  
+6d3f			;	; reset flags for the row   
+6d3f			;  
+6d3f			;	ld b,'.'  
+6d3f			;	and (hl)  
+6d3f			;	jr z, maskskip  
+6d3f			;	ld b,'#'  
+6d3f			;maskskip:  
+6d3f			;	; save  key state  
+6d3f			;	push hl  
+6d3f			;	ld hl, (keybufptr)  
+6d3f			;	ld (hl), b  
+6d3f			;	inc hl  
+6d3f			;	ld (keybufptr), hl  
+6d3f			;  
+6d3f			;	; move to next bit mask  
+6d3f			;	pop hl  
+6d3f			;	inc hl  
+6d3f			;  
+6d3f			;	dec d  
+6d3f			;	jr nz, colloop  
+6d3f			;  
+6d3f			;	ret  
+6d3f			;  
+6d3f			;  
+6d3f			;;  
+6d3f			; lcd functions  
+6d3f			;  
+6d3f			;  
+6d3f			  
+6d3f			;if DEBUG_KEY_MATRIX  
+6d3f			  
+6d3f			; test function to display hardware view of matrix state  
+6d3f			  
+6d3f			matrix:  
+6d3f			  
+6d3f			  
+6d3f			  
+6d3f			; scan keyboard row 1  
+6d3f 3e 80			ld a, 128  
+6d41 21 f8 fe			ld hl, keyscan_table_row1  
+6d44 cd 91 6d			call .rowscan  
+6d47			  
+6d47 3e 40			ld a, 64  
+6d49 21 f3 fe			ld hl, keyscan_table_row2  
+6d4c cd 91 6d			call .rowscan  
+6d4f			  
+6d4f 3e 20			ld a, 32  
+6d51 21 ee fe			ld hl, keyscan_table_row3  
+6d54 cd 91 6d			call .rowscan  
+6d57			  
+6d57 3e 10			ld a, 16  
+6d59 21 e9 fe			ld hl, keyscan_table_row4  
+6d5c cd 91 6d			call .rowscan  
+6d5f			  
+6d5f			; Display text on first line  
+6d5f 3e 00		            LD   A, kLCD_Line1  
+6d61 cd b7 6b		            CALL fLCD_Pos       ;Position cursor to location in A  
+6d64 11 f8 fe		            LD   DE, keyscan_table_row1  
+6d67			            ;LD   DE, MsgHello  
+6d67 cd bf 6b		            CALL fLCD_Str       ;Display string pointed to by DE  
+6d6a			  
+6d6a			; Display text on second line  
+6d6a 3e 40		            LD   A, kLCD_Line2  
+6d6c cd b7 6b		            CALL fLCD_Pos       ;Position cursor to location in A  
+6d6f 11 f3 fe		            LD   DE, keyscan_table_row2  
+6d72 cd bf 6b		            CALL fLCD_Str       ;Display string pointed to by DE  
+6d75 3e 14		            LD   A, kLCD_Line3  
+6d77 cd b7 6b		            CALL fLCD_Pos       ;Position cursor to location in A  
+6d7a 11 ee fe		            LD   DE, keyscan_table_row3  
+6d7d cd bf 6b		            CALL fLCD_Str       ;Display string pointed to by DE  
+6d80 3e 54		            LD   A, kLCD_Line4  
+6d82 cd b7 6b		            CALL fLCD_Pos       ;Position cursor to location in A  
+6d85 11 e9 fe		            LD   DE, keyscan_table_row4  
+6d88 cd bf 6b		            CALL fLCD_Str       ;Display string pointed to by DE  
+6d8b			  
+6d8b cd 86 0c			call delay250ms  
+6d8e c3 3f 6d			jp matrix  
+6d91			  
+6d91			; pass de as row display flags  
+6d91			.rowscan:   
+6d91 d3 c1			out (portbdata),a  
+6d93 db c1			in a,(portbdata)  
+6d95 4f				ld c,a  
+6d96				; reset flags for the row   
+6d96 06 2e			ld b,'.'  
+6d98 e6 01			and 1  
+6d9a 28 02			jr z, .p1on  
+6d9c 06 23			ld b,'#'  
+6d9e			.p1on:  
+6d9e 70				ld (hl), b  
+6d9f 23				inc hl  
+6da0			  
+6da0 06 2e			ld b,'.'  
+6da2 79				ld a,c  
+6da3 e6 02			and 2  
+6da5			;	bit 0,a  
+6da5 28 02			jr z, .p2on  
+6da7 06 23			ld b,'#'  
+6da9			.p2on:  
+6da9 70				ld (hl), b  
+6daa 23				inc hl  
+6dab			;  
+6dab 06 2e			ld b,'.'  
+6dad 79				ld a,c  
+6dae e6 04			and 4  
+6db0			;;	bit 0,a  
+6db0 28 02			jr z, .p3on  
+6db2 06 23			ld b,'#'  
+6db4			.p3on:  
+6db4 70				ld (hl), b  
+6db5 23				inc hl  
+6db6			;;  
+6db6 06 2e			ld b,'.'  
+6db8			;;	bit 0,a  
+6db8 79				ld a,c  
+6db9 e6 08			and 8  
+6dbb 28 02			jr z, .p4on  
+6dbd 06 23			ld b,'#'  
+6dbf			.p4on:  
+6dbf 70				ld (hl), b  
+6dc0 23				inc hl  
+6dc1			  
+6dc1			; zero term  
+6dc1 06 00			ld b,0  
+6dc3 70				ld (hl), b  
+6dc4			  
+6dc4 c9			.rscandone: ret  
+6dc5			  
+6dc5			  
+6dc5			  
+6dc5			;endif  
+6dc5			  
+6dc5			  
+6dc5			; eof  
 # End of file firmware_key_4x4.asm
 # End of file os_mini.asm
-6d23
+6dc5

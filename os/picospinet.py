@@ -30,17 +30,26 @@
 # clock out a string on stack
 #
 
-# : clkstro count $01 do i $01 substr spio done $00 spio ; 
+
+# use: "hello" ptr count clostro
+
+# : clkstro $00 do dup i + @ spio loop ;
+
+
+
 
 # clock in a string to SCRATCHPAD
 
 # : clkstri scratchpad $01 - repeat $01 + dup dup spii ! @ $00 = until ; 
 
-# : send spicel $01 spio clkstro spiceh ;
-# : listen spicel $02 spio spii $00 clkstro spiceh ;
-# : sendstr spicel $03 spio spio clkstro spiceh ;
+# use: "hello" $00 send
+# : send spicel $01 spio spio ptr count clkstro spiceh ;
+# : listen spicel $02 spio spii $00 clkstri spiceh ;
+# : storestr spicel $03 spio spio ptr count clkstro spiceh ;
 # : getstr spicel $04 spio clkstri spiceh ;
 
+# use: "pass" "ssid" wifi
+# : wifi $0b spio ptr count clkstro ptr drop ptr count clkstro ; 
 
 # Network protocol
 #
@@ -121,6 +130,11 @@ DO=Pin(1,mode=Pin.OUT)    # pico pin 2
 SCLK=Pin(0,mode=Pin.IN)   # pico pin 4
 CE=Pin(3,mode=Pin.IN)     # pico pin 5
 
+node_1=0
+node_1_buff="Hi!"
+node_1_cmd=""
+node_1_strings={}
+
 #READ=1   # ; Read data from memory array beginning at selected address
 #WRITE=2  #;  Write data to memory array beginning at selected address
 
@@ -142,25 +156,46 @@ WifiPass=""
 
 
 
-def saveSetttings:
+def saveSettings():
+        global WifiSSID
+        global WifiPass
+        global node_1_strings
+
         settings = [ WifiSSID, WifiPass ] 
    
         print( "Saving wifi settings") # STRIP
-        print(settings)
+#        print(settings)
         with open('/spinet-wifi.json', "w") as file_write:
             json.dump(settings, file_write)
         file_write.close()
+        print( "Saving string store for node 1") # STRIP
+#        print(settings)
+        with open('/spinet-strings-1.json', "w") as file_write:
+            json.dump(node_1_strings, file_write)
+        file_write.close()
+        
 
-def loadSettings:
+def loadSettings():
+    global WifiSSID
+    global WifiPass
+    global node_1_strings
     try:
         f = open( "/spinet-wifi.json","r" )
         print( "Loading wifi settings") # STRIP
         p = f.read()
         sett=json.loads(p)
-        print(sett)
+ #       print(sett)
 
-        WifiSSID= sett[1]
-        WifiPass= sett[2]
+        WifiSSID= sett[0]
+        WifiPass= sett[1]
+        
+        f = open( "/spinet-strings-1.json","r" )
+        print( "Loading string store for node 1") # STRIP
+        p = f.read()
+        sett=json.loads(p)
+        node_1_strings=sett
+        print(node_1_strings)        
+        
     except:
         saveSettings()
 
@@ -217,12 +252,14 @@ NTP_DELTA = 2208988800 - tm_gmtoff # mod by @PaulskPt.
 ntphost = "uk.pool.ntp.org" # mod by @PaulskPt
 #dim = {1:31, 2:28, 3:31, 4:30, 5:31, 6:30, 7:31, 8:31, 9:30, 10:31, 11:30, 12:31}
 
-
+connectretries=5
 ntp_retries=5
 def settime():
     #global lastUpdate
-    #global time_is_set
+    global time_is_set
+    global connectretries
     global ntp_retries
+    global wlan
 
     if not wlan.isconnected():
         if connectretries>0:
@@ -249,6 +286,8 @@ def settime():
                     time_is_set=True
                     print( "Too many NTP tries. SKipping") # STRIP
                 sleep(1)
+                
+    print(wlan.isconnected())
 
 
 def clockbyteout(byte):
@@ -394,9 +433,10 @@ def clockbytein():
 
 # clock in a zero term string from a node
 
-def clockinzs:
+def clockinzs():
     s=""
     cond=True
+    print("Clock-in zero term string")
     while cond:
         b=clockbytein()
         if b == 0:
@@ -404,21 +444,18 @@ def clockinzs:
         else:
             print(chr(b))
             s=s+chr(b)
-
+    print("Got string: "+s)
     return s
 
 
 
 loadSettings()
+print("Tring wlan connection")
 settime()
 
 fromserver=""
 gotcmd=False
 celast=False
-node_1=0
-node_1_buff="Hi!"
-node_1_cmd=""
-node_1_strings=[]
 curCmd=0
 while(1):
     #cenow=CE.value() 
@@ -442,9 +479,10 @@ while(1):
             curCmd=node_1
             
         if curCmd == CMD_WIFI:
-            print( "Setting Wifi...")
+            print( "Setting Wifi... Waiting for SSID")
             WifiSSID=clockinzs()
             print( "Set Wifi SSID to "+WifiSSID)
+            print("Waiting for password")
             WifiPass=clockinzs()
             print( "Set Wifi password to "+WifiPass)
             saveSettings()
@@ -458,10 +496,16 @@ while(1):
             node_1_cmd=clockinzs() 
             # TODO save string to node's buffer list
            
+            print("Saving string to node buffer "+str(dest_node))
+            # TODO echo back sending
+            node_1_buff=node_1_cmd
+            
+            
             if dest_node == 255 :   # Tell the server to do something
+                print("Node is server. Handle remote commands")
                 if "GET" == node_1_cmd[:3]:    # look up something on the lan
-                    
-                        blob = urequests.get(node_1_cmd[5:])
+                        print("Get remote URL..")
+                        blob = urequests.get(node_1_cmd[4:])
                         node_1_buff=blob.text
                         print(blob.reason) # STRIP
                         print(blob.text) # STRIP
@@ -494,6 +538,8 @@ while(1):
             s=clockinzs()
             print("String: "+s)
             node_1_strings[ix]=s
+            print("Stored strings: "+str(node_1_strings))
+            saveSettings()
             
             
         if curCmd == CMD_GET:

@@ -145,6 +145,10 @@ if STORAGE_SE
 	CWHEAD .SPII 61 "SPIO" 4 WORD_FLAG_CODE
 ; | SPIO ( u1 -- ) Send byte u1 to SPI  |  DONE
 
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "SPo"
+			CALLMONITOR
+		endif
 		; get port
 
 
@@ -176,6 +180,10 @@ if STORAGE_SE
 .SPII:
 	CWHEAD .SESEL 62 "SPII" 5 WORD_FLAG_CODE
 ; | SPII ( -- u1 ) Get a byte from SPI  | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "SPi"
+			CALLMONITOR
+		endif
 
 		; TODO Get SPI byte
 
@@ -183,6 +191,10 @@ if STORAGE_SE
 
 		ld h, 0
 		ld l, a
+		if DEBUG_FORTH_WORDS
+			DMARK "Si2"
+			CALLMONITOR
+		endif
 		call forth_push_numhl
 
 		NEXTW

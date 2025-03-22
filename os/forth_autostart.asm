@@ -32,6 +32,11 @@ startcmds:
 
 	; start up words that are actually useful
 
+    dw spi1
+    dw spi2
+    dw spi3
+
+
 	dw longread
 	dw clrstack
 	dw type
@@ -113,6 +118,12 @@ startcmds:
 ;	dw keybs
 	db 0, 0	
 
+; SPI Net support words
+
+
+spi1:       db ": clkstro $00 do dup i + @ spio loop ; ",0
+spi2:       db ": send spicel $01 spio spio ptr count clkstro spiceh ; ",0
+spi3:       db ": storestr spicel $03 spio spio ptr count clkstro spiceh ; ", 0
 
 ; Long read of currently open file
 longread:   db ": lread read repeat readcont if read concat then readcont until nop ; ", 0

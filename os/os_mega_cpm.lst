@@ -22127,6 +22127,10 @@
 4677				CWHEAD .SPII 61 "SPIO" 4 WORD_FLAG_CODE 
 4677			; | SPIO ( u1 -- ) Send byte u1 to SPI  |  DONE 
 4677			 
+4677					if DEBUG_FORTH_WORDS_KEY 
+4677						DMARK "SPo" 
+4677						CALLMONITOR 
+4677					endif 
 4677					; get port 
 4677			 
 4677			 
@@ -22158,6 +22162,10 @@
 4677			.SPII: 
 4677				CWHEAD .SESEL 62 "SPII" 5 WORD_FLAG_CODE 
 4677			; | SPII ( -- u1 ) Get a byte from SPI  | DONE 
+4677					if DEBUG_FORTH_WORDS_KEY 
+4677						DMARK "SPi" 
+4677						CALLMONITOR 
+4677					endif 
 4677			 
 4677					; TODO Get SPI byte 
 4677			 
@@ -22165,6 +22173,10 @@
 4677			 
 4677					ld h, 0 
 4677					ld l, a 
+4677					if DEBUG_FORTH_WORDS 
+4677						DMARK "Si2" 
+4677						CALLMONITOR 
+4677					endif 
 4677					call forth_push_numhl 
 4677			 
 4677					NEXTW 

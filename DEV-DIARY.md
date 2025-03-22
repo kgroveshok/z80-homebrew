@@ -10,13 +10,12 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE BUG Init of SPI is leaving both bank 1 and cart 1 CE active. Need to do $01 BANK first to set flags correctly. Fix to disable cart 1 CE at init. Yes, in storage_init there was a set 0 on CE which should be high not low
 * DONE When switching between BANK and CARTDEV change the spi_clktime between 0 for BANK and default to $0a for CARTDEV
 * DONE Hook up Pico and get it talking over SPI to enable networking. If using SPI + CE then can have Pico being hub for a few z80 machines to network together. CE is working now but clock isnt handshaking correctly. Each SPIO seems to send a single bit... Now have some basic SPI node activity working.
+* DONE SPI Net Wifi config via Z80
+* DONE SPI Net sending messages to nodes and server to batch delivery
 
-
-* TODO SPI Net sending messages to nodes and server to batch delivery
-* TODO SPI Net get waiting messages for node from server
-* TODO SPI Net send internet traffic and push results to message buffer
-* TODO SPI Net NTP time support
-* TODO SPI Net Wifi config via Z80
+* TODO SPI Net get waiting messages for node from server. Seem to have a clock out issue. SPII always gives zero. Need to use scope.
+* TODO SPI Net send internet traffic and push results to message buffer. Does get URL but blows out on memory
+* TODO SPI Net NTP time support. Sets NTP time. Need to get it back
 * TODO SPI Net get LAN status
 
 

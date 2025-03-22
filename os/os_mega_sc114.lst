@@ -22123,6 +22123,10 @@ c56c
 c56c				CWHEAD .SPII 61 "SPIO" 4 WORD_FLAG_CODE 
 c56c			; | SPIO ( u1 -- ) Send byte u1 to SPI  |  DONE 
 c56c			 
+c56c					if DEBUG_FORTH_WORDS_KEY 
+c56c						DMARK "SPo" 
+c56c						CALLMONITOR 
+c56c					endif 
 c56c					; get port 
 c56c			 
 c56c			 
@@ -22154,6 +22158,10 @@ c56c
 c56c			.SPII: 
 c56c				CWHEAD .SESEL 62 "SPII" 5 WORD_FLAG_CODE 
 c56c			; | SPII ( -- u1 ) Get a byte from SPI  | DONE 
+c56c					if DEBUG_FORTH_WORDS_KEY 
+c56c						DMARK "SPi" 
+c56c						CALLMONITOR 
+c56c					endif 
 c56c			 
 c56c					; TODO Get SPI byte 
 c56c			 
@@ -22161,6 +22169,10 @@ c56c					call spi_read_byte
 c56c			 
 c56c					ld h, 0 
 c56c					ld l, a 
+c56c					if DEBUG_FORTH_WORDS 
+c56c						DMARK "Si2" 
+c56c						CALLMONITOR 
+c56c					endif 
 c56c					call forth_push_numhl 
 c56c			 
 c56c					NEXTW 

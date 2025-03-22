@@ -71,13 +71,13 @@ CMD_LISTEN=2
 
 CMD_STORE=3
 # Store string
-# 03 <low> <high> <zero term packet>
+# 03 <0-255> <zero term packet>
 #
 #   stores the zero term packet as a file on local storage with store_<node id>_<address>.txt
 
 CMD_GET=4
 # Get store
-# 04 <low> <high> clock in <zero term packet>
+# 04 <0-255> <zero term packet>
 #
 # gets the zero term packet as a file on local storage with store_<node id>_<address>.txt
 
@@ -110,6 +110,13 @@ CMD_WIFI=11
 
 CMD_LANSTATUS=12
 # 12 Request current LAN status, IP, datetime etc
+
+CMD_TERM=13
+# 13 Send a byte stream to terminal hosted by server (more useful if a Pi with HDMI and not Pico)
+
+CMD_NOTE=14
+# 14 <note> <duration>  Play a note via PWM on the Pico (useful as dont have the sound chip working yet)
+
 
 
 # server (ff node) commands
@@ -292,18 +299,23 @@ def settime():
 
 def clockbyteout(byte):
    # msb first
+    while( not SCLK.value() ):
+            pass # wait for low to high clock out and move on
 
+    pat=""
     print("byte "+str(byte))
     for n in range(7,-1,-1):
         
-        #print("clock high")
+#        print("clock high")
         if ( byte & ( 1<<n)) :
             DI.high()
-            #print( " bit "+str(n)+" high  1")
+            pat=pat+"1"
+ #           print( " bit "+str(n)+" high  1")
             
         else:
             DI.low()
-            #print( " bit "+str(n)+" low   0")
+            pat=pat+"0"
+  #          print( " bit "+str(n)+" low   0")
         #time.sleep(0.025)
 
 
@@ -314,7 +326,8 @@ def clockbyteout(byte):
             pass # wait for low to high clock out and move on
 
         #time.sleep(0.025)
-        #print("clock low")
+    print(pat)
+    #    print("clock low")
 
 def clockbytein():
    # msb first

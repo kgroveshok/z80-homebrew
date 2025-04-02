@@ -3,15 +3,8 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 ------------------------------------------------
 
 
-21st Mar 2025
-------------
-
-* DONE CART not setting correct CE lines as shown by tests with picospinet.py. Helps if you use the correct word CARTDEV not CART
-* DONE BUG Init of SPI is leaving both bank 1 and cart 1 CE active. Need to do $01 BANK first to set flags correctly. Fix to disable cart 1 CE at init. Yes, in storage_init there was a set 0 on CE which should be high not low
-* DONE When switching between BANK and CARTDEV change the spi_clktime between 0 for BANK and default to $0a for CARTDEV
-* DONE Hook up Pico and get it talking over SPI to enable networking. If using SPI + CE then can have Pico being hub for a few z80 machines to network together. CE is working now but clock isnt handshaking correctly. Each SPIO seems to send a single bit... Now have some basic SPI node activity working.
-* DONE SPI Net Wifi config via Z80
-* DONE SPI Net sending messages to nodes and server to batch delivery
+3rd April 2025
+--------------
 
 * TODO SPI Net get waiting messages for node from server. Seem to have a clock out issue. SPII always gives zero. Need to use scope.
 * TODO SPI Net send internet traffic and push results to message buffer. Does get URL but blows out on memory
@@ -114,6 +107,108 @@ Nice to haves:
 * TODO Extract all of the symbols in the symbol table to be available as words in FORTH, debug and asm above
 * TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs. FORGET and LIST use a scanner. Combine with main parser and have one for keyword and another for byte code
 * TODO Add a simple assembler feature like BBC Basic
+
+2nd April 2025
+--------------
+
+Just been building a second machine to provide a way to test the Pico networking and found I hadn't documented the hook up of the LCD and keyboard properly. So here it is:
+
+
+# cld1 follows 20x2 lcd pin out
+# 40x4 lcd pin to lcd connector
+#
+# lcd1 header
+# 1 gnd
+# 2 +5v vcc
+# 3 vo
+# 4 rs
+# 5 r/w
+# 6 e
+# 7 nc
+# 8 nc
+# 9 nc
+# 10 nc
+# 11 d4   pa4
+# 12 d5   pa 5
+# 13 d6   pa 6
+# 14 d7   pa 7
+# 15 back light   need link to +5v
+# 16 gnd
+
+
+# where does e2 connect?
+
+
+# lcd 40x4 con
+# 
+# 1 db7
+# 2 db6
+# 3 db5
+# 4 db4
+# 5 db 3
+# 6 db2
+# 7 dv1
+# 8 db0
+# 9 e1
+# 10 rw
+# 11 rs
+# 12 vo
+# 13 vss
+# 14 vdd
+# 15 e2
+# 16 nc/vee
+# 17 a
+# 18 k
+
+
+Keyboard PCB hook up is reversed!
+
+Main PCB:     4 3 2 1
+Key PCB:  + - 1 2 3 4
+
+
+40x4 LCD hook up
+
+Looking to rear of LCD socket pins labelled to main board connector
+
+  +--+--+  
+ 2 |13|14|  1
+ 4 |11|12|  3
+ 6 |  |  |  5
+ 8 |  |  |  7
+10 | 5| 6|  9
+12 | 3| 4| 11
+14 | 2| 1| 13
+16 |  | x| 15
+18 |16|15| 17
+   +--+--+
+
+x - VIDCLK pin on VIDOUT connector:
+
+    ^ to back of board
+    GND
+    +5
+    VIDCLK
+    VOUT
+
+ 
+
+
+
+
+
+
+
+21st Mar 2025
+------------
+
+* DONE CART not setting correct CE lines as shown by tests with picospinet.py. Helps if you use the correct word CARTDEV not CART
+* DONE BUG Init of SPI is leaving both bank 1 and cart 1 CE active. Need to do $01 BANK first to set flags correctly. Fix to disable cart 1 CE at init. Yes, in storage_init there was a set 0 on CE which should be high not low
+* DONE When switching between BANK and CARTDEV change the spi_clktime between 0 for BANK and default to $0a for CARTDEV
+* DONE Hook up Pico and get it talking over SPI to enable networking. If using SPI + CE then can have Pico being hub for a few z80 machines to network together. CE is working now but clock isnt handshaking correctly. Each SPIO seems to send a single bit... Now have some basic SPI node activity working.
+* DONE SPI Net Wifi config via Z80
+* DONE SPI Net sending messages to nodes and server to batch delivery
+
 
 23rd Feb 2025
 -------------

@@ -117,7 +117,14 @@ CMD_TERM=13
 CMD_NOTE=14
 # 14 <note> <duration>  Play a note via PWM on the Pico (useful as dont have the sound chip working yet)
 
+CMD_GETNODE=15
+# 15 Clock back the node hub and id this device is connected to
 
+CMD_GETMAP=16
+# 16 clock back hub id and status of each node (connected or not). 
+
+CMD_GETCHR=17
+# 17 clock back next byte in buffer
 
 # server (ff node) commands
 #
@@ -132,15 +139,127 @@ import time
 
 # just one node for now
 
-DI=Pin(2,mode=Pin.IN)      #pico pin 1
-DO=Pin(1,mode=Pin.OUT)    # pico pin 2
-SCLK=Pin(0,mode=Pin.IN)   # pico pin 4
-CE=Pin(3,mode=Pin.IN)     # pico pin 5
+#DI=Pin(2,mode=Pin.IN)      #pico pin 1
+#DO=Pin(1,mode=Pin.OUT)    # pico pin 2
+#SCLK=Pin(0,mode=Pin.IN)   # pico pin 4
+#CE=Pin(3,mode=Pin.IN)     # pico pin 5
 
-node_1=0
-node_1_buff="Hi!"
-node_1_cmd=""
-node_1_strings={}
+#node_1=0
+#node_1_buff="Hi!"
+#node_1_cmd=""
+#node_1_strings={}
+
+
+# structrure to hold each node
+
+#     Node 1          Node 2    Node 3    Node 4      Node 5       Node 6
+#       GPIO  Pin  
+#SLK    0     1      4   6       8   11     12  16    16    21     20  26 
+#DO     1     2      5   7       9   12     13  17    17    22     21  27
+#DI     2     4      6   9      10   14     14  19    18    24     22  29
+#CE     3     5      7  10      11   15     15  20    19    25     26  31
+
+# sub seq steps
+SEQ_SPICLKPULSE=1
+SEQ_SPIINBIT7=2
+SEQ_SPIINBIT6=3
+SEQ_SPIINBIT5=4
+SEQ_SPIINBIT4=5
+SEQ_SPIINBIT3=6
+SEQ_SPIINBIT2=7
+SEQ_SPIINBIT1=8
+SEQ_SPIINBIT0=9
+`
+SEQ_SPIOUTBIT7=10
+SEQ_SPIOUTBIT6=11
+SEQ_SPIOUTBIT5=12
+SEQ_SPIOUTBIT4=13
+SEQ_SPIOUTBIT3=14
+SEQ_SPIOUTBIT2=15
+SEQ_SPIOUTBIT1=16
+SEQ_SPIOUTBIT0=17
+
+SEQ_SAVEPARAM1=18
+SEQ_SAVEPARAM2=19
+SEQ_SAVEPARAM3=20
+SEQ_SAVEPARAM4=21
+
+# command sequence ops
+
+seq={
+        { "cmd" : CMD_SEND,   # the command in operation for this node
+          "seq" : [ SEQ_SPIINBIT7, SEQ_SPIINBIT6, SEQ_SPIINBIT5,   ]
+        }
+
+    }
+
+# node setup
+
+nodes={
+
+    { "hub" : 0,     # this hub id (not used yet but could be used to chain hubs over ip)
+      "node" : 1,    # this current node 
+      "DIpin" : 2,      # DI pin for node
+      "DOpin" : 1,      # DO pin for node
+      "SCLKpin" : 0,    # SCLK pin for node
+      "CEpin" : 3,      # CE pin for node
+      "buff" : "",   # Current buffer
+      "cmd" : "",    # Current command selected 
+      "cmdseq": [],   # sequence of actions for current command
+      "cmdseqp": 0,   # position of sequence of actions for current command
+      "cmdspiseq": "",   # spi action for current command
+      "strings" : {},    # Strings stash for node
+      "seq" : "",     # Current position on processing command
+      "byteclk" : 0,   # Current value of clocked in byte
+      "param" : {},   # Hash of params currently being constructed for command
+      "clkstate" : 0,   # state current SCLK is in
+      "lastactive" : 0,    # unix time stamp of when we last saw a clock pulse. Used to detect dead node
+      "islive" : 0      # flag is set when any data is detected on this node
+    },
+
+
+    { "hub" : 0,     # this hub id (not used yet but could be used to chain hubs over ip)
+      "node" : 2,    # this current node 
+      "DIpin" : 6,      # DI pin for node
+      "DOpin" : 5,      # DO pin for node
+      "SCLKpin" : 4,    # SCLK pin for node
+      "CEpin" : 7,      # CE pin for node
+      "buff" : "",   # Current buffer
+      "cmd" : "",    # Current command selected 
+      "cmdseq": [],   # sequence of actions for current command
+      "cmdseqp": 0,   # position of sequence of actions for current command
+      "cmdspiseq": "",   # spi action for current command
+      "strings" : {},    # Strings stash for node
+      "seq" : "",     # Current position on processing command
+      "byteclk" : 0,   # Current value of clocked in byte
+      "param" : {},   # Hash of params currently being constructed for command
+      "clkstate" : 0,   # state current SCLK is in
+      "lastactive" : 0,    # unix time stamp of when we last saw a clock pulse. Used to detect dead node
+      "islive" : 0      # flag is set when any data is detected on this node
+    },
+
+
+
+
+
+
+}
+
+
+def setupNodes():
+    print("Setup PICO GPIO pins for SPI on each node")
+    for a in nodes:
+        print(a)
+
+        # setup SPI pin for node
+        
+        a["DI"]=Pin(a["DIpin"],mode=Pin.IN) 
+        a["DO"]=Pin(a["DOpin"],mode=Pin.OUT)
+        a["SCLK"]=Pin(a["SCLKpin"],mode=Pin.IN) 
+        a["CE"]=Pin(a["CEpin"],mode=Pin.IN)     
+
+    print(nodes)
+
 
 #READ=1   # ; Read data from memory array beginning at selected address
 #WRITE=2  #;  Write data to memory array beginning at selected address
@@ -461,6 +580,7 @@ def clockinzs():
     return s
 
 
+setupNodes()
 
 loadSettings()
 print("Tring wlan connection")
@@ -471,6 +591,62 @@ gotcmd=False
 celast=False
 curCmd=0
 while(1):
+    # smallest unit of step is a single SCLK hand shake. Multiplex the bit handshake for each node
+    # on clock pulse
+
+
+    status=""
+    for n in nodes:
+        if n["CE"].value() == 0:     # Node wants to talk
+            status=status+"Y-"
+
+            # get current clock state
+
+            clk=n["SCLK"].value()
+            preclk=n["clkstate"]
+
+            if clk:
+                status=status+"H-"
+            else:
+                status=status+"L-"
+
+            # clock state has changed
+
+            if clk <> preclk:
+                status=status="C"
+
+                # TODO if clock is low then clock in/out a single bit for current sequence
+
+                # are we looking for a command first?
+
+                if n["cmd"]="" and n["cmdspiseq"]="" :
+                    # yes, start clock in a bit
+                    n["cmdspiseq"]=SEQ_SPIINBIT7
+
+
+                # TODO clock in a bit for cmdspiseq
+
+
+                # process sequence steps
+
+                # TODO progress SPI IN
+                # TODO progress SPI OUT
+                # TODO end of in and out
+                # TODO is this byte a command? if command is empty and we have a byte then yes. Load sequence for the command
+                # TODO process a sequence 
+
+            else:
+                status=status=" "
+
+            n["clkstate"]=clk
+
+        else:
+            status=status+"N-?-? "
+
+
+    print( "Status: "+status)
+
+
     #cenow=CE.value() 
     #if cenow != celast:
     #    celast=cenow
@@ -482,89 +658,89 @@ while(1):
     #    else:
     #            print( "CE high")
             
-    if CE.value() == 0 :
-    #    print( "CE low")
-    
-        # no command is in progress so see if we have one
-        if curCmd == 0:
-            node_1=clockbytein()
-            print("Cmd: "+str(node_1))
-            curCmd=node_1
-            
-        if curCmd == CMD_WIFI:
-            print( "Setting Wifi... Waiting for SSID")
-            WifiSSID=clockinzs()
-            print( "Set Wifi SSID to "+WifiSSID)
-            print("Waiting for password")
-            WifiPass=clockinzs()
-            print( "Set Wifi password to "+WifiPass)
-            saveSettings()
-            settime()
-
-
-
-        if curCmd == CMD_SEND:
-            dest_node=clockbytein()
-            print( "Sending string to node "+str(dest_node)+"...")
-            node_1_cmd=clockinzs() 
-            # TODO save string to node's buffer list
-           
-            print("Saving string to node buffer "+str(dest_node))
-            # TODO echo back sending
-            node_1_buff=node_1_cmd
-            
-            
-            if dest_node == 255 :   # Tell the server to do something
-                print("Node is server. Handle remote commands")
-                if "GET" == node_1_cmd[:3]:    # look up something on the lan
-                        print("Get remote URL..")
-                        blob = urequests.get(node_1_cmd[4:])
-                        node_1_buff=blob.text
-                        print(blob.reason) # STRIP
-                        print(blob.text) # STRIP
-                        blob.close()
-
-            
-            
-            
-            
-        if curCmd == CMD_LISTEN:
-            print( "Node is listening...")
-            
-            if len(node_1_buff) > 0:
-                clockbyteout(1)
-                for i,c in enumerate(node_1_buff):
-                    print(ord(c))
-                    clockbyteout(ord(c))
-                    if i > 40:
-                        # TODO limit to getting 40 chars for testing. Need to do in max string
-                        # length blocks when live which is 250 chars
-                        break
-                clockbyteout(0)
-            else:
-                clockbyteout(0)
-            
-            
-        if curCmd == CMD_STORE:
-            ix=clockbytein()
-            print( "Node wants to store a string in "+str(ix)+"...")
-            s=clockinzs()
-            print("String: "+s)
-            node_1_strings[ix]=s
-            print("Stored strings: "+str(node_1_strings))
-            saveSettings()
-            
-            
-        if curCmd == CMD_GET:
-            ix=clockbytein()
-            print( "Node wants to a string from store "+str(ix)+"...")
-            for i,c in enumerate(node_1_strings[ix]):
-                    print(ord(c))
-                    clockbyteout(ord(c))
-            clockbyteout(0)
-            
-            
-        curCmd = 0
+#    if CE.value() == 0 :
+#    #    print( "CE low")
+#    
+#        # no command is in progress so see if we have one
+#        if curCmd == 0:
+#            node_1=clockbytein()
+#            print("Cmd: "+str(node_1))
+#            curCmd=node_1
+#            
+#        if curCmd == CMD_WIFI:
+#            print( "Setting Wifi... Waiting for SSID")
+#            WifiSSID=clockinzs()
+#            print( "Set Wifi SSID to "+WifiSSID)
+#            print("Waiting for password")
+#            WifiPass=clockinzs()
+#            print( "Set Wifi password to "+WifiPass)
+#            saveSettings()
+#            settime()
+#
+#
+#
+#        if curCmd == CMD_SEND:
+#            dest_node=clockbytein()
+#            print( "Sending string to node "+str(dest_node)+"...")
+#            node_1_cmd=clockinzs() 
+#            # TODO save string to node's buffer list
+#           
+#            print("Saving string to node buffer "+str(dest_node))
+#            # TODO echo back sending
+#            node_1_buff=node_1_cmd
+#            
+#            
+#            if dest_node == 255 :   # Tell the server to do something
+#                print("Node is server. Handle remote commands")
+#                if "GET" == node_1_cmd[:3]:    # look up something on the lan
+#                        print("Get remote URL..")
+#                        blob = urequests.get(node_1_cmd[4:])
+#                        node_1_buff=blob.text
+#                        print(blob.reason) # STRIP
+#                        print(blob.text) # STRIP
+#                        blob.close()
+#
+#            
+#            
+#            
+#            
+#        if curCmd == CMD_LISTEN:
+#            print( "Node is listening...")
+#            
+#            if len(node_1_buff) > 0:
+#                clockbyteout(1)
+#                for i,c in enumerate(node_1_buff):
+#                    print(ord(c))
+#                    clockbyteout(ord(c))
+#                    if i > 40:
+#                        # TODO limit to getting 40 chars for testing. Need to do in max string
+#                        # length blocks when live which is 250 chars
+#                        break
+#                clockbyteout(0)
+#            else:
+#                clockbyteout(0)
+#            
+#            
+#        if curCmd == CMD_STORE:
+#            ix=clockbytein()
+#            print( "Node wants to store a string in "+str(ix)+"...")
+#            s=clockinzs()
+#            print("String: "+s)
+#            node_1_strings[ix]=s
+#            print("Stored strings: "+str(node_1_strings))
+#            saveSettings()
+#            
+#            
+#        if curCmd == CMD_GET:
+#            ix=clockbytein()
+#            print( "Node wants to a string from store "+str(ix)+"...")
+#            for i,c in enumerate(node_1_strings[ix]):
+#                    print(ord(c))
+#                    clockbyteout(ord(c))
+#            clockbyteout(0)
+#            
+#            
+#        curCmd = 0
         # chip has been selected
 
         # test data

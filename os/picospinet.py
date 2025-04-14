@@ -161,23 +161,23 @@ import time
 
 # sub seq steps
 SEQ_SPICLKPULSE=1
-SEQ_SPIINBIT7=2
-SEQ_SPIINBIT6=3
-SEQ_SPIINBIT5=4
-SEQ_SPIINBIT4=5
-SEQ_SPIINBIT3=6
-SEQ_SPIINBIT2=7
-SEQ_SPIINBIT1=8
-SEQ_SPIINBIT0=9
+SEQ_SPIINBIT7=9
+SEQ_SPIINBIT6=8
+SEQ_SPIINBIT5=7
+SEQ_SPIINBIT4=6
+SEQ_SPIINBIT3=5
+SEQ_SPIINBIT2=4
+SEQ_SPIINBIT1=3
+SEQ_SPIINBIT0=2
 `
-SEQ_SPIOUTBIT7=10
-SEQ_SPIOUTBIT6=11
-SEQ_SPIOUTBIT5=12
-SEQ_SPIOUTBIT4=13
-SEQ_SPIOUTBIT3=14
-SEQ_SPIOUTBIT2=15
-SEQ_SPIOUTBIT1=16
-SEQ_SPIOUTBIT0=17
+SEQ_SPIOUTBIT7=17
+SEQ_SPIOUTBIT6=16
+SEQ_SPIOUTBIT5=15
+SEQ_SPIOUTBIT4=14
+SEQ_SPIOUTBIT3=13
+SEQ_SPIOUTBIT2=12
+SEQ_SPIOUTBIT1=11
+SEQ_SPIOUTBIT0=10
 
 SEQ_SAVEPARAM1=18
 SEQ_SAVEPARAM2=19
@@ -415,6 +415,55 @@ def settime():
                 
     print(wlan.isconnected())
 
+def nodeclockbyteout(node):
+   # msb first
+    # calc bit to clock
+    n=node["cmdspiseq"]-SEQ_SPIOUTBIT0
+    print("Node "+str(node["node"]))+": byte "+str(node["byteclk"])+" bit "+str(n))
+    byte=node["byteclk"]
+
+    if ( byte & ( 1<<n)) :
+        node["DI"].high()
+        print("Node "+str(node["node"]))+": bit high ")
+        
+    else:
+        node["DI"].low()
+        print("Node "+str(node["node"]))+": bit low ")
+
+    n=node["cmdspiseq"]-1
+
+    if n < SEQ_SPIOUTBIT0:
+        n=-1
+
+    return n
+
+
+def nodeclockbytein(node):
+   # msb first
+    n=node["cmdspiseq"]-SEQ_SPIINBIT0
+    print("Node "+str(node["node"]))+": byte "+str(node["byteclk"])+" bit "+str(n))
+    byte=node["byteclk"]
+    bit=node["DI"].value()
+    if bit  :
+ #       print( " bit "+str(n)+" is high   1")
+        byte=(byte<< 1 ) +1
+        
+    #    
+    else:
+  #      print( " bit "+str(n)+" is low 0")
+        byte=(byte<< 1 ) 
+
+    #print(b)
+
+    node["byteclk"]=byte
+    print("Node "+str(node["node"]))+": byte "+str(byte))
+
+    n=node["cmdspiseq"]-1
+
+    if n < SEQ_SPIINBIT0:
+        n=-1
+
+    return n
 
 def clockbyteout(byte):
    # msb first
@@ -595,10 +644,9 @@ while(1):
     # on clock pulse
 
 
-    status=""
     for n in nodes:
         if n["CE"].value() == 0:     # Node wants to talk
-            status=status+"Y-"
+            print( "Node %d: CE low" % n["node"])
 
             # get current clock state
 
@@ -606,45 +654,71 @@ while(1):
             preclk=n["clkstate"]
 
             if clk:
-                status=status+"H-"
+                print( "Node %d: SCLK high" % n["node"])
             else:
-                status=status+"L-"
+                print( "Node %d: SCLK low" % n["node"])
 
-            # clock state has changed
+            # clock state has changed 
 
-            if clk <> preclk:
-                status=status="C"
+            if clk <> preclk :
+                print( "Node %d: SCLK state change" % n["node"])
 
-                # TODO if clock is low then clock in/out a single bit for current sequence
+                if clk == 0:
 
-                # are we looking for a command first?
+                    # act on a low state
 
-                if n["cmd"]="" and n["cmdspiseq"]="" :
-                    # yes, start clock in a bit
-                    n["cmdspiseq"]=SEQ_SPIINBIT7
+                    # TODO if clock is low then clock in/out a single bit for current sequence
+
+                    # are we looking for a command first?
+
+                    if n["cmd"]="" and n["cmdspiseq"]=0 :
+                        # yes, start clock in a bit
+                        n["cmdspiseq"]=SEQ_SPIINBIT7
+                        print( "Node %d: Clock in cmd" % n["node"])
 
 
-                # TODO clock in a bit for cmdspiseq
+                    # TODO clock in a bit for cmdspiseq
 
+                    
+                    if n["cmdspiseq"] <> 0 :
+                        if n["cmdspiseq"] > SEQ_SPIINBIT7 :
+                            # OUT
+                            n["cmdspiseq"]=nodeclockbyteout(n)
+                        else:
+                            # IN
+                            n["cmdspiseq"]=nodeclockbytein(n)
 
-                # process sequence steps
+                        if n["cmdspiseq"] == -1 :
+                            # at end of byte transfer
 
-                # TODO progress SPI IN
-                # TODO progress SPI OUT
-                # TODO end of in and out
-                # TODO is this byte a command? if command is empty and we have a byte then yes. Load sequence for the command
+                            # process sequence steps
+
+                            # TODO progress SPI IN
+                            # TODO progress SPI OUT
+                            # TODO end of in and out
+                            # TODO is this byte a command? if command is empty and we have a byte then yes. Load sequence for the command
+
+                            if n["cmd" ] == "":
+                                n["cmd" ] = n["byteclk"]
+                                n["cmdseqq"]"=0
+
+                                # look up sequence for cmd
+
+                                for a in seq:
+                                    if a["cmd"] = n["cmd"] :
+                                        n["cmdseq"] = a["seq"]
+
+                    
+
                 # TODO process a sequence 
 
-            else:
-                status=status=" "
+                if n["cmd"] <> 0:
+                    # process a sequence
+                    print("Node %d : proc sequence at step %d" % ( n["node"], n["cmdseqq"] ) )
+
 
             n["clkstate"]=clk
 
-        else:
-            status=status+"N-?-? "
-
-
-    print( "Status: "+status)
 
 
     #cenow=CE.value() 

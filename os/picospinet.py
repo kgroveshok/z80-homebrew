@@ -51,6 +51,9 @@
 # use: "pass" "ssid" wifi
 # : wifi $0b spio ptr count clkstro ptr drop ptr count clkstro ; 
 
+buffers={}
+
+
 # Network protocol
 #
 # cmd dest len <packet>
@@ -134,6 +137,9 @@ CMD_GETCHR=17
 
 # All clocked in data from client to the server (z80) to be pushed to stack on the z80
 
+CMD_DEBUG=18
+# 18 dump to logs all of the node vars to console to help with debug
+
 from machine import Pin
 import time
 
@@ -169,7 +175,7 @@ SEQ_SPIINBIT3=5
 SEQ_SPIINBIT2=4
 SEQ_SPIINBIT1=3
 SEQ_SPIINBIT0=2
-`
+
 SEQ_SPIOUTBIT7=17
 SEQ_SPIOUTBIT6=16
 SEQ_SPIOUTBIT5=15
@@ -184,18 +190,38 @@ SEQ_SAVEPARAM2=19
 SEQ_SAVEPARAM3=20
 SEQ_SAVEPARAM4=21
 
+# command ops
+
+SEQ_BYTEIN=100
+SEQ_BYTEOUT=101
+SEQ_ZSTRIN=102
+SEQ_STROUT=103
+SEQ_INIT= 104    # init for the command ie setup params
+SEQ_SAVE= 105    # save any params clocked in
+SEQ_DEBUG=106
+SEQ_SYNC=107    # force sync of buffers to storage
+
 # command sequence ops
 
-seq={
+seq=[
         { "cmd" : CMD_SEND,   # the command in operation for this node
-          "seq" : [ SEQ_SPIINBIT7, SEQ_SPIINBIT6, SEQ_SPIINBIT5,   ]
-        }
+          # node to rec byte, byte to send it
+          "seq" : [ SEQ_INIT, SEQ_BYTEIN, SEQ_BYTEIN, SEQ_SAVE ]
+        },
+        { "cmd" : CMD_LISTEN,   # the command in operation for this node
+          # send back byte in buffer
+          "seq" : [ SEQ_INIT, SEQ_BYTEOUT ]
+        },
+        { "cmd" : CMD_DEBUG,   # the command in operation for this node
+          # send back byte in buffer
+          "seq" : [ SEQ_DEBUG, SEQ_SYNC ]
+        },
 
-    }
+    ]
 
 # node setup
 
-nodes={
+nodes=[
 
     { "hub" : 0,     # this hub id (not used yet but could be used to chain hubs over ip)
       "node" : 1,    # this current node 
@@ -204,52 +230,52 @@ nodes={
       "SCLKpin" : 0,    # SCLK pin for node
       "CEpin" : 3,      # CE pin for node
       "buff" : "",   # Current buffer
-      "cmd" : "",    # Current command selected 
+      "cmd" : 0,    # Current command selected 
       "cmdseq": [],   # sequence of actions for current command
       "cmdseqp": 0,   # position of sequence of actions for current command
-      "cmdspiseq": "",   # spi action for current command
+      "cmdspiseq": 0,   # spi action for current command
       "strings" : {},    # Strings stash for node
       "seq" : "",     # Current position on processing command
       "byteclk" : 0,   # Current value of clocked in byte
-      "param" : {},   # Hash of params currently being constructed for command
+      "params" : {},   # Hash of params currently being constructed for command
       "clkstate" : 0,   # state current SCLK is in
       "lastactive" : 0,    # unix time stamp of when we last saw a clock pulse. Used to detect dead node
       "islive" : 0      # flag is set when any data is detected on this node
     },
 
 
-    { "hub" : 0,     # this hub id (not used yet but could be used to chain hubs over ip)
-      "node" : 2,    # this current node 
-      "DIpin" : 6,      # DI pin for node
-      "DOpin" : 5,      # DO pin for node
-      "SCLKpin" : 4,    # SCLK pin for node
-      "CEpin" : 7,      # CE pin for node
-      "buff" : "",   # Current buffer
-      "cmd" : "",    # Current command selected 
-      "cmdseq": [],   # sequence of actions for current command
-      "cmdseqp": 0,   # position of sequence of actions for current command
-      "cmdspiseq": "",   # spi action for current command
-      "strings" : {},    # Strings stash for node
-      "seq" : "",     # Current position on processing command
-      "byteclk" : 0,   # Current value of clocked in byte
-      "param" : {},   # Hash of params currently being constructed for command
-      "clkstate" : 0,   # state current SCLK is in
-      "lastactive" : 0,    # unix time stamp of when we last saw a clock pulse. Used to detect dead node
-      "islive" : 0      # flag is set when any data is detected on this node
-    },
+    #{ "hub" : 0,     # this hub id (not used yet but could be used to chain hubs over ip)
+    #  "node" : 2,    # this current node 
+    #  "DIpin" : 6,      # DI pin for node
+    #  "DOpin" : 5,      # DO pin for node
+    #  "SCLKpin" : 4,    # SCLK pin for node
+    #  "CEpin" : 7,      # CE pin for node
+    #  "buff" : "",   # Current buffer
+    #  "cmd" : "",    # Current command selected 
+    #  "cmdseq": [],   # sequence of actions for current command
+    #  "cmdseqp": 0,   # position of sequence of actions for current command
+    #  "cmdspiseq": "",   # spi action for current command
+    #  "strings" : {},    # Strings stash for node
+    #  "seq" : "",     # Current position on processing command
+    #  "byteclk" : 0,   # Current value of clocked in byte
+    #  "param" : {},   # Hash of params currently being constructed for command
+    #  "clkstate" : 0,   # state current SCLK is in
+    #  "lastactive" : 0,    # unix time stamp of when we last saw a clock pulse. Used to detect dead node
+    #  "islive" : 0      # flag is set when any data is detected on this node
+    #},
 
 
 
 
 
 
-}
+]
 
 
 def setupNodes():
     print("Setup PICO GPIO pins for SPI on each node")
     for a in nodes:
-        print(a)
+        print("Setting up for node "+str(a["node"]))
 
         # setup SPI pin for node
         
@@ -285,7 +311,7 @@ WifiPass=""
 def saveSettings():
         global WifiSSID
         global WifiPass
-        global node_1_strings
+        global buffers
 
         settings = [ WifiSSID, WifiPass ] 
    
@@ -294,17 +320,17 @@ def saveSettings():
         with open('/spinet-wifi.json', "w") as file_write:
             json.dump(settings, file_write)
         file_write.close()
-        print( "Saving string store for node 1") # STRIP
+        print( "Saving sbuffers store for nodes") # STRIP
 #        print(settings)
-        with open('/spinet-strings-1.json', "w") as file_write:
-            json.dump(node_1_strings, file_write)
+        with open('/spinet-buffers.json', "w") as file_write:
+            json.dump(buffers, file_write)
         file_write.close()
         
 
 def loadSettings():
     global WifiSSID
     global WifiPass
-    global node_1_strings
+    global buffers
     try:
         f = open( "/spinet-wifi.json","r" )
         print( "Loading wifi settings") # STRIP
@@ -315,12 +341,12 @@ def loadSettings():
         WifiSSID= sett[0]
         WifiPass= sett[1]
         
-        f = open( "/spinet-strings-1.json","r" )
-        print( "Loading string store for node 1") # STRIP
+        f = open( "/spinet-buffers.json","r" )
+        print( "Loading buffers store for nodes") # STRIP
         p = f.read()
         sett=json.loads(p)
-        node_1_strings=sett
-        print(node_1_strings)        
+        buffers=sett
+        print(buffers)        
         
     except:
         saveSettings()
@@ -419,16 +445,18 @@ def nodeclockbyteout(node):
    # msb first
     # calc bit to clock
     n=node["cmdspiseq"]-SEQ_SPIOUTBIT0
-    print("Node "+str(node["node"]))+": byte "+str(node["byteclk"])+" bit "+str(n))
+    print("Node "+str(node["node"])+": out byte "+str(node["byteclk"])+" bit "+str(n))
+    if node["cmd"] != 0 :
+        node["byteclk"]=node["params"][node["cmdseqp"]]
     byte=node["byteclk"]
 
     if ( byte & ( 1<<n)) :
         node["DI"].high()
-        print("Node "+str(node["node"]))+": bit high ")
+        print("Node "+str(node["node"])+": bit high ")
         
     else:
         node["DI"].low()
-        print("Node "+str(node["node"]))+": bit low ")
+        print("Node "+str(node["node"])+": bit low ")
 
     n=node["cmdspiseq"]-1
 
@@ -441,7 +469,14 @@ def nodeclockbyteout(node):
 def nodeclockbytein(node):
    # msb first
     n=node["cmdspiseq"]-SEQ_SPIINBIT0
-    print("Node "+str(node["node"]))+": byte "+str(node["byteclk"])+" bit "+str(n))
+    print("Node "+str(node["node"])+": in byte "+str(node["byteclk"])+" bit "+str(n))
+    if node["cmd"] != 0 :
+        try:
+            node["byteclk"]=node["params"][node["cmdseqp"]]
+        except:
+            node["byteclk"]=0
+    byte=node["byteclk"]
+
     byte=node["byteclk"]
     bit=node["DI"].value()
     if bit  :
@@ -456,7 +491,9 @@ def nodeclockbytein(node):
     #print(b)
 
     node["byteclk"]=byte
-    print("Node "+str(node["node"]))+": byte "+str(byte))
+    if node["cmd"] != 0 :
+        node["params"][node["cmdseqp"]]=byte
+    print("Node "+str(node["node"])+": byte "+str(byte))
 
     n=node["cmdspiseq"]-1
 
@@ -610,6 +647,37 @@ def clockbytein():
  #   CE.high()
  #   print("ce high")
 
+def cmd_init(n):
+    print("Init params for command %d in node %d" % ( n["cmd"], n["node"]))
+    print(n["params"])
+    
+    if n["cmd"] == CMD_LISTEN:
+            # put a char from the current buffer into the param list to send back
+            n["params"][1]=buffers[n["node"]][1:1]
+            n["params"][2]=buffers[n["node"]][1:1]
+            buffers[n["node"]]=buffers[n["node"]][2:]
+            pass
+            
+    if n["cmd"] == CMD_SEND:
+            n["params"]={}
+        
+    print(n["params"])
+
+def cmd_save(n):
+    print("Save params for command %d in node %d" % ( n["cmd"], n["node"]))
+    print(n["params"])
+    
+    if n["cmd"] == CMD_SEND:
+        # save the param to the dest buffer
+        try:
+            curbuff=buffers[n["params"][2]]
+        except:
+            curbuff=""
+        
+        buffers[n["params"][2]]=curbuff+chr(n["params"][3])
+    
+    print(n["params"])
+    print(buffers)
 
 
 # clock in a zero term string from a node
@@ -643,25 +711,26 @@ while(1):
     # smallest unit of step is a single SCLK hand shake. Multiplex the bit handshake for each node
     # on clock pulse
 
-
+    
     for n in nodes:
+        #print("Polling node "+str(n["node"])+str(n["CE"].value()))
         if n["CE"].value() == 0:     # Node wants to talk
-            print( "Node %d: CE low" % n["node"])
+   #         print( "Node %d: CE low" % n["node"])
 
             # get current clock state
 
             clk=n["SCLK"].value()
             preclk=n["clkstate"]
 
-            if clk:
-                print( "Node %d: SCLK high" % n["node"])
-            else:
-                print( "Node %d: SCLK low" % n["node"])
+#            if clk:
+ #               print( "Node %d: SCLK high" % n["node"])
+ #           else:
+ #               print( "Node %d: SCLK low" % n["node"])
 
             # clock state has changed 
 
-            if clk <> preclk :
-                print( "Node %d: SCLK state change" % n["node"])
+            if clk != preclk :
+                #print( "Node %d: SCLK state change" % n["node"])
 
                 if clk == 0:
 
@@ -671,7 +740,7 @@ while(1):
 
                     # are we looking for a command first?
 
-                    if n["cmd"]="" and n["cmdspiseq"]=0 :
+                    if n["cmd"] == 0 and n["cmdspiseq"] == 0 :
                         # yes, start clock in a bit
                         n["cmdspiseq"]=SEQ_SPIINBIT7
                         print( "Node %d: Clock in cmd" % n["node"])
@@ -679,8 +748,16 @@ while(1):
 
                     # TODO clock in a bit for cmdspiseq
 
+# TODO save or set the current byte for in or out
+# TODO keep in sync with param and byte directly in the function def for in/out????
+
+                            #else:
+                            #        # done with a param
+                            #        n["param"][n["cmdseqp"]=n["byteclk"]
+
+
                     
-                    if n["cmdspiseq"] <> 0 :
+                    if n["cmdspiseq"] != 0 :
                         if n["cmdspiseq"] > SEQ_SPIINBIT7 :
                             # OUT
                             n["cmdspiseq"]=nodeclockbyteout(n)
@@ -698,24 +775,74 @@ while(1):
                             # TODO end of in and out
                             # TODO is this byte a command? if command is empty and we have a byte then yes. Load sequence for the command
 
-                            if n["cmd" ] == "":
+                            if n["cmd" ] == 0:
                                 n["cmd" ] = n["byteclk"]
-                                n["cmdseqq"]"=0
+                                n["cmdseqp"]=0
+                                n["byteclk"]=0
 
                                 # look up sequence for cmd
-
+                                n["cmdseq"] =[]
                                 for a in seq:
-                                    if a["cmd"] = n["cmd"] :
+                                    if a["cmd"] == n["cmd"] :
                                         n["cmdseq"] = a["seq"]
-
+                                        print("Command sequence selected: "+str(a["seq"]))
+                                if n["cmdseq"] == []:
+                                    # no command byte seq found to exec to look for a new command again
+                                    n["cmd"]=0
+                                    
+                                
                     
 
-                # TODO process a sequence 
+                # TODO process a sequence step
 
-                if n["cmd"] <> 0:
+                if n["cmd"] != 0:
                     # process a sequence
-                    print("Node %d : proc sequence at step %d" % ( n["node"], n["cmdseqq"] ) )
+                    print("Node %d : proc sequence at step %d" % ( n["node"], n["cmdseqp"] ) )
+                    
+                    if n["cmdspiseq"] == -1 :
+                            print( "Run seq starting with "+str(n["cmdseq"]))
+                            # no byte shift in/out in progress so process setp
+                            
+                            # TODO byte in set seq
+                            if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEIN:
+                                    print( "Clock in a byte" )
+                                    n["cmdspiseq"] = SEQ_SPIINBIT7
+                            # TODO byte out set seq
+                            if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEOUT:
+                                    print( "Clock out a byte" )
+                                    n["cmdspiseq"] = SEQ_SPIOUTBIT7
+                                    
+                            # TODO do seq init call
+                            if n["cmdseq"][n["cmdseqp"]] == SEQ_INIT:
+                                cmd_init(n)
+                                
+                            # TODO do seq save params
+                            if n["cmdseq"][n["cmdseqp"]] == SEQ_SAVE:
+                                cmd_save(n)
+                            
+                            if n["cmdseq"][n["cmdseqp"]] == SEQ_DEBUG:
+                                print(n)
+                                print(buffers)
+                                saveSettings()
 
+
+                            n["cmdseqp"]=n["cmdseqp"]+1
+                            print(n["params"])
+                            print("Next step")
+                            if n["cmdseqp"] > len(n["cmdseq"])-1:
+                                # sequence complete, new command
+                                n["cmd"]=0
+                                print("Command processed. Next cmd...")
+                                n["cmdspiseq"] = 0
+                                print(n)
+                                n["byteclk"]=0
+                                
+                                
+                                
+                                n["cmdseqp"]=0
+                                
+                            
+                            
 
             n["clkstate"]=clk
 

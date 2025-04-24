@@ -3,8 +3,12 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 ------------------------------------------------
 
 
-3rd April 2025
+24rd April 2025
 --------------
+* DONE new multiplex code for SPI Net gateway can now multiplex in a command and params for the put char to buffer. 
+
+* TODO fix listen command to clock a char out from buffer. 
+* TODO Once clock out char is working then can do the rest of the commands
 
 * TODO SPI Net get waiting messages for node from server. Seem to have a clock out issue. SPII always gives zero. Need to use scope.
 * TODO SPI Net send internet traffic and push results to message buffer. Does get URL but blows out on memory

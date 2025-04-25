@@ -200,6 +200,7 @@ SEQ_INIT= 104    # init for the command ie setup params
 SEQ_SAVE= 105    # save any params clocked in
 SEQ_DEBUG=106
 SEQ_SYNC=107    # force sync of buffers to storage
+SEQ_NOP=108
 
 # command sequence ops
 
@@ -210,7 +211,7 @@ seq=[
         },
         { "cmd" : CMD_LISTEN,   # the command in operation for this node
           # send back byte in buffer
-          "seq" : [ SEQ_INIT, SEQ_BYTEOUT ]
+          "seq" : [ SEQ_INIT, SEQ_BYTEOUT, SEQ_NOP ]
         },
         { "cmd" : CMD_DEBUG,   # the command in operation for this node
           # send back byte in buffer
@@ -450,6 +451,7 @@ def nodeclockbyteout(node):
         node["byteclk"]=node["params"][node["cmdseqp"]]
     byte=node["byteclk"]
 
+
     if ( byte & ( 1<<n)) :
         node["DI"].high()
         print("Node "+str(node["node"])+": bit high ")
@@ -653,9 +655,15 @@ def cmd_init(n):
     
     if n["cmd"] == CMD_LISTEN:
             # put a char from the current buffer into the param list to send back
-            n["params"][1]=buffers[n["node"]][1:1]
-            n["params"][2]=buffers[n["node"]][1:1]
-            buffers[n["node"]]=buffers[n["node"]][2:]
+            print(buffers)
+            b=buffers[str(n["node"])]
+            if len(b) > 0:
+                n["params"][1]=ord(b[0:1])
+                n["params"][2]=ord(b[0:1])
+                buffers[str(n["node"])]=b[1:]
+            else:
+                n["params"][1]=0
+                n["params"][2]=0
             pass
             
     if n["cmd"] == CMD_SEND:
@@ -670,11 +678,11 @@ def cmd_save(n):
     if n["cmd"] == CMD_SEND:
         # save the param to the dest buffer
         try:
-            curbuff=buffers[n["params"][2]]
+            curbuff=buffers[str(n["params"][2])]
         except:
             curbuff=""
         
-        buffers[n["params"][2]]=curbuff+chr(n["params"][3])
+        buffers[str(n["params"][2])]=curbuff+chr(n["params"][3])
     
     print(n["params"])
     print(buffers)

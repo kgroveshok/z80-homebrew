@@ -189,10 +189,14 @@ if STORAGE_SE
 
 		call spi_read_byte
 
+		if DEBUG_FORTH_WORDS
+			DMARK "Si2"
+			CALLMONITOR
+		endif
 		ld h, 0
 		ld l, a
 		if DEBUG_FORTH_WORDS
-			DMARK "Si2"
+			DMARK "Si3"
 			CALLMONITOR
 		endif
 		call forth_push_numhl

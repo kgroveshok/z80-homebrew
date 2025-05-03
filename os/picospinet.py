@@ -211,7 +211,7 @@ seq=[
         },
         { "cmd" : CMD_LISTEN,   # the command in operation for this node
           # send back byte in buffer
-          "seq" : [ SEQ_INIT, SEQ_BYTEOUT, SEQ_NOP ]
+          "seq" : [ SEQ_INIT, SEQ_BYTEOUT ]
         },
         { "cmd" : CMD_DEBUG,   # the command in operation for this node
           # send back byte in buffer
@@ -453,11 +453,11 @@ def nodeclockbyteout(node):
 
 
     if ( byte & ( 1<<n)) :
-        node["DI"].high()
+        node["DO"].high()
         print("Node "+str(node["node"])+": bit high ")
         
     else:
-        node["DI"].low()
+        node["DO"].low()
         print("Node "+str(node["node"])+": bit low ")
 
     n=node["cmdspiseq"]-1
@@ -513,16 +513,16 @@ def clockbyteout(byte):
     print("byte "+str(byte))
     for n in range(7,-1,-1):
         
-#        print("clock high")
+        print("clock high")
         if ( byte & ( 1<<n)) :
-            DI.high()
+            DO.high()
             pat=pat+"1"
- #           print( " bit "+str(n)+" high  1")
+            print( " bit "+str(n)+" high  1")
             
         else:
-            DI.low()
+            DO.low()
             pat=pat+"0"
-  #          print( " bit "+str(n)+" low   0")
+            print( " bit "+str(n)+" low   0")
         #time.sleep(0.025)
 
 
@@ -534,7 +534,7 @@ def clockbyteout(byte):
 
         #time.sleep(0.025)
     print(pat)
-    #    print("clock low")
+    print("clock low")
 
 def clockbytein():
    # msb first
@@ -664,6 +664,9 @@ def cmd_init(n):
             else:
                 n["params"][1]=0
                 n["params"][2]=0
+                
+            #n["params"][1]=32
+            #n["params"][2]=32
             pass
             
     if n["cmd"] == CMD_SEND:
@@ -715,6 +718,12 @@ fromserver=""
 gotcmd=False
 celast=False
 curCmd=0
+
+
+#while(1):
+#    clockbyteout(33);
+
+
 while(1):
     # smallest unit of step is a single SCLK hand shake. Multiplex the bit handshake for each node
     # on clock pulse
@@ -725,24 +734,40 @@ while(1):
         if n["CE"].value() == 0:     # Node wants to talk
    #         print( "Node %d: CE low" % n["node"])
 
+
+#**** for clock out state change needs to occur after data presented on the bus. it is a clock cycle begind the wave
+
+
             # get current clock state
 
             clk=n["SCLK"].value()
             preclk=n["clkstate"]
 
-#            if clk:
- #               print( "Node %d: SCLK high" % n["node"])
- #           else:
- #               print( "Node %d: SCLK low" % n["node"])
+            #if clk:
+            #    print( "Node %d: SCLK high" % n["node"])
+            #else:
+            #    print( "Node %d: SCLK low" % n["node"])
 
             # clock state has changed 
 
             if clk != preclk :
-                #print( "Node %d: SCLK state change" % n["node"])
+                print( "Node %d: SCLK state change" % n["node"])
+                if clk:
+                    print( "Node %d: SCLK high" % n["node"])
+                else:
+                    print( "Node %d: SCLK low" % n["node"])
+
+                if clk == 1:
+                    if n["cmdspiseq"] != 0 :
+                        if n["cmdspiseq"] > SEQ_SPIINBIT7 :
+                            # OUT
+                            n["cmdspiseq"]=nodeclockbyteout(n)
+                    
+                    
 
                 if clk == 0:
 
-                    # act on a low state
+                    # act on a low state (for clock in)
 
                     # TODO if clock is low then clock in/out a single bit for current sequence
 
@@ -768,7 +793,8 @@ while(1):
                     if n["cmdspiseq"] != 0 :
                         if n["cmdspiseq"] > SEQ_SPIINBIT7 :
                             # OUT
-                            n["cmdspiseq"]=nodeclockbyteout(n)
+     #                       n["cmdspiseq"]=nodeclockbyteout(n)
+                            pass
                         else:
                             # IN
                             n["cmdspiseq"]=nodeclockbytein(n)
@@ -803,9 +829,9 @@ while(1):
 
                 # TODO process a sequence step
 
-                if n["cmd"] != 0:
+            if n["cmd"] != 0:
                     # process a sequence
-                    print("Node %d : proc sequence at step %d" % ( n["node"], n["cmdseqp"] ) )
+            #        print("Node %d : proc sequence at step %d" % ( n["node"], n["cmdseqp"] ) )
                     
                     if n["cmdspiseq"] == -1 :
                             print( "Run seq starting with "+str(n["cmdseq"]))
@@ -849,7 +875,13 @@ while(1):
                                 
                                 n["cmdseqp"]=0
                                 
-                            
+                                #if clk == 1:
+                                #    if n["cmdspiseq"] != 0 :
+                                #        if n["cmdspiseq"] > SEQ_SPIINBIT7 :
+                                #            # OUT
+                                #            n["cmdspiseq"]=nodeclockbyteout(n)
+                                
+                                            
                             
 
             n["clkstate"]=clk

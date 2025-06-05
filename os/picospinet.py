@@ -58,19 +58,18 @@ buffers={}
 #
 # cmd dest len <packet>
 
-CMD_SEND=1
-# Send message to node 1-4 - node ff is ext
-# 01 <node> <zero term packet>
+CMD_PUTCHR=1
+# Send char to node 1-4 - node ff is ext
+# 01 -> 
+# <node> -> 
+# <char> ->
 #
-# will add the zero term packet to the receive buffer of the node
-# if the node is ff then it is taken as a server command
-# adds the zero term packet as a file on local storage with rec_<dest id>_<src id>_<seq>.txt
 
-CMD_LISTEN=2
+CMD_GETCHR=2
 # Listen for message to receive
 # 02  ->
-#  <source node id> or 00 if no data waiting
-#  if >0 then clock in <zero term packet>
+#   <-  <source node id> or 00 if no data waiting
+#       if >0 then clock in <zero term packet>
 
 CMD_STORE=3
 # Store string
@@ -95,6 +94,11 @@ CMD_NEXT=6
 # 06 next buffer
 # removes most recent rec_<node id>_*.txt 
 
+
+
+# will add the zero term packet to the receive buffer of the node
+# if the node is ff then it is taken as a server command
+# adds the zero term packet as a file on local storage with rec_<dest id>_<src id>_<seq>.txt
 
 CMD_UNIXTS=7
 # 07   get unix time stamp
@@ -166,24 +170,25 @@ import time
 #CE     3     5      7  10      11   15     15  20    19    25     26  31
 
 # sub seq steps
-SEQ_SPICLKPULSE=1
-SEQ_SPIINBIT7=9
-SEQ_SPIINBIT6=8
-SEQ_SPIINBIT5=7
-SEQ_SPIINBIT4=6
-SEQ_SPIINBIT3=5
-SEQ_SPIINBIT2=4
-SEQ_SPIINBIT1=3
-SEQ_SPIINBIT0=2
 
-SEQ_SPIOUTBIT7=17
-SEQ_SPIOUTBIT6=16
-SEQ_SPIOUTBIT5=15
-SEQ_SPIOUTBIT4=14
-SEQ_SPIOUTBIT3=13
-SEQ_SPIOUTBIT2=12
-SEQ_SPIOUTBIT1=11
-SEQ_SPIOUTBIT0=10
+SEQ_SPICLKPULSE=1
+#SEQ_SPIINBIT7=9
+#SEQ_SPIINBIT6=8
+#SEQ_SPIINBIT5=7
+#SEQ_SPIINBIT4=6
+#SEQ_SPIINBIT3=5
+#SEQ_SPIINBIT2=4
+#SEQ_SPIINBIT1=3
+#SEQ_SPIINBIT0=2
+#
+#SEQ_SPIOUTBIT7=17
+#SEQ_SPIOUTBIT6=16
+#SEQ_SPIOUTBIT5=15
+#SEQ_SPIOUTBIT4=14
+#SEQ_SPIOUTBIT3=13
+#SEQ_SPIOUTBIT2=12
+#SEQ_SPIOUTBIT1=11
+#SEQ_SPIOUTBIT0=10
 
 SEQ_SAVEPARAM1=18
 SEQ_SAVEPARAM2=19
@@ -205,11 +210,11 @@ SEQ_NOP=108
 # command sequence ops
 
 seq=[
-        { "cmd" : CMD_SEND,   # the command in operation for this node
+        { "cmd" : CMD_PUTCHR,   # the command in operation for this node
           # node to rec byte, byte to send it
           "seq" : [ SEQ_INIT, SEQ_BYTEIN, SEQ_BYTEIN, SEQ_SAVE ]
         },
-        { "cmd" : CMD_LISTEN,   # the command in operation for this node
+        { "cmd" : CMD_GETCHR,   # the command in operation for this node
           # send back byte in buffer
           "seq" : [ SEQ_INIT, SEQ_BYTEOUT ]
         },
@@ -234,12 +239,12 @@ nodes=[
       "cmd" : 0,    # Current command selected 
       "cmdseq": [],   # sequence of actions for current command
       "cmdseqp": 0,   # position of sequence of actions for current command
-      "cmdspiseq": 0,   # spi action for current command
+      "cmdspiseq": -1,   # spi action for current command
       "strings" : {},    # Strings stash for node
       "seq" : "",     # Current position on processing command
-      "byteclk" : 0,   # Current value of clocked in byte
+      "byteclk" : 0,   # Current value of clocked in/out byte
       "params" : {},   # Hash of params currently being constructed for command
-      "clkstate" : 0,   # state current SCLK is in
+      "clkstate" : 0,   # state current SCLK 
       "lastactive" : 0,    # unix time stamp of when we last saw a clock pulse. Used to detect dead node
       "islive" : 0      # flag is set when any data is detected on this node
     },
@@ -445,7 +450,7 @@ def settime():
 def nodeclockbyteout(node):
    # msb first
     # calc bit to clock
-    n=node["cmdspiseq"]-SEQ_SPIOUTBIT0
+    n=node["cmdspiseq"]
     print("Node "+str(node["node"])+": out byte "+str(node["byteclk"])+" bit "+str(n))
     if node["cmd"] != 0 :
         node["byteclk"]=node["params"][node["cmdseqp"]]
@@ -462,7 +467,7 @@ def nodeclockbyteout(node):
 
     n=node["cmdspiseq"]-1
 
-    if n < SEQ_SPIOUTBIT0:
+    if n < 0:
         n=-1
 
     return n
@@ -470,14 +475,14 @@ def nodeclockbyteout(node):
 
 def nodeclockbytein(node):
    # msb first
-    n=node["cmdspiseq"]-SEQ_SPIINBIT0
+    n=node["cmdspiseq"]
     print("Node "+str(node["node"])+": in byte "+str(node["byteclk"])+" bit "+str(n))
     if node["cmd"] != 0 :
         try:
             node["byteclk"]=node["params"][node["cmdseqp"]]
         except:
             node["byteclk"]=0
-    byte=node["byteclk"]
+    #byte=node["byteclk"]
 
     byte=node["byteclk"]
     bit=node["DI"].value()
@@ -499,7 +504,7 @@ def nodeclockbytein(node):
 
     n=node["cmdspiseq"]-1
 
-    if n < SEQ_SPIINBIT0:
+    if n < 0:
         n=-1
 
     return n
@@ -653,23 +658,25 @@ def cmd_init(n):
     print("Init params for command %d in node %d" % ( n["cmd"], n["node"]))
     print(n["params"])
     
-    if n["cmd"] == CMD_LISTEN:
+    if n["cmd"] == CMD_GETCHR:
             # put a char from the current buffer into the param list to send back
             print(buffers)
             b=buffers[str(n["node"])]
             if len(b) > 0:
-                n["params"][1]=ord(b[0:1])
-                n["params"][2]=ord(b[0:1])
+                n["byteclk"]=ord(b[0:1])
+            #    n["params"][1]=ord(b[0:1])
+            #    n["params"][2]=ord(b[0:1])
                 buffers[str(n["node"])]=b[1:]
             else:
-                n["params"][1]=0
-                n["params"][2]=0
+                n["byteclk"]=0
+                #n["params"][1]=0
+                #n["params"][2]=0
                 
             #n["params"][1]=32
             #n["params"][2]=32
             pass
             
-    if n["cmd"] == CMD_SEND:
+    if n["cmd"] == CMD_PUTCHR:
             n["params"]={}
         
     print(n["params"])
@@ -678,7 +685,7 @@ def cmd_save(n):
     print("Save params for command %d in node %d" % ( n["cmd"], n["node"]))
     print(n["params"])
     
-    if n["cmd"] == CMD_SEND:
+    if n["cmd"] == CMD_PUTCHR:
         # save the param to the dest buffer
         try:
             curbuff=buffers[str(n["params"][2])]
@@ -758,6 +765,8 @@ while(1):
                     print( "Node %d: SCLK low" % n["node"])
 
 #                if clk == 1:
+#                # TODO detect if wanting to clock data out and if so and at first state set byte to
+#                go out
 #                    if n["cmdspiseq"] != 0 :
 #                        if n["cmdspiseq"] > SEQ_SPIINBIT7 :
 #                            # OUT
@@ -775,10 +784,11 @@ while(1):
 
                     # are we looking for a command first?
 
-                    if n["cmd"] == 0 and n["cmdspiseq"] == 0 :
+# TODO only clock in if a clock in process
+                    if n["cmd"] == 0 and n["cmdspiseq"] == -1 :
                         # yes, start clock in a bit
-                        n["cmdspiseq"]=SEQ_SPIINBIT7
-                        print( "Node %d: Clock in cmd" % n["node"])
+                        n["cmdspiseq"]=7
+                        print( "Node %d: Start clock in cmd" % n["node"])
 
 
                     # TODO clock in a bit for cmdspiseq
@@ -792,14 +802,8 @@ while(1):
 
 
                     
-                    if n["cmdspiseq"] != 0 :
-                        if n["cmdspiseq"] > SEQ_SPIINBIT7 :
-                            # OUT
-     #                       n["cmdspiseq"]=nodeclockbyteout(n)
-                            pass
-                        else:
-                            # IN
-                            n["cmdspiseq"]=nodeclockbytein(n)
+                    if n["cmdspiseq"] >= 0 :
+                        n["cmdspiseq"]=nodeclockbytein(n)
 
                         if n["cmdspiseq"] == -1 :
                             # at end of byte transfer
@@ -842,11 +846,11 @@ while(1):
                             # TODO byte in set seq
                             if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEIN:
                                     print( "Clock in a byte" )
-                                    n["cmdspiseq"] = SEQ_SPIINBIT7
+                                    n["cmdspiseq"] = 7
                             # TODO byte out set seq
                             if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEOUT:
                                     print( "Clock out a byte" )
-                                    n["cmdspiseq"] = SEQ_SPIOUTBIT7
+                                    n["cmdspiseq"] = 7
                                     
                             # TODO do seq init call
                             if n["cmdseq"][n["cmdseqp"]] == SEQ_INIT:

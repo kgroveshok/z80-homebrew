@@ -757,11 +757,13 @@ while(1):
                 else:
                     print( "Node %d: SCLK low" % n["node"])
 
-                if clk == 1:
-                    if n["cmdspiseq"] != 0 :
-                        if n["cmdspiseq"] > SEQ_SPIINBIT7 :
-                            # OUT
-                            n["cmdspiseq"]=nodeclockbyteout(n)
+#                if clk == 1:
+#                    if n["cmdspiseq"] != 0 :
+#                        if n["cmdspiseq"] > SEQ_SPIINBIT7 :
+#                            # OUT
+##                            cmd_init()                            
+##                            n["cmdspiseq"]=nodeclockbyteout(n["params"][1])
+#                            n["cmdspiseq"]=nodeclockbyteout(65)
                     
                     
 
@@ -831,7 +833,7 @@ while(1):
 
             if n["cmd"] != 0:
                     # process a sequence
-            #        print("Node %d : proc sequence at step %d" % ( n["node"], n["cmdseqp"] ) )
+                    print("Node %d : proc sequence at step %d" % ( n["node"], n["cmdseqp"] ) )
                     
                     if n["cmdspiseq"] == -1 :
                             print( "Run seq starting with "+str(n["cmdseq"]))

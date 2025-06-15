@@ -72,13 +72,13 @@ CMD_GETCHR=0x11
 #   <-  <source node id> or 00 if no data waiting
 #       if >0 then clock in <zero term packet>
 
-CMD_PUTSTRZ=0x12
+CMD_PUTSSTRZ=0x12
 # Store string
 # 03 <0-255> <zero term packet>
 #
 #   stores the zero term packet as a file on local storage with store_<node id>_<address>.txt
 
-CMD_GETSTRZ=0x13
+CMD_GETSSTRZ=0x13
 # Get stored string
 # 04 <0-255> <zero term packet>
 #
@@ -217,7 +217,8 @@ SEQ_END=109
 SEQ_SAVEBYTE=110
 SEQ_REPEAT=150
 SEQ_UNTILZ=151
-
+SEQ_STRSZNEXT=153
+ 
 # command sequence ops
 
 seq=[
@@ -247,7 +248,7 @@ seq=[
           "seq" : [ SEQ_INIT,  SEQ_END ]
         },
 
-        { "cmd" : CMD_PUTSTRZ,   # the command in operation for this node
+        { "cmd" : CMD_PUTSSTRZ,   # the command in operation for this node
           # str index, then zero term string
           "seq" : [ SEQ_INIT,
                     SEQ_BYTEIN,    # index
@@ -258,9 +259,9 @@ seq=[
                     SEQ_UNTILZ,
                     SEQ_END ]
         },
-        { "cmd" : CMD_GETSTRZ,   # the command in operation for this node
+        { "cmd" : CMD_GETSSTRZ,   # the command in operation for this node
           # node to rec byte, byte to send it
-          "seq" : [ SEQ_INIT,  SEQ_END ]
+          "seq" : [ SEQ_INIT, SEQ_BYTEIN, SEQ_SAVEBYTE, SEQ_REPEAT, SEQ_STRZNEXT, SEQ_BYTEOUT, SEQ_UNTILZ,  SEQ_END ]
         },
     ]
 
@@ -516,11 +517,11 @@ def nodeclockbyteout(node):
 
     if ( byte & ( 1<<n)) :
         node["DO"].high()
-        print("Node "+str(node["node"])+": bit high ")
+#        print("Node "+str(node["node"])+": bit high ")
         
     else:
         node["DO"].low()
-        print("Node "+str(node["node"])+": bit low ")
+ #       print("Node "+str(node["node"])+": bit low ")
 
     n=node["cmdspiseq"]-1
 
@@ -544,12 +545,12 @@ def nodeclockbytein(node):
     byte=node["byteclk"]
     bit=node["DI"].value()
     if bit  :
-        print( " bit "+str(n)+" is high   1")
+ #       print( " bit "+str(n)+" is high   1")
         byte=(byte<< 1 ) +1
         
     #    
     else:
-        print( " bit "+str(n)+" is low 0")
+  #      print( " bit "+str(n)+" is low 0")
         byte=(byte<< 1 ) 
 
     #print(b)
@@ -713,7 +714,8 @@ def nodeclockbytein(node):
 
 def cmd_init(n):
     print("Init params for command %d in node %d" % ( n["cmd"], n["node"]))
-    print(n["params"])
+#    print(n["params"])
+    n["params"]={}
     
     if n["cmd"] == CMD_GETCHR:
             # put a char from the current buffer into the param list to send back
@@ -733,14 +735,18 @@ def cmd_init(n):
             #n["params"][2]=32
             pass
             
-    if n["cmd"] == CMD_PUTCHR:
-            n["params"]={}
+#    if n["cmd"] == CMD_PUTCHR:
+#            n["params"]={}##
 
-    if n["cmd"] == CMD_PUTSTRZ:
-            n["params"]={}
-        
+    #if n["cmd"] == CMD_PUTSTRZ:
+    #        n["params"]={}
+    
+    if n["cmd"] == CMD_GETSSTRZ:
+            print("getz init counter")
+            n["params"]['c']=0
+    
     if n["cmd"] == CMD_CLRALL:
-            n["params"]={}
+     #       n["params"]={}
             buffers[str(n["node"])]=""
             
     print(n["params"])
@@ -760,7 +766,7 @@ def cmd_end(n):
         
         buffers[str(n["params"][1])]=curbuff+chr(n["params"][2])
 
-    if n["cmd"] == CMD_PUTSTRZ:
+    if n["cmd"] == CMD_PUTSSTRZ:
         # param one is the string index followed by the string
         p=2
         s=""
@@ -994,7 +1000,24 @@ while(1):
                                     print( "Start clock out a byte" )
                                     n["cmdspiseq"] = SEQ_SPIBIT7
 
-                                    
+
+                            if n["cmdseq"][n["cmdseqp"]] == SEQ_SSTRZNEXT:
+                                print("Clock out stored string content")
+                                s1=n["strings"][str(n["params"][2])]
+                                ct=n["params"]['c']
+                                try:
+                                    c=s1[ct]
+                                    n["byteclk"]=ord(c)
+                                except:
+                                    n["byteclk"]=0
+                                #print(s1)
+                                #print(ct)
+                                #print(c)
+                                
+                                print(n["byteclk"])
+                                n["params"]['c']=ct+1
+                                n["cmdseqp"]=n["cmdseqp"]+1
+
                             # TODO do seq init call
                             if n["cmdseq"][n["cmdseqp"]] == SEQ_INIT:
                                 cmd_init(n)

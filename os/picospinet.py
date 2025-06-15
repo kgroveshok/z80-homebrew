@@ -60,13 +60,13 @@ buffers={}
 # cmd dest len <packet>
 
 CMD_PUTCHR=0x10
-# Send char to node 1-4 - node ff is ext
+# Send char to node 1-4 - node ff is ext node 0 is all (todo)
 # 01 -> 
 # <node> -> 
 # <char> ->
 #
 
-CMD_GETCHR=0x12
+CMD_GETCHR=0x11
 # Listen for message to receive
 # 02  ->
 #   <-  <source node id> or 00 if no data waiting
@@ -84,7 +84,7 @@ CMD_GETCHR=0x12
 #
 # gets the zero term packet as a file on local storage with store_<node id>_<address>.txt
 
-#CMD_CLRALL=5
+CMD_CLRALL=0x15
 # clear receive buffer 
 #
 # 05
@@ -173,12 +173,12 @@ import time
 
 # sub seq steps
 
-SEQ_SPICLKPULSE=1
+#SEQ_SPICLKPULSE=1
 
-SEQ_SAVEPARAM1=18
-SEQ_SAVEPARAM2=19
-SEQ_SAVEPARAM3=20
-SEQ_SAVEPARAM4=21
+#SEQ_SAVEPARAM1=18
+#SEQ_SAVEPARAM2=19
+#SEQ_SAVEPARAM3=20
+#SEQ_SAVEPARAM4=21
 
 # command op codes
 
@@ -193,23 +193,23 @@ SEQ_SPIBIT0=0
 
 
 
-SEQ_SPIINBIT7=9
-SEQ_SPIINBIT6=8
-SEQ_SPIINBIT5=7
-SEQ_SPIINBIT4=6
-SEQ_SPIINBIT3=5
-SEQ_SPIINBIT2=4
-SEQ_SPIINBIT1=3
-SEQ_SPIINBIT0=2
+#SEQ_SPIINBIT7=9
+#SEQ_SPIINBIT6=8
+#SEQ_SPIINBIT5=7
+#SEQ_SPIINBIT4=6
+#SEQ_SPIINBIT3=5
+#SEQ_SPIINBIT2=4
+#SEQ_SPIINBIT1=3
+#SEQ_SPIINBIT0=2
 #
-SEQ_SPIOUTBIT7=17
-SEQ_SPIOUTBIT6=16
-SEQ_SPIOUTBIT5=15
-SEQ_SPIOUTBIT4=14
-SEQ_SPIOUTBIT3=13
-SEQ_SPIOUTBIT2=12
-SEQ_SPIOUTBIT1=11
-SEQ_SPIOUTBIT0=10
+#SEQ_SPIOUTBIT7=17
+#SEQ_SPIOUTBIT6=16
+#SEQ_SPIOUTBIT5=15
+#SEQ_SPIOUTBIT4=14
+#SEQ_SPIOUTBIT3=13
+#SEQ_SPIOUTBIT2=12
+#SEQ_SPIOUTBIT1=11
+#SEQ_SPIOUTBIT0=10
 
 SEQ_BYTEIN=100
 SEQ_BYTEOUT=101
@@ -246,6 +246,17 @@ seq=[
         { "cmd" : CMD_DEBUG,   # the command in operation for this node
           # send back byte in buffer
           "seq" : [ SEQ_DEBUG, SEQ_SYNC ]
+        },
+        { "cmd" : CMD_CLRALL,   # the command in operation for this node
+          # node to rec byte, byte to send it
+          "seq" : [ SEQ_INIT, 
+    #        SEQ_SPIINBIT7, SEQ_SPIINBIT6, SEQ_SPIINBIT5, SEQ_SPIINBIT4, SEQ_SPIINBIT3, SEQ_SPIINBIT2, SEQ_SPIINBIT1, SEQ_SPIINBIT0, 
+            #SEQ_BYTEIN,
+            #SEQ_SAVEBYTE, 
+    #        SEQ_SPIINBIT7, SEQ_SPIINBIT6, SEQ_SPIINBIT5, SEQ_SPIINBIT4, SEQ_SPIINBIT3, SEQ_SPIINBIT2, SEQ_SPIINBIT1, SEQ_SPIINBIT0, 
+            #SEQ_BYTEIN,
+            #SEQ_SAVEBYTE, 
+            SEQ_END ]
         },
 
     ]
@@ -477,8 +488,8 @@ def nodeclockbyteout(node):
     # calc bit to clock
     n=node["cmdspiseq"]
     print("Node "+str(node["node"])+": out byte "+str(node["byteclk"])+" bit "+str(n))
-    if node["cmd"] != 0 :
-        node["byteclk"]=node["params"][node["cmdseqp"]]
+    #if node["cmd"] != 0 :
+    #    node["byteclk"]=node["params"][node["cmdseqp"]]
     byte=node["byteclk"]
 
 
@@ -502,22 +513,22 @@ def nodeclockbytein(node):
    # msb first
     n=node["cmdspiseq"]
     print("Node "+str(node["node"])+": in byte "+str(node["byteclk"])+" bit "+str(n))
-    if node["cmd"] != 0 :
-        try:
-            node["byteclk"]=node["params"][node["cmdseqp"]]
-        except:
-            node["byteclk"]=0
+    #if node["cmd"] != 0 :
+        #try:
+        #    node["byteclk"]=node["params"][node["cmdseqp"]]
+        #except:
+        #    node["byteclk"]=0
     #byte=node["byteclk"]
 
     byte=node["byteclk"]
     bit=node["DI"].value()
     if bit  :
- #       print( " bit "+str(n)+" is high   1")
+        print( " bit "+str(n)+" is high   1")
         byte=(byte<< 1 ) +1
         
     #    
     else:
-  #      print( " bit "+str(n)+" is low 0")
+        print( " bit "+str(n)+" is low 0")
         byte=(byte<< 1 ) 
 
     #print(b)
@@ -525,7 +536,7 @@ def nodeclockbytein(node):
     node["byteclk"]=byte
 #    if node["cmd"] != 0 :
 #        node["params"][node["cmdseqp"]]=byte
-    print("Node "+str(node["node"])+": byte "+str(byte))
+    print("Node "+str(node["node"])+": byte is "+str(byte))
 
     n=node["cmdspiseq"]-1
 
@@ -704,6 +715,10 @@ def cmd_init(n):
     if n["cmd"] == CMD_PUTCHR:
             n["params"]={}
         
+    if n["cmd"] == CMD_CLRALL:
+            n["params"]={}
+            buffers[str(n["node"])]=""
+            
     print(n["params"])
     n["cmdseqp"]=n["cmdseqp"]+1
     n["cmdspiseq"]=-1
@@ -715,7 +730,7 @@ def cmd_end(n):
     if n["cmd"] == CMD_PUTCHR:
         # save the param to the dest buffer
         try:
-            curbuff=buffers[str(n["params"][2])]
+            curbuff=buffers[str(n["params"][1])]
         except:
             curbuff=""
         
@@ -795,6 +810,7 @@ while(1):
             if n["cmd"] == 0 and n["cmdspiseq"] == -1:
                         print( "Clock in start of a command")
                         n["cmdspiseq"]=SEQ_SPIBIT7
+                        print("set byteclk=0")
                         n["byteclk"]=0
 
 
@@ -829,6 +845,7 @@ while(1):
                     if clk == 1 and n["cmdspiseq"] == -1:
                         print( "Clock in start of a command2")
                         n["cmdspiseq"]=SEQ_SPIBIT7
+                        print("set byteclk=0 a")
                         n["byteclk"]=0
 
                     if clk == 0:
@@ -840,7 +857,7 @@ while(1):
                             # must have clocked in the last command byte. Look it up and start a run
                             print("Have command byte. Now look up:"+str(n["cmd"]))
                             
-                            
+                            print("set byteclk=0 b")
                             n["cmdseqp"]=0
                             n["byteclk"]=0
 
@@ -859,20 +876,23 @@ while(1):
 
                 else:
                     print("in a step. any spi activity?")
-                    if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEOUT and clk == 1 :
-                        print("clock high and byte out")
-                        # TODO prep a clock out of byte
-                        n["cmdspiseq"]=nodeclockbyteout(n)
-                        if n["cmdspiseq"]==-1:
-                            n["cmdseqp"]=n["cmdseqp"]+1
+                    try:
+                        if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEOUT and clk == 1 :
+                            print("clock high and byte out")
+                            # TODO prep a clock out of byte
+                            n["cmdspiseq"]=nodeclockbyteout(n)
+                            if n["cmdspiseq"]==-1:
+                                n["cmdseqp"]=n["cmdseqp"]+1
 
-                    if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEIN and clk == 0 :
-                        # TODO prep a clock out of byte
-                        print("clock low and byte in")
-                        n["cmdspiseq"]=nodeclockbytein(n)
-                        if n["cmdspiseq"]==-1:
-                            n["cmdseqp"]=n["cmdseqp"]+1
-
+                        if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEIN and clk == 0 :
+                            # TODO prep a clock out of byte
+                            print("clock low and byte in")
+                            n["cmdspiseq"]=nodeclockbytein(n)
+                            if n["cmdspiseq"]==-1:
+                                n["cmdseqp"]=n["cmdseqp"]+1
+                    except:
+                        # might have gone past end of command sequence
+                        pass
 
 #                if clk == 0:
 #
@@ -934,39 +954,45 @@ while(1):
 
             if n["cmd"] != 0:
                     # process a sequence
-                    print("Node %d : proc sequence at step %d" % ( n["node"], n["cmdseqp"] ) )
+#                    print("Node %d : proc sequence at step %d" % ( n["node"], n["cmdseqp"] ) )
                     
                     if n["cmdspiseq"] == -1 :
                             print( "Run seq starting with "+str(n["cmdseq"]))
                             # no byte shift in/out in progress so process setp
                             
-                            # TODO byte in set seq
-                            if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEIN:
-                                    print( "Clock in a byte at bit pos 0" )
-                                    n["cmdspiseq"] = SEQ_SPIBIT7
+                            try:
+                                # TODO byte in set seq
+                                if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEIN:
+                                        print( "Start clock in a byte" )
+                                        n["cmdspiseq"] = SEQ_SPIBIT7
+                                        print("set byteclk=0 c")
+                                        n["byteclk"] = 0
 
-                            # TODO byte out set seq
-                            if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEOUT:
-                                    print( "Clock out a byte" )
-                                    n["cmdspiseq"] = SEQ_SPIBIT7
+                                # TODO byte out set seq
+                                if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEOUT:
+                                        print( "Start clock out a byte" )
+                                        n["cmdspiseq"] = SEQ_SPIBIT7
 
+                                        
+                                # TODO do seq init call
+                                if n["cmdseq"][n["cmdseqp"]] == SEQ_INIT:
+                                    cmd_init(n)
                                     
-                            # TODO do seq init call
-                            if n["cmdseq"][n["cmdseqp"]] == SEQ_INIT:
-                                cmd_init(n)
-                                
-                            if n["cmdseq"][n["cmdseqp"]] == SEQ_SAVEBYTE:
-                                cmd_savebyte(n)
-                            if n["cmdseq"][n["cmdseqp"]] == SEQ_DEBUG:
-                                print(n)
-                                print(buffers)
-                                saveSettings()
+                                if n["cmdseq"][n["cmdseqp"]] == SEQ_SAVEBYTE:
+                                    cmd_savebyte(n)
+                                    
+                                if n["cmdseq"][n["cmdseqp"]] == SEQ_DEBUG:
+                                    print(n)
+                                    print(buffers)
+                                    saveSettings()
 
-                            # TODO do seq save params
-                            if n["cmdseq"][n["cmdseqp"]] == SEQ_END:
-                                cmd_end(n)
+                                # TODO do seq save params
+                                if n["cmdseq"][n["cmdseqp"]] == SEQ_END:
+                                    cmd_end(n)
                             
-                            
+                            except:
+                                # might have gone past end of command sequence
+                                pass
 
 #                            n["cmdseqp"]=n["cmdseqp"]+1
 #                            print(n["params"])
@@ -977,6 +1003,7 @@ while(1):
                                 print("Command processed. Next cmd...")
                                 n["cmdspiseq"] = -1 
                                 print(n)
+                                print("set byteclk=0 g")
                                 n["byteclk"]=0
                                 
                                 

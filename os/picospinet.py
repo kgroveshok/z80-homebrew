@@ -72,28 +72,21 @@ CMD_GETCHR=0x11
 #   <-  <source node id> or 00 if no data waiting
 #       if >0 then clock in <zero term packet>
 
-#CMD_STORE=3
+CMD_PUTSTRZ=0x12
 # Store string
 # 03 <0-255> <zero term packet>
 #
 #   stores the zero term packet as a file on local storage with store_<node id>_<address>.txt
 
-#CMD_GET=4
-# Get store
+CMD_GETSTRZ=0x13
+# Get stored string
 # 04 <0-255> <zero term packet>
 #
 # gets the zero term packet as a file on local storage with store_<node id>_<address>.txt
 
 CMD_CLRALL=0x15
-# clear receive buffer 
+# clear receive buffer for this node
 #
-# 05
-#
-# delets all rec_<node id>_*.txt
-
-#CMD_NEXT=6
-# 06 next buffer
-# removes most recent rec_<node id>_*.txt 
 
 
 
@@ -213,15 +206,17 @@ SEQ_SPIBIT0=0
 
 SEQ_BYTEIN=100
 SEQ_BYTEOUT=101
-#SEQ_ZSTRIN=102
-#SEQ_STROUT=103
+SEQ_ZSTRIN=102
+SEQ_STROUT=103
 SEQ_INIT= 104    # init for the command ie setup params
 SEQ_SAVE= 105    # save any params clocked in
 SEQ_DEBUG=106
 SEQ_SYNC=107    # force sync of buffers to storage
 SEQ_NOP=108
 SEQ_END=109
-SEQ_SAVEBYTE=110 
+SEQ_SAVEBYTE=110
+SEQ_REPEAT=150
+SEQ_UNTILZ=151
 
 # command sequence ops
 
@@ -245,20 +240,28 @@ seq=[
         },
         { "cmd" : CMD_DEBUG,   # the command in operation for this node
           # send back byte in buffer
-          "seq" : [ SEQ_DEBUG, SEQ_SYNC ]
+          "seq" : [ SEQ_DEBUG, SEQ_END ]
         },
         { "cmd" : CMD_CLRALL,   # the command in operation for this node
           # node to rec byte, byte to send it
-          "seq" : [ SEQ_INIT, 
-    #        SEQ_SPIINBIT7, SEQ_SPIINBIT6, SEQ_SPIINBIT5, SEQ_SPIINBIT4, SEQ_SPIINBIT3, SEQ_SPIINBIT2, SEQ_SPIINBIT1, SEQ_SPIINBIT0, 
-            #SEQ_BYTEIN,
-            #SEQ_SAVEBYTE, 
-    #        SEQ_SPIINBIT7, SEQ_SPIINBIT6, SEQ_SPIINBIT5, SEQ_SPIINBIT4, SEQ_SPIINBIT3, SEQ_SPIINBIT2, SEQ_SPIINBIT1, SEQ_SPIINBIT0, 
-            #SEQ_BYTEIN,
-            #SEQ_SAVEBYTE, 
-            SEQ_END ]
+          "seq" : [ SEQ_INIT,  SEQ_END ]
         },
 
+        { "cmd" : CMD_PUTSTRZ,   # the command in operation for this node
+          # str index, then zero term string
+          "seq" : [ SEQ_INIT,
+                    SEQ_BYTEIN,    # index
+                    SEQ_SAVEBYTE,
+                    SEQ_REPEAT,
+                    SEQ_BYTEIN,    # zero term str
+                    SEQ_SAVEBYTE,
+                    SEQ_UNTILZ,
+                    SEQ_END ]
+        },
+        { "cmd" : CMD_GETSTRZ,   # the command in operation for this node
+          # node to rec byte, byte to send it
+          "seq" : [ SEQ_INIT,  SEQ_END ]
+        },
     ]
 
 # node setup
@@ -354,6 +357,7 @@ def saveSettings():
         global WifiSSID
         global WifiPass
         global buffers
+        global nodes
 
         settings = [ WifiSSID, WifiPass ] 
    
@@ -368,12 +372,19 @@ def saveSettings():
             json.dump(buffers, file_write)
         file_write.close()
         
+        for n in nodes:
+            print("Dumping string array for node "+str(n["node"]))
+            with open('/spinet-strings-'+str(n["node"])+'.json', "w") as file_write:
+                json.dump(n["strings"], file_write)
+            file_write.close()
+        
 
 def loadSettings():
-    global WifiSSID
-    global WifiPass
-    global buffers
-    try:
+        global WifiSSID
+        global WifiPass
+        global buffers
+        global nodes
+    #try:
         f = open( "/spinet-wifi.json","r" )
         print( "Loading wifi settings") # STRIP
         p = f.read()
@@ -390,8 +401,18 @@ def loadSettings():
         buffers=sett
         print(buffers)        
         
-    except:
-        saveSettings()
+        for n in nodes:
+            print("Loading stored string array for node "+str(n["node"]))
+               
+            f = open('/spinet-strings-'+str(n["node"])+'.json',"r" )
+            p = f.read()
+            sett=json.loads(p)
+            n["strings"]=sett
+            print(n["strings"])        
+            
+        
+    #except:
+    #    saveSettings()
 
 wlan=None
 connection=None
@@ -714,6 +735,9 @@ def cmd_init(n):
             
     if n["cmd"] == CMD_PUTCHR:
             n["params"]={}
+
+    if n["cmd"] == CMD_PUTSTRZ:
+            n["params"]={}
         
     if n["cmd"] == CMD_CLRALL:
             n["params"]={}
@@ -735,7 +759,20 @@ def cmd_end(n):
             curbuff=""
         
         buffers[str(n["params"][1])]=curbuff+chr(n["params"][2])
-    
+
+    if n["cmd"] == CMD_PUTSTRZ:
+        # param one is the string index followed by the string
+        p=2
+        s=""
+        try:
+            while 1:
+                s=s+chr(n["params"][p])
+                p=p+1
+        except:
+            pass
+        n["strings"][int(n["params"][1])]=s
+        print("Save string: "+str(s))
+
     print(n["params"])
     print(buffers)
     n["cmdseqp"]=n["cmdseqp"]+1
@@ -747,22 +784,6 @@ def cmd_savebyte(n):
     print("Save byte -> Save params for command %d in node %d" % ( n["cmd"], n["node"]))
     print(n["params"])
     n["cmdseqp"]=n["cmdseqp"]+1
-
-# clock in a zero term string from a node
-
-def clockinzs():
-    s=""
-    cond=True
-    print("Clock-in zero term string")
-    while cond:
-        b=clockbytein()
-        if b == 0:
-            cond=False
-        else:
-            print(chr(b))
-            s=s+chr(b)
-    print("Got string: "+s)
-    return s
 
 
 setupNodes()
@@ -960,39 +981,54 @@ while(1):
                             print( "Run seq starting with "+str(n["cmdseq"]))
                             # no byte shift in/out in progress so process setp
                             
-                            try:
+                       #     try:
                                 # TODO byte in set seq
-                                if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEIN:
-                                        print( "Start clock in a byte" )
-                                        n["cmdspiseq"] = SEQ_SPIBIT7
-                                        print("set byteclk=0 c")
-                                        n["byteclk"] = 0
+                            if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEIN:
+                                    print( "Start clock in a byte" )
+                                    n["cmdspiseq"] = SEQ_SPIBIT7
+                                    print("set byteclk=0 c")
+                                    n["byteclk"] = 0
 
-                                # TODO byte out set seq
-                                if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEOUT:
-                                        print( "Start clock out a byte" )
-                                        n["cmdspiseq"] = SEQ_SPIBIT7
+                            # TODO byte out set seq
+                            if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEOUT:
+                                    print( "Start clock out a byte" )
+                                    n["cmdspiseq"] = SEQ_SPIBIT7
 
+                                    
+                            # TODO do seq init call
+                            if n["cmdseq"][n["cmdseqp"]] == SEQ_INIT:
+                                cmd_init(n)
+                                
+                            if n["cmdseq"][n["cmdseqp"]] == SEQ_SAVEBYTE:
+                                cmd_savebyte(n)
+
+                            if n["cmdseq"][n["cmdseqp"]] == SEQ_REPEAT:
+                                print("Repeat marker")
+                                n["cmdseqp"]=n["cmdseqp"]+1
+
+                            if n["cmdseq"][n["cmdseqp"]] == SEQ_UNTILZ:
+                                # go back to the last REQ_REPEAT marker
+                                if n["byteclk"]==0:
+                                    print("Now have zero term. Next...")
+                                    n["cmdseqp"]=n["cmdseqp"]+1
+                                else:
+                                    print("No zero term... Jump back to previous repeat marker..")
+                                    while n["cmdseq"][n["cmdseqp"]] != SEQ_REPEAT:
+                                        n["cmdseqp"]=n["cmdseqp"]-1
                                         
-                                # TODO do seq init call
-                                if n["cmdseq"][n["cmdseqp"]] == SEQ_INIT:
-                                    cmd_init(n)
-                                    
-                                if n["cmdseq"][n["cmdseqp"]] == SEQ_SAVEBYTE:
-                                    cmd_savebyte(n)
-                                    
-                                if n["cmdseq"][n["cmdseqp"]] == SEQ_DEBUG:
-                                    print(n)
-                                    print(buffers)
-                                    saveSettings()
+                            if n["cmdseq"][n["cmdseqp"]] == SEQ_DEBUG:
+                                print(n)
+                                print(buffers)
+                                saveSettings()
+                                n["cmdseqp"]=n["cmdseqp"]+1
 
-                                # TODO do seq save params
-                                if n["cmdseq"][n["cmdseqp"]] == SEQ_END:
-                                    cmd_end(n)
-                            
-                            except:
+                            # TODO do seq save params
+                            if n["cmdseq"][n["cmdseqp"]] == SEQ_END:
+                                cmd_end(n)
+                        
+                        #    except:
                                 # might have gone past end of command sequence
-                                pass
+                         #       pass
 
 #                            n["cmdseqp"]=n["cmdseqp"]+1
 #                            print(n["params"])

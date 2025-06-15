@@ -22161,10 +22161,14 @@ c56c					; TODO Get SPI byte
 c56c			 
 c56c					call spi_read_byte 
 c56c			 
+c56c					if DEBUG_FORTH_WORDS 
+c56c						DMARK "Si2" 
+c56c						CALLMONITOR 
+c56c					endif 
 c56c					ld h, 0 
 c56c					ld l, a 
 c56c					if DEBUG_FORTH_WORDS 
-c56c						DMARK "Si2" 
+c56c						DMARK "Si3" 
 c56c						CALLMONITOR 
 c56c					endif 
 c56c					call forth_push_numhl 

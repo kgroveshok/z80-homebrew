@@ -97,10 +97,10 @@ CMD_CLRALL=0x15
 #CMD_UNIXTS=7
 # 07   get unix time stamp
 
-#CMD_DATE=8
+CMD_GETDATE=0x16
 # 08 get current date
 
-#CMD_TIME=9
+CMD_GETTIME=0x17
 ## 09 get current time
 
 #CMD_TZ=10
@@ -217,7 +217,7 @@ SEQ_END=109
 SEQ_SAVEBYTE=110
 SEQ_REPEAT=150
 SEQ_UNTILZ=151
-SEQ_STRSZNEXT=153
+SEQ_SSTRZNEXT=153
  
 # command sequence ops
 
@@ -261,8 +261,17 @@ seq=[
         },
         { "cmd" : CMD_GETSSTRZ,   # the command in operation for this node
           # node to rec byte, byte to send it
-          "seq" : [ SEQ_INIT, SEQ_BYTEIN, SEQ_SAVEBYTE, SEQ_REPEAT, SEQ_STRZNEXT, SEQ_BYTEOUT, SEQ_UNTILZ,  SEQ_END ]
+          "seq" : [ SEQ_INIT, SEQ_BYTEIN, SEQ_SAVEBYTE, SEQ_REPEAT, SEQ_SSTRZNEXT, SEQ_BYTEOUT, SEQ_UNTILZ,  SEQ_END ]
         },
+        { "cmd" : CMD_GETTIME,   # the command in operation for this node
+          # node to rec byte, byte to send it
+          "seq" : [ SEQ_INIT, SEQ_REPEAT, SEQ_SSTRZNEXT, SEQ_BYTEOUT, SEQ_UNTILZ,  SEQ_END ]
+        },
+        { "cmd" : CMD_GETDATE,   # the command in operation for this node
+          # node to rec byte, byte to send it
+          "seq" : [ SEQ_INIT, SEQ_REPEAT, SEQ_SSTRZNEXT, SEQ_BYTEOUT, SEQ_UNTILZ,  SEQ_END ]
+        },
+
     ]
 
 # node setup
@@ -341,7 +350,7 @@ def setupNodes():
 # Wifi card setup
 #https://peppe8o.com/getting-started-with-wifi-on-raspberry-pi-pico-w-and-micropython/
 from time import sleep
-from time import ticks_ms, ticks_diff
+from time import ticks_ms, ticks_diff, localtime
 import framebuf,sys
 import os
 import json
@@ -711,6 +720,27 @@ def nodeclockbytein(node):
 
  #   CE.high()
  #   print("ce high")
+now=""
+nowdate=""
+nowtime=""
+
+def lpad(str,width,padwith):
+        ret=(padwith * width) + str
+        return ret[len(ret)-width:30]
+
+
+
+
+def setNow():
+    global now
+    global nowdate
+    global nowtime
+    now = localtime()        
+
+    # datetime format
+    nowdate=str(now[0])+"-"+lpad(str(now[1]),2,"0")+"-"+lpad(str(now[2]),2,"0")
+    nowtime=lpad(str(now[3]),2,"0")+":"+lpad(str(now[4]),2,"0")+":"+lpad(str(now[5]),2,"0")
+
 
 def cmd_init(n):
     print("Init params for command %d in node %d" % ( n["cmd"], n["node"]))
@@ -744,6 +774,20 @@ def cmd_init(n):
     if n["cmd"] == CMD_GETSSTRZ:
             print("getz init counter")
             n["params"]['c']=0
+
+    if n["cmd"] == CMD_GETTIME:
+            setNow()
+            print("gettime init counter")
+            n["params"]['c']=0
+            n["params"][2]="time"
+            n["strings"]["time"]=nowtime
+            
+    if n["cmd"] == CMD_GETDATE:
+            setNow()
+            print("getdate init counter")
+            n["params"]['c']=0
+            n["params"][2]="date"
+            n["strings"]["date"]=nowdate
     
     if n["cmd"] == CMD_CLRALL:
      #       n["params"]={}
@@ -835,7 +879,7 @@ while(1):
 
             
             if n["cmd"] == 0 and n["cmdspiseq"] == -1:
-                        print( "Clock in start of a command")
+                        print( "Node %d: Clock in start of a command" % n["node"])
                         n["cmdspiseq"]=SEQ_SPIBIT7
                         print("set byteclk=0")
                         n["byteclk"]=0

@@ -22171,10 +22171,14 @@
 4677			 
 4677					call spi_read_byte 
 4677			 
+4677					if DEBUG_FORTH_WORDS 
+4677						DMARK "Si2" 
+4677						CALLMONITOR 
+4677					endif 
 4677					ld h, 0 
 4677					ld l, a 
 4677					if DEBUG_FORTH_WORDS 
-4677						DMARK "Si2" 
+4677						DMARK "Si3" 
 4677						CALLMONITOR 
 4677					endif 
 4677					call forth_push_numhl 

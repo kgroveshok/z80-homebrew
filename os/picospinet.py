@@ -118,7 +118,7 @@ CMD_GETTIME=0x17
 #CMD_NOTE=14
 # 14 <note> <duration>  Play a note via PWM on the Pico (useful as dont have the sound chip working yet)
 
-#CMD_GETNODE=15
+CMD_GETNODE=0x18
 # 15 Clock back the node hub and id this device is connected to
 
 #CMD_GETMAP=16
@@ -126,6 +126,9 @@ CMD_GETTIME=0x17
 
 #CMD_GETCHR=17
 # 17 clock back next byte in buffer
+
+CMD_NETPOST=20
+CMD_NETGET=21
 
 # server (ff node) commands
 #
@@ -135,7 +138,7 @@ CMD_GETTIME=0x17
 
 # All clocked in data from client to the server (z80) to be pushed to stack on the z80
 
-CMD_DEBUG=0x20
+CMD_DEBUG=0x30
 # 18 dump to logs all of the node vars to console to help with debug
 
 from machine import Pin
@@ -235,8 +238,12 @@ seq=[
         },
         { "cmd" : CMD_GETCHR,   # the command in operation for this node
           # send back byte in buffer
-          "seq" : [ SEQ_INIT,  SEQ_BYTEOUT
-          #SEQ_SPIOUTBIT7, SEQ_SPIOUTBIT6, SEQ_SPIOUTBIT5, SEQ_SPIOUTBIT4, SEQ_SPIOUTBIT3, SEQ_SPIOUTBIT2, SEQ_SPIOUTBIT1, SEQ_SPIOUTBIT0, 
+          "seq" : [ SEQ_INIT,  SEQ_BYTEOUT, SEQ_END
+          ]
+        },
+        { "cmd" : CMD_GETNODE,   # the command in operation for this node
+          # send back byte in buffer
+          "seq" : [ SEQ_INIT,  SEQ_BYTEOUT, SEQ_END
           ]
         },
         { "cmd" : CMD_DEBUG,   # the command in operation for this node
@@ -299,25 +306,93 @@ nodes=[
     },
 
 
-    #{ "hub" : 0,     # this hub id (not used yet but could be used to chain hubs over ip)
-    #  "node" : 2,    # this current node 
-    #  "DIpin" : 6,      # DI pin for node
-    #  "DOpin" : 5,      # DO pin for node
-    #  "SCLKpin" : 4,    # SCLK pin for node
-    #  "CEpin" : 7,      # CE pin for node
-    #  "buff" : "",   # Current buffer
-    #  "cmd" : "",    # Current command selected 
-    #  "cmdseq": [],   # sequence of actions for current command
-    #  "cmdseqp": 0,   # position of sequence of actions for current command
-    #  "cmdspiseq": "",   # spi action for current command
-    #  "strings" : {},    # Strings stash for node
-    #  "seq" : "",     # Current position on processing command
-    #  "byteclk" : 0,   # Current value of clocked in byte
-    #  "param" : {},   # Hash of params currently being constructed for command
-    #  "clkstate" : 0,   # state current SCLK is in
-    #  "lastactive" : 0,    # unix time stamp of when we last saw a clock pulse. Used to detect dead node
-    #  "islive" : 0      # flag is set when any data is detected on this node
-    #},
+
+    { "hub" : 0,     # TODO this hub id (not used yet but could be used to chain hubs over ip)
+      "node" : 2,    # this current node 
+      "DIpin" : 6,      # DI pin for node
+      "DOpin" : 5,      # DO pin for node
+      "SCLKpin" : 4,    # SCLK pin for node
+      "CEpin" : 7,      # CE pin for node
+      "buff" : "",   # Current buffer
+      "cmd" : 0,    # Current command selected 
+      "cmdseq": [],   # sequence of actions for current command
+      "cmdseqp": 0,   # position of sequence of actions for current command
+      "cmdspiseq": -1,   # spi action for current command
+      "strings" : {},    # Strings stash for node
+ #     "seq" : "",     # Current position on processing command
+      "byteclk" : 0,   # Current value of clocked in/out byte
+      "params" : {},   # Hash of params currently being constructed for command
+      "clkstate" : 0,   # state current SCLK 
+      "lastactive" : 0,    # TODO unix time stamp of when we last saw a clock pulse. Used to detect dead node
+      "islive" : 0      # TODO flag is set when any data is detected on this node
+    },
+
+
+
+    { "hub" : 0,     # TODO this hub id (not used yet but could be used to chain hubs over ip)
+      "node" : 3,    # this current node 
+      "DIpin" : 10,      # DI pin for node
+      "DOpin" : 9,      # DO pin for node
+      "SCLKpin" : 8,    # SCLK pin for node
+      "CEpin" : 11,      # CE pin for node
+      "buff" : "",   # Current buffer
+      "cmd" : 0,    # Current command selected 
+      "cmdseq": [],   # sequence of actions for current command
+      "cmdseqp": 0,   # position of sequence of actions for current command
+      "cmdspiseq": -1,   # spi action for current command
+      "strings" : {},    # Strings stash for node
+ #     "seq" : "",     # Current position on processing command
+      "byteclk" : 0,   # Current value of clocked in/out byte
+      "params" : {},   # Hash of params currently being constructed for command
+      "clkstate" : 0,   # state current SCLK 
+      "lastactive" : 0,    # TODO unix time stamp of when we last saw a clock pulse. Used to detect dead node
+      "islive" : 0      # TODO flag is set when any data is detected on this node
+    },
+
+
+
+    { "hub" : 0,     # TODO this hub id (not used yet but could be used to chain hubs over ip)
+      "node" : 4,    # this current node 
+      "DIpin" : 14,      # DI pin for node
+      "DOpin" : 13,      # DO pin for node
+      "SCLKpin" : 12,    # SCLK pin for node
+      "CEpin" : 15,      # CE pin for node
+      "buff" : "",   # Current buffer
+      "cmd" : 0,    # Current command selected 
+      "cmdseq": [],   # sequence of actions for current command
+      "cmdseqp": 0,   # position of sequence of actions for current command
+      "cmdspiseq": -1,   # spi action for current command
+      "strings" : {},    # Strings stash for node
+ #     "seq" : "",     # Current position on processing command
+      "byteclk" : 0,   # Current value of clocked in/out byte
+      "params" : {},   # Hash of params currently being constructed for command
+      "clkstate" : 0,   # state current SCLK 
+      "lastactive" : 0,    # TODO unix time stamp of when we last saw a clock pulse. Used to detect dead node
+      "islive" : 0      # TODO flag is set when any data is detected on this node
+    },
+
+
+
+
+    { "hub" : 0,     # TODO this hub id (not used yet but could be used to chain hubs over ip)
+      "node" : 5,    # this current node 
+      "DIpin" : 18,      # DI pin for node
+      "DOpin" : 17,      # DO pin for node
+      "SCLKpin" : 16,    # SCLK pin for node
+      "CEpin" : 19,      # CE pin for node
+      "buff" : "",   # Current buffer
+      "cmd" : 0,    # Current command selected 
+      "cmdseq": [],   # sequence of actions for current command
+      "cmdseqp": 0,   # position of sequence of actions for current command
+      "cmdspiseq": -1,   # spi action for current command
+      "strings" : {},    # Strings stash for node
+ #     "seq" : "",     # Current position on processing command
+      "byteclk" : 0,   # Current value of clocked in/out byte
+      "params" : {},   # Hash of params currently being constructed for command
+      "clkstate" : 0,   # state current SCLK 
+      "lastactive" : 0,    # TODO unix time stamp of when we last saw a clock pulse. Used to detect dead node
+      "islive" : 0      # TODO flag is set when any data is detected on this node
+    },
 
 
 
@@ -771,6 +846,9 @@ def cmd_init(n):
     #if n["cmd"] == CMD_PUTSTRZ:
     #        n["params"]={}
     
+    if n["cmd"] == CMD_GETNODE:
+               n["byteclk"]=n["node"]
+
     if n["cmd"] == CMD_GETSSTRZ:
             print("getz init counter")
             n["params"]['c']=0
@@ -1031,71 +1109,71 @@ while(1):
                             print( "Run seq starting with "+str(n["cmdseq"]))
                             # no byte shift in/out in progress so process setp
                             
-                       #     try:
-                                # TODO byte in set seq
-                            if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEIN:
-                                    print( "Start clock in a byte" )
-                                    n["cmdspiseq"] = SEQ_SPIBIT7
-                                    print("set byteclk=0 c")
-                                    n["byteclk"] = 0
+                            try:
+                                    # TODO byte in set seq
+                                if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEIN:
+                                        print( "Start clock in a byte" )
+                                        n["cmdspiseq"] = SEQ_SPIBIT7
+                                        print("set byteclk=0 c")
+                                        n["byteclk"] = 0
 
-                            # TODO byte out set seq
-                            if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEOUT:
-                                    print( "Start clock out a byte" )
-                                    n["cmdspiseq"] = SEQ_SPIBIT7
+                                # TODO byte out set seq
+                                if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEOUT:
+                                        print( "Start clock out a byte" )
+                                        n["cmdspiseq"] = SEQ_SPIBIT7
 
 
-                            if n["cmdseq"][n["cmdseqp"]] == SEQ_SSTRZNEXT:
-                                print("Clock out stored string content")
-                                s1=n["strings"][str(n["params"][2])]
-                                ct=n["params"]['c']
-                                try:
-                                    c=s1[ct]
-                                    n["byteclk"]=ord(c)
-                                except:
-                                    n["byteclk"]=0
-                                #print(s1)
-                                #print(ct)
-                                #print(c)
-                                
-                                print(n["byteclk"])
-                                n["params"]['c']=ct+1
-                                n["cmdseqp"]=n["cmdseqp"]+1
-
-                            # TODO do seq init call
-                            if n["cmdseq"][n["cmdseqp"]] == SEQ_INIT:
-                                cmd_init(n)
-                                
-                            if n["cmdseq"][n["cmdseqp"]] == SEQ_SAVEBYTE:
-                                cmd_savebyte(n)
-
-                            if n["cmdseq"][n["cmdseqp"]] == SEQ_REPEAT:
-                                print("Repeat marker")
-                                n["cmdseqp"]=n["cmdseqp"]+1
-
-                            if n["cmdseq"][n["cmdseqp"]] == SEQ_UNTILZ:
-                                # go back to the last REQ_REPEAT marker
-                                if n["byteclk"]==0:
-                                    print("Now have zero term. Next...")
+                                if n["cmdseq"][n["cmdseqp"]] == SEQ_SSTRZNEXT:
+                                    print("Clock out stored string content")
+                                    s1=n["strings"][str(n["params"][2])]
+                                    ct=n["params"]['c']
+                                    try:
+                                        c=s1[ct]
+                                        n["byteclk"]=ord(c)
+                                    except:
+                                        n["byteclk"]=0
+                                    #print(s1)
+                                    #print(ct)
+                                    #print(c)
+                                    
+                                    print(n["byteclk"])
+                                    n["params"]['c']=ct+1
                                     n["cmdseqp"]=n["cmdseqp"]+1
-                                else:
-                                    print("No zero term... Jump back to previous repeat marker..")
-                                    while n["cmdseq"][n["cmdseqp"]] != SEQ_REPEAT:
-                                        n["cmdseqp"]=n["cmdseqp"]-1
-                                        
-                            if n["cmdseq"][n["cmdseqp"]] == SEQ_DEBUG:
-                                print(n)
-                                print(buffers)
-                                saveSettings()
-                                n["cmdseqp"]=n["cmdseqp"]+1
 
-                            # TODO do seq save params
-                            if n["cmdseq"][n["cmdseqp"]] == SEQ_END:
-                                cmd_end(n)
-                        
-                        #    except:
+                                # TODO do seq init call
+                                if n["cmdseq"][n["cmdseqp"]] == SEQ_INIT:
+                                    cmd_init(n)
+                                    
+                                if n["cmdseq"][n["cmdseqp"]] == SEQ_SAVEBYTE:
+                                    cmd_savebyte(n)
+
+                                if n["cmdseq"][n["cmdseqp"]] == SEQ_REPEAT:
+                                    print("Repeat marker")
+                                    n["cmdseqp"]=n["cmdseqp"]+1
+
+                                if n["cmdseq"][n["cmdseqp"]] == SEQ_UNTILZ:
+                                    # go back to the last REQ_REPEAT marker
+                                    if n["byteclk"]==0:
+                                        print("Now have zero term. Next...")
+                                        n["cmdseqp"]=n["cmdseqp"]+1
+                                    else:
+                                        print("No zero term... Jump back to previous repeat marker..")
+                                        while n["cmdseq"][n["cmdseqp"]] != SEQ_REPEAT:
+                                            n["cmdseqp"]=n["cmdseqp"]-1
+                                            
+                                if n["cmdseq"][n["cmdseqp"]] == SEQ_DEBUG:
+                                    print(n)
+                                    print(buffers)
+                                    saveSettings()
+                                    n["cmdseqp"]=n["cmdseqp"]+1
+
+                                # TODO do seq save params
+                                if n["cmdseq"][n["cmdseqp"]] == SEQ_END:
+                                    cmd_end(n)
+                            
+                            except:
                                 # might have gone past end of command sequence
-                         #       pass
+                                pass
 
 #                            n["cmdseqp"]=n["cmdseqp"]+1
 #                            print(n["params"])

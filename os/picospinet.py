@@ -594,7 +594,7 @@ def nodeclockbyteout(node):
    # msb first
     # calc bit to clock
     n=node["cmdspiseq"]
-    print("Node "+str(node["node"])+": out byte "+str(node["byteclk"])+" bit "+str(n))
+#    print("Node "+str(node["node"])+": out byte "+str(node["byteclk"])+" bit "+str(n))
     #if node["cmd"] != 0 :
     #    node["byteclk"]=node["params"][node["cmdseqp"]]
     byte=node["byteclk"]
@@ -619,7 +619,7 @@ def nodeclockbyteout(node):
 def nodeclockbytein(node):
    # msb first
     n=node["cmdspiseq"]
-    print("Node "+str(node["node"])+": in byte "+str(node["byteclk"])+" bit "+str(n))
+#    print("Node "+str(node["node"])+": in byte "+str(node["byteclk"])+" bit "+str(n))
     #if node["cmd"] != 0 :
         #try:
         #    node["byteclk"]=node["params"][node["cmdseqp"]]
@@ -643,7 +643,7 @@ def nodeclockbytein(node):
     node["byteclk"]=byte
 #    if node["cmd"] != 0 :
 #        node["params"][node["cmdseqp"]]=byte
-    print("Node "+str(node["node"])+": byte is "+str(byte))
+ #   print("Node "+str(node["node"])+": byte is "+str(byte))
 
     n=node["cmdspiseq"]-1
 
@@ -905,6 +905,9 @@ def cmd_end(n):
     print(n["params"])
     print(buffers)
     n["cmdseqp"]=n["cmdseqp"]+1
+    n["cmdspiseq"]=-1
+    n["cmd"]=0
+                        
 
 def cmd_savebyte(n):
     # save current byte to next param
@@ -938,6 +941,10 @@ while(1):
     
     for n in nodes:
         #print("Polling node "+str(n["node"])+str(n["CE"].value()))
+        if n["CE"].value() == 1:   # disable any command in progress
+                n["cmdspiseq"]=-1
+                n["cmd"]=0
+
         if n["CE"].value() == 0:     # Node wants to talk
    #         print( "Node %d: CE low" % n["node"])
 
@@ -950,10 +957,10 @@ while(1):
             clk=n["SCLK"].value()
             preclk=n["clkstate"]
 
-            #if clk:
-            #    print( "Node %d: SCLK high" % n["node"])
-            #else:
-            #    print( "Node %d: SCLK low" % n["node"])
+#            if clk:
+#                print( "Node %d: SCLK high" % n["node"])
+#            else:
+#                print( "Node %d: SCLK low" % n["node"])
 
 
             
@@ -967,11 +974,11 @@ while(1):
             # clock state has changed 
 
             if clk != preclk :
-                print( "Node %d: SCLK state change" % n["node"])
-                if clk:
-                    print( "Node %d: SCLK high" % n["node"])
-                else:
-                    print( "Node %d: SCLK low" % n["node"])
+#                print( "Node %d: SCLK state change" % n["node"])
+#                if clk:
+#                    print( "Node %d: SCLK high" % n["node"])
+#                else:
+#                    print( "Node %d: SCLK low" % n["node"])
 
 #                if clk == 1:
 #                # TODO detect if wanting to clock data out and if so and at first state set byte to
@@ -1122,7 +1129,7 @@ while(1):
                                 if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEOUT:
                                         print( "Start clock out a byte" )
                                         n["cmdspiseq"] = SEQ_SPIBIT7
-
+# TODO BUG clock out leaves clkstate in wrong place for next command
 
                                 if n["cmdseq"][n["cmdseqp"]] == SEQ_SSTRZNEXT:
                                     print("Clock out stored string content")

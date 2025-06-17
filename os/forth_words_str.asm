@@ -520,7 +520,7 @@
 	       NEXTW
 
 .LEN:
-	CWHEAD .CHAR 56 "COUNT" 5 WORD_FLAG_CODE
+	CWHEAD .ASC 56 "COUNT" 5 WORD_FLAG_CODE
 ; | COUNT (  str -- str u1 ) Push the length of the string str on TOS as u1 | DONE
 
 		if DEBUG_FORTH_WORDS_KEY
@@ -546,11 +546,11 @@
 
 
 	       NEXTW
-.CHAR:
-	CWHEAD .ENDSTR 57 "CHAR" 4 WORD_FLAG_CODE
-; | CHAR ( u -- n ) Get the ascii value of the first character of the string on the stack | DONE
+.ASC:
+	CWHEAD .CHR 57 "ASC" 3 WORD_FLAG_CODE
+; | ASC ( u -- n ) Get the ascii value of the first character of the string on the stack | DONE
 		if DEBUG_FORTH_WORDS_KEY
-			DMARK "CHR"
+			DMARK "ASC"
 			CALLMONITOR
 		endif
 		FORTH_DSP
@@ -569,6 +569,31 @@
 		ld h,0
 		ld l,a
 		call forth_push_numhl
+
+	       NEXTW
+
+.CHR:
+	CWHEAD .ENDSTR 57 "CHR" 3 WORD_FLAG_CODE
+; | CHR ( u -- n ) The ASCII character value of u is turned into a string n on the stack | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "CHR"
+			CALLMONITOR
+		endif
+		FORTH_DSP_VALUEHL
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		; save asci byte as a zero term string and push string
+
+		ld a,l
+		ld (scratch), a
+
+		ld a, 0
+		ld (scratch+1), a
+
+		ld hl, scratch
+		call forth_push_str
+
 
 	       NEXTW
 

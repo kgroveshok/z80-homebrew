@@ -40,6 +40,9 @@ startcmds:
     dw spi6
     dw spi7
 
+    dw spi8
+    dw spi9
+    dw spi10
 
 	dw longread
 	dw clrstack
@@ -141,11 +144,27 @@ spi5:       db ": getnode spicel $18 spio spii nop spiceh ; ", 0
 
 ; store string ( str i - )
 
-spi6:       db ": storestr spicel $12 spio spio count $00 do dup i + @ spio loop spiceh ; ", 0
+spi6:       db ": storestr spicel $12 spio spio count $00 do dup i + @ spio $01 pause loop spiceh ; ", 0
 
-; get string ( i - str )
+; get string ( addr i -  )    TO FIX
 
-spi7:       db ": getstorestr spicel $13 spio spio \"\" repeat spii dup concat $00 = not until spiceh ; ", 0
+spi7:       db ": getstorestr spicel $13 spio spio \" \" repeat spii dup concat $00 = not until spiceh ; ", 0
+
+
+; SPICHAT (TODO)
+; Program to allow two nodes to chat with eachother
+;
+; v0 - target node
+; 
+; accept input at 0,0
+; if input is string send spitype to target node
+; starting at row 2,0 , while spigetchr is not zero -> 
+;
+; ( node - )
+spi8:		db ": spichatp $00 $00 at accept ;", 0
+spi9: 		db ": spichatr repeat spigetchr dup dup $00 = not if emit then $00 = not until $02 pause ; ",0
+spi10:		db ": spichat v0! repeat spichatp count dup $00 > if spitype $01 pause then cls $00 $03 at \">\" . spichatr true until ;", 0
+
 
 ; Long read of currently open file
 longread:   db ": lread read repeat readcont if read concat then readcont until nop ; ", 0

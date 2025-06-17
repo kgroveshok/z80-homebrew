@@ -35,6 +35,10 @@ startcmds:
     dw spi1
     dw spi2
     dw spi3
+    dw spi4
+    dw spi5
+    dw spi6
+    dw spi7
 
 
 	dw longread

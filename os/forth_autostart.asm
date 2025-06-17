@@ -120,10 +120,28 @@ startcmds:
 
 ; SPI Net support words
 
+; v0! = node to send to
+; ( str count - )
+spi1:       db ": spitype spicel $00 do dup i + @ v0@ $10 spio spio spio $01 pause loop spiceh ; ; ",0
 
-spi1:       db ": clkstro $00 do dup i + @ spio loop ; ",0
-spi2:       db ": send spicel $01 spio spio ptr count clkstro spiceh ; ",0
+; spiputchr ( char node - )
+spi2:       db ": spiputchr spicel $10 spio spio ptr @ spio spiceh ; ",0
 spi3:       db ": storestr spicel $03 spio spio ptr count clkstro spiceh ; ", 0
+
+; spigetchr ( - n )
+spi4:       db ": spigetchr spicel $11 spio spii spiceh ; ", 0
+
+; getnode ( - n )
+spi5:       db ": getnode spicel $18 spio spii nop spiceh ; ", 0
+
+
+; store string ( str i - )
+
+spi6:       db ": storestr spicel $12 spio spio count $00 do dup i + @ spio loop spiceh ; ", 0
+
+; get string ( i - str )
+
+spi7:       db ": getstorestr spicel $13 spio spio \"\" repeat spii dup concat $00 = not until spiceh ; ", 0
 
 ; Long read of currently open file
 longread:   db ": lread read repeat readcont if read concat then readcont until nop ; ", 0

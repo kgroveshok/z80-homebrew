@@ -488,13 +488,14 @@ def loadSettings():
         
         for n in nodes:
             print("Loading stored string array for node "+str(n["node"]))
-               
-            f = open('/spinet-strings-'+str(n["node"])+'.json',"r" )
-            p = f.read()
-            sett=json.loads(p)
-            n["strings"]=sett
-            print(n["strings"])        
-            
+            try:   
+                f = open('/spinet-strings-'+str(n["node"])+'.json',"r" )
+                p = f.read()
+                sett=json.loads(p)
+                n["strings"]=sett
+                print(n["strings"])        
+            except:
+                    print("File not found")
         
     #except:
     #    saveSettings()

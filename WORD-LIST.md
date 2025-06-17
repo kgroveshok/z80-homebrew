@@ -742,7 +742,10 @@ Also refer to the auto start list examples as these contain extra words created 
 ### COUNT (  str -- str u1 ) Push the length of the string str on TOS as u1 | DONE
 
 
-### CHAR ( u -- n ) Get the ascii value of the first character of the string on the stack | DONE
+### ASC ( u -- n ) Get the ascii value of the first character of the string on the stack | DONE
+
+
+### CHR ( u -- n ) The ASCII character value of u is turned into a string n on the stack | DONE
 
 
 # Words Ready To Use
@@ -1105,7 +1108,10 @@ Also refer to the auto start list examples as these contain extra words created 
 ### COUNT (  str -- str u1 ) Push the length of the string str on TOS as u1 | DONE
 
 
-### CHAR ( u -- n ) Get the ascii value of the first character of the string on the stack | DONE
+### ASC ( u -- n ) Get the ascii value of the first character of the string on the stack | DONE
+
+
+### CHR ( u -- n ) The ASCII character value of u is turned into a string n on the stack | DONE
 
 
 # Words Still Left To Do

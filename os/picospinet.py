@@ -30,6 +30,15 @@ buffers={}
 
 CMD_PUTCHR=0x10
 # Send char to node 1-4 - node ff is ext node 0 is all (todo)
+#
+#
+# To externl, storage to strings
+#
+# URL <url>    - wget on the url and places ascii version in new next buffer
+# SEND <ip> <address>  - sends the contents of the string at storage address to ip
+# READ <ip> <address>  - gets the contents of the string on ip and saves to storage address
+# EXEC                 - Instruct hub to do remote actions
+# CLR                  - Clears hub instruction list
 
 CMD_GETCHR=0x11
 # Listen for message to receive
@@ -92,14 +101,6 @@ CMD_GETNODE=0x18
 #CMD_GETCHR=17
 # 17 clock back next byte in buffer
 
-CMD_NETPOST=20
-CMD_NETGET=21
-
-# server (ff node) commands
-#
-# URL <url>    - wget on the url and places ascii version in new next buffer
-# SEND <ip> <address>  - sends the contents of the string at storage address to ip
-# READ <ip> <address>  - gets the contents of the string on ip and saves to storage address
 
 # All clocked in data from client to the server (z80) to be pushed to stack on the z80
 
@@ -112,7 +113,7 @@ CMD_NETDEBUG=0x31
 CMD_SYNC=0x32
 # x -> Number of minutes to sync settings to storage
 
-netdebug=0
+netdebug=1
 
 # late time storage arrays were synced to storage
 lastsync=0
@@ -284,6 +285,7 @@ nodes=[
       "cmdseq": [],   # sequence of actions for current command
       "cmdseqp": 0,   # position of sequence of actions for current command
       "cmdspiseq": -1,   # spi action for current command
+      "servercmd": "",    # the command server should act on
       "strings" : {},    # Strings stash for node
  #     "seq" : "",     # Current position on processing command
       "byteclk" : 0,   # Current value of clocked in/out byte
@@ -302,7 +304,8 @@ nodes=[
       "SCLKpin" : 4,    # SCLK pin for node
       "CEpin" : 7,      # CE pin for node
       "buff" : "",   # Current buffer
-      "cmd" : 0,    # Current command selected 
+      "cmd" : 0,    # Current command selected
+      "servercmd": "",    # the command server should act on
       "cmdseq": [],   # sequence of actions for current command
       "cmdseqp": 0,   # position of sequence of actions for current command
       "cmdspiseq": -1,   # spi action for current command
@@ -324,7 +327,8 @@ nodes=[
       "SCLKpin" : 8,    # SCLK pin for node
       "CEpin" : 11,      # CE pin for node
       "buff" : "",   # Current buffer
-      "cmd" : 0,    # Current command selected 
+      "cmd" : 0,    # Current command selected
+      "servercmd": "",    # the command server should act on
       "cmdseq": [],   # sequence of actions for current command
       "cmdseqp": 0,   # position of sequence of actions for current command
       "cmdspiseq": -1,   # spi action for current command
@@ -346,7 +350,8 @@ nodes=[
       "SCLKpin" : 12,    # SCLK pin for node
       "CEpin" : 15,      # CE pin for node
       "buff" : "",   # Current buffer
-      "cmd" : 0,    # Current command selected 
+      "cmd" : 0,    # Current command selected
+      "servercmd": "",    # the command server should act on
       "cmdseq": [],   # sequence of actions for current command
       "cmdseqp": 0,   # position of sequence of actions for current command
       "cmdspiseq": -1,   # spi action for current command
@@ -369,7 +374,8 @@ nodes=[
       "SCLKpin" : 16,    # SCLK pin for node
       "CEpin" : 19,      # CE pin for node
       "buff" : "",   # Current buffer
-      "cmd" : 0,    # Current command selected 
+      "cmd" : 0,    # Current command selected
+      "servercmd": "",    # the command server should act on
       "cmdseq": [],   # sequence of actions for current command
       "cmdseqp": 0,   # position of sequence of actions for current command
       "cmdspiseq": -1,   # spi action for current command
@@ -763,6 +769,16 @@ def cmd_end(n):
                     buffers[str(nn["node"])]=curbuff+chr(n["params"][2])
             
             print(buffers)
+        elif n["params"][1] == 255 :
+                # build server command string
+                print("Save to server buffer ") if netdebug > 0 else 0
+                try:
+                    curbuff=n["servercmd"]
+                except:
+                    curbuff=""
+        
+                n["servercmd"]=curbuff+chr(n["params"][2])
+
         else:
             print("Save to single buffer "+str(n["params"][1])) if netdebug > 0 else 0
             try:

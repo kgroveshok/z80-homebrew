@@ -109,7 +109,7 @@ CMD_DEBUG=0x30
 CMD_NETDEBUG=0x31
 # x -> Debug to console level
 
-netdebug=1
+netdebug=0
 
 from machine import Pin
 import time

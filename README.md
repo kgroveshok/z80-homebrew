@@ -56,6 +56,13 @@ Current Specification/Feature Set
 * To aid in board development and speed up the change and test cycle I've now added support for running on the wonderful Steven Cousin's SC114 board. This is quicker than having to remove the EEPROM (even in a zif socket), burn it and put it back.
 * Added CP/M support for even quicker test cyles!
 
+Expansions/Addons
+-----------------
+
+* PicoNet - A Pico device which provides 5/6 SPI network ports allowing intercoms between nodes and act as an internet gateway.
+
+
+
 ![](stage4.0/Gerber_PCB_z80-system-3-sbc.zip)
 ![](stage4.0/Schematic_z80-system-4-sbc-2024-03-02.pdf)
 ![](stage4.0/Schematic_z80-system-4-sbc-2024-03-02.png)

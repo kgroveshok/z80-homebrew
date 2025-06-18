@@ -3,16 +3,17 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 ------------------------------------------------
 
 
-24rd April 2025
+18th June 2025
 --------------
-* DONE new multiplex code for SPI Net gateway can now multiplex in a command and params for the put char to buffer. 
 
-* TODO fix listen command to clock a char out from buffer. 
-* TODO Once clock out char is working then can do the rest of the commands
+* DONE PicoNet - Basic multiplexing of SPI nodes with echo back interface working
+* DONE fix listen command to clock a char out from buffer. 
+* DONE Once clock out char is working then can do the rest of the commands
 
-* TODO SPI Net get waiting messages for node from server. Seem to have a clock out issue. SPII always gives zero. Need to use scope.
+* DONE SPI Net NTP time support. Sets NTP time. Need to get it back
+* DONE SPI Net get waiting messages for node from server. Seem to have a clock out issue. SPII always gives zero. Need to use scope.
+
 * TODO SPI Net send internet traffic and push results to message buffer. Does get URL but blows out on memory
-* TODO SPI Net NTP time support. Sets NTP time. Need to get it back
 * TODO SPI Net get LAN status
 
 
@@ -78,7 +79,7 @@ Nice to haves:
 * TODO Cease support for os-mini as a lot of features just wont work... Perhaps do defines????
 * TODO for auto run storage include a CHAIN feature
 * TODO Do a nice FORTH primer with the hardware. Screen shots and all...
-* TODO New case design
+* TODO New case design - Have a new one, printed and need to refine for use with PicoNET
 * TODO Add to docs that looking up file name of id is just id BREAD 
 * TODO Create a disk UI in native asm for robustness and speed? Have some config routines for this now. Expand on them
 * TODO Add word to call fill_display with a char
@@ -111,6 +112,12 @@ Nice to haves:
 * TODO Extract all of the symbols in the symbol table to be available as words in FORTH, debug and asm above
 * TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs. FORGET and LIST use a scanner. Combine with main parser and have one for keyword and another for byte code
 * TODO Add a simple assembler feature like BBC Basic
+
+24rd April 2025
+---------------
+
+* DONE new multiplex code for SPI Net gateway can now multiplex in a command and params for the put char to buffer. 
+
 
 2nd April 2025
 --------------

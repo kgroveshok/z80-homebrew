@@ -109,7 +109,14 @@ CMD_DEBUG=0x30
 CMD_NETDEBUG=0x31
 # x -> Debug to console level
 
+CMD_SYNC=0x32
+# x -> Number of minutes to sync settings to storage
+
 netdebug=0
+
+# late time storage arrays were synced to storage
+lastsync=0
+timetosync=5
 
 from machine import Pin
 import time
@@ -219,6 +226,10 @@ seq=[
 
 
         { "cmd" : CMD_NETDEBUG,   # the command in operation for this node
+          # send back byte in buffer
+          "seq" : [ SEQ_INIT, SEQ_BYTEIN, SEQ_SAVEBYTE, SEQ_END ]
+        },
+        { "cmd" : CMD_SYNC,   # the command in operation for this node
           # send back byte in buffer
           "seq" : [ SEQ_INIT, SEQ_BYTEIN, SEQ_SAVEBYTE, SEQ_END ]
         },
@@ -408,7 +419,7 @@ import os
 import json
 import network
 import socket
-
+import utime
 
 WifiSSID=""
 WifiPass=""
@@ -729,6 +740,10 @@ def cmd_end(n):
     #    
     #except:
     #        print("fail in netbug")
+    if n["cmd"] == CMD_SYNC:
+            print("Set sync from " + str(timetosync))  if netdebug > 0 else 0
+            timetosync=n["params"][1]
+            print("Set sync to " + str(timetosync))  if netdebug > 0 else 0
 
 
 
@@ -803,10 +818,18 @@ curCmd=0
 
 
 while(1):
+    
+    # do a sync to storage
+    
+    thistime=utime.time()
+    if lastsync < ( thistime - (60*timetosync)): 
+        print("Sync array to storage "+str(thistime))
+        lastsync = thistime
+        saveSettings()
+    
     # smallest unit of step is a single SCLK hand shake. Multiplex the bit handshake for each node
     # on clock pulse
 
-    
     for n in nodes:
         #print("Polling node "+str(n["node"])+str(n["CE"].value()))
         if n["CE"].value() == 1:   # disable any command in progress

@@ -1,42 +1,11 @@
-# Using my simulation of spi via the pico which is and easier change/test cycle than asm
-# TODO
-# Watch for chip select and then listen to the SPI bus for commands
+# PicoNET - SPI networking hub
+# (c) 2025 Kevin Groves
 
-# CE needed for network access
-
-# Network support traffic
-#
-# Most retro internet addons pretend to be a modem. Worth trying to emulate to some extent with SPI
-# though of course because SPI is a special format and the platform doesn't provide serial support
-# anyway, don't need to be particuarly standard. Just a bit obvious.
-#
-# SPI Server is Z80
-# 
-# Data commands:
-#
-# CE select puts client (pico) on listen
-# Byte:
-#    01 - Ask client to clk out buffered data until zero term appears on stream
-#    02 - Tell client to receive data to act on
-#
-# use groups of pi pins to connect multiple machines and have the pi as hub
-#
-#
-# have protocol of from to comms packet with 0 for internet????
-
-
-
-# Sample sample FORTH code to send data
-
-# clock out a string on stack
-#
 
 
 # use: "hello" ptr count clostro
 
 # : clkstro $00 do dup i + @ spio loop ;
-
-
 
 
 # clock in a string to SCRATCHPAD
@@ -61,10 +30,6 @@ buffers={}
 
 CMD_PUTCHR=0x10
 # Send char to node 1-4 - node ff is ext node 0 is all (todo)
-# 01 -> 
-# <node> -> 
-# <char> ->
-#
 
 CMD_GETCHR=0x11
 # Listen for message to receive
@@ -140,6 +105,11 @@ CMD_NETGET=21
 
 CMD_DEBUG=0x30
 # 18 dump to logs all of the node vars to console to help with debug
+
+CMD_NETDEBUG=0x31
+# Debug to console level
+
+netdebug=0
 
 from machine import Pin
 import time
@@ -652,150 +622,6 @@ def nodeclockbytein(node):
 
     return n
 
-#def clockbyteout(byte):
-#   # msb first
-#    while( not SCLK.value() ):
-#            pass # wait for low to high clock out and move on
-#
-#    pat=""
-#    print("byte "+str(byte))
-#    for n in range(7,-1,-1):
-#        
-#        print("clock high")
-#        if ( byte & ( 1<<n)) :
-#            DO.high()
-#            pat=pat+"1"
-#            print( " bit "+str(n)+" high  1")
-#            
-#        else:
-#            DO.low()
-#            pat=pat+"0"
-#            print( " bit "+str(n)+" low   0")
-#        #time.sleep(0.025)
-#
-#
-#        while(SCLK.value() ):
-#            pass     # wait for high to low to clock out
-#        #time.sleep(0.025)
-#        while( not SCLK.value() ):
-#            pass # wait for low to high clock out and move on
-#
-#        #time.sleep(0.025)
-#    print(pat)
-#    print("clock low")
-#
-#def clockbytein():
-#   # msb first
-#    b=""
-#    a=0
-#    for n in range(7,-1,-1):
-#        #SCLK.high()
-#        #print("clock is low")
-#        while not SCLK.value() :
-#                
-#                pass
-#        #print("clock high")
-#
-#        #print("clock low")
-#        bit=DI.value()
-##        SCLK.low()
-#        while SCLK.value() :
-#                pass
-#        #time.sleep(0.025)
-#        #print("clock low")
-#        bit=DI.value()
-#        if bit  :
-#     #       print( " bit "+str(n)+" is high   1")
-#            b=b+"1"
-#            a=(a<< 1 ) +1
-#            
-#        #    
-#        else:
-#      #      print( " bit "+str(n)+" is low 0")
-#            b=b+"0"
-#            a=(a<< 1 ) 
-#
-#    #print(b)
-#
-#    return a
-
-
-#def writebyte(byte,addressh,addressl):
- #      
-  #  #; initi write mode
-    #;
-  #  #;CS low
-    #
-
-  #  print("* write "+str(byte)+" to "+str(addressl))
-  #  CE.low()
-  #  print("ce low")
-  #  #;clock out wren instruction##
-
-    #print("* wren")
-    #clockbyteout(WREN)
-
-    #;cs high to enable write latch
-
-  #  CE.high()
-
-  #  print("ce high")
-    #;
-    #; intial write data
-    #;
-    #; cs low
-    #
-
-  #  CE.low()
-    #print("ce low")
-
-    #; clock out write instruction
-    #
- #   print("* write")
- #   clockbyteout(WRITE)
-
-    #; clock out address (depending on address size)
-    #
-#    print("* address")
-#    clockbyteout(addressh)
-#    clockbyteout(addressl)
-
-    #; clock out byte(s) for page
-
- #   print("* data")
-#    clockbyteout(byte)
-
-#    CE.high()
-#    print("ce high")
-
-
-#def readbyte(addressh,addressl):
- #   print("read "+str(addressl))
-       
-    #; initi write mode
-    #;
-    #;CS low
-    #
-
- #   CE.low()
-    #print("ce low")
-    #;clock out read instruction
-#
-#    clockbyteout(READ)
-
-
-    #; clock out address (depending on address size)
-    #
-
- #   clockbyteout(addressh)
- #   clockbyteout(addressl)
-
-    #; clock in byte(s) for page
-
- #   clockbytein()
-
- #   CE.high()
- #   print("ce high")
 now=""
 nowdate=""
 nowtime=""
@@ -803,9 +629,6 @@ nowtime=""
 def lpad(str,width,padwith):
         ret=(padwith * width) + str
         return ret[len(ret)-width:30]
-
-
-
 
 def setNow():
     global now
@@ -877,17 +700,35 @@ def cmd_init(n):
     n["cmdspiseq"]=-1
     
 def cmd_end(n):
+    #global nodes
+    
     print("End command. Save params for command %d in node %d" % ( n["cmd"], n["node"]))
     print(n["params"])
     
     if n["cmd"] == CMD_PUTCHR:
         # save the param to the dest buffer
-        try:
-            curbuff=buffers[str(n["params"][1])]
-        except:
-            curbuff=""
         
-        buffers[str(n["params"][1])]=curbuff+chr(n["params"][2])
+        if n["params"][1] == 0 :
+            # save to all nodes
+            print("Save to all buffers")
+            for nn in nodes:
+                try:
+                    curbuff=buffers[str(nn["node"])]
+                except:
+                    curbuff=""
+                if nn["node"] != n["node"] :
+                    # but exclude sender node
+                    buffers[str(nn["node"])]=curbuff+chr(n["params"][2])
+            
+            print(buffers)
+        else:
+            print("Save to single buffer "+str(n["params"][1]))
+            try:
+                curbuff=buffers[str(n["params"][1])]
+            except:
+                curbuff=""
+        
+            buffers[str(n["params"][1])]=curbuff+chr(n["params"][2])
 
     if n["cmd"] == CMD_PUTSSTRZ:
         # param one is the string index followed by the string

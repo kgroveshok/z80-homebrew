@@ -151,7 +151,7 @@ spi6:       db ": storestr spicel $12 spio spio count $00 do dup i + @ spio $01 
 spi7:       db ": getstorestr spicel $13 spio spio \" \" repeat spii dup concat $00 = not until spiceh ; ", 0
 
 
-; SPICHAT (TODO)
+; NETCHAT (TODO)
 ; Program to allow two nodes to chat with eachother
 ;
 ; v0 - target node
@@ -161,9 +161,9 @@ spi7:       db ": getstorestr spicel $13 spio spio \" \" repeat spii dup concat 
 ; starting at row 2,0 , while spigetchr is not zero -> 
 ;
 ; ( node - )
-spi8:		db ": spichatp $00 $00 at accept ;", 0
-spi9: 		db ": spichatr repeat spigetchr dup dup $00 = not if emit then $00 = not until $02 pause ; ",0
-spi10:		db ": spichat v0! repeat spichatp count dup $00 > if spitype $01 pause then cls $00 $03 at \">\" . spichatr true until ;", 0
+spi8:		db ": netchatp $00 $00 at accept ;", 0
+spi9: 		db ": netchatr repeat spigetchr dup dup $00 = not if emit then $00 = not until $02 pause ; ",0
+spi10:		db ": netchat v0! repeat netchatp count dup $00 > if spitype $01 pause then cls $00 $03 at \">\" . netchatr true until ;", 0
 
 
 ; Long read of currently open file

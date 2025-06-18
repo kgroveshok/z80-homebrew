@@ -129,11 +129,10 @@ startcmds:
 
 ; v0! = node to send to
 ; ( str count - )
-spi1:       db ": spitype spicel $00 do dup i + @ v0@ $10 spio spio spio $01 pause loop spiceh ; ; ",0
+spi1:       db ": spitype spiceh $00 do dup i + @ v0@ spicel $10 spio spio spio spiceh $01 pause loop ; ; ",0
 
 ; spiputchr ( char node - )
 spi2:       db ": spiputchr spicel $10 spio spio ptr @ spio spiceh ; ",0
-spi3:       db ": storestr spicel $03 spio spio ptr count clkstro spiceh ; ", 0
 
 ; spigetchr ( - n )
 spi4:       db ": spigetchr spicel $11 spio spii spiceh ; ", 0
@@ -144,6 +143,7 @@ spi5:       db ": getnode spicel $18 spio spii nop spiceh ; ", 0
 
 ; store string ( str i - )
 
+spi3:       db ": storestrold spicel $03 spio spio ptr count clkstro spiceh ; ", 0
 spi6:       db ": storestr spicel $12 spio spio count $00 do dup i + @ spio $01 pause loop spiceh ; ", 0
 
 ; get string ( addr i -  )    TO FIX
@@ -160,6 +160,9 @@ spi7:       db ": getstorestr spicel $13 spio spio \" \" repeat spii dup concat 
 ; if input is string send spitype to target node
 ; starting at row 2,0 , while spigetchr is not zero -> 
 ;
+;
+; TODO add paging of get request
+
 ; ( node - )
 spi8:		db ": netchatp $00 $00 at accept ;", 0
 spi9: 		db ": netchatr repeat spigetchr dup dup $00 = not if emit then $00 = not until $02 pause ; ",0

@@ -32,13 +32,14 @@ CMD_PUTCHR=0x10
 # Send char to node 1-4 - node ff is ext node 0 is all (todo)
 #
 #
-# To externl, storage to strings
+# To externl, storage to strings. Commands delimited by ',' (comma)
 #
-# URL <url>    - wget on the url and places ascii version in new next buffer
-# SEND <ip> <address>  - sends the contents of the string at storage address to ip
-# READ <ip> <address>  - gets the contents of the string on ip and saves to storage address
-# EXEC                 - Instruct hub to do remote actions
-# CLR                  - Clears hub instruction list
+# GET <url>    - GET on the url and places ascii version in new next buffer
+# PST <url>    - POST on the url and places ascii version in new next buffer
+# SND <ip> <port>  - sends the contents of the string at storage address to ip
+# REC <ip> <port>  - gets the contents of the string on ip and saves to storage address
+# GO                  - Instruct hub to do remote actions
+
 
 CMD_GETCHR=0x11
 # Listen for message to receive
@@ -117,7 +118,10 @@ netdebug=1
 
 # late time storage arrays were synced to storage
 lastsync=0
-timetosync=5
+timetosync=1
+
+lastservercmd=0
+timetoservercmd=1
 
 from machine import Pin
 import time
@@ -832,9 +836,32 @@ curCmd=0
 #while(1):
 #    clockbyteout(33);
 
+def serverCmd(n):
+    print("Process server commands")
+    cmd=n["servercmd"]
+    #if cmd.find(",clr")>0:
+    #    print("Clear server commands")
+    #    n["servercmd"]=""
+    if cmd.find(",go")>=0:
+        print("Exec server commands")
+        for cmds in cmd.split(","):
+            if cmds[:3]=="get":
+                print("get: "+cmds[3:])
+                # TODO get web request
+                
+                
+        print("Done scan. Clear commands")
+        n["servercmd"]=""
+        
+    
+
 
 while(1):
-    
+
+
+
+# TODO only do when nothing is active??
+
     # do a sync to storage
     
     thistime=utime.time()
@@ -842,7 +869,21 @@ while(1):
         print("Sync array to storage "+str(thistime))
         lastsync = thistime
         saveSettings()
+
+    # process server commands
     
+    thistime=utime.time()
+    if lastservercmd < ( thistime - (60*timetoservercmd)): 
+        print("Server commands "+str(thistime))
+        lastservercmd = thistime
+        for n in nodes:
+            print("Checking node for server commands "+str(n["node"]))
+            print(n["servercmd"])
+            if len(n["servercmd"]) > 0:
+                print(" Server commands present...")
+                serverCmd(n)
+
+
     # smallest unit of step is a single SCLK hand shake. Multiplex the bit handshake for each node
     # on clock pulse
 

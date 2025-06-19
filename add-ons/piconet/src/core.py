@@ -1,8 +1,14 @@
 # PicoNET - SPI networking hub
 # (c) 2025 Kevin Groves
 
+# recommend adding slower SPI time when debug is on
+# spi_clktime:    equ $fa6b
+# e.g. $a0 $fa6b !
 
 
+import machine 
+import urequests
+import uasyncio as asyncio
 # use: "hello" ptr count clostro
 
 # : clkstro $00 do dup i + @ spio loop ;
@@ -837,330 +843,367 @@ curCmd=0
 #    clockbyteout(33);
 
 def serverCmd(n):
-    print("Process server commands")
+    global buffers
+    print("Process server commands")  if netdebug > 0 else 0
     cmd=n["servercmd"]
     #if cmd.find(",clr")>0:
     #    print("Clear server commands")
     #    n["servercmd"]=""
     if cmd.find(",go")>=0:
-        print("Exec server commands")
+        print("Exec server commands")   if netdebug > 0 else 0
         for cmds in cmd.split(","):
             if cmds[:3]=="get":
-                print("get: "+cmds[3:])
+                u=cmds[4:]
+                print("get:"+u+":")   if netdebug > 0 else 0
                 # TODO get web request
                 
-                
+                blob = urequests.get(u)
+                blobcontver=blob.text
+                print(blob.reason)   if netdebug > 0 else 0
+                blob.close()
+                try:
+                    curbuff=buffers[str(n["node"])]
+                except:
+                    curbuff=""
+            
+                buffers[str(n["node"])]=curbuff+blobcontver
+
         print("Done scan. Clear commands")
         n["servercmd"]=""
         
     
 
+async def main():
+    global nodes
+    global thistime
+    global lastsync
+    global timetosync
+    global lastservercmd
+    global timetoservercmd
+    while True:
 
-while(1):
 
 
+    # TODO only do when nothing is active??
 
-# TODO only do when nothing is active??
+        # do a sync to storage
+        
+        thistime=utime.time()
+        if lastsync < ( thistime - (60*timetosync)): 
+            print("Sync array to storage "+str(thistime))
+            lastsync = thistime
+            saveSettings()
 
-    # do a sync to storage
-    
-    thistime=utime.time()
-    if lastsync < ( thistime - (60*timetosync)): 
-        print("Sync array to storage "+str(thistime))
-        lastsync = thistime
-        saveSettings()
+        # process server commands
+        
+        thistime=utime.time()
+        if lastservercmd < ( thistime - (60*timetoservercmd)): 
+            print("Server commands "+str(thistime))
+            lastservercmd = thistime
+            for n in nodes:
+                print("Checking node for server commands "+str(n["node"]))
+                print(n["servercmd"])
+                if len(n["servercmd"]) > 0:
+                    print(" Server commands present...")
+                    serverCmd(n)
 
-    # process server commands
-    
-    thistime=utime.time()
-    if lastservercmd < ( thistime - (60*timetoservercmd)): 
-        print("Server commands "+str(thistime))
-        lastservercmd = thistime
+
+        # smallest unit of step is a single SCLK hand shake. Multiplex the bit handshake for each node
+        # on clock pulse
+
         for n in nodes:
-            print("Checking node for server commands "+str(n["node"]))
-            print(n["servercmd"])
-            if len(n["servercmd"]) > 0:
-                print(" Server commands present...")
-                serverCmd(n)
+            #print("Polling node "+str(n["node"])+str(n["CE"].value()))
+            if n["CE"].value() == 1:   # disable any command in progress
+                    n["cmdspiseq"]=-1
+                    n["cmd"]=0
+
+            if n["CE"].value() == 0:     # Node wants to talk
+       #         print( "Node %d: CE low" % n["node"])
 
 
-    # smallest unit of step is a single SCLK hand shake. Multiplex the bit handshake for each node
-    # on clock pulse
-
-    for n in nodes:
-        #print("Polling node "+str(n["node"])+str(n["CE"].value()))
-        if n["CE"].value() == 1:   # disable any command in progress
-                n["cmdspiseq"]=-1
-                n["cmd"]=0
-
-        if n["CE"].value() == 0:     # Node wants to talk
-   #         print( "Node %d: CE low" % n["node"])
+    #**** for clock out state change needs to occur after data presented on the bus. it is a clock cycle begind the wave
 
 
-#**** for clock out state change needs to occur after data presented on the bus. it is a clock cycle begind the wave
+                # get current clock state
+
+                clk=n["SCLK"].value()
+                preclk=n["clkstate"]
+
+    #            if clk:
+    #                print( "Node %d: SCLK high" % n["node"])
+    #            else:
+    #                print( "Node %d: SCLK low" % n["node"])
 
 
-            # get current clock state
-
-            clk=n["SCLK"].value()
-            preclk=n["clkstate"]
-
-#            if clk:
-#                print( "Node %d: SCLK high" % n["node"])
-#            else:
-#                print( "Node %d: SCLK low" % n["node"])
-
-
-            
-            if n["cmd"] == 0 and n["cmdspiseq"] == -1:
-                        print( "Node %d: Clock in start of a command" % n["node"]) if netdebug > 0 else 0
-                        n["cmdspiseq"]=SEQ_SPIBIT7
-                        print("set byteclk=0") if netdebug > 0 else 0
-                        n["byteclk"]=0
-
-
-            # clock state has changed 
-
-            if clk != preclk :
-#                print( "Node %d: SCLK state change" % n["node"])
-#                if clk:
-#                    print( "Node %d: SCLK high" % n["node"])
-#                else:
-#                    print( "Node %d: SCLK low" % n["node"])
-
-#                if clk == 1:
-#                # TODO detect if wanting to clock data out and if so and at first state set byte to
-#                go out
-#                    if n["cmdspiseq"] != 0 :
-#                        if n["cmdspiseq"] > SEQ_SPIINBIT7 :
-#                            # OUT
-##                            cmd_init()                            
-##                            n["cmdspiseq"]=nodeclockbyteout(n["params"][1])
-#                            n["cmdspiseq"]=nodeclockbyteout(65)
-                    
-            
-
-        # if no command active and clk is 0 then clock in a bit
-        #   if last bit then decode command
-
-
-
-                if n["cmd"] == 0:
-                    print("no command") if netdebug > 0 else 0
-                    if clk == 1 and n["cmdspiseq"] == -1:
-                        print( "Clock in start of a command2") if netdebug > 0 else 0
-                        n["cmdspiseq"]=SEQ_SPIBIT7
-                        print("set byteclk=0 a") if netdebug > 0 else 0
-                        n["byteclk"]=0
-
-                    if clk == 0:
-                        print("Clockin in bit for command") if netdebug > 0 else 0
-                        n["cmdspiseq"]=nodeclockbytein(n)
-                        print("Clock in state: "+str(n["cmdspiseq"])) if netdebug > 0 else 0
-                        if n["cmdspiseq"] == -1:
-                            n["cmd" ] = n["byteclk"]
-                            # must have clocked in the last command byte. Look it up and start a run
-                            print("Have command byte. Now look up:"+str(n["cmd"])) if netdebug > 0 else 0
-                            
-                            print("set byteclk=0 b") if netdebug > 0 else 0
-                            n["cmdseqp"]=0
+                
+                if n["cmd"] == 0 and n["cmdspiseq"] == -1:
+                            print( "Node %d: Clock in start of a command" % n["node"]) if netdebug > 0 else 0
+                            n["cmdspiseq"]=SEQ_SPIBIT7
+                            print("set byteclk=0") if netdebug > 0 else 0
                             n["byteclk"]=0
 
-                            # look up sequence for cmd
-                            n["cmdseq"] =[]
-                            for a in seq:
-                                if a["cmd"] == n["cmd"] :
-                                    n["cmdseq"] = a["seq"]
-                                    print("Command sequence selected: "+str(a["seq"])) if netdebug > 0 else 0
-                            if n["cmdseq"] == []:
-                                # no command byte seq found to exec to look for a new command again
-                                print("Invalid command byte") if netdebug > 0 else 0
-                                n["cmd"]=0
+
+                # clock state has changed 
+
+                if clk != preclk :
+    #                print( "Node %d: SCLK state change" % n["node"])
+    #                if clk:
+    #                    print( "Node %d: SCLK high" % n["node"])
+    #                else:
+    #                    print( "Node %d: SCLK low" % n["node"])
+
+    #                if clk == 1:
+    #                # TODO detect if wanting to clock data out and if so and at first state set byte to
+    #                go out
+    #                    if n["cmdspiseq"] != 0 :
+    #                        if n["cmdspiseq"] > SEQ_SPIINBIT7 :
+    #                            # OUT
+    ##                            cmd_init()                            
+    ##                            n["cmdspiseq"]=nodeclockbyteout(n["params"][1])
+    #                            n["cmdspiseq"]=nodeclockbyteout(65)
+                        
+                
+
+            # if no command active and clk is 0 then clock in a bit
+            #   if last bit then decode command
+
+
+
+                    if n["cmd"] == 0:
+                        print("no command") if netdebug > 0 else 0
+                        if clk == 1 and n["cmdspiseq"] == -1:
+                            print( "Clock in start of a command2") if netdebug > 0 else 0
+                            n["cmdspiseq"]=SEQ_SPIBIT7
+                            print("set byteclk=0 a") if netdebug > 0 else 0
+                            n["byteclk"]=0
+
+                        if clk == 0:
+                            print("Clockin in bit for command") if netdebug > 0 else 0
+                            n["cmdspiseq"]=nodeclockbytein(n)
+                            print("Clock in state: "+str(n["cmdspiseq"])) if netdebug > 0 else 0
+                            if n["cmdspiseq"] == -1:
+                                n["cmd" ] = n["byteclk"]
+                                # must have clocked in the last command byte. Look it up and start a run
+                                print("Have command byte. Now look up:"+str(n["cmd"])) if netdebug > 0 else 0
+                                
+                                print("set byteclk=0 b") if netdebug > 0 else 0
+                                n["cmdseqp"]=0
+                                n["byteclk"]=0
+
+                                # look up sequence for cmd
+                                n["cmdseq"] =[]
+                                for a in seq:
+                                    if a["cmd"] == n["cmd"] :
+                                        n["cmdseq"] = a["seq"]
+                                        print("Command sequence selected: "+str(a["seq"])) if netdebug > 0 else 0
+                                if n["cmdseq"] == []:
+                                    # no command byte seq found to exec to look for a new command again
+                                    print("Invalid command byte") if netdebug > 0 else 0
+                                    n["cmd"]=0
+                                            
+
+
+                    else:
+                        print("in a step. any spi activity?") if netdebug > 0 else 0
+                        try:
+                            if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEOUT and clk == 1 :
+                                print("clock high and byte out") if netdebug > 0 else 0
+                                # TODO prep a clock out of byte
+                                n["cmdspiseq"]=nodeclockbyteout(n)
+                                if n["cmdspiseq"]==-1:
+                                    n["cmdseqp"]=n["cmdseqp"]+1
+
+                            if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEIN and clk == 0 :
+                                # TODO prep a clock out of byte
+                                print("clock low and byte in") if netdebug > 0 else 0
+                                n["cmdspiseq"]=nodeclockbytein(n)
+                                if n["cmdspiseq"]==-1:
+                                    n["cmdseqp"]=n["cmdseqp"]+1
+                        except:
+                            # might have gone past end of command sequence
+                            pass
+
+    #                if clk == 0:
+    #
+    #                    # act on a low state (for clock in)
+    #
+    #                    # TODO if clock is low then clock in/out a single bit for current sequence
+    #
+    #                    # are we looking for a command first?
+    #
+    ## TODO only clock in if a clock in process
+    #                    if n["cmd"] == 0 and n["cmdspiseq"] == -1 :
+    #                        # yes, start clock in a bit
+    #                        n["cmdspiseq"]=7
+    #                        print( "Node %d: Start clock in cmd" % n["node"])
+    #
+    #
+    #                    # TODO clock in a bit for cmdspiseq
+    #
+    ## TODO save or set the current byte for in or out
+    ## TODO keep in sync with param and byte directly in the function def for in/out????
+    #
+    #                            #else:
+    #                            #        # done with a param
+    #                            #        n["param"][n["cmdseqp"]=n["byteclk"]
+
+
+                        
+                        #if n["cmdspiseq"] >= 0 :
+    #                        n["cmdspiseq"]=nodeclockbytein(n)
+    #                if n["cmdspiseq"] == -1 :
+    #                            # at end of byte transfer
+    #
+    #                            # process sequence steps
+    #
+    #                            # TODO progress SPI IN
+    #                            # TODO progress SPI OUT
+    #                            # TODO end of in and out
+    #                            # TODO is this byte a command? if command is empty and we have a byte then yes. Load sequence for the command
+    #
+    #                            if n["cmd" ] == 0:
+    #                                n["cmd" ] = n["byteclk"]
+    #                                n["cmdseqp"]=0
+    #                                n["byteclk"]=0
+    #
+    #                                # look up sequence for cmd
+    #                                n["cmdseq"] =[]
+    #                                for a in seq:
+    #                                    if a["cmd"] == n["cmd"] :
+    #                                        n["cmdseq"] = a["seq"]
+    #                                        print("Command sequence selected: "+str(a["seq"]))
+    #                                if n["cmdseq"] == []:
+    #                                    # no command byte seq found to exec to look for a new command again
+    #                                    n["cmd"]=0
+    #                                    
+    #                                
+    #                    
+
+                    # TODO process a sequence step
+
+                if n["cmd"] != 0:
+                        # process a sequence
+    #                    print("Node %d : proc sequence at step %d" % ( n["node"], n["cmdseqp"] ) )
+                        
+                        if n["cmdspiseq"] == -1 :
+                                print( "Run seq starting with "+str(n["cmdseq"])) if netdebug > 0 else 0
+                                # no byte shift in/out in progress so process setp
+                                
+                                try:
+                                        # TODO byte in set seq
+                                    if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEIN:
+                                            print( "Start clock in a byte" ) if netdebug > 0 else 0
+                                            n["cmdspiseq"] = SEQ_SPIBIT7
+                                            print("set byteclk=0 c") if netdebug > 0 else 0
+                                            n["byteclk"] = 0
+
+                                    # TODO byte out set seq
+                                    if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEOUT:
+                                            print( "Start clock out a byte" ) if netdebug > 0 else 0
+                                            n["cmdspiseq"] = SEQ_SPIBIT7
+    # TODO BUG clock out leaves clkstate in wrong place for next command
+
+                                    if n["cmdseq"][n["cmdseqp"]] == SEQ_SSTRZNEXT:
+                                        print("Clock out stored string content") if netdebug > 0 else 0
+                                        s1=n["strings"][str(n["params"][2])]
+                                        ct=n["params"]['c']
+                                        try:
+                                            c=s1[ct]
+                                            n["byteclk"]=ord(c)
+                                        except:
+                                            n["byteclk"]=0
+                                        #print(s1)
+                                        #print(ct)
+                                        #print(c)
+                                        
+                                        print(n["byteclk"]) if netdebug > 0 else 0
+                                        n["params"]['c']=ct+1
+                                        n["cmdseqp"]=n["cmdseqp"]+1
+
+                                    # TODO do seq init call
+                                    if n["cmdseq"][n["cmdseqp"]] == SEQ_INIT:
+                                        cmd_init(n)
+                                        
+                                    if n["cmdseq"][n["cmdseqp"]] == SEQ_SAVEBYTE:
+                                        cmd_savebyte(n)
                                         
 
-
-                else:
-                    print("in a step. any spi activity?") if netdebug > 0 else 0
-                    try:
-                        if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEOUT and clk == 1 :
-                            print("clock high and byte out") if netdebug > 0 else 0
-                            # TODO prep a clock out of byte
-                            n["cmdspiseq"]=nodeclockbyteout(n)
-                            if n["cmdspiseq"]==-1:
-                                n["cmdseqp"]=n["cmdseqp"]+1
-
-                        if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEIN and clk == 0 :
-                            # TODO prep a clock out of byte
-                            print("clock low and byte in") if netdebug > 0 else 0
-                            n["cmdspiseq"]=nodeclockbytein(n)
-                            if n["cmdspiseq"]==-1:
-                                n["cmdseqp"]=n["cmdseqp"]+1
-                    except:
-                        # might have gone past end of command sequence
-                        pass
-
-#                if clk == 0:
-#
-#                    # act on a low state (for clock in)
-#
-#                    # TODO if clock is low then clock in/out a single bit for current sequence
-#
-#                    # are we looking for a command first?
-#
-## TODO only clock in if a clock in process
-#                    if n["cmd"] == 0 and n["cmdspiseq"] == -1 :
-#                        # yes, start clock in a bit
-#                        n["cmdspiseq"]=7
-#                        print( "Node %d: Start clock in cmd" % n["node"])
-#
-#
-#                    # TODO clock in a bit for cmdspiseq
-#
-## TODO save or set the current byte for in or out
-## TODO keep in sync with param and byte directly in the function def for in/out????
-#
-#                            #else:
-#                            #        # done with a param
-#                            #        n["param"][n["cmdseqp"]=n["byteclk"]
-
-
-                    
-                    #if n["cmdspiseq"] >= 0 :
-#                        n["cmdspiseq"]=nodeclockbytein(n)
-#                if n["cmdspiseq"] == -1 :
-#                            # at end of byte transfer
-#
-#                            # process sequence steps
-#
-#                            # TODO progress SPI IN
-#                            # TODO progress SPI OUT
-#                            # TODO end of in and out
-#                            # TODO is this byte a command? if command is empty and we have a byte then yes. Load sequence for the command
-#
-#                            if n["cmd" ] == 0:
-#                                n["cmd" ] = n["byteclk"]
-#                                n["cmdseqp"]=0
-#                                n["byteclk"]=0
-#
-#                                # look up sequence for cmd
-#                                n["cmdseq"] =[]
-#                                for a in seq:
-#                                    if a["cmd"] == n["cmd"] :
-#                                        n["cmdseq"] = a["seq"]
-#                                        print("Command sequence selected: "+str(a["seq"]))
-#                                if n["cmdseq"] == []:
-#                                    # no command byte seq found to exec to look for a new command again
-#                                    n["cmd"]=0
-#                                    
-#                                
-#                    
-
-                # TODO process a sequence step
-
-            if n["cmd"] != 0:
-                    # process a sequence
-#                    print("Node %d : proc sequence at step %d" % ( n["node"], n["cmdseqp"] ) )
-                    
-                    if n["cmdspiseq"] == -1 :
-                            print( "Run seq starting with "+str(n["cmdseq"])) if netdebug > 0 else 0
-                            # no byte shift in/out in progress so process setp
-                            
-                            try:
-                                    # TODO byte in set seq
-                                if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEIN:
-                                        print( "Start clock in a byte" ) if netdebug > 0 else 0
-                                        n["cmdspiseq"] = SEQ_SPIBIT7
-                                        print("set byteclk=0 c") if netdebug > 0 else 0
-                                        n["byteclk"] = 0
-
-                                # TODO byte out set seq
-                                if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEOUT:
-                                        print( "Start clock out a byte" ) if netdebug > 0 else 0
-                                        n["cmdspiseq"] = SEQ_SPIBIT7
-# TODO BUG clock out leaves clkstate in wrong place for next command
-
-                                if n["cmdseq"][n["cmdseqp"]] == SEQ_SSTRZNEXT:
-                                    print("Clock out stored string content") if netdebug > 0 else 0
-                                    s1=n["strings"][str(n["params"][2])]
-                                    ct=n["params"]['c']
-                                    try:
-                                        c=s1[ct]
-                                        n["byteclk"]=ord(c)
-                                    except:
-                                        n["byteclk"]=0
-                                    #print(s1)
-                                    #print(ct)
-                                    #print(c)
-                                    
-                                    print(n["byteclk"]) if netdebug > 0 else 0
-                                    n["params"]['c']=ct+1
-                                    n["cmdseqp"]=n["cmdseqp"]+1
-
-                                # TODO do seq init call
-                                if n["cmdseq"][n["cmdseqp"]] == SEQ_INIT:
-                                    cmd_init(n)
-                                    
-                                if n["cmdseq"][n["cmdseqp"]] == SEQ_SAVEBYTE:
-                                    cmd_savebyte(n)
-                                    
-
-                                if n["cmdseq"][n["cmdseqp"]] == SEQ_REPEAT:
-                                    print("Repeat marker") if netdebug > 0 else 0
-                                    n["cmdseqp"]=n["cmdseqp"]+1
-
-                                if n["cmdseq"][n["cmdseqp"]] == SEQ_UNTILZ:
-                                    # go back to the last REQ_REPEAT marker
-                                    if n["byteclk"]==0:
-                                        print("Now have zero term. Next...") if netdebug > 0 else 0
+                                    if n["cmdseq"][n["cmdseqp"]] == SEQ_REPEAT:
+                                        print("Repeat marker") if netdebug > 0 else 0
                                         n["cmdseqp"]=n["cmdseqp"]+1
-                                    else:
-                                        print("No zero term... Jump back to previous repeat marker..") if netdebug > 0 else 0
-                                        while n["cmdseq"][n["cmdseqp"]] != SEQ_REPEAT:
-                                            n["cmdseqp"]=n["cmdseqp"]-1
-                                            
-                                if n["cmdseq"][n["cmdseqp"]] == SEQ_DEBUG:
-                                    print(n) 
-                                    print(buffers) 
-                                    saveSettings()
-                                    n["cmdseqp"]=n["cmdseqp"]+1
 
-                                # TODO do seq save params
-                                if n["cmdseq"][n["cmdseqp"]] == SEQ_END:
-                                    cmd_end(n)
-                            
-                            except:
-                                # might have gone past end of command sequence
-                                pass
+                                    if n["cmdseq"][n["cmdseqp"]] == SEQ_UNTILZ:
+                                        # go back to the last REQ_REPEAT marker
+                                        if n["byteclk"]==0:
+                                            print("Now have zero term. Next...") if netdebug > 0 else 0
+                                            n["cmdseqp"]=n["cmdseqp"]+1
+                                        else:
+                                            print("No zero term... Jump back to previous repeat marker..") if netdebug > 0 else 0
+                                            while n["cmdseq"][n["cmdseqp"]] != SEQ_REPEAT:
+                                                n["cmdseqp"]=n["cmdseqp"]-1
+                                                
+                                    if n["cmdseq"][n["cmdseqp"]] == SEQ_DEBUG:
+                                        print(n) 
+                                        print(buffers) 
+                                        saveSettings()
+                                        n["cmdseqp"]=n["cmdseqp"]+1
 
-#                            n["cmdseqp"]=n["cmdseqp"]+1
-#                            print(n["params"])
-#                            print("Next step")
-                            if n["cmdseqp"] > len(n["cmdseq"])-1:
-                                # sequence complete, new command
-                                n["cmd"]=0
-                                print("Command processed. Next cmd...") if netdebug > 0 else 0
-                                n["cmdspiseq"] = -1 
-                                print(n) if netdebug > 0 else 0
-                                print("set byteclk=0 g") if netdebug > 0 else 0
-                                n["byteclk"]=0
+                                    # TODO do seq save params
+                                    if n["cmdseq"][n["cmdseqp"]] == SEQ_END:
+                                        cmd_end(n)
                                 
-                                
-                                
-                                n["cmdseqp"]=0
-                                
-                                #if clk == 1:
-                                #    if n["cmdspiseq"] != 0 :
-                                #        if n["cmdspiseq"] > SEQ_SPIINBIT7 :
-                                #            # OUT
-                                #            n["cmdspiseq"]=nodeclockbyteout(n)
-                                
-                                            
-                            
+                                except:
+                                    # might have gone past end of command sequence
+                                    pass
 
-            n["clkstate"]=clk
+    #                            n["cmdseqp"]=n["cmdseqp"]+1
+    #                            print(n["params"])
+    #                            print("Next step")
+                                if n["cmdseqp"] > len(n["cmdseq"])-1:
+                                    # sequence complete, new command
+                                    n["cmd"]=0
+                                    print("Command processed. Next cmd...") if netdebug > 0 else 0
+                                    n["cmdspiseq"] = -1 
+                                    print(n) if netdebug > 0 else 0
+                                    print("set byteclk=0 g") if netdebug > 0 else 0
+                                    n["byteclk"]=0
+                                    
+                                    
+                                    
+                                    n["cmdseqp"]=0
+                                    
+                                    #if clk == 1:
+                                    #    if n["cmdspiseq"] != 0 :
+                                    #        if n["cmdspiseq"] > SEQ_SPIINBIT7 :
+                                    #            # OUT
+                                    #            n["cmdspiseq"]=nodeclockbyteout(n)
+                                    
+                                                
+                                
 
+                n["clkstate"]=clk
 
+id="?"
+machine=""
 
+def startup(mach):
+    global id
+    global machine
+    machine=mach
+
+    try:
+        id=mach.unique_id()
+        #id=id.replace("\", "")
+        
+        id="".join(hex(n) for n in id)
+        id=id.replace('0x','')
+    except:
+        id="na"
+    print(id) # STRIP
+    try:
+            asyncio.run(main())
+    finally:
+            asyncio.new_event_loop()
 
 # eof
 

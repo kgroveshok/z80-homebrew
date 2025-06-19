@@ -140,10 +140,11 @@ spi4:       db ": spigetchr spicel $11 spio spii spiceh ; ", 0
 ; getnode ( - n )
 spi5:       db ": getnode spicel $18 spio spii nop spiceh ; ", 0
 
-
+; ( str node - ) 
+spi3:       db ": sendnode v0! count spiceh $00 do dup i + @ v0@ spicel $10 spio spio spio spiceh $01 pause loop ; ; ",0
 ; store string ( str i - )
 
-spi3:       db ": storestrold spicel $03 spio spio ptr count clkstro spiceh ; ", 0
+;spi3:       db ": storestrold spicel $03 spio spio ptr count clkstro spiceh ; ", 0
 spi6:       db ": storestr spicel $12 spio spio count $00 do dup i + @ spio $01 pause loop spiceh ; ", 0
 
 ; get string ( addr i -  )    TO FIX

@@ -13,6 +13,10 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE SPI Net NTP time support. Sets NTP time. Need to get it back
 * DONE SPI Net get waiting messages for node from server. Seem to have a clock out issue. SPII always gives zero. Need to use scope.
 
+
+* TODO Add word for setting spi_time
+* TODO Add word for setting node number to talk to???
+
 * TODO SPI Net send internet traffic and push results to message buffer. Does get URL but blows out on memory
 * TODO SPI Net get LAN status
 

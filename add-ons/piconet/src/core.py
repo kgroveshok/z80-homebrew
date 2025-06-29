@@ -128,7 +128,7 @@ CMD_NETDEBUG=0x31
 CMD_SYNC=0x32
 # x -> Number of minutes to sync settings to storage
 
-netdebug=1
+netdebug=0
 
 # late time storage arrays were synced to storage
 lastsync=0

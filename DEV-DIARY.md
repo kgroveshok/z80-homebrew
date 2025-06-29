@@ -10,6 +10,8 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE Added SPITIME const to provide a better way to handle SPI timing changes
 * DONE Add word for setting spi_time
 
+
+* TODO Combine VAR and SCRATCH?
 * TODO Add word for setting node number to talk to???
 
 * TODO SPI Net send internet traffic and push results to message buffer. Does get URL but blows out on memory

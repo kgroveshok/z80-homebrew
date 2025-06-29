@@ -70,6 +70,15 @@ $01 score 2!
 As that would over write 'timer'.
 
 
+
+Another variable method is the use of VAR.
+
+e.g.
+
+"a" VAR @
+
+
+
 Storage
 =======
 

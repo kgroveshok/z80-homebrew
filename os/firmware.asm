@@ -331,7 +331,8 @@ cli_origptr: equ cli_ptr - 2           ; pointer to start of word to parse which
 cli_mvdot: equ cli_origptr - 1 ;     ; true will move the cursor once something is displayed
 cli_autodisplay: equ cli_mvdot - 1 ;     ; true will auto update the display (slow) otherwise need to use DRAW
 cli_var_array: equ cli_autodisplay - ( 10 * 2 ) ; word or string pointer variables using V@0-V@9
-cli_ret_sp: equ cli_var_array - 2    ; ret stack pointer
+cli_var_array2: equ cli_var_array - ( 26 * 2 ) ; word or string pointer variables using VAR word
+cli_ret_sp: equ cli_var_array2 - 2    ; ret stack pointer
 cli_loop_sp: equ cli_ret_sp - 2   ; data stack pointer
 cli_data_sp: equ cli_loop_sp - 2   ; data stack pointer
 

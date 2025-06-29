@@ -80,6 +80,7 @@ include "forth_words_maths.asm"
 include "forth_words_display.asm"
 include "forth_words_str.asm"
 include "forth_words_key.asm"
+include "forth_words_const.asm"
 
 if STORAGE_SE
    	include "forth_words_storage.asm"
@@ -90,6 +91,60 @@ endif
 
 
 .VARS:
+	CWHEAD .V0 99 "VAR" 3 WORD_FLAG_CODE
+;| VAR ( u1 -- )  Get the address of the variable referenced on TOS  | TO TEST
+;|
+;| The variable name should consist of a single letter. e.g. "a"
+;! If a full string is passed then only the first char is looked at
+;| Any other char could exceed bounds checks! 
+
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "VAR"
+			CALLMONITOR
+		endif
+
+		FORTH_DSP_VALUEHL
+
+		ld a, (hl)    ; get first char on of the string
+
+
+		if DEBUG_FORTH_WORDS
+			DMARK "VR1"
+			CALLMONITOR
+		endif
+		
+		push af	
+		FORTH_DSP_POP
+		pop af
+
+		; convert to upper
+
+		call to_upper
+		if DEBUG_FORTH_WORDS
+			DMARK "Vaa"
+			CALLMONITOR
+		endif
+		ld b, 'A'
+		sub b			; set offset
+		if DEBUG_FORTH_WORDS
+			DMARK "Vbb"
+			CALLMONITOR
+		endif
+		sla a 
+	
+		
+		if DEBUG_FORTH_WORDS
+			DMARK "VR2"
+			CALLMONITOR
+		endif
+
+		ld hl, cli_var_array2
+		call addatohl
+		call forth_push_numhl
+
+
+	       NEXTW
+.V0:
 	CWHEAD .V0Q 100 "V0!" 3 WORD_FLAG_CODE
 ;| V0! ( u1 -- )  Store value to v0  | DONE
 

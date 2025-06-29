@@ -7,6 +7,24 @@
 Also refer to the auto start list examples as these contain extra words created at runtime as needed
 
 
+## Constants (i.e. Useful memory addresses that can set or get features)
+
+
+### SPITIME ( -- u1 )   Pushes address of the SPI pulse counter/delay to stack
+
+
+### If using BANK devices then leave as is.
+
+
+### Only really useful for the CARTDEV where other devices may be too far or slow. In particular
+
+
+### the multiplexing of the PicoSPINet device which might not be running fast enough for all of the nodes
+
+
+### VA ( -- u1 )   Pushes address of block of memory used for v1..5
+
+
 ## Core Words
 
 
@@ -1118,6 +1136,24 @@ Also refer to the auto start list examples as these contain extra words created 
 
 
 
+
+
+## Constants (i.e. Useful memory addresses that can set or get features)
+
+
+### SPITIME ( -- u1 )   Pushes address of the SPI pulse counter/delay to stack
+
+
+### If using BANK devices then leave as is.
+
+
+### Only really useful for the CARTDEV where other devices may be too far or slow. In particular
+
+
+### the multiplexing of the PicoSPINet device which might not be running fast enough for all of the nodes
+
+
+### VA ( -- u1 )   Pushes address of block of memory used for v1..5
 
 
 ## Core Words

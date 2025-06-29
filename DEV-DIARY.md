@@ -3,18 +3,13 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 ------------------------------------------------
 
 
-18th June 2025
+29th June 2025
 --------------
 
-* DONE PicoNet - Basic multiplexing of SPI nodes with echo back interface working
-* DONE fix listen command to clock a char out from buffer. 
-* DONE Once clock out char is working then can do the rest of the commands
+* DONE Added VAR word to handle 26 letter var array
+* DONE Added SPITIME const to provide a better way to handle SPI timing changes
+* DONE Add word for setting spi_time
 
-* DONE SPI Net NTP time support. Sets NTP time. Need to get it back
-* DONE SPI Net get waiting messages for node from server. Seem to have a clock out issue. SPII always gives zero. Need to use scope.
-
-
-* TODO Add word for setting spi_time
 * TODO Add word for setting node number to talk to???
 
 * TODO SPI Net send internet traffic and push results to message buffer. Does get URL but blows out on memory
@@ -116,6 +111,18 @@ Nice to haves:
 * TODO Extract all of the symbols in the symbol table to be available as words in FORTH, debug and asm above
 * TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs. FORGET and LIST use a scanner. Combine with main parser and have one for keyword and another for byte code
 * TODO Add a simple assembler feature like BBC Basic
+
+18th June 2025
+--------------
+
+* DONE PicoNet - Basic multiplexing of SPI nodes with echo back interface working
+* DONE fix listen command to clock a char out from buffer. 
+* DONE Once clock out char is working then can do the rest of the commands
+
+* DONE SPI Net NTP time support. Sets NTP time. Need to get it back
+* DONE SPI Net get waiting messages for node from server. Seem to have a clock out issue. SPII always gives zero. Need to use scope.
+
+
 
 24rd April 2025
 ---------------

@@ -11,6 +11,11 @@ import urequests
 import uasyncio as asyncio
 # use: "hello" ptr count clostro
 
+print("Starting PicoSPINet")
+# need this for serial to take time to connect
+from time import sleep
+sleep(2)
+
 # : clkstro $00 do dup i + @ spio loop ;
 
 
@@ -482,11 +487,12 @@ def saveSettings():
         
 
 def loadSettings():
-        global WifiSSID
-        global WifiPass
-        global buffers
-        global nodes
-    #try:
+    global WifiSSID
+    global WifiPass
+    global buffers
+    global nodes
+    global hasWifi
+    try:
         f = open( "/spinet-wifi.json","r" )
         print( "Loading wifi settings") # STRIP
         p = f.read()
@@ -514,8 +520,12 @@ def loadSettings():
             except:
                     print("File not found")
         
-    #except:
-    #    saveSettings()
+    except:
+        saveSettings()
+
+    if WifiSSID=="" or WifiPass=="":
+        print("No Wifi details set")
+        hasWifi=False
 
 wlan=None
 connection=None
@@ -527,6 +537,9 @@ def connect():
    # wlan.connect(SSIDWifi, passwordWifi)
    pass
 
+print("Wifi...")
+
+hasWifi = False
 try:
 #if True:
   import network
@@ -537,8 +550,11 @@ try:
 # actually check if any of the wifi functions are present. If so then we have wifi!
   wlan = network.WLAN(network.STA_IF)
   print(wlan)
+  hasWifi = True
+  print("Connected")
 except :
     hasWifi = False
+    print("Not connected")
 
 def wifistatus():
     return wlan.isconnected()
@@ -843,8 +859,10 @@ def cmd_savebyte(n):
 setupNodes()
 
 loadSettings()
-print("Tring wlan connection")
-settime()
+print("Trying wlan connection")
+if hasWifi:
+    print("Wifi working. Setting NTP Time")
+    settime()
 
 fromserver=""
 gotcmd=False
@@ -893,6 +911,8 @@ async def main():
     global timetosync
     global lastservercmd
     global timetoservercmd
+
+    print("Main thread")
     while True:
 
 
@@ -1199,6 +1219,8 @@ async def main():
 id="?"
 machine=""
 
+print("Startup main thread")
+
 def startup(mach):
     global id
     global machine
@@ -1212,6 +1234,8 @@ def startup(mach):
         id=id.replace('0x','')
     except:
         id="na"
+        print("error")
+    print("id is")
     print(id) # STRIP
     try:
             asyncio.run(main())

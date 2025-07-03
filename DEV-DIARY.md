@@ -2,13 +2,36 @@
 Z80 Home Brew Micro-computer Project - Dev Diary
 ------------------------------------------------
 
+3rd July 2025
+-------------
+* DONE Fixed -> adding extra spaces. Push/pop of wrong reg pair
 
-29th June 2025
---------------
+* TODO need words to report on hardware e.g. screen dims
+* TODO bl word causing reboot only on z80, not doing it in cpm
+* TODO Extract all of the symbols in the symbol table to be available as words in FORTH, debug and asm above
+* TODO PICK word to pick a value at a given value on stack and move to TOS
+* TO TEST need word to report where cursor current at
+* TODO BUG swap of string and number leaves string ptr being left as number. Not swapping var type?
 
-* DONE Added VAR word to handle 26 letter var array
-* DONE Added SPITIME const to provide a better way to handle SPI timing changes
-* DONE Add word for setting spi_time
+* TODO Add word to call fill_display with a char
+* TODO Add FILL word - ( addr n char -- ) fills address for n long with char
+* TODO Add ERASE word - ( addr n -- ) fills address for n long with zero
+* TODO LSHIFT and RSHIFT for bit shifting
+* TODO in dla handle empty dir
+* TODO Word to define lcd user character 0-3. Then word to output via emit etc
+
+* TODO Fix NUM2STR. 
+* TODO Fix LEFT
+* TODO Fix RIGHT
+* TODO Fix 2SWAP
+* TODO Fix KEY
+* TODO Fix IS 
+* TODO Add to start up a list of what storage labels are seen
+
+* TODO Add LREAD support to the autostart exec
+
+* TODO Change NOTE to PLAY and use a stream of items on stack
+* TODO with the second PIO port hook up and debug the sound card
 
 
 * TODO Handle socket level iputchr
@@ -22,7 +45,6 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 
 
 
-* TODO BUG swap of string and number leaves string ptr being left as number. Not swapping var type?
 
 * TODO Future bug? stack imbalance on storage_read. Needs a pop of de if no record found. Have added code watch for further issues
 
@@ -30,7 +52,6 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Add a flag to block 0 to decide if the auto startup prompt is given and/or run
 
 * TODO Stop menu scrolling past last item
-* TODO Add to start up a list of what storage labels are seen
 * TODO BUG If : word is in caps it wont work. This could be connected with caps on LIST which only works if given as lcase.
 
 * TODO add more editing features 
@@ -43,12 +64,6 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Jump to end of line does not work should set to the number in last debug display
 * TODO If cursor at end of line, when go back it leaves custor displayed
 * TODO With the float code being so big need to do some opt via http://z80-heaven.wikidot.com/optimization
-* TODO Fix NUM2STR. 
-* TODO Fix LEFT
-* TODO Fix RIGHT
-* TODO Fix 2SWAP
-* TODO Fix KEY
-* TODO Fix IS 
 
 * TODO read ext concat is the problem
 * TODO uword not exact match pulls wrong code
@@ -61,7 +76,6 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO ui to call config
 * TODO backup and restore of banks to network
 * TODO change size to fsize?
-* TODO bl word causing reboot
 * TODO do random quotes from file as example code
 * TODO ui join files ui
 * TODO add file description
@@ -69,32 +83,24 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 Nice to haves:
 
 
-* TODO Add LREAD support to the autostart exec
 * TODO Conslidate all prompts into a single file to allow for removing duplicates and may even localisation
 * TODO Add scroll down indicator to menu code
 * TODO Cant use special chars in quoted strings??? Why? Emit works for the char code.
 * TODO Saved setting to enable/disable auto start
 * TODO Saved setting to select words to auto load from storage
 * TODO add ram test to the diags
-* TODO in dla handle empty dir
 * TODO Alt T is duplicated }. Free to reuse
 * TODO Alt H is duplicated |. Free to reuse
 * TODO Alt U, O, P, 5, 7, 8, 9, Enter are free
-* TODO Cease support for os-mini as a lot of features just wont work... Perhaps do defines????
 * TODO for auto run storage include a CHAIN feature
 * TODO Do a nice FORTH primer with the hardware. Screen shots and all...
 * TODO New case design - Have a new one, printed and need to refine for use with PicoNET
 * TODO Add to docs that looking up file name of id is just id BREAD 
 * TODO Create a disk UI in native asm for robustness and speed? Have some config routines for this now. Expand on them
-* TODO Add word to call fill_display with a char
-* TODO Add FILL word - ( addr n char -- ) fills address for n long with char
-* TODO Add ERASE word - ( addr n -- ) fills address for n long with zero
-* TODO LSHIFT and RSHIFT for bit shifting
 * TODO New value type for signed and unsigned val. Add to maths. added DS_TYPE_SNUM need a word to convert type. SIGN/UNSIGN. Fix up <= and dot.
 * TODO Speed up screen updates - instead of writing whole screen detect what has changed? 
 * TODO Add no bank chip detection to format
 * TODO Add support for ELSE and ENDIF. IF THEN ELSE ENDIF   or IF THEN ENDIF. Or IF ... ELSE ... THEN
-* TODO Word to define lcd user character 0-3. Then word to output via emit etc
 
 * TODO need word to get file id by name
 * TODO need word to get file name by id
@@ -106,16 +112,20 @@ Nice to haves:
 * TODO CP/M keyboard entry not great
 * TODO Change circuit so that the storage cart is actually on port a and provides a full 5 chip pack. Then move sound to port b
 * TODO wire up a temp interface to the serial EEPROMS so I can test storage on the SC114 as I have the PIO and digital IO cards installed
-* TODO with the second PIO port hook up and debug the sound card
-* TODO PICK word to pick a value at a given value on stack and move to TOS
-* TODO Change NOTE to PLAY and use a stream of items on stack
-* TO TEST need word to report where cursor current at
 * TODO Take the vid out handshake lines and code up a Pico to handle display.
 * TODO Pico to handle display to have two way return of data
-* TODO need words to report on hardware e.g. screen dims
-* TODO Extract all of the symbols in the symbol table to be available as words in FORTH, debug and asm above
 * TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs. FORGET and LIST use a scanner. Combine with main parser and have one for keyword and another for byte code
 * TODO Add a simple assembler feature like BBC Basic
+
+
+29th June 2025
+--------------
+
+* DONE Added VAR word to handle 26 letter var array
+* DONE Added SPITIME const to provide a better way to handle SPI timing changes
+* DONE Add word for setting spi_time
+
+
 
 18th June 2025
 --------------

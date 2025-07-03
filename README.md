@@ -67,6 +67,9 @@ Expansions/Addons
    - Powered nodes
 
 
+   For more details look at the Addons README
+
+
 
 ![](stage4.0/Gerber_PCB_z80-system-3-sbc.zip)
 ![](stage4.0/Schematic_z80-system-4-sbc-2024-03-02.pdf)

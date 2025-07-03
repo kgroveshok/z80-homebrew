@@ -269,7 +269,12 @@ endif
 
 .nodashswap:
 
-		push hl   ; save string start in case we need to advance print
+if DEBUG_FORTH_DOT
+	DMARK "D-o"
+	CALLMONITOR
+endif	
+
+		push de   ; save string start in case we need to advance print
 
 		ld a, (f_cursor_ptr)
 		call str_at_display
@@ -283,10 +288,11 @@ endif
 		; see if we need to advance the print position
 
 		pop hl   ; get back string
+;		ex de,hl
 
 		ld a, (cli_mvdot)
 if DEBUG_FORTH_DOT
-		ld e,a
+;		ld e,a
 	DMARK "D>1"
 	CALLMONITOR
 endif	
@@ -295,6 +301,10 @@ endif
 		; yes, lets advance the print position
 		ld a, 0
 		call strlent
+if DEBUG_FORTH_DOT
+	DMARK "D-?"
+	CALLMONITOR
+endif	
 		ld a, (f_cursor_ptr)
 		add a,l
 		;call addatohl

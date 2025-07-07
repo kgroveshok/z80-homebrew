@@ -65,7 +65,7 @@ Expansions/Addons
    - Internet communications
    - Storage services
    - Powered nodes
-
+   - Emulates the EEPROM used for onboard storage with node specific and common storage banks
 
    For more details look at the Addons README
 

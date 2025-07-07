@@ -8,6 +8,7 @@ PicoSPINet
    - Internet communications
    - Storage services
    - Powered nodes
+   - Emulates the EEPROM used for onboard storage with node specific and common storage banks
 
 
 More to come with PCB design etc

@@ -2,9 +2,13 @@
 Z80 Home Brew Micro-computer Project - Dev Diary
 ------------------------------------------------
 
-3rd July 2025
+7th July 2025
 -------------
-* DONE Fixed -> adding extra spaces. Push/pop of wrong reg pair
+
+* DONE Added emulation of EEPROM storage to PicoSPINet. A single common bank testing with
+
+* TODO Add command to select between common or node PicoSPINet storage banks
+* TODO Add command to select different banks of common or node PicoSPINet storage banks
 
 * TODO need words to report on hardware e.g. screen dims
 * TODO bl word causing reboot only on z80, not doing it in cpm
@@ -117,6 +121,9 @@ Nice to haves:
 * TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs. FORGET and LIST use a scanner. Combine with main parser and have one for keyword and another for byte code
 * TODO Add a simple assembler feature like BBC Basic
 
+3rd July 2025
+-------------
+* DONE Fixed -> adding extra spaces. Push/pop of wrong reg pair
 
 29th June 2025
 --------------

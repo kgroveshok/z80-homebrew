@@ -9,6 +9,7 @@
 import machine 
 import urequests
 import uasyncio as asyncio
+import sys
 # use: "hello" ptr count clostro
 
 print("Starting PicoSPINet")
@@ -17,6 +18,7 @@ from time import sleep
 sleep(2)
 
 # : clkstro $00 do dup i + @ spio loop ;
+
 
 
 # clock in a string to SCRATCHPAD
@@ -133,14 +135,35 @@ CMD_NETDEBUG=0x31
 CMD_SYNC=0x32
 # x -> Number of minutes to sync settings to storage
 
+# emulation of the Microchip Serial EEPROMS used on the main board
+
+CMD_EP_READ=3
+# 16 bit address >
+# 8 data <
+CMD_EP_WRITE=2
+# 16 address >
+# 8 data >
+#CMD_EP_WRDI=4
+#CMD_EP_WREN=6
+#CMD_STORE_RDSR=
+# storage bank 
+# TODO create node specific banks and possibly multiple banks which are switchable
+import os
+
+ep_store=""
+ep_byte = bytearray(1)
+
+
+
+
 netdebug=0
 
 # late time storage arrays were synced to storage
 lastsync=0
-timetosync=1
+timetosync=60
 
 lastservercmd=0
-timetoservercmd=1
+timetoservercmd=10000
 
 from machine import Pin
 import time
@@ -222,6 +245,7 @@ SEQ_SAVEBYTE=110
 SEQ_REPEAT=150
 SEQ_UNTILZ=151
 SEQ_SSTRZNEXT=153
+SEQ_PROC=120
  
 # command sequence ops
 
@@ -248,6 +272,14 @@ seq=[
           ]
         },
 
+        { "cmd" : CMD_EP_READ,   # the command in operation for this node
+          # send back byte in buffer
+          "seq" : [ SEQ_INIT, SEQ_BYTEIN, SEQ_SAVEBYTE, SEQ_BYTEIN, SEQ_SAVEBYTE, SEQ_PROC, SEQ_BYTEOUT, SEQ_END ]
+        },
+        { "cmd" : CMD_EP_WRITE,   # the command in operation for this node
+          # send back byte in buffer
+          "seq" : [ SEQ_INIT, SEQ_BYTEIN, SEQ_SAVEBYTE, SEQ_BYTEIN, SEQ_SAVEBYTE, SEQ_BYTEIN, SEQ_SAVEBYTE, SEQ_PROC, SEQ_END ]
+        },
 
         { "cmd" : CMD_NETDEBUG,   # the command in operation for this node
           # send back byte in buffer
@@ -460,14 +492,51 @@ WifiPass=""
 
 
 
+def epstoreOpen():
+    global ep_store
+
+    print("Open eeprom.bin")
+    try:
+        a=os.stat("/eeprom.bin")
+        s=a[6]
+        print("/eeprom.bin size is "+str(s))
+
+    except:
+        print("/eeprom.bin might not exist? Creating")
+        s=0
+#    print(a)
+
+    if s < 60000:
+        print("Padding /eeprom.bin")
+        ep_store=open("/eeprom.bin","w")
+        for b in range(0,80000):
+            ep_store.write(" ")
+#        ep_store.flush()
+        ep_store.close()
+    print("Opening...")
+    ep_store=open("/eeprom.bin","r+b")
+
+def epstoreClose():
+    global ep_store
+
+    print("Close eeprom.bin")
+#    ep_store.flush()
+    ep_store.close()
+    a=os.stat("/eeprom.bin")
+    s=a[6]
+    print("/eeprom.bin size is "+str(s))
+
 def saveSettings():
         global WifiSSID
         global WifiPass
         global buffers
         global nodes
+        global ep_store
 
         settings = [ WifiSSID, WifiPass ] 
-   
+  
+        epstoreClose()
+
         print( "Saving wifi settings") # STRIP
 #        print(settings)
         with open('/spinet-wifi.json', "w") as file_write:
@@ -485,6 +554,7 @@ def saveSettings():
                 json.dump(n["strings"], file_write)
             file_write.close()
         
+        epstoreOpen()
 
 def loadSettings():
     global WifiSSID
@@ -536,6 +606,10 @@ def connect():
    # wlan.active(True)
    # wlan.connect(SSIDWifi, passwordWifi)
    pass
+
+epstoreOpen()
+epstoreClose()
+epstoreOpen()
 
 print("Wifi...")
 
@@ -708,9 +782,16 @@ def setNow():
 
 def cmd_init(n):
     global netdebug
-    print("Init params for command %d in node %d" % ( n["cmd"], n["node"])) if netdebug > 0 else 0
+    print("Init params for command %d in node %d" % ( n["cmd"], n["node"])) if netdebug > 10 else 0
 #    print(n["params"])
     n["params"]={}
+
+    if n["cmd"] == CMD_EP_READ:
+        print("EEPROM Read Byte") if netdebug > 5 else 0
+        pass
+    if n["cmd"] == CMD_EP_WRITE:
+        print("EEPROM Write Byte") if netdebug > 5 else 0
+        pass
 
 
     if n["cmd"] == CMD_GETCHR:
@@ -771,8 +852,8 @@ def cmd_end(n):
     #global nodes
 
     
-    print("End command. Save params for command %d in node %d" % ( n["cmd"], n["node"])) if netdebug > 0 else 0
-    print(n["params"]) if netdebug > 0 else 0
+    print("End command. Save params for command %d in node %d" % ( n["cmd"], n["node"])) if netdebug > 5 else 0
+    print(n["params"]) if netdebug > 5 else 0
 
 
     #try:
@@ -786,9 +867,9 @@ def cmd_end(n):
     #except:
     #        print("fail in netbug")
     if n["cmd"] == CMD_SYNC:
-            print("Set sync from " + str(timetosync))  if netdebug > 0 else 0
+            print("Set sync from " + str(timetosync))  if netdebug > 10 else 0
             timetosync=n["params"][1]
-            print("Set sync to " + str(timetosync))  if netdebug > 0 else 0
+            print("Set sync to " + str(timetosync))  if netdebug > 10 else 0
 
 
 
@@ -797,7 +878,7 @@ def cmd_end(n):
         
         if n["params"][1] == 0 :
             # save to all nodes
-            print("Save to all buffers") if netdebug > 0 else 0
+            print("Save to all buffers") if netdebug > 10 else 0
             for nn in nodes:
                 try:
                     curbuff=buffers[str(nn["node"])]
@@ -810,7 +891,7 @@ def cmd_end(n):
             print(buffers)
         elif n["params"][1] == 255 :
                 # build server command string
-                print("Save to server buffer ") if netdebug > 0 else 0
+                print("Save to server buffer ") if netdebug > 10 else 0
                 try:
                     curbuff=n["servercmd"]
                 except:
@@ -819,7 +900,7 @@ def cmd_end(n):
                 n["servercmd"]=curbuff+chr(n["params"][2])
 
         else:
-            print("Save to single buffer "+str(n["params"][1])) if netdebug > 0 else 0
+            print("Save to single buffer "+str(n["params"][1])) if netdebug > 10 else 0
             try:
                 curbuff=buffers[str(n["params"][1])]
             except:
@@ -838,22 +919,62 @@ def cmd_end(n):
         except:
             pass
         n["strings"][int(n["params"][1])]=s
-        print("Save string: "+str(s)) if netdebug > 0 else 0
+        print("Save string: "+str(s)) if netdebug > 10 else 0
 
-    print(n["params"]) if netdebug > 5 else 0
-    print(buffers) if netdebug > 5 else 0
+    print(n["params"]) if netdebug > 15 else 0
+    print(buffers) if netdebug > 15 else 0
     n["cmdseqp"]=n["cmdseqp"]+1
     n["cmdspiseq"]=-1
     n["cmd"]=0
                         
+def cmd_proc(n):
+    global netdebug
+    global ep_store
+    global ep_byte
+    # save current byte to next param
+    print("In proc")  if netdebug > 50 else 0
+    print(n["params"])   if netdebug > 50 else 0
+    #if netdebug > 0 else 0
+    try:
+        if n["cmd"] == CMD_EP_READ:
+            print("Read address")  if netdebug > 5 else 0
+            print("<", end="")  if netdebug > 1 else 0
+            a=(int(n["params"][1])<<8)+int(n["params"][2])
+            print(a)  if netdebug > 50 else 0
+            ep_store.seek(a)
+            print("Seek done. Read")  if netdebug > 50 else 0
+            b=ep_store.read(1)
+            print("Read done. Use byte")  if netdebug > 50 else 0
+            print(b)  if netdebug > 50 else 0
+            n["byteclk"]=int(b[0])
+            print(n["byteclk"])  if netdebug > 50 else 0
+
+        if n["cmd"] == CMD_EP_WRITE:
+            print("Write address")  if netdebug > 5 else 0
+            print(">", end="")  if netdebug > 1 else 0
+            a=(int(n["params"][1])<<8)+int(n["params"][2])
+            print(a)  if netdebug > 50 else 0
+            print(n["byteclk"])  if netdebug > 50 else 0
+            ep_store.seek(a)
+
+            ep_byte[0] = n["byteclk"]
+            ep_store.write(ep_byte)
+
+        n["cmdseqp"]=n["cmdseqp"]+1
+        print("Next")  if netdebug > 50 else 0
+    except Exception as E:
+        print("Error in cmd_proc "+str(E))
+        n["byteclk"]=0
+
+    n["cmdseqp"]=n["cmdseqp"]+1
 
 def cmd_savebyte(n):
     global netdebug
     # save current byte to next param
     pct=len(n["params"])+1
     n["params"][pct]=n["byteclk"]
-    print("Save byte -> Save params for command %d in node %d" % ( n["cmd"], n["node"])) if netdebug > 0 else 0
-    print(n["params"]) if netdebug > 0 else 0
+    print("Save byte -> Save params for command %d in node %d" % ( n["cmd"], n["node"])) if netdebug > 10 else 0
+    print(n["params"]) if netdebug > 50 else 0
     n["cmdseqp"]=n["cmdseqp"]+1
 
 setupNodes()
@@ -875,22 +996,22 @@ curCmd=0
 
 def serverCmd(n):
     global buffers
-    print("Process server commands")  if netdebug > 0 else 0
+    print("Process server commands")  if netdebug > 10 else 0
     cmd=n["servercmd"]
     #if cmd.find(",clr")>0:
     #    print("Clear server commands")
     #    n["servercmd"]=""
     if cmd.find(",go")>=0:
-        print("Exec server commands")   if netdebug > 0 else 0
+        print("Exec server commands")   if netdebug > 10 else 0
         for cmds in cmd.split(","):
             if cmds[:7]=="connect":
                 u=cmds[8:]
-                print("connect to:"+u+":")   if netdebug > 10 else 0
+                print("connect to:"+u+":")   if netdebug > 50 else 0
                 n["extern"]=u
             if cmds[:3]=="get":
                 blob = urequests.get(n["extern"])
                 blobcontver=blob.text
-                print(blob.reason)   if netdebug > 10 else 0
+                print(blob.reason)   if netdebug > 50 else 0
                 blob.close()
                 try:
                     curbuff=buffers[str(n["node"])]
@@ -922,16 +1043,18 @@ async def main():
         # do a sync to storage
         
         thistime=utime.time()
-        if lastsync < ( thistime - (60*timetosync)): 
-            print("Sync array to storage "+str(thistime))
+        #if lastsync < ( thistime - (60*timetosync)): 
+        if thistime-lastsync > 60*timetosync:
+            print("Sync array to storage "+str(thistime)+ " last " + str(lastsync))
             lastsync = thistime
             saveSettings()
 
         # process server commands
         
-        thistime=utime.time()
-        if lastservercmd < ( thistime - (60*timetoservercmd)): 
-            print("Server commands "+str(thistime))
+        #thistime=utime.time()
+        if thistime-lastservercmd > 60*timetoservercmd: 
+        #if lastservercmd < ( thistime - (60*timetoservercmd)): 
+            print("Server commands "+str(thistime)+ " last " + str(lastservercmd))
             lastservercmd = thistime
             for n in nodes:
                 print("Checking node for server commands "+str(n["node"]))
@@ -972,7 +1095,7 @@ async def main():
                 if n["cmd"] == 0 and n["cmdspiseq"] == -1:
                             print( "Node %d: Clock in start of a command" % n["node"]) if netdebug > 10 else 0
                             n["cmdspiseq"]=SEQ_SPIBIT7
-                            print("set byteclk=0") if netdebug > 10 else 0
+                            print("set byteclk=0") if netdebug > 50 else 0
                             n["byteclk"]=0
 
 
@@ -1007,7 +1130,7 @@ async def main():
                         if clk == 1 and n["cmdspiseq"] == -1:
                             print( "Clock in start of a command2") if netdebug > 10 else 0
                             n["cmdspiseq"]=SEQ_SPIBIT7
-                            print("set byteclk=0 a") if netdebug > 10 else 0
+                            print("set byteclk=0 a") if netdebug > 50 else 0
                             n["byteclk"]=0
 
                         if clk == 0:
@@ -1019,7 +1142,7 @@ async def main():
                                 # must have clocked in the last command byte. Look it up and start a run
                                 print("Have command byte. Now look up:"+str(n["cmd"])) if netdebug > 10 else 0
                                 
-                                print("set byteclk=0 b") if netdebug > 10 else 0
+                                print("set byteclk=0 b") if netdebug > 50 else 0
                                 n["cmdseqp"]=0
                                 n["byteclk"]=0
 
@@ -1127,7 +1250,7 @@ async def main():
                                     if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEIN:
                                             print( "Start clock in a byte" ) if netdebug > 10 else 0
                                             n["cmdspiseq"] = SEQ_SPIBIT7
-                                            print("set byteclk=0 c") if netdebug > 10 else 0
+                                            print("set byteclk=0 c") if netdebug > 50 else 0
                                             n["byteclk"] = 0
 
                                     # TODO byte out set seq
@@ -1149,7 +1272,7 @@ async def main():
                                         #print(ct)
                                         #print(c)
                                         
-                                        print(n["byteclk"]) if netdebug > 10 else 0
+                                        print(n["byteclk"]) if netdebug > 50 else 0
                                         n["params"]['c']=ct+1
                                         n["cmdseqp"]=n["cmdseqp"]+1
 
@@ -1159,6 +1282,9 @@ async def main():
                                         
                                     if n["cmdseq"][n["cmdseqp"]] == SEQ_SAVEBYTE:
                                         cmd_savebyte(n)
+
+                                    if n["cmdseq"][n["cmdseqp"]] == SEQ_PROC:
+                                        cmd_proc(n)
                                         
 
                                     if n["cmdseq"][n["cmdseqp"]] == SEQ_REPEAT:
@@ -1176,6 +1302,7 @@ async def main():
                                                 n["cmdseqp"]=n["cmdseqp"]-1
                                                 
                                     if n["cmdseq"][n["cmdseqp"]] == SEQ_DEBUG:
+                                        print("****** DEBUG DUMP *****")
                                         print(n) 
                                         print(buffers) 
                                         saveSettings()
@@ -1197,8 +1324,8 @@ async def main():
                                     n["cmd"]=0
                                     print("Command processed. Next cmd...") if netdebug > 5 else 0
                                     n["cmdspiseq"] = -1 
-                                    print(n) if netdebug > 10 else 0
-                                    print("set byteclk=0 g") if netdebug > 10 else 0
+                                    print(n) if netdebug > 50 else 0
+                                    print("set byteclk=0 g") if netdebug > 50 else 0
                                     n["byteclk"]=0
                                     
                                     

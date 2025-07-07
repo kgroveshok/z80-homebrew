@@ -86,6 +86,8 @@ include "firmware.asm"
 ;endif
 
 
+; Add NMI support. A rst 066h when r15z goes neg on clock side of resist. needs to do retn when exiting
+
 ; start system
 
 coldstart:

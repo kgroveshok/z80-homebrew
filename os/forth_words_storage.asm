@@ -5,6 +5,7 @@
  
 	CWHEAD .BREAD 38 "RECORD" 6 WORD_FLAG_CODE
 ; | RECORD ( u id -- s ) With the current bank, read record number u from file id and push to stack  | DONE
+; | | Compatible with PicoSPINet 
 
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "REC"
@@ -69,6 +70,7 @@
  
 	CWHEAD .BWRITE 38 "BREAD" 5 WORD_FLAG_CODE
 ; | BREAD ( u -- u ) Lowlevel storage word. With the current bank, read a block from block address u (1-512) and push to stack  | DONE
+; | | Compatible with PicoSPINet 
 	
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "BRD"
@@ -119,6 +121,7 @@
 .BWRITE:
 	CWHEAD .BUPD 38 "BWRITE" 6 WORD_FLAG_CODE
 ; | BWRITE ( s u -- ) Lowlevel storage word. With the current bank, write the string s to address u | DONE
+; | | Compatible with PicoSPINet 
 
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "BWR"
@@ -187,6 +190,7 @@
 ; | BUPD ( u -- ) Lowlevel storage word. Write the contents of the current file system storage buffer directly to address u | DONE
 ; | | Coupled with the use of the BREAD, BWRITE and STOREPAGE words it is possible to implement a direct
 ; | | or completely different file system structure.
+; | | Compatible with PicoSPINet 
 
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "BUD"
@@ -247,6 +251,7 @@
 ;.BYNAME:
 	CWHEAD .DIR 38 "GETID" 5 WORD_FLAG_CODE
 ; | GETID ( s -- u ) Get the file ID in the current BANK of the file named s | DONE
+; | | Compatible with PicoSPINet 
 
 		; get pointer to file name to seek
 
@@ -264,6 +269,7 @@
 .DIR:
 	CWHEAD .SAVE 38 "DIR" 3 WORD_FLAG_CODE
 ; | DIR ( u -- lab id ... c t ) Using bank number u push directory entries from persistent storage as w with count u  | DONE
+; | | Compatible with PicoSPINet 
 
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "DIR"
@@ -610,6 +616,7 @@
 .SFREE:
 	CWHEAD .SIZE 83 "FFREE" 5 WORD_FLAG_CODE
 ; | FFREE ( -- n )  Gets number of free file blocks on current storage bank | DONE
+; | | Compatible with PicoSPINet 
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "FFR"
 			CALLMONITOR
@@ -623,6 +630,7 @@
 .SIZE:
 	CWHEAD .CREATE 83 "SIZE" 4 WORD_FLAG_CODE
 ; | SIZE ( u -- n )  Gets number of blocks used by file id u and push to stack | DONE
+; | | Compatible with PicoSPINet 
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "SIZ"
 			CALLMONITOR
@@ -648,6 +656,7 @@
 ; | | 
 ; | | Max file IDs are 255.
 ; | | 
+; | | Compatible with PicoSPINet 
 		
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "CRT"
@@ -694,6 +703,7 @@
 ; | | "A string to add to file" $01 APPEND
 ; | | 
 ; | | The maximum file size currently using 32k serial EEPROMS using 64 byte blocks is 15k.
+; | | Compatible with PicoSPINet 
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "APP"
 			CALLMONITOR
@@ -734,6 +744,7 @@
 .SDEL:
 	CWHEAD .OPEN 86 "ERA" 4 WORD_FLAG_CODE
 ; | ERA ( n --  )  Deletes all data for file id n on current storage bank | DONE
+; | | Compatible with PicoSPINet 
 		FORTH_DSP_VALUEHL
 ;		push hl 	; save file id
 
@@ -759,6 +770,7 @@
 ; | | $01 OPEN $01 DO $01 READ . LOOP
 ; | |
 ; | | Will return with 255 blocks if the file does not exist
+; | | Compatible with PicoSPINet 
 
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "OPN"
@@ -838,6 +850,7 @@
 ; | | 
 ; | | Note: There is a flag that enables/disables long block reads called 'store_longread' and a poke of a non-zero value will
 ; | | enable the code to automatically read futher blocks if full. It is BUGGY so don't use for now.
+; | | Compatible with PicoSPINet 
 
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "REA"
@@ -953,6 +966,7 @@
 ; | EOF ( -- u )  Returns EOF logical state of current open file id | DONE
 ; | | e.g.
 ; | | $01 OPEN REPEAT READ EOF $00 IF LOOP
+; | | Compatible with PicoSPINet 
 		; TODO if current block id for stream is zero then push true else false
 
 		if DEBUG_FORTH_WORDS_KEY
@@ -987,6 +1001,7 @@
 .FORMAT:
 	CWHEAD .LABEL 89 "FORMAT" 6 WORD_FLAG_CODE
 ; | FORMAT (  --  )  Formats the current bank selected (NO PROMPT!) | DONE
+; | | Compatible with PicoSPINet 
 		; TODO if current block id for stream is zero then push true else false
 	
 	if DEBUG_STORESE
@@ -1011,6 +1026,7 @@
 .LABEL:
 	CWHEAD .STOREPAGE 89 "LABEL" 5 WORD_FLAG_CODE
 ; | LABEL ( u --  )  Sets the storage bank label to string on top of stack  | DONE
+; | | Compatible with PicoSPINet 
 		; TODO test to see if bank is selected
 	
 		if DEBUG_FORTH_WORDS_KEY
@@ -1040,6 +1056,7 @@
 .STOREPAGE:
 	CWHEAD .LABELS 89 "STOREPAGE" 9 WORD_FLAG_CODE
 ; | STOREPAGE ( -- addr )  Pushes the address of the file system record buffer to stack for direct access  | DONE
+; | | Compatible with PicoSPINet 
 		; TODO test to see if bank is selected
 	
 		if DEBUG_FORTH_WORDS_KEY
@@ -1059,6 +1076,7 @@
 .LABELS:
 	CWHEAD .SCONST1 89 "LABELS" 6 WORD_FLAG_CODE
 ; | LABELS (  -- b n .... c  )  Pushes each storage bank labels (n) along with id (b) onto the stack giving count (c) of banks  | TO TEST
+; | | *NOT* Compatible with PicoSPINet 
 		; 
 
 		; save the current device selected to restore afterwards
@@ -1135,6 +1153,7 @@
 .SCONST1:
 	CWHEAD .SCONST2 89 "FILEID" 6 WORD_FLAG_CODE
 ; | FILEID (  -- u1  )  Pushes currently open file ID to stack | DONE
+; | | Compatible with PicoSPINet 
 		ld a, (store_filecache)
 		ld h, 0
 		ld l, a
@@ -1143,6 +1162,7 @@
 .SCONST2:
 	CWHEAD .SCONST3 89 "FILEEXT" 7 WORD_FLAG_CODE
 ; | FILEEXT (  -- u1  )  Pushes the currently read file extent of the file to stack | DONE
+; | | Compatible with PicoSPINet 
 		ld a, (store_openext)
 		ld h, 0
 		ld l, a
@@ -1151,6 +1171,7 @@
 .SCONST3:
 	CWHEAD .SCONST4 89 "FILEMAX" 7 WORD_FLAG_CODE
 ; | FILEMAXEXT (  -- u1  )  Pushes the maximum file extent of the currenlty open file to stack | DONE
+; | | Compatible with PicoSPINet 
 		ld a, (store_openmaxext)
 		ld h, 0
 		ld l, a
@@ -1159,6 +1180,7 @@
 .SCONST4:
 	CWHEAD .SCONST5 89 "FILEADDR" 8 WORD_FLAG_CODE
 ; | FILEADDR (  -- u1  )  Pushes the address of the block accessed for the currenlty open file to stack | DONE
+; | | Compatible with PicoSPINet 
 		ld hl, (store_openaddr)
 		call forth_push_numhl
 		NEXTW
@@ -1167,6 +1189,7 @@
 ; | READCONT (  -- u1  )  Pushes the READ continuation flag to stack | DONE
 ; | | If the most recent READ results in a full buffer load then this flag is set and will indicate that
 ; | | a further read should, if applicable, be CONCAT to the previous read.
+; | | Compatible with PicoSPINet 
 		ld a, (store_readcont)
 		ld h, 0
 		ld l, a

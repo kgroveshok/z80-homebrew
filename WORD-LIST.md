@@ -547,10 +547,19 @@ Also refer to the auto start list examples as these contain extra words created 
 ### RECORD ( u id -- s ) With the current bank, read record number u from file id and push to stack  | DONE
 
 
+ Compatible with PicoSPINet 
+
+
 ### BREAD ( u -- u ) Lowlevel storage word. With the current bank, read a block from block address u (1-512) and push to stack  | DONE
 
 
+ Compatible with PicoSPINet 
+
+
 ### BWRITE ( s u -- ) Lowlevel storage word. With the current bank, write the string s to address u | DONE
+
+
+ Compatible with PicoSPINet 
 
 
 ### BUPD ( u -- ) Lowlevel storage word. Write the contents of the current file system storage buffer directly to address u | DONE
@@ -562,10 +571,19 @@ Also refer to the auto start list examples as these contain extra words created 
  or completely different file system structure.
 
 
+ Compatible with PicoSPINet 
+
+
 ### GETID ( s -- u ) Get the file ID in the current BANK of the file named s | DONE
 
 
+ Compatible with PicoSPINet 
+
+
 ### DIR ( u -- lab id ... c t ) Using bank number u push directory entries from persistent storage as w with count u  | DONE
+
+
+ Compatible with PicoSPINet 
 
 
 ### SEO ( u1 u2 -- ) Send byte u1 to Serial EEPROM device at address u2 | DONE
@@ -577,7 +595,13 @@ Also refer to the auto start list examples as these contain extra words created 
 ### FFREE ( -- n )  Gets number of free file blocks on current storage bank | DONE
 
 
+ Compatible with PicoSPINet 
+
+
 ### SIZE ( u -- n )  Gets number of blocks used by file id u and push to stack | DONE
+
+
+ Compatible with PicoSPINet 
 
 
 ### CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS | DONE
@@ -601,6 +625,9 @@ Also refer to the auto start list examples as these contain extra words created 
  
 
 
+ Compatible with PicoSPINet 
+
+
 ### APPEND ( u n --  )  Appends data u to file id on current storage bank | DONE
 
 
@@ -619,7 +646,13 @@ Also refer to the auto start list examples as these contain extra words created 
  The maximum file size currently using 32k serial EEPROMS using 64 byte blocks is 15k.
 
 
+ Compatible with PicoSPINet 
+
+
 ### ERA ( n --  )  Deletes all data for file id n on current storage bank | DONE
+
+
+ Compatible with PicoSPINet 
 
 
 ### OPEN ( n -- n )  Sets file id to point to first data page for subsequent READs. Pushes the max number of blocks for this file | DONE
@@ -635,6 +668,9 @@ Also refer to the auto start list examples as these contain extra words created 
 
 
  Will return with 255 blocks if the file does not exist
+
+
+ Compatible with PicoSPINet 
 
 
 ### READ ( -- n  )  Reads next page of current file id and push to stack | DONE
@@ -670,6 +706,9 @@ Also refer to the auto start list examples as these contain extra words created 
  enable the code to automatically read futher blocks if full. It is BUGGY so don't use for now.
 
 
+ Compatible with PicoSPINet 
+
+
 ### EOF ( -- u )  Returns EOF logical state of current open file id | DONE
 
 
@@ -679,28 +718,55 @@ Also refer to the auto start list examples as these contain extra words created 
  $01 OPEN REPEAT READ EOF $00 IF LOOP
 
 
+ Compatible with PicoSPINet 
+
+
 ### FORMAT (  --  )  Formats the current bank selected (NO PROMPT!) | DONE
+
+
+ Compatible with PicoSPINet 
 
 
 ### LABEL ( u --  )  Sets the storage bank label to string on top of stack  | DONE
 
 
+ Compatible with PicoSPINet 
+
+
 ### STOREPAGE ( -- addr )  Pushes the address of the file system record buffer to stack for direct access  | DONE
+
+
+ Compatible with PicoSPINet 
 
 
 ### LABELS (  -- b n .... c  )  Pushes each storage bank labels (n) along with id (b) onto the stack giving count (c) of banks  | TO TEST
 
 
+ *NOT* Compatible with PicoSPINet 
+
+
 ### FILEID (  -- u1  )  Pushes currently open file ID to stack | DONE
+
+
+ Compatible with PicoSPINet 
 
 
 ### FILEEXT (  -- u1  )  Pushes the currently read file extent of the file to stack | DONE
 
 
+ Compatible with PicoSPINet 
+
+
 ### FILEMAXEXT (  -- u1  )  Pushes the maximum file extent of the currenlty open file to stack | DONE
 
 
+ Compatible with PicoSPINet 
+
+
 ### FILEADDR (  -- u1  )  Pushes the address of the block accessed for the currenlty open file to stack | DONE
+
+
+ Compatible with PicoSPINet 
 
 
 ### READCONT (  -- u1  )  Pushes the READ continuation flag to stack | DONE
@@ -710,6 +776,9 @@ Also refer to the auto start list examples as these contain extra words created 
 
 
  a further read should, if applicable, be CONCAT to the previous read.
+
+
+ Compatible with PicoSPINet 
 
 
 ## String Words

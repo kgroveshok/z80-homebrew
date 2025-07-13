@@ -8,7 +8,7 @@
 
 #    Vcc (pin 16) to 5V
 
-#    OE (pin 13) to ground
+#    OE (pin 13) to ground   see below
 
 #    MR (pin 10) to 5V
 
@@ -23,10 +23,17 @@
 # sound chip
 
 # d0-d7 on shift go to reversed d0-d7 on sound
-# ce on sound 6 to gnd
+# ce on sound 6 to gnd see below
 # we on sound 5 to gpio 4
 
-
+# going to try spi ce to:
+# ce to shift reg
+# ce to sn 
+# ce to inverter
+#    out to shift reg latch
+#    out to sn we
+#   shift
+# will there be enough of a delay to apply changes?
 
 
 from machine import Pin
@@ -38,21 +45,25 @@ clockPin = Pin(1,mode=Pin.OUT)
 #////Pin connected to DS of 74HC595
 dataPin = Pin(0,mode=Pin.OUT)
 # pin MR 10
-resetPin = Pin(3,mode=Pin.OUT);
+resetPin = Pin(3,mode=Pin.OUT)
 
-soundPin = Pin(4,mode=Pin.OUT);
+soundPin = Pin(4,mode=Pin.OUT)
+
+cePin=Pin(5, mode=Pin.OUT)
 
 sr = 0
 from time import sleep
 #sleep(2)
 
+resetPin.high()
+
 def shiftout(byte):
     print(byte)
     soundPin.high()
-    resetPin.low()
-    sleep(0.01)
+    #resetPin.low()
+    #sleep(0.01)
     
-    resetPin.high()
+    #resetPin.high()
     
      
     latchPin.low()
@@ -119,8 +130,10 @@ def soundTog():
     sleep(0.01)
 
 def outbyte(b):
+    cePin.low()
     shiftout(b)
     writebyte(b)
+    cePin.high()
     
 
 def offAllChannels():
@@ -152,7 +165,7 @@ SOUND_VOL= 0b10000
 SOUND_TONE= 0
 
 
-
+cePin.low()
 
 
 #sound.high()
@@ -178,6 +191,7 @@ sleep(.5)
 while True:
 
         #  // Change the Tone Period for Channel A every 500ms
+
 
         outbyte(223)
         #write_register(1, 1)

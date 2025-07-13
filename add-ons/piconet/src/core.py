@@ -787,16 +787,16 @@ def cmd_init(n):
     n["params"]={}
 
     if n["cmd"] == CMD_EP_READ:
-        print("EEPROM Read Byte") if netdebug > 5 else 0
+        print("EEPROM Read Byte") if netdebug > 5 else 0   # STRIP
         pass
     if n["cmd"] == CMD_EP_WRITE:
-        print("EEPROM Write Byte") if netdebug > 5 else 0
+        print("EEPROM Write Byte") if netdebug > 5 else 0    # STRIP
         pass
 
 
     if n["cmd"] == CMD_GETCHR:
             # put a char from the current buffer into the param list to send back
-            print(buffers) if netdebug > 5 else 0
+            print(buffers) if netdebug > 5 else 0     # STRIP 
             b=buffers[str(n["node"])]
             if len(b) > 0:
                 n["byteclk"]=ord(b[0:1])
@@ -822,19 +822,19 @@ def cmd_init(n):
                n["byteclk"]=n["node"]
 
     if n["cmd"] == CMD_GETSSTRZ:
-            print("getz init counter") if netdebug > 5 else 0
+            print("getz init counter") if netdebug > 5 else 0    # STRIP
             n["params"]['c']=0
 
     if n["cmd"] == CMD_GETTIME:
             setNow()
-            print("gettime init counter") if netdebug > 5 else 0
+            print("gettime init counter") if netdebug > 5 else 0     # STRIP
             n["params"]['c']=0
             n["params"][2]="time"
             n["strings"]["time"]=nowtime
             
     if n["cmd"] == CMD_GETDATE:
             setNow()
-            print("getdate init counter") if netdebug > 5 else 0
+            print("getdate init counter") if netdebug > 5 else 0    # STRIP
             n["params"]['c']=0
             n["params"][2]="date"
             n["strings"]["date"]=nowdate
@@ -843,7 +843,7 @@ def cmd_init(n):
      #       n["params"]={}
             buffers[str(n["node"])]=""
             
-    print(n["params"]) if netdebug > 10 else 0
+    print(n["params"]) if netdebug > 10 else 0    # STRIP 
     n["cmdseqp"]=n["cmdseqp"]+1
     n["cmdspiseq"]=-1
     
@@ -853,13 +853,13 @@ def cmd_end(n):
 
     
     print("End command. Save params for command %d in node %d" % ( n["cmd"], n["node"])) if netdebug > 5 else 0
-    print(n["params"]) if netdebug > 5 else 0
+    print(n["params"]) if netdebug > 5 else 0   # STRIP
 
 
     #try:
     if n["cmd"] == CMD_NETDEBUG:
-            print(n["params"])
-            print("Set netdebug from " + str(netdebug))
+            print(n["params"])   
+            print("Set netdebug from " + str(netdebug))   
             netdebug=n["params"][1]
             print("Set netdebug to " + str(netdebug))
     #    
@@ -878,7 +878,7 @@ def cmd_end(n):
         
         if n["params"][1] == 0 :
             # save to all nodes
-            print("Save to all buffers") if netdebug > 10 else 0
+            print("Save to all buffers") if netdebug > 10 else 0    # STRIP
             for nn in nodes:
                 try:
                     curbuff=buffers[str(nn["node"])]
@@ -891,7 +891,7 @@ def cmd_end(n):
             print(buffers)
         elif n["params"][1] == 255 :
                 # build server command string
-                print("Save to server buffer ") if netdebug > 10 else 0
+                print("Save to server buffer ") if netdebug > 10 else 0   # STRIP
                 try:
                     curbuff=n["servercmd"]
                 except:
@@ -900,7 +900,7 @@ def cmd_end(n):
                 n["servercmd"]=curbuff+chr(n["params"][2])
 
         else:
-            print("Save to single buffer "+str(n["params"][1])) if netdebug > 10 else 0
+            print("Save to single buffer "+str(n["params"][1])) if netdebug > 10 else 0    # STRIP
             try:
                 curbuff=buffers[str(n["params"][1])]
             except:
@@ -919,10 +919,10 @@ def cmd_end(n):
         except:
             pass
         n["strings"][int(n["params"][1])]=s
-        print("Save string: "+str(s)) if netdebug > 10 else 0
+        print("Save string: "+str(s)) if netdebug > 10 else 0    # STRIP
 
-    print(n["params"]) if netdebug > 15 else 0
-    print(buffers) if netdebug > 15 else 0
+    print(n["params"]) if netdebug > 15 else 0    # STRIP
+    print(buffers) if netdebug > 15 else 0   # STRIP
     n["cmdseqp"]=n["cmdseqp"]+1
     n["cmdspiseq"]=-1
     n["cmd"]=0
@@ -932,36 +932,36 @@ def cmd_proc(n):
     global ep_store
     global ep_byte
     # save current byte to next param
-    print("In proc")  if netdebug > 50 else 0
-    print(n["params"])   if netdebug > 50 else 0
+    print("In proc")  if netdebug > 50 else 0    # STRIP
+    print(n["params"])   if netdebug > 50 else 0    # STRIP
     #if netdebug > 0 else 0
     try:
         if n["cmd"] == CMD_EP_READ:
-            print("Read address")  if netdebug > 5 else 0
+            print("Read address")  if netdebug > 5 else 0   # STRIP
             print("<", end="")  if netdebug > 1 else 0
             a=(int(n["params"][1])<<8)+int(n["params"][2])
-            print(a)  if netdebug > 50 else 0
+            print(a)  if netdebug > 50 else 0    # STRIP
             ep_store.seek(a)
-            print("Seek done. Read")  if netdebug > 50 else 0
+            print("Seek done. Read")  if netdebug > 50 else 0    # STRIP
             b=ep_store.read(1)
-            print("Read done. Use byte")  if netdebug > 50 else 0
-            print(b)  if netdebug > 50 else 0
+            print("Read done. Use byte")  if netdebug > 50 else 0    # STRIP
+            print(b)  if netdebug > 50 else 0    # STRIP
             n["byteclk"]=int(b[0])
-            print(n["byteclk"])  if netdebug > 50 else 0
+            print(n["byteclk"])  if netdebug > 50 else 0    # STRIP
 
         if n["cmd"] == CMD_EP_WRITE:
-            print("Write address")  if netdebug > 5 else 0
+            print("Write address")  if netdebug > 5 else 0    # STRIP
             print(">", end="")  if netdebug > 1 else 0
             a=(int(n["params"][1])<<8)+int(n["params"][2])
-            print(a)  if netdebug > 50 else 0
-            print(n["byteclk"])  if netdebug > 50 else 0
+            print(a)  if netdebug > 50 else 0    # STRIP
+            print(n["byteclk"])  if netdebug > 50 else 0     # STRIP
             ep_store.seek(a)
 
             ep_byte[0] = n["byteclk"]
             ep_store.write(ep_byte)
 
         n["cmdseqp"]=n["cmdseqp"]+1
-        print("Next")  if netdebug > 50 else 0
+        print("Next")  if netdebug > 50 else 0    # STRIP
     except Exception as E:
         print("Error in cmd_proc "+str(E))
         n["byteclk"]=0
@@ -974,7 +974,7 @@ def cmd_savebyte(n):
     pct=len(n["params"])+1
     n["params"][pct]=n["byteclk"]
     print("Save byte -> Save params for command %d in node %d" % ( n["cmd"], n["node"])) if netdebug > 10 else 0
-    print(n["params"]) if netdebug > 50 else 0
+    print(n["params"]) if netdebug > 50 else 0    # STRIP
     n["cmdseqp"]=n["cmdseqp"]+1
 
 setupNodes()
@@ -1002,16 +1002,16 @@ def serverCmd(n):
     #    print("Clear server commands")
     #    n["servercmd"]=""
     if cmd.find(",go")>=0:
-        print("Exec server commands")   if netdebug > 10 else 0
+        print("Exec server commands")   if netdebug > 10 else 0     # STRIP
         for cmds in cmd.split(","):
             if cmds[:7]=="connect":
                 u=cmds[8:]
-                print("connect to:"+u+":")   if netdebug > 50 else 0
+                print("connect to:"+u+":")   if netdebug > 50 else 0    # STRIP
                 n["extern"]=u
             if cmds[:3]=="get":
                 blob = urequests.get(n["extern"])
                 blobcontver=blob.text
-                print(blob.reason)   if netdebug > 50 else 0
+                print(blob.reason)   if netdebug > 50 else 0      # STIP
                 blob.close()
                 try:
                     curbuff=buffers[str(n["node"])]
@@ -1093,9 +1093,9 @@ async def main():
 
                 
                 if n["cmd"] == 0 and n["cmdspiseq"] == -1:
-                            print( "Node %d: Clock in start of a command" % n["node"]) if netdebug > 10 else 0
+                            print( "Node %d: Clock in start of a command" % n["node"]) if netdebug > 10 else 0    
                             n["cmdspiseq"]=SEQ_SPIBIT7
-                            print("set byteclk=0") if netdebug > 50 else 0
+                            print("set byteclk=0") if netdebug > 50 else 0     # STRIP
                             n["byteclk"]=0
 
 
@@ -1126,23 +1126,23 @@ async def main():
 
 
                     if n["cmd"] == 0:
-                        print("no command") if netdebug > 10 else 0
+                        print("no command") if netdebug > 10 else 0    # STRIP
                         if clk == 1 and n["cmdspiseq"] == -1:
-                            print( "Clock in start of a command2") if netdebug > 10 else 0
+                            print( "Clock in start of a command2") if netdebug > 10 else 0  
                             n["cmdspiseq"]=SEQ_SPIBIT7
-                            print("set byteclk=0 a") if netdebug > 50 else 0
+                            print("set byteclk=0 a") if netdebug > 50 else 0    # STRIP
                             n["byteclk"]=0
 
                         if clk == 0:
-                            print("Clockin in bit for command") if netdebug > 10 else 0
+                            print("Clockin in bit for command") if netdebug > 10 else 0     # STRIP
                             n["cmdspiseq"]=nodeclockbytein(n)
-                            print("Clock in state: "+str(n["cmdspiseq"])) if netdebug > 10 else 0
+                            print("Clock in state: "+str(n["cmdspiseq"])) if netdebug > 10 else 0  # STRIP
                             if n["cmdspiseq"] == -1:
                                 n["cmd" ] = n["byteclk"]
                                 # must have clocked in the last command byte. Look it up and start a run
-                                print("Have command byte. Now look up:"+str(n["cmd"])) if netdebug > 10 else 0
+                                print("Have command byte. Now look up:"+str(n["cmd"])) if netdebug >  10 else 0    # STRIP
                                 
-                                print("set byteclk=0 b") if netdebug > 50 else 0
+                                print("set byteclk=0 b") if netdebug > 50 else 0     # STRIP
                                 n["cmdseqp"]=0
                                 n["byteclk"]=0
 
@@ -1151,19 +1151,19 @@ async def main():
                                 for a in seq:
                                     if a["cmd"] == n["cmd"] :
                                         n["cmdseq"] = a["seq"]
-                                        print("Command sequence selected: "+str(a["seq"])) if netdebug > 10 else 0
+                                        print("Command sequence selected: "+str(a["seq"])) if netdebug > 10 else 0   # STRIP
                                 if n["cmdseq"] == []:
                                     # no command byte seq found to exec to look for a new command again
-                                    print("Invalid command byte") if netdebug > 10 else 0
+                                    print("Invalid command byte") if netdebug > 10 else 0     # STRIP
                                     n["cmd"]=0
                                             
 
 
                     else:
-                        print("in a step. any spi activity?") if netdebug > 10 else 0
+                        print("in a step. any spi activity?") if netdebug > 10 else 0    # STRIP
                         try:
                             if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEOUT and clk == 1 :
-                                print("clock high and byte out") if netdebug > 10 else 0
+                                print("clock high and byte out") if netdebug > 10 else 0    # STRIP
                                 # TODO prep a clock out of byte
                                 n["cmdspiseq"]=nodeclockbyteout(n)
                                 if n["cmdspiseq"]==-1:
@@ -1171,7 +1171,7 @@ async def main():
 
                             if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEIN and clk == 0 :
                                 # TODO prep a clock out of byte
-                                print("clock low and byte in") if netdebug > 10 else 0
+                                print("clock low and byte in") if netdebug > 10 else 0   # STRIP
                                 n["cmdspiseq"]=nodeclockbytein(n)
                                 if n["cmdspiseq"]==-1:
                                     n["cmdseqp"]=n["cmdseqp"]+1
@@ -1248,19 +1248,19 @@ async def main():
                                 try:
                                         # TODO byte in set seq
                                     if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEIN:
-                                            print( "Start clock in a byte" ) if netdebug > 10 else 0
+                                            print( "Start clock in a byte" ) if netdebug > 10 else 0 # STRIP
                                             n["cmdspiseq"] = SEQ_SPIBIT7
-                                            print("set byteclk=0 c") if netdebug > 50 else 0
+                                            print("set byteclk=0 c") if netdebug > 50 else 0   # STRIP
                                             n["byteclk"] = 0
 
                                     # TODO byte out set seq
                                     if n["cmdseq"][n["cmdseqp"]] == SEQ_BYTEOUT:
-                                            print( "Start clock out a byte" ) if netdebug > 10 else 0
+                                            print( "Start clock out a byte" ) if netdebug > 10 else 0  # STRIP
                                             n["cmdspiseq"] = SEQ_SPIBIT7
     # TODO BUG clock out leaves clkstate in wrong place for next command
 
                                     if n["cmdseq"][n["cmdseqp"]] == SEQ_SSTRZNEXT:
-                                        print("Clock out stored string content") if netdebug > 10 else 0
+                                        print("Clock out stored string content") if netdebug > 10 else 0  # STRIP
                                         s1=n["strings"][str(n["params"][2])]
                                         ct=n["params"]['c']
                                         try:
@@ -1272,7 +1272,7 @@ async def main():
                                         #print(ct)
                                         #print(c)
                                         
-                                        print(n["byteclk"]) if netdebug > 50 else 0
+                                        print(n["byteclk"]) if netdebug > 50 else 0   # STRIP
                                         n["params"]['c']=ct+1
                                         n["cmdseqp"]=n["cmdseqp"]+1
 
@@ -1288,23 +1288,23 @@ async def main():
                                         
 
                                     if n["cmdseq"][n["cmdseqp"]] == SEQ_REPEAT:
-                                        print("Repeat marker") if netdebug > 10 else 0
+                                        print("Repeat marker") if netdebug > 10 else 0  # STRIP
                                         n["cmdseqp"]=n["cmdseqp"]+1
 
                                     if n["cmdseq"][n["cmdseqp"]] == SEQ_UNTILZ:
                                         # go back to the last REQ_REPEAT marker
                                         if n["byteclk"]==0:
-                                            print("Now have zero term. Next...") if netdebug > 10 else 0
+                                            print("Now have zero term. Next...") if netdebug > 10 else 0  # STRIP
                                             n["cmdseqp"]=n["cmdseqp"]+1
                                         else:
-                                            print("No zero term... Jump back to previous repeat marker..") if netdebug > 10 else 0
+                                            print("No zero term... Jump back to previous repeat marker..") if netdebug > 10 else 0  # STRIP
                                             while n["cmdseq"][n["cmdseqp"]] != SEQ_REPEAT:
                                                 n["cmdseqp"]=n["cmdseqp"]-1
                                                 
                                     if n["cmdseq"][n["cmdseqp"]] == SEQ_DEBUG:
-                                        print("****** DEBUG DUMP *****")
-                                        print(n) 
-                                        print(buffers) 
+                                        print("****** DEBUG DUMP *****")  
+                                        print(n)    # STRIP
+                                        print(buffers)    # STRIP
                                         saveSettings()
                                         n["cmdseqp"]=n["cmdseqp"]+1
 
@@ -1322,10 +1322,10 @@ async def main():
                                 if n["cmdseqp"] > len(n["cmdseq"])-1:
                                     # sequence complete, new command
                                     n["cmd"]=0
-                                    print("Command processed. Next cmd...") if netdebug > 5 else 0
+                                    print("Command processed. Next cmd...") if netdebug > 5 else 0 # STRIP
                                     n["cmdspiseq"] = -1 
-                                    print(n) if netdebug > 50 else 0
-                                    print("set byteclk=0 g") if netdebug > 50 else 0
+                                    print(n) if netdebug > 50 else 0  # STRIP
+                                    print("set byteclk=0 g") if netdebug > 50 else 0  # STRIP
                                     n["byteclk"]=0
                                     
                                     

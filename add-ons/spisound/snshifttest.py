@@ -36,6 +36,31 @@
 # will there be enough of a delay to apply changes?
 
 
+# $01 cartdev
+#: latch spicel spio spiceh spicel  ; 
+
+#$74 $12 $90 $1F $07 $05 count $00 do latch $01 delay loop 
+
+#$E9 $AB $7B $66 $3F $1C $FD count $00 do latch $01 delay loop 
+
+#* $74 = 01110100 (in binary)
+#* $12 = 00010010 (in binary)
+#* $90 = 10010000 (in binary)
+#* $1F = 00011111 (in binary)
+#* $07 = 00000111 (in binary)
+#* $05 = 00000101 (in binary)
+#* $E9 = 11101001 (in binary)
+#* $AB = 10101011 (in binary)
+#* $7B = 01111011 (in binary)
+#* $66 = 01100110 (in binary)
+#* $3F = 00111111 (in binary)
+#* $1C = 00011100 (in binary)
+#* $FD = 11111101 (in binary)
+
+# $8f $80 do spicel i spio spiceh spicel $01 delay loop
+# : note $80 + spicel spio spiceh spicel ;
+# : vol $90 + spicel spio spiceh spicel ;
+
 from machine import Pin
 
 #//Pin connected to ST_CP of 74HC595

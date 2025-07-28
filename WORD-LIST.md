@@ -430,7 +430,7 @@ Also refer to the auto start list examples as these contain extra words created 
 ### BL (  -- c ) Push the value of space onto the stack as a string  | DONE
 
 
-### SPACES ( u -- str ) A string of u spaces is pushed onto the stack | TO TEST
+### SPACES ( u -- str ) A string of u spaces is pushed onto the stack | DONE
 
 
 ### SCROLL ( -- ) Scroll up one line - next write will update if required | DONE
@@ -494,6 +494,9 @@ Also refer to the auto start list examples as these contain extra words created 
 
 
 ### EDIT ( u -- u ) Takes string on TOS and allows editing of it. Pushes it back once done. | DONE
+
+
+### DEDIT ( ptr --  ) Takes an address for direct editing in memory. | TO TEST
 
 
 ## Logic Words
@@ -1024,6 +1027,9 @@ Also refer to the auto start list examples as these contain extra words created 
 ### BL (  -- c ) Push the value of space onto the stack as a string  | DONE
 
 
+### SPACES ( u -- str ) A string of u spaces is pushed onto the stack | DONE
+
+
 ### SCROLL ( -- ) Scroll up one line - next write will update if required | DONE
 
 
@@ -1288,9 +1294,6 @@ Also refer to the auto start list examples as these contain extra words created 
 ### .> ( u -- ) Display TOS and move the next display point with display  | WIP
 
 
-### SPACES ( u -- str ) A string of u spaces is pushed onto the stack | TO TEST
-
-
 ### SCROLLD ( -- ) Scroll down one line - next write will update if required | TO DO
 
 
@@ -1307,6 +1310,9 @@ Also refer to the auto start list examples as these contain extra words created 
 
 
 ### KEY ( -- w f ) Scan for keypress but do not wait true if next item on stack is key press | TODO
+
+
+### DEDIT ( ptr --  ) Takes an address for direct editing in memory. | TO TEST
 
 
 ## Logic Words

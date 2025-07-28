@@ -10,14 +10,16 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE Not doing. Change NOTE to PLAY and use a stream of items on stack
 * DONE Via SPI with the second PIO port hook up and debug the sound card
 * DONE Create A SYMBOL word which is a look up to the address of a system symbol table more efficent than adding more words
+* DONE Fixed SPACES
+* DONE bl word causing reboot only on z80, not doing it in cpm. Maybe due to write to ROM on z80.
+* DONE FILEADDR already does this. Add word to report the physical address of the currently loaded record
+* DONE Added a direct memory edit DEDIT word
+* TODO file editor
 
 * TODO Add op-amp circuit to SPISound and allow for selection at wire time
 
 * TODO Save auto run flags to block 0 on bank 1 and not on currently selected device. Need a function to load from block 0 into hardware_config and then repoint all menu options to load and save them.
 
-* TODO bl word causing reboot only on z80, not doing it in cpm
-* TODO file editor
-* TODO Add word to report the physical address of the currently loaded record
 * TODO Add a flag to block 0 to decide if the auto startup prompt is given and/or run
 * TODO config var to auto run everything?
 * TODO Add selectable guard around SPIO to prevent accidental corruption of storage banks

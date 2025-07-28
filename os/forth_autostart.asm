@@ -44,6 +44,11 @@ startcmds:
     dw spi9
     dw spi10
 
+; file editor
+	dw edit1
+	dw edit2
+	dw edit3
+
 	dw longread
 	dw clrstack
 	dw type
@@ -125,11 +130,19 @@ startcmds:
 ;	dw keybs
 	db 0, 0	
 
+
+; File Editor
+
+; ( id - ) use 'e' to edit the displayed line
+edit1: db ": edc waitk $65 = if ede then ; ", 0
+edit2: db ": ede v1@ v0@ record storepage ptr $02 + dedit storepage fileaddr bwrite ; ", 0
+edit3: db ": ed dup v0! open $01 do i v0@ record cls . i v1! edc loop ; ",0
+
 ; SPI Net support words
 
 ; v0! = node to send to
 ; ( str count - )
-spi1:       db ": spitype spiceh $00 do dup i + @ v0@ spicel $10 spio spio spio spiceh $01 pause loop ; ; ",0
+spi1:       db ": spitype spiceh $00 do dup i + @ v0@ spicel $10 spio spio spio spiceh $01 pause loop ; ",0
 
 ; spiputchr ( char node - )
 spi2:       db ": spiputchr spicel $10 spio spio ptr @ spio spiceh ; ",0

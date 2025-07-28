@@ -54,7 +54,7 @@
 		NEXTW
 
 .EDIT:
-	CWHEAD .ENDKEY 44 "EDIT" 4 WORD_FLAG_CODE
+	CWHEAD .DEDIT 44 "EDIT" 4 WORD_FLAG_CODE
 ; | EDIT ( u -- u ) Takes string on TOS and allows editing of it. Pushes it back once done. | DONE
 
 		; TODO does not copy from stack
@@ -106,6 +106,47 @@
 		call forth_push_str
 		NEXTW
 
+.DEDIT:
+	CWHEAD .ENDKEY 44 "DEDIT" 5 WORD_FLAG_CODE
+; | DEDIT ( ptr --  ) Takes an address for direct editing in memory. | TO TEST
+
+		; TODO does not copy from stack
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "DED"
+			CALLMONITOR
+		endif
+
+		;FORTH_DSP
+		FORTH_DSP_VALUEHL
+;		inc hl    ; TODO do type check
+
+;		call get_word_hl
+		push hl
+		push hl
+		FORTH_DSP_POP
+		pop hl
+		if DEBUG_FORTH_WORDS
+			DMARK "EDp"
+			CALLMONITOR
+		endif
+	;	ld a, 0
+		call strlenz
+		inc hl
+
+		ld b, 0
+		ld c, l
+
+		pop hl
+
+		;ld a, 0
+		;ld (hl),a
+		ld a,(f_cursor_ptr)
+		ld d, 100
+		ld c, 0
+		ld e, 40
+		call input_str
+		; TODO perhaps do a type check and wrap in quotes if not a number
+		NEXTW
 
 
 .ENDKEY:

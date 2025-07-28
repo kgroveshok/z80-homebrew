@@ -14,7 +14,10 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE bl word causing reboot only on z80, not doing it in cpm. Maybe due to write to ROM on z80.
 * DONE FILEADDR already does this. Add word to report the physical address of the currently loaded record
 * DONE Added a direct memory edit DEDIT word
-* TODO file editor
+* DONE file editor
+
+
+* TODO ed word has a rouge address pushed to stack when editing a record
 
 * TODO Add op-amp circuit to SPISound and allow for selection at wire time
 

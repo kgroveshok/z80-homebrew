@@ -469,7 +469,7 @@ endif
 
 .SPACES:
 	CWHEAD .SCROLL 51 "SPACES" 6 WORD_FLAG_CODE
-; | SPACES ( u -- str ) A string of u spaces is pushed onto the stack | TO TEST
+; | SPACES ( u -- str ) A string of u spaces is pushed onto the stack | DONE
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "SPS"
 			CALLMONITOR
@@ -478,16 +478,16 @@ endif
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 
-;		push hl    ; u
+		push hl    ; u
 		if DEBUG_FORTH_WORDS
 			DMARK "SPA"
 			CALLMONITOR
 		endif
 
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
-;		pop hl
-		ld c, l
-		ld b, 0
+		pop hl
+		ld c, 0
+		ld b, l
 		ld hl, scratch 
 
 		if DEBUG_FORTH_WORDS
@@ -495,10 +495,10 @@ endif
 			CALLMONITOR
 		endif
 		ld a, ' '
-.spaces1:	push bc
+.spaces1:	
 		ld (hl),a
 		inc hl
-		pop bc
+		
 		djnz .spaces1
 		ld a,0
 		ld (hl),a
@@ -507,7 +507,7 @@ endif
 			DMARK "SP3"
 			CALLMONITOR
 		endif
-		call forth_apush
+		call forth_push_str
 
 	       NEXTW
 

@@ -1,0 +1,10 @@
+
+
+: latch $01 cartdev spio $02 cartdev spiceh spicel spiceh $01 cartdev ; 
+
+$74 $12 $90 $1F $07 $05 count $00 do latch $01 delay loop 
+
+$E9 $AB $7B $66 $3F $1C $FD count $00 do latch $01 delay loop 
+
+
+$74 $12 $90 $1F $07 $05 $E9 $AB $7B $66 $3F $1C $FD 

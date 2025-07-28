@@ -460,12 +460,16 @@ endif
 			DMARK "BL."
 			CALLMONITOR
 		endif
-		ld hl, .blstr
+		ld a, " "
+		ld (scratch),a
+		ld a, 0
+		ld (scratch+1),a
+		ld hl, scratch
 		call forth_push_str
 		
 	       NEXTW
 
-.blstr: db " ", 0
+;.blstr: db " ", 0
 
 .SPACES:
 	CWHEAD .SCROLL 51 "SPACES" 6 WORD_FLAG_CODE

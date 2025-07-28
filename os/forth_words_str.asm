@@ -553,21 +553,29 @@
 			DMARK "ASC"
 			CALLMONITOR
 		endif
-		FORTH_DSP
+		FORTH_DSP_VALUE
 		;v5 FORTH_DSP_VALUE
-		inc hl      ; now at start of numeric as string
+;		inc hl      ; now at start of numeric as string
 
-;		push hl
+		push hl
 
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
-;		pop hl
+		pop hl
 
+		if DEBUG_FORTH_WORDS
+			DMARK "AS1"
+			CALLMONITOR
+		endif
 		; push the content of a onto the stack as a value
 
 		ld a,(hl)   ; get char
 		ld h,0
 		ld l,a
+		if DEBUG_FORTH_WORDS
+			DMARK "AS2"
+			CALLMONITOR
+		endif
 		call forth_push_numhl
 
 	       NEXTW

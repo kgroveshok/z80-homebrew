@@ -135,7 +135,7 @@ startcmds:
 
 ; ( id - ) use 'e' to edit the displayed line
 edit1: db ": edc waitk $65 = if ede then ; ", 0
-edit2: db ": ede v1@ v0@ record storepage ptr $02 + dedit storepage fileaddr bwrite ; ", 0
+edit2: db ": ede v1@ v0@ record storepage ptr $02 + cls dedit filepage bupd ; ", 0
 edit3: db ": ed dup v0! open $01 do i v0@ record cls . i v1! edc loop ; ",0
 
 ; SPI Net support words

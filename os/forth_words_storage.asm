@@ -69,7 +69,7 @@
 .BREAD:
  
 	CWHEAD .BWRITE 38 "BREAD" 5 WORD_FLAG_CODE
-; | BREAD ( u -- u ) Lowlevel storage word. With the current bank, read a block from block address u (1-512) and push to stack  | DONE
+; | BREAD ( u -- u ) Lowlevel storage word. With the current bank, read a block from page id u (1-512) and push to stack  | DONE
 ; | | Compatible with PicoSPINet 
 	
 		if DEBUG_FORTH_WORDS_KEY
@@ -120,7 +120,7 @@
 		NEXTW
 .BWRITE:
 	CWHEAD .BUPD 38 "BWRITE" 6 WORD_FLAG_CODE
-; | BWRITE ( s u -- ) Lowlevel storage word. With the current bank, write the string s to address u | DONE
+; | BWRITE ( s u -- ) Lowlevel storage word. With the current bank, write the string s to page id u | DONE
 ; | | Compatible with PicoSPINet 
 
 		if DEBUG_FORTH_WORDS_KEY
@@ -187,7 +187,7 @@
 
 .BUPD:
 	CWHEAD .BYID 38 "BUPD" 4 WORD_FLAG_CODE
-; | BUPD ( u -- ) Lowlevel storage word. Write the contents of the current file system storage buffer directly to address u | DONE
+; | BUPD ( u -- ) Lowlevel storage word. Write the contents of the current file system storage buffer directly to page id u | DONE
 ; | | Coupled with the use of the BREAD, BWRITE and STOREPAGE words it is possible to implement a direct
 ; | | or completely different file system structure.
 ; | | Compatible with PicoSPINet 
@@ -1185,6 +1185,20 @@
 		call forth_push_numhl
 		NEXTW
 .SCONST5:
+	CWHEAD .SCONST6 89 "FILEPAGE" 8 WORD_FLAG_CODE
+; | FILEPAGE (  -- u1  )  Pushes the page id block accessed for the currenlty open file to stack | DONE
+; | | Compatible with PicoSPINet 
+		ld hl, (store_openaddr)
+		push hl
+		pop bc
+		ld d, 0
+		ld e, STORE_BLOCK_PHY
+		call Div16
+		push bc
+		pop hl
+		call forth_push_numhl
+		NEXTW
+.SCONST6:
 	CWHEAD .ENDSTORAGE 89 "READCONT" 8 WORD_FLAG_CODE
 ; | READCONT (  -- u1  )  Pushes the READ continuation flag to stack | DONE
 ; | | If the most recent READ results in a full buffer load then this flag is set and will indicate that

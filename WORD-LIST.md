@@ -562,19 +562,19 @@ Also refer to the auto start list examples as these contain extra words created 
  Compatible with PicoSPINet 
 
 
-### BREAD ( u -- u ) Lowlevel storage word. With the current bank, read a block from block address u (1-512) and push to stack  | DONE
+### BREAD ( u -- u ) Lowlevel storage word. With the current bank, read a block from page id u (1-512) and push to stack  | DONE
 
 
  Compatible with PicoSPINet 
 
 
-### BWRITE ( s u -- ) Lowlevel storage word. With the current bank, write the string s to address u | DONE
+### BWRITE ( s u -- ) Lowlevel storage word. With the current bank, write the string s to page id u | DONE
 
 
  Compatible with PicoSPINet 
 
 
-### BUPD ( u -- ) Lowlevel storage word. Write the contents of the current file system storage buffer directly to address u | DONE
+### BUPD ( u -- ) Lowlevel storage word. Write the contents of the current file system storage buffer directly to page id u | DONE
 
 
  Coupled with the use of the BREAD, BWRITE and STOREPAGE words it is possible to implement a direct
@@ -776,6 +776,12 @@ Also refer to the auto start list examples as these contain extra words created 
 
 
 ### FILEADDR (  -- u1  )  Pushes the address of the block accessed for the currenlty open file to stack | DONE
+
+
+ Compatible with PicoSPINet 
+
+
+### FILEPAGE (  -- u1  )  Pushes the page id block accessed for the currenlty open file to stack | DONE
 
 
  Compatible with PicoSPINet 
@@ -1114,13 +1120,13 @@ Also refer to the auto start list examples as these contain extra words created 
 ### RECORD ( u id -- s ) With the current bank, read record number u from file id and push to stack  | DONE
 
 
-### BREAD ( u -- u ) Lowlevel storage word. With the current bank, read a block from block address u (1-512) and push to stack  | DONE
+### BREAD ( u -- u ) Lowlevel storage word. With the current bank, read a block from page id u (1-512) and push to stack  | DONE
 
 
-### BWRITE ( s u -- ) Lowlevel storage word. With the current bank, write the string s to address u | DONE
+### BWRITE ( s u -- ) Lowlevel storage word. With the current bank, write the string s to page id u | DONE
 
 
-### BUPD ( u -- ) Lowlevel storage word. Write the contents of the current file system storage buffer directly to address u | DONE
+### BUPD ( u -- ) Lowlevel storage word. Write the contents of the current file system storage buffer directly to page id u | DONE
 
 
 ### GETID ( s -- u ) Get the file ID in the current BANK of the file named s | DONE
@@ -1178,6 +1184,9 @@ Also refer to the auto start list examples as these contain extra words created 
 
 
 ### FILEADDR (  -- u1  )  Pushes the address of the block accessed for the currenlty open file to stack | DONE
+
+
+### FILEPAGE (  -- u1  )  Pushes the page id block accessed for the currenlty open file to stack | DONE
 
 
 ### READCONT (  -- u1  )  Pushes the READ continuation flag to stack | DONE

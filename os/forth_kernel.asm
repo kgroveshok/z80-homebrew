@@ -29,6 +29,19 @@ if FORTH_PARSEV5
 include "forth_stackopsv5.asm"
 endif
 
+loadwordinhl:	
+
+	push de
+
+	ld e, (hl)
+	inc hl
+	ld d, (hl)
+	ex de,hl 
+
+	pop de
+
+	ret
+
 user_word_eol: 
 	; hl contains the pointer to where to create a linked list item from the end
 	; of the user dict to continue on at the system word dict

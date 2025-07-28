@@ -2,18 +2,31 @@
 Z80 Home Brew Micro-computer Project - Dev Diary
 ------------------------------------------------
 
-7th July 2025
--------------
 
-* DONE Added emulation of EEPROM storage to PicoSPINet. A single common bank testing with
+28th July 2025
+--------------
+
+* DONE SPISound now built and working as a temp board. Still need to do PCB 
+* DONE Not doing. Change NOTE to PLAY and use a stream of items on stack
+* DONE Via SPI with the second PIO port hook up and debug the sound card
+* DONE Create A SYMBOL word which is a look up to the address of a system symbol table more efficent than adding more words
+
+* TODO Add op-amp circuit to SPISound and allow for selection at wire time
+
+* TODO Save auto run flags to block 0 on bank 1 and not on currently selected device. Need a function to load from block 0 into hardware_config and then repoint all menu options to load and save them.
+
+* TODO bl word causing reboot only on z80, not doing it in cpm
+* TODO file editor
+* TODO Add word to report the physical address of the currently loaded record
+* TODO Add a flag to block 0 to decide if the auto startup prompt is given and/or run
+* TODO config var to auto run everything?
+* TODO Add selectable guard around SPIO to prevent accidental corruption of storage banks
+* TODO BUG Add reselection of BANK during auto load 
+* TODO need words to report on hardware e.g. screen dims
 
 * TODO Add command to select between common or node PicoSPINet storage banks
 * TODO Add command to select different banks of common or node PicoSPINet storage banks
-
-* TODO need words to report on hardware e.g. screen dims
-* TODO bl word causing reboot only on z80, not doing it in cpm
-* TODO Extract all of the symbols in the symbol table to be available as words in FORTH, debug and asm above
-* TODO PICK word to pick a value at a given value on stack and move to TOS
+* TODO BUG Uword can't have a numeric in the word name???? Odd...
 * TO TEST need word to report where cursor current at
 * TODO BUG swap of string and number leaves string ptr being left as number. Not swapping var type?
 
@@ -34,8 +47,6 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 
 * TODO Add LREAD support to the autostart exec
 
-* TODO Change NOTE to PLAY and use a stream of items on stack
-* TODO with the second PIO port hook up and debug the sound card
 
 
 * TODO Handle socket level iputchr
@@ -52,8 +63,6 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 
 * TODO Future bug? stack imbalance on storage_read. Needs a pop of de if no record found. Have added code watch for further issues
 
-* TODO Save auto run flags to block 0 on bank 1 and not on currently selected device. Need a function to load from block 0 into hardware_config and then repoint all menu options to load and save them.
-* TODO Add a flag to block 0 to decide if the auto startup prompt is given and/or run
 
 * TODO Stop menu scrolling past last item
 * TODO BUG If : word is in caps it wont work. This could be connected with caps on LIST which only works if given as lcase.
@@ -62,6 +71,7 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO fix editor bugs
 * TODO fix editor issues
 * TODO typing a long few lines and then back space, then insert ends up creating spurious characters - added clear of edit buffer
+* TODO PICK word to pick a value at a given value on stack and move to TOS
 * TODO Fix prev line recall and insertion. Corruption appears on the end of line - added clear of edit buffer
 * TODO Editor issue insert mid string causes loss of zero term giving random data
 * TODO Backspace mid string does not clean up shifted text
@@ -76,7 +86,6 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO file select to copy to del
 * TODO rename file
 * TODO delete record
-* TODO file editor
 * TODO ui to call config
 * TODO backup and restore of banks to network
 * TODO change size to fsize?
@@ -120,6 +129,13 @@ Nice to haves:
 * TODO Pico to handle display to have two way return of data
 * TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs. FORGET and LIST use a scanner. Combine with main parser and have one for keyword and another for byte code
 * TODO Add a simple assembler feature like BBC Basic
+
+
+7th July 2025
+-------------
+
+* DONE Added emulation of EEPROM storage to PicoSPINet. A single common bank testing with
+
 
 3rd July 2025
 -------------

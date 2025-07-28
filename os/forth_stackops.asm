@@ -696,6 +696,9 @@ FORTH_DSP_VALUEHL:  macro
 	endm
 
 
+;FORTH_LOAD_WORDHL:  macro
+;	call macro_loadwordhl
+;	endm
 
 macro_dsp_valuehl:
 	FORTH_DSP_VALUE
@@ -806,6 +809,7 @@ macro_forth_loop_pop:
 		FORTH_CHK_LOOP_UNDER
 	endif
 	ret
+
 
 ; eof
 

@@ -2,20 +2,20 @@
 
 ; | ## Device Words
 
-if SOUND_ENABLE
-.NOTE:
-	CWHEAD .AFTERSOUND 31 "NOTE" 4 WORD_FLAG_CODE
-; | NOTE ( ud uf --  )  Plays a note of frequency uf for the duration of ud millseconds | TODO
-		if DEBUG_FORTH_WORDS_KEY
-			DMARK "NTE"
-			CALLMONITOR
-		endif
-
-	
-
-		NEXTW
-.AFTERSOUND:
-endif
+;if SOUND_ENABLE
+;.NOTE:
+;	CWHEAD .AFTERSOUND 31 "NOTE" 4 WORD_FLAG_CODE
+;; NOTE ( ud uf --  )  Plays a note of frequency uf for the duration of ud millseconds | TODO
+;		if DEBUG_FORTH_WORDS_KEY
+;			DMARK "NTE"
+;			CALLMONITOR
+;		endif
+;
+;	
+;
+;		NEXTW
+;.AFTERSOUND:
+;endif
 
 
 USE_GPIO: equ 0

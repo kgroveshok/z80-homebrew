@@ -25,6 +25,15 @@ Also refer to the auto start list examples as these contain extra words created 
 ### VA ( -- u1 )   Pushes address of block of memory used for v1..5
 
 
+### SYMBOL ( u1 -- )  Get the address of a system symbol from a look up table to TOS  | DONE
+
+
+
+
+
+### The value is the number reference and the final address is pushed to stack
+
+
 ## Core Words
 
 
@@ -328,7 +337,7 @@ Also refer to the auto start list examples as these contain extra words created 
 ## Device Words
 
 
-### NOTE ( ud uf --  )  Plays a note of frequency uf for the duration of ud millseconds | TODO
+### TODO
 
 
 ### IOIN ( u1 -- u )    Perform a GPIO read of pin u1 and push result  | 
@@ -841,6 +850,9 @@ Also refer to the auto start list examples as these contain extra words created 
 
 
 
+### SYMBOL ( u1 -- )  Get the address of a system symbol from a look up table to TOS  | DONE
+
+
 ### HEAP ( -- u1 u2 )   Pushes u1 the current number of bytes in the heap and u2 the remaining bytes - Only present if using my MALLOC | DONE
 
 
@@ -1225,6 +1237,12 @@ Also refer to the auto start list examples as these contain extra words created 
 ### VA ( -- u1 )   Pushes address of block of memory used for v1..5
 
 
+
+
+
+### The value is the number reference and the final address is pushed to stack
+
+
 ## Core Words
 
 
@@ -1243,7 +1261,7 @@ Also refer to the auto start list examples as these contain extra words created 
 ## Device Words
 
 
-### NOTE ( ud uf --  )  Plays a note of frequency uf for the duration of ud millseconds | TODO
+### TODO
 
 
 ### IOIN ( u1 -- u )    Perform a GPIO read of pin u1 and push result  | 

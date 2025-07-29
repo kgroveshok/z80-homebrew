@@ -8098,6 +8098,19 @@
 1475			; de - points to strings to add to file 
 1475			 
 1475			.genfile: 
+1475				push hl 
+1475				push de 
+1475			 
+1475				call clear_display 
+1475				ld a, display_row_1 
+1475				ld de, .genfiletxt 
+1475				call str_at_display 
+1475				call update_display 
+1475			 
+1475				pop de 
+1475				pop hl 
+1475			 
+1475			 
 1475				push de 
 1475				call storage_create 
 1475				; id in hl 
@@ -8134,6 +8147,7 @@
 1475			 
 1475				ret 
 1475			 
+1475			.genfiletxt:  db "Creating file...",0 
 1475			 
 1475			.utilwordef: 
 1475				dw strncpy 

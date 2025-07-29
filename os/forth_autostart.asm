@@ -200,9 +200,9 @@ type:     db ": type $00 do dup i + @ emit loop ;", 0
 
 strncpy:   db ": strncpy $00 scratch 2! $02 scratch 2! do $00 scratch 2@ i + @ $02 scratch 2@ i + ! loop nop  ;",0
 
-start1:     	db ": bpon $0000 bp ;",0
-start2:     	db ": bpoff $0001 bp ;",0
-start3b:         db ": dla dir cls drop dup $00 > if $01 do $08 $04 at . $01 $04 at . $04 $04 at . $23 $04 at accept drop scroll loop then nop ;",0
+start1:     	db ": bpon $00 bp ;",0
+start2:     	db ": bpoff $01 bp ;",0
+start3b:         db ": ls dir cls drop dup $00 > if $01 do $08 $04 at . $01 $04 at . $04 $04 at . $23 $04 at accept drop scroll loop then nop ;",0
 start3c:         db ": dirlist dir cls drop dup $00 > if $01 do \"/\" .> .> \"Ext:\" .> .> \"Id: \" .> .>  loop then nop ;",0
 
 

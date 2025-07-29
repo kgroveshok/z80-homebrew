@@ -2,19 +2,24 @@
 Z80 Home Brew Micro-computer Project - Dev Diary
 ------------------------------------------------
 
-
-28th July 2025
+29th July 2025
 --------------
 
-* DONE SPISound now built and working as a temp board. Still need to do PCB 
-* DONE Not doing. Change NOTE to PLAY and use a stream of items on stack
-* DONE Via SPI with the second PIO port hook up and debug the sound card
-* DONE Create A SYMBOL word which is a look up to the address of a system symbol table more efficent than adding more words
-* DONE Fixed SPACES
-* DONE bl word causing reboot only on z80, not doing it in cpm. Maybe due to write to ROM on z80.
-* DONE FILEADDR already does this. Add word to report the physical address of the currently loaded record
-* DONE Added a direct memory edit DEDIT word
-* DONE file editor
+* DONE RENAME word to allow for the new auto start method
+
+
+
+
+* TODO Add hook vectors. Can change  dbug checks to vector with return if disabled to save on push and asterisk checks. Add hook for stack checks to disable. Add hooks for some other points such as before and after words
+
+* TODO Change auto from file to run all files with asterisk in first chat of name
+
+* TODO NMI vector and switch - default to running monitor
+
+* TODO Make monitor do a call warm boot. Does it already do this during stack crash or a different case? No add it.
+* TODO Monitor to have G command
+* TODO Monitor to have warm boot jump option
+* TODO Add to symbol some key vectors for commands eg. MALLOC, PUTCH, GETCH, Symbol table. 
 
 
 * TODO ed word has a rouge address pushed to stack when editing a record
@@ -134,6 +139,21 @@ Nice to haves:
 * TODO Pico to handle display to have two way return of data
 * TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs. FORGET and LIST use a scanner. Combine with main parser and have one for keyword and another for byte code
 * TODO Add a simple assembler feature like BBC Basic
+
+
+28th July 2025
+--------------
+
+* DONE SPISound now built and working as a temp board. Still need to do PCB 
+* DONE Not doing. Change NOTE to PLAY and use a stream of items on stack
+* DONE Via SPI with the second PIO port hook up and debug the sound card
+* DONE Create A SYMBOL word which is a look up to the address of a system symbol table more efficent than adding more words
+* DONE Fixed SPACES
+* DONE bl word causing reboot only on z80, not doing it in cpm. Maybe due to write to ROM on z80.
+* DONE FILEADDR already does this. Add word to report the physical address of the currently loaded record
+* DONE Added a direct memory edit DEDIT word
+* DONE file editor
+
 
 
 7th July 2025

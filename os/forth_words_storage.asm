@@ -1,6 +1,110 @@
 
 ; | ## Fixed Storage Words
 
+.RENAME:
+ 
+	CWHEAD .RECORD 38 "RENAME" 6 WORD_FLAG_CODE
+; | RENAME ( s id -- ) With the current bank, rename the file id with the new label s  | DONE
+; | | Compatible with PicoSPINet 
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "REN"
+			CALLMONITOR
+		endif
+
+
+		; preserve some internal vars used by other file handing routines
+
+		ld hl, (store_openaddr)
+		push hl
+		ld a, (store_readcont)
+		push af
+
+		FORTH_DSP_VALUEHL
+
+		; move ext and id around for the file header
+
+		ld h, l
+		ld l, 0
+
+		push hl    ; id
+
+		FORTH_DSP_POP
+
+		; Locate the file header
+
+		pop hl
+		push hl
+		ld de, store_page      ; get block zero of file
+		if DEBUG_FORTH_WORDS
+			DMARK "REr"
+			CALLMONITOR
+		endif
+		call storage_read
+
+	call ishlzero
+	jr nz, .rnfound
+
+	; file does not exist so indicate with 255 extents in use
+
+	ld a, 255
+	pop hl ; clear dup hl
+	jr .skiprneof
+
+
+.rnfound:
+		; file found so rename
+
+		FORTH_DSP_VALUEHL
+
+	push hl
+	ld a, 0
+	call strlent
+	inc hl   ; cover zero term
+	ld b,0
+	ld c,l
+	pop hl
+		ld de, store_page + 3
+		ldir
+
+		ld de, store_page
+		if DEBUG_FORTH_WORDS
+			DMARK "RER"
+			CALLMONITOR
+		endif
+
+		pop hl    ; get orig file id and mangle it for find id
+		ld d, l
+		ld e, h
+
+		ld hl, 0
+		if DEBUG_FORTH_WORDS
+			DMARK "REf"
+			CALLMONITOR
+		endif
+		call storage_findnextid
+		ld de, store_page
+		if DEBUG_FORTH_WORDS
+			DMARK "REw"
+			CALLMONITOR
+		endif
+		call storage_write_block
+
+		ld a, 0
+.skiprneof:
+		; drop file name
+		FORTH_DSP_POP
+
+		ld l, a
+		ld h, 0
+		call forth_push_numhl
+
+
+		pop af
+		ld (store_readcont),a
+		pop hl
+		ld (store_openaddr), hl
+			
+	NEXTW
 .RECORD:
  
 	CWHEAD .BREAD 38 "RECORD" 6 WORD_FLAG_CODE

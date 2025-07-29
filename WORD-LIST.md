@@ -556,6 +556,12 @@ Also refer to the auto start list examples as these contain extra words created 
 ## Fixed Storage Words
 
 
+### RENAME ( s id -- ) With the current bank, rename the file id with the new label s  | DONE
+
+
+ Compatible with PicoSPINet 
+
+
 ### RECORD ( u id -- s ) With the current bank, read record number u from file id and push to stack  | DONE
 
 
@@ -1115,6 +1121,9 @@ Also refer to the auto start list examples as these contain extra words created 
 
 
 ### RND ( u1 u2 -- u ) Generate a random number no lower than u1 and no higher than u2 and push to stack | DONE
+
+
+### RENAME ( s id -- ) With the current bank, rename the file id with the new label s  | DONE
 
 
 ### RECORD ( u id -- s ) With the current bank, read record number u from file id and push to stack  | DONE

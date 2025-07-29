@@ -9061,10 +9061,12 @@
 17a9			; config menus 
 17a9			 
 17a9 .. 00		prom_c3: db "Add Dictionary To File",0 
+17c0			 
 17c0			if STARTUP_V1 
 17c0 .. 00		prom_c2: db "Select Autoload File",0 
 17d5 .. 00		prom_c2a: db "Disable Autoload File", 0 
 17eb			endif 
+17eb			 
 17eb			if STARTUP_V2 
 17eb			prom_c2: db "Enable Autoload Files",0 
 17eb			prom_c2a: db "Disable Autoload Files", 0 

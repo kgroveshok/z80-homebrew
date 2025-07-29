@@ -7,8 +7,7 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 
 * DONE RENAME word to allow for the new auto start method
 * DONE Change auto from file to run all files with asterisk in first chat of name
-
-* TODO BUG now forced to resolve the lread feature when loading from file
+* DONE BUG now forced to resolve the lread feature when loading from file
 
 
 

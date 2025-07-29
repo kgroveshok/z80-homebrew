@@ -278,7 +278,8 @@ forth_autoload:
 			CALLMONITOR
 		endif
 
-
+		call clear_display
+		call update_display
 
 		ret
 
@@ -339,7 +340,14 @@ forth_autoload:
 	ld a, 1 
 	ld (store_openext), a    ; save count of ext
 
-.autof: 
+.autof:
+	; begin to read a line from file
+
+	ld hl, os_cli_cmd
+	ld (os_var_array), hl     ; somewhere to hold the line construction pointer
+ 
+.readext:
+	ld a, (store_openext)
 	ld l , a
 	
 	ld a, (store_page)
@@ -352,6 +360,30 @@ forth_autoload:
 		call storage_read
 	call ishlzero
 	ret z
+
+; TODO copy to exec buffer
+; check (store_readcont) if 0 then exec, if not then load on the end of the exec buffer until 0
+
+	; copy the record buffer to the cli buffer
+
+	ld de, (os_var_array)
+	ld hl, store_page+2
+;	ex de, hl
+	ld bc, STORE_BLOCK_PHY-2   ; two for the file ids
+	ldir
+	ld (os_var_array), de
+	
+	ld a, (store_openext)
+	inc a
+	ld (store_openext), a    ; save count of ext
+
+
+; check (store_readcont) if 0 then exec, if not then load on the end of the exec buffer until 0
+	
+	ld a, (store_readcont)
+	cp 0
+	jr nz, .readext
+
 ;	jr z, .autoend
 
 		if DEBUG_FORTH_WORDS
@@ -363,21 +395,26 @@ forth_autoload:
 	call str_at_display
 
 	call update_display
-	call delay250ms
+;	call delay250ms
 
 
 
-	ld hl, store_page+2
+
+.autoexec:
+
+
+	ld hl, os_cli_cmd
+		if DEBUG_FORTH_WORDS
+			DMARK "ASx"
+			CALLMONITOR
+		endif
 	call forthparse
 	call forthexec
 	call forthexec_cleanup
 
-	
-	ld a, (store_openext)
-	inc a
-	ld (store_openext), a    ; save count of ext
 
-	jr .autof
+
+	jp .autof
 ;.autofdone:
 ;
 ;		if DEBUG_FORTH_WORDS

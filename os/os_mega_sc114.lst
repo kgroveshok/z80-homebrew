@@ -9057,10 +9057,12 @@
 969e			; config menus 
 969e			 
 969e .. 00		prom_c3: db "Add Dictionary To File",0 
+96b5			 
 96b5			if STARTUP_V1 
 96b5 .. 00		prom_c2: db "Select Autoload File",0 
 96ca .. 00		prom_c2a: db "Disable Autoload File", 0 
 96e0			endif 
+96e0			 
 96e0			if STARTUP_V2 
 96e0			prom_c2: db "Enable Autoload Files",0 
 96e0			prom_c2a: db "Disable Autoload Files", 0 

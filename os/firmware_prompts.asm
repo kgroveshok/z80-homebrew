@@ -9,10 +9,12 @@ prom_bootmsg1:	db "by Kevin Groves",0
 ; config menus
 
 prom_c3: db "Add Dictionary To File",0
+
 if STARTUP_V1
 prom_c2: db "Select Autoload File",0
 prom_c2a: db "Disable Autoload File", 0
 endif
+
 if STARTUP_V2
 prom_c2: db "Enable Autoload Files",0
 prom_c2a: db "Disable Autoload Files", 0

@@ -313,6 +313,19 @@ create_startup:
 ; de - points to strings to add to file
 
 .genfile:
+	push hl
+	push de
+
+	call clear_display
+	ld a, display_row_1
+	dl de, .genfiletxt
+	call str_at_display
+	call update_display
+
+	pop de
+	pop hl
+
+
 	push de
 	call storage_create
 	; id in hl
@@ -349,6 +362,7 @@ create_startup:
 
 	ret
 
+.genfiletxt:  db "Creating file...",0
 
 .utilwordef:
 	dw strncpy

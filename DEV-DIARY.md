@@ -9,6 +9,7 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE Change auto from file to run all files with asterisk in first chat of name
 * DONE BUG now forced to resolve the lread feature when loading from file
 
+* TODO Tidy auto run loading screen
 
 
 * TODO Add hook vectors. Can change  dbug checks to vector with return if disabled to save on push and asterisk checks. Add hook for stack checks to disable. Add hooks for some other points such as before and after words

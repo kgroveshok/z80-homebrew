@@ -318,7 +318,7 @@ create_startup:
 
 	call clear_display
 	ld a, display_row_1
-	dl de, .genfiletxt
+	ld de, .genfiletxt
 	call str_at_display
 	call update_display
 

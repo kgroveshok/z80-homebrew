@@ -8,6 +8,9 @@
 0000			 
 0000			ENABLE_BASIC: equ 0 
 0000			 
+0000			STARTUP_V1: equ 1 
+0000			STARTUP_V2: equ 0 
+0000			 
 0000			tos:	equ 0f000h 
 0000			; Using SCM API instead 
 0000			;SC114_SIO_1_OUT: equ 81 
@@ -7792,7 +7795,13 @@
 930f cc 60 93			call z, .savetostore 
 9312			 
 9312 fe 02			cp 2 
+9314			if STARTUP_V1 
 9314 cc 4c 93			call z, .selautoload 
+9317			endif 
+9317			 
+9317			if STARTUP_V2 
+9317				call z, .enautoload 
+9317			endif 
 9317 fe 03			cp 3 
 9319 cc 42 93			call z, .disautoload 
 931c fe 04			cp 4 
@@ -7803,7 +7812,10 @@
 9328 cc ad 94			call z, .bpsgo 
 932b fe 07			cp 7 
 932d cc 90 93			call z, hardware_diags 
-9330			 
+9330			if STARTUP_V2 
+9330				cp 8 
+9330				call z, create_startup 
+9330			endif 
 9330 18 d0			jr config 
 9332			 
 9332			.configmn: 
@@ -7815,10 +7827,36 @@
 933a fd 96			dw prom_m4 
 933c 18 97			dw prom_m4b 
 933e 20 97			dw prom_c1 
+9340			if STARTUP_V2 
+9340				dw prom_c9 
+9340			endif 
 9340 00 00			dw 0 
 9342				 
 9342			 
+9342			if STARTUP_V2 
+9342			.enautoload: 
+9342				if STORAGE_SE 
+9342				ld a, $fe      ; bit 0 clear 
+9342				ld (spi_device), a 
 9342			 
+9342				call storage_get_block_0 
+9342			 
+9342				ld a, 1 
+9342				ld (store_page+STORE_0_AUTOFILE), a 
+9342			 
+9342					ld hl, 0 
+9342					ld de, store_page 
+9342				call storage_write_block	 ; save update 
+9342				else 
+9342			 
+9342				ld hl, prom_notav 
+9342				ld de, prom_empty 
+9342				call info_panel 
+9342				endif 
+9342			 
+9342			 
+9342				ret 
+9342			endif 
 9342			 
 9342			.disautoload: 
 9342				if STORAGE_SE 
@@ -7843,7 +7881,7 @@
 934b			 
 934b c9				ret 
 934c			 
-934c			 
+934c			if STARTUP_V1 
 934c			 
 934c			; Select auto start 
 934c			 
@@ -7936,7 +7974,7 @@
 9355			 
 9355				endif 
 9355 c9				ret 
-9356			 
+9356			endif 
 9356			 
 9356			 
 9356			; Select storage bank 
@@ -7991,6 +8029,218 @@
 9369			 
 9369 c9				ret 
 936a			 
+936a			if STARTUP_V2 
+936a			 
+936a			create_startup: 
+936a			 
+936a				ld a, 0 
+936a				ld hl, .crstart 
+936a				call menu 
+936a			 
+936a				cp 0 
+936a				ret z 
+936a			 
+936a				cp 1 
+936a				call z, .genlsword 
+936a				cp 2 
+936a				call z, .genedword 
+936a			 
+936a				cp 3 
+936a				call z, .gendemword 
+936a			 
+936a				cp 4 
+936a				call z, .genutlword 
+936a				cp 5 
+936a				call z, .genspiword 
+936a				cp 6 
+936a				call z, .genkeyword 
+936a				jr create_startup 
+936a			 
+936a			.genlsword: 
+936a				ld hl, crs_s1 
+936a				ld de, .lsworddef 
+936a				call .genfile 
+936a				ret 
+936a			 
+936a			.genedword: 
+936a				ld de, .edworddef 
+936a				ld hl, crs_s2 
+936a				call .genfile 
+936a				ret 
+936a			 
+936a			.gendemword: 
+936a				ld de, .demoworddef 
+936a				ld hl, crs_s3 
+936a				call .genfile 
+936a				ret 
+936a			 
+936a			.genutlword: 
+936a				ld hl, crs_s4 
+936a				ld de, .utilwordef 
+936a				call .genfile 
+936a				ret 
+936a			.genspiword: 
+936a				ld hl, crs_s5 
+936a				ld de, .spiworddef 
+936a				call .genfile 
+936a				ret 
+936a			.genkeyword: 
+936a				ld hl, crs_s6 
+936a				ld de, .keyworddef 
+936a				call .genfile 
+936a				ret 
+936a			 
+936a			; hl - points to file name 
+936a			; de - points to strings to add to file 
+936a			 
+936a			.genfile: 
+936a				push de 
+936a				call storage_create 
+936a				; id in hl 
+936a				pop de   ; table of strings to add 
+936a			 
+936a			.genloop: 
+936a			 
+936a				push hl ; save id for next time around 
+936a				push de ; save de for next time around 
+936a			 
+936a				ex de, hl 
+936a				call loadwordinhl 
+936a				ex de, hl 
+936a			 
+936a				; need hl to be the id 
+936a				; need de to be the string ptr 
+936a				 
+936a				call storage_append 
+936a			 
+936a				pop de 
+936a				pop hl 
+936a			 
+936a				inc de 
+936a				inc de 
+936a			 
+936a				ld a,(de) 
+936a				cp 0 
+936a				jr nz, .genloop 
+936a				inc de 
+936a				ld a, (de) 
+936a				dec de 
+936a				cp 0 
+936a				jr nz, .genloop	 
+936a			 
+936a				ret 
+936a			 
+936a			 
+936a			.utilwordef: 
+936a				dw strncpy 
+936a				dw type 
+936a				dw clrstack 
+936a				dw longread 
+936a				dw start1 
+936a				dw start2 
+936a				dw start3b 
+936a				dw start3c 
+936a				dw list 
+936a				dw 0 
+936a			 
+936a			.lsworddef: 
+936a				dw start3b 
+936a				dw 0 
+936a			 
+936a			.edworddef: 
+936a				dw edit1 
+936a				dw edit2 
+936a				dw edit3 
+936a				dw 0 
+936a			 
+936a			.demoworddef: 
+936a				dw test5 
+936a				dw test6 
+936a				dw test7 
+936a				dw test8 
+936a				dw test9 
+936a				dw test10 
+936a				dw game1 
+936a				dw game1a 
+936a				dw game1b 
+936a				dw game1c 
+936a				dw game1d 
+936a				dw game1s 
+936a				dw game1t 
+936a				dw game1f 
+936a				dw game1z 
+936a				dw game1zz 
+936a				dw ssv2 
+936a				dw ssv3 
+936a				dw ssv4 
+936a				dw ssv5 
+936a				dw ssv1 
+936a				dw ssv1cpm	 
+936a				dw game2b 
+936a				dw game2bf 
+936a				dw game2mba 
+936a				dw game2mbas	 
+936a				dw game2mbht 
+936a				dw game2mbms 
+936a				dw game2mb 
+936a				dw game3w 
+936a				dw game3p 
+936a				dw game3sc 
+936a				dw game3vsi 
+936a				dw game3vs 
+936a				dw 0 
+936a			 
+936a			 
+936a			.spiworddef: 
+936a			 
+936a			    dw spi1 
+936a			    dw spi2 
+936a			    dw spi3 
+936a			    dw spi4 
+936a			    dw spi5 
+936a			    dw spi6 
+936a			    dw spi7 
+936a			 
+936a			    dw spi8 
+936a			    dw spi9 
+936a			    dw spi10 
+936a			    dw 0 
+936a			 
+936a			.keyworddef: 
+936a			 
+936a				dw keyup 
+936a				dw keydown 
+936a				dw keyleft 
+936a				dw keyright 
+936a				dw 	keyf1 
+936a				dw keyf2 
+936a				dw keyf3 
+936a				dw keyf4 
+936a				dw keyf5 
+936a				dw keyf6 
+936a				dw keyf7 
+936a				dw keyf8 
+936a				dw keyf9 
+936a				dw keyf10 
+936a				dw keyf11 
+936a				dw keyf12 
+936a				dw keytab 
+936a				dw keycr 
+936a				dw keyhome 
+936a				dw keyend 
+936a				dw keybs 
+936a				dw 0 
+936a			 
+936a			.crstart: 
+936a				dw crs_s1 
+936a				dw crs_s2 
+936a				dw crs_s3 
+936a				dw crs_s4 
+936a				dw crs_s5 
+936a				dw crs_s6 
+936a				dw 0 
+936a			 
+936a			endif 
 936a			 
 936a			 
 936a			if STORAGE_SE 
@@ -8807,14 +9057,34 @@
 969e			; config menus 
 969e			 
 969e .. 00		prom_c3: db "Add Dictionary To File",0 
+96b5			if STARTUP_V1 
 96b5 .. 00		prom_c2: db "Select Autoload File",0 
 96ca .. 00		prom_c2a: db "Disable Autoload File", 0 
+96e0			endif 
+96e0			if STARTUP_V2 
+96e0			prom_c2: db "Enable Autoload Files",0 
+96e0			prom_c2a: db "Disable Autoload Files", 0 
+96e0			 
+96e0			crs_s1: db "*ls-word", 0 
+96e0			crs_s2: db "*ed-word", 0 
+96e0			crs_s3: db "*Demo-Programs", 0 
+96e0			crs_s4: db "*Utils", 0 
+96e0			crs_s5: db "*SPI-Addons", 0 
+96e0			crs_s6: db "*Key-constants", 0 
+96e0			 
+96e0			 
+96e0			 
+96e0			endif 
 96e0 .. 00		prom_c2b: db "Select Storage Bank",0 
 96f4 .. 00		prom_c4: db "Settings",0 
 96fd .. 00		prom_m4:   db "Debug & Breakpoints On/Off",0 
 9718 .. 00		prom_m4b:   db "Monitor",0 
 9720 .. 00		prom_c1: db "Hardware Diags",0 
 972f			 
+972f			 
+972f			if STARTUP_V2 
+972f			prom_c9: db "Create Startup Files",0 
+972f			endif 
 972f			 
 972f .. 00		prom_notav:    db "Feature not available",0 
 9745 .. 00		prom_empty:    db "",0 
@@ -8951,11 +9221,25 @@
 977f			        ; TODO prevent this running at warmstart after crash  
 977f			 
 977f				if STARTUP_ENABLE 
-977f					if STORAGE_SE 
-977f						call forth_autoload 
-977f					endif 
-977f cd 4f df				call forth_startup 
+977f			 
+977f					if STARTUP_V1 
+977f			 
+977f						if STORAGE_SE 
+977f							call forth_autoload 
+977f						endif 
+977f cd 62 e1					call forth_startup 
+9782					endif 
 9782			 
+9782					if STARTUP_V2 
+9782			 
+9782						if STORAGE_SE 
+9782							call forth_autoload 
+9782						else 
+9782							call forth_startup 
+9782						endif 
+9782			 
+9782			 
+9782					endif 
 9782			 
 9782				endif 
 9782			 
@@ -9766,7 +10050,7 @@
 9aa3			 
 9aa3			macro_forth_dsp_next: 
 9aa3				if DEBUG_FORTH_STACK_GUARD 
-9aa3 cd 19 e0				call check_stacks 
+9aa3 cd 43 df				call check_stacks 
 9aa6				endif 
 9aa6 e5				push hl 
 9aa7 d5				push de 
@@ -9784,7 +10068,7 @@
 9ab5 d1				pop de 
 9ab6 e1				pop hl 
 9ab7				if DEBUG_FORTH_STACK_GUARD 
-9ab7 cd 19 e0				call check_stacks 
+9ab7 cd 43 df				call check_stacks 
 9aba				endif 
 9aba c9				ret 
 9abb			 
@@ -9797,7 +10081,7 @@
 9abb			 
 9abb			macro_forth_rsp_next: 
 9abb				if DEBUG_FORTH_STACK_GUARD 
-9abb cd 19 e0				call check_stacks 
+9abb cd 43 df				call check_stacks 
 9abe				endif 
 9abe e5				push hl 
 9abf d5				push de 
@@ -9812,7 +10096,7 @@
 9acc d1				pop de 
 9acd e1				pop hl 
 9ace				if DEBUG_FORTH_STACK_GUARD 
-9ace cd 19 e0				call check_stacks 
+9ace cd 43 df				call check_stacks 
 9ad1				endif 
 9ad1 c9				ret 
 9ad2			 
@@ -9850,14 +10134,14 @@
 9adc			macro_forth_rsp_pop: 
 9adc				if DEBUG_FORTH_STACK_GUARD 
 9adc			;		DMARK "RPP" 
-9adc cd 19 e0				call check_stacks 
+9adc cd 43 df				call check_stacks 
 9adf					FORTH_CHK_RSP_UNDER 
 9adf e5				push hl 
 9ae0 d5				push de 
 9ae1 2a fc e9			ld hl,(cli_ret_sp) 
 9ae4 11 b6 e9			ld de, cli_ret_stack 
 9ae7 cd c0 8c			call cmp16 
-9aea da 2d e1			jp c, fault_rsp_under 
+9aea da 57 e0			jp c, fault_rsp_under 
 9aed d1				pop de 
 9aee e1				pop hl 
 9aef				endm 
@@ -9894,14 +10178,14 @@
 9af8				; do stack underflow checks 
 9af8 e1				pop hl 
 9af9				if DEBUG_FORTH_STACK_GUARD 
-9af9 cd 19 e0				call check_stacks 
+9af9 cd 43 df				call check_stacks 
 9afc					FORTH_CHK_RSP_UNDER 
 9afc e5				push hl 
 9afd d5				push de 
 9afe 2a fc e9			ld hl,(cli_ret_sp) 
 9b01 11 b6 e9			ld de, cli_ret_stack 
 9b04 cd c0 8c			call cmp16 
-9b07 da 2d e1			jp c, fault_rsp_under 
+9b07 da 57 e0			jp c, fault_rsp_under 
 9b0a d1				pop de 
 9b0b e1				pop hl 
 9b0c				endm 
@@ -10544,7 +10828,7 @@
 9d3c			 
 9d3c			macro_forth_loop_next: 
 9d3c				if DEBUG_FORTH_STACK_GUARD 
-9d3c cd 19 e0				call check_stacks 
+9d3c cd 43 df				call check_stacks 
 9d3f				endif 
 9d3f e5				push hl 
 9d40 d5				push de 
@@ -10578,7 +10862,7 @@
 9d69 d1				pop de    ; been reversed so save a swap on restore 
 9d6a e1				pop hl 
 9d6b				if DEBUG_FORTH_STACK_GUARD 
-9d6b cd 19 e0				call check_stacks 
+9d6b cd 43 df				call check_stacks 
 9d6e				endif 
 9d6e c9				ret 
 9d6f			 
@@ -10620,14 +10904,14 @@
 9d91 f1			.pastdmark: pop af  
 9d92			endm  
 # End of macro DMARK
-9d92 cd 19 e0				call check_stacks 
+9d92 cd 43 df				call check_stacks 
 9d95					FORTH_CHK_LOOP_UNDER 
 9d95 e5				push hl 
 9d96 d5				push de 
 9d97 2a fa e9			ld hl,(cli_loop_sp) 
 9d9a 11 34 e9			ld de, cli_loop_stack 
 9d9d cd c0 8c			call cmp16 
-9da0 da 33 e1			jp c, fault_loop_under 
+9da0 da 5d e0			jp c, fault_loop_under 
 9da3 d1				pop de 
 9da4 e1				pop hl 
 9da5				endm 
@@ -10641,14 +10925,14 @@
 9dae				; TODO do stack underflow checks 
 9dae e1				pop hl 
 9daf				if DEBUG_FORTH_STACK_GUARD 
-9daf cd 19 e0				call check_stacks 
+9daf cd 43 df				call check_stacks 
 9db2					FORTH_CHK_LOOP_UNDER 
 9db2 e5				push hl 
 9db3 d5				push de 
 9db4 2a fa e9			ld hl,(cli_loop_sp) 
 9db7 11 34 e9			ld de, cli_loop_stack 
 9dba cd c0 8c			call cmp16 
-9dbd da 33 e1			jp c, fault_loop_under 
+9dbd da 5d e0			jp c, fault_loop_under 
 9dc0 d1				pop de 
 9dc1 e1				pop hl 
 9dc2				endm 
@@ -10663,14 +10947,14 @@
 9dc4				; release malloc data 
 9dc4			 
 9dc4				if DEBUG_FORTH_STACK_GUARD 
-9dc4 cd 19 e0				call check_stacks 
+9dc4 cd 43 df				call check_stacks 
 9dc7					FORTH_CHK_DSP_UNDER 
 9dc7 e5				push hl 
 9dc8 d5				push de 
 9dc9 2a f8 e9			ld hl,(cli_data_sp) 
 9dcc 11 32 e8			ld de, cli_data_stack 
 9dcf cd c0 8c			call cmp16 
-9dd2 da 27 e1			jp c, fault_dsp_under 
+9dd2 da 51 e0			jp c, fault_dsp_under 
 9dd5 d1				pop de 
 9dd6 e1				pop hl 
 9dd7				endm 
@@ -10754,14 +11038,14 @@
 9e24 22 f8 e9			ld (cli_data_sp), hl 
 9e27			 
 9e27				if DEBUG_FORTH_STACK_GUARD 
-9e27 cd 19 e0				call check_stacks 
+9e27 cd 43 df				call check_stacks 
 9e2a					FORTH_CHK_DSP_UNDER 
 9e2a e5				push hl 
 9e2b d5				push de 
 9e2c 2a f8 e9			ld hl,(cli_data_sp) 
 9e2f 11 32 e8			ld de, cli_data_stack 
 9e32 cd c0 8c			call cmp16 
-9e35 da 27 e1			jp c, fault_dsp_under 
+9e35 da 51 e0			jp c, fault_dsp_under 
 9e38 d1				pop de 
 9e39 e1				pop hl 
 9e3a				endm 
@@ -10869,7 +11153,7 @@
 9e67			forth_warmstart: 
 9e67				; setup stack over/under flow checks 
 9e67				if DEBUG_FORTH_STACK_GUARD 
-9e67 cd ff df				call chk_stk_init 
+9e67 cd 29 df				call chk_stk_init 
 9e6a				endif 
 9e6a			 
 9e6a				; init stack pointers  - * these stacks go upwards *  
@@ -24017,381 +24301,399 @@ df29
 df29			; eof 
 # End of file forth_autostart.asm
 df29			 
-df29 .. 00		sprompt1: db "Startup load...",0 
-df39 .. 00		sprompt2: db "Run? 1=No *=End #=All",0 
-df4f			 
-df4f			 
-df4f			 
-df4f			 
-df4f			forth_startup: 
-df4f 21 88 cc			ld hl, startcmds 
-df52 3e 00			ld a, 0 
-df54 32 f1 e6			ld (os_last_cmd), a    ; tmp var to skip prompts if doing all 
-df57			 
-df57 e5			.start1:	push hl 
-df58 cd 75 8a			call clear_display 
-df5b 11 29 df			ld de, sprompt1 
-df5e 3e 00		        ld a, display_row_1 
-df60 cd 88 8a			call str_at_display 
-df63 11 39 df			ld de, sprompt2 
-df66 3e 28		        ld a, display_row_2 
-df68 cd 88 8a			call str_at_display 
-df6b e1				pop hl 
-df6c e5				push hl 
-df6d 5e				ld e,(hl) 
-df6e 23				inc hl 
-df6f 56				ld d,(hl) 
-df70 3e 50		        ld a, display_row_3 
-df72 cd 88 8a			call str_at_display 
-df75 cd 98 8a			call update_display 
-df78			 
-df78			 
-df78 3a f1 e6			ld a, (os_last_cmd) 
-df7b fe 00			cp 0 
-df7d 28 05			jr z, .startprompt 
-df7f cd e6 89			call delay250ms 
-df82 18 24			jr .startdo 
-df84				 
-df84				 
-df84			 
-df84			.startprompt: 
-df84			 
-df84 3e 9f			ld a,display_row_4 + display_cols - 1 
-df86 11 8a 9a		        ld de, endprg 
-df89 cd 88 8a			call str_at_display 
-df8c cd 98 8a			call update_display 
-df8f cd f2 89			call delay1s 
-df92 cd b5 e2			call cin_wait 
-df95						 
-df95 fe 2a			cp '*' 
-df97 28 5e			jr z, .startupend1 
-df99 fe 23			cp '#' 
-df9b 20 07			jr nz, .startno 
-df9d 3e 01			ld a, 1 
-df9f 32 f1 e6			ld (os_last_cmd),a 
-dfa2 18 04			jr .startdo 
-dfa4 fe 31		.startno:	cp '1' 
-dfa6 28 3a			jr z,.startnxt  
-dfa8			 
-dfa8				; exec startup line 
-dfa8			.startdo:	 
-dfa8 e1				pop hl 
-dfa9 e5				push hl 
-dfaa				 
-dfaa 5e				ld e,(hl) 
-dfab 23				inc hl 
-dfac 56				ld d,(hl) 
-dfad eb				ex de,hl 
-dfae			 
-dfae e5				push hl 
-dfaf			 
-dfaf 3e 00			ld a, 0 
-dfb1				;ld a, FORTH_END_BUFFER 
-dfb1 cd 0b 91			call strlent 
-dfb4 23				inc hl   ; include zero term to copy 
-dfb5 06 00			ld b,0 
-dfb7 4d				ld c,l 
-dfb8 e1				pop hl 
-dfb9 11 cb e2			ld de, scratch 
-dfbc ed b0			ldir 
-dfbe			 
-dfbe			 
-dfbe 21 cb e2			ld hl, scratch 
-dfc1 cd 0f 9f			call forthparse 
-dfc4 cd 4f 9f			call forthexec 
-dfc7 cd 61 9e			call forthexec_cleanup 
-dfca			 
-dfca 3e 78			ld a, display_row_4 
-dfcc 11 2e 98			ld de, endprog 
-dfcf			 
-dfcf cd 98 8a			call update_display		 
-dfd2			 
-dfd2 3a f1 e6			ld a, (os_last_cmd) 
-dfd5 fe 00			cp 0 
-dfd7 20 09			jr nz, .startnxt 
-dfd9 cd 8c 9a			call next_page_prompt 
-dfdc cd 75 8a		        call clear_display 
-dfdf cd 98 8a			call update_display		 
-dfe2			 
-dfe2				; move onto next startup line? 
-dfe2			.startnxt: 
-dfe2			 
-dfe2 cd e6 89			call delay250ms 
-dfe5 e1				pop hl 
-dfe6			 
-dfe6 23				inc hl 
-dfe7 23				inc hl 
-dfe8			 
-dfe8 e5				push hl 
-dfe9 5e				ld e, (hl) 
-dfea 23				inc hl 
-dfeb 56				ld d, (hl) 
-dfec e1				pop hl 
-dfed				; TODO replace 0 test 
-dfed			 
-dfed eb				ex de, hl 
-dfee cd cb 8c			call ishlzero 
-dff1			;	ld a,e 
-dff1			;	add d 
-dff1			;	cp 0    ; any left to do? 
-dff1 eb				ex de, hl 
-dff2 c2 57 df			jp nz, .start1 
-dff5 18 01			jr .startupend 
-dff7			 
-dff7 e1			.startupend1: pop hl 
-dff8			.startupend: 
-dff8			 
-dff8 cd 75 8a			call clear_display 
-dffb cd 98 8a			call update_display 
-dffe c9				ret 
-dfff			 
-dfff			 
-dfff			; stack over and underflow checks 
-dfff			 
-dfff			; init the words to detect the under/overflow 
-dfff			 
-dfff			chk_stk_init: 
-dfff				; a vague random number to check so we dont get any "lucky" hits 
-dfff 3e 2d			ld a, 45 
-e001 6f				ld l, a 
-e002 00				nop 
-e003 3e 17			ld a, 23 
-e005 67				ld h, a 
-e006			 
-e006 22 b2 e2			ld (chk_word), hl     ; the word we need to check against 
-e009			 
-e009			;	ld (chk_stund), hl	; stack points.... 
-e009 22 00 ef			ld (chk_stovr), hl 
-e00c 22 f6 e9			ld (chk_ret_und), hl 
-e00f 22 b4 e9			ld (chk_ret_ovr), hl 
-e012 22 32 e9			ld (chk_loop_ovr), hl 
-e015 22 30 e8			ld (chk_data_ovr), hl 
-e018 c9				ret 
-e019				 
-e019			check_stacks: 
-e019				; check all stack words 
-e019			 
-e019 e5				push hl 
-e01a d5				push de 
-e01b			 
-e01b			;	ld de,(chk_word) 
-e01b			;	ld hl, (chk_stund)	; stack points.... 
-e01b			;	if DEBUG_STK_FAULT 
-e01b			;		DMARK "FAa" 
-e01b			;		CALLMONITOR 
-e01b			;	endif 
-e01b			;	call cmp16 
-e01b			;	jp z, .chk_faulta 
-e01b			; 
-e01b			;	ld de, sfaultsu 
-e01b			;	jp .chk_fault 
-e01b			 
-e01b 2a 00 ef		.chk_faulta: ld hl, (chk_stovr) 
-e01e ed 5b b2 e2		ld de,(chk_word) 
-e022				if DEBUG_STK_FAULT 
-e022					DMARK "FAb" 
-e022					CALLMONITOR 
-e022				endif 
-e022 cd c0 8c			call cmp16 
-e025 28 06			jr z, .chk_fault1 
-e027 11 c8 e0			ld de, sfaultso 
-e02a c3 7c e0			jp .chk_fault 
-e02d			.chk_fault1:  
-e02d 2a f6 e9			ld hl, (chk_ret_und) 
-e030 ed 5b b2 e2		ld de,(chk_word) 
-e034				if DEBUG_STK_FAULT 
-e034					DMARK "FAU" 
-e034					CALLMONITOR 
-e034				endif 
-e034 cd c0 8c			call cmp16 
-e037 ca 40 e0			jp z, .chk_fault2 
-e03a 11 d8 e0			ld de, sfaultru 
-e03d c3 7c e0			jp .chk_fault 
-e040			.chk_fault2:  
-e040 2a b4 e9			ld hl, (chk_ret_ovr) 
-e043 ed 5b b2 e2		ld de,(chk_word) 
-e047				if DEBUG_STK_FAULT 
-e047					DMARK "FA1" 
-e047					CALLMONITOR 
-e047				endif 
-e047 cd c0 8c			call cmp16 
-e04a ca 53 e0			jp z, .chk_fault3 
-e04d 11 e6 e0			ld de, sfaultro 
-e050 c3 7c e0			jp .chk_fault 
-e053			.chk_fault3:  
-e053 2a 32 e9			ld hl, (chk_loop_ovr) 
-e056 ed 5b b2 e2		ld de,(chk_word) 
-e05a				if DEBUG_STK_FAULT 
-e05a					DMARK "FA2" 
-e05a					CALLMONITOR 
-e05a				endif 
-e05a cd c0 8c			call cmp16 
-e05d ca 66 e0			jp z, .chk_fault4 
-e060 11 00 e1			ld de, sfaultlo 
-e063 c3 7c e0			jp .chk_fault 
-e066			.chk_fault4:  
-e066 2a 30 e8			ld hl, (chk_data_ovr) 
-e069 ed 5b b2 e2		ld de,(chk_word) 
-e06d				if DEBUG_STK_FAULT 
-e06d					DMARK "FA3" 
-e06d					CALLMONITOR 
-e06d				endif 
-e06d cd c0 8c			call cmp16 
-e070 ca 79 e0			jp z, .chk_fault5 
-e073 11 1a e1			ld de, sfaultdo 
-e076 c3 7c e0			jp .chk_fault 
-e079			 
-e079			 
-e079			.chk_fault5:  
-e079 d1				pop de 
-e07a e1				pop hl 
-e07b			 
-e07b c9				ret 
-e07c			 
-e07c cd 75 8a		.chk_fault: 	call clear_display 
-e07f 3e 28				ld a, display_row_2 
-e081 cd 88 8a				call str_at_display 
-e084 11 aa e0				   ld de, .stackfault 
-e087 3e 00				ld a, display_row_1 
-e089 cd 88 8a				call str_at_display 
-e08c 11 71 ee				    ld de, debug_mark 
-e08f 3e 11				ld a, display_row_1+17 
-e091 cd 88 8a				call str_at_display 
-e094 cd 98 8a				call update_display 
-e097			 
-e097				; prompt before entering montior for investigating issue 
-e097			 
-e097 3e 78			ld a, display_row_4 
-e099 11 2e 98			ld de, endprog 
-e09c			 
-e09c cd 98 8a			call update_display		 
-e09f			 
-e09f cd 8c 9a			call next_page_prompt 
-e0a2			 
-e0a2 d1				pop de 
-e0a3 e1				pop hl 
-e0a4 cd 82 98				call monitor 
-e0a7 c3 7c 97				jp warmstart 
-e0aa					;jp 0 
-e0aa					;halt 
-e0aa			 
-e0aa			 
-e0aa			 
-e0aa .. 00		.stackfault: 	db "Stack fault:",0 
-e0b7			 
-e0b7 .. 00		sfaultsu: 	db	"Stack under flow",0 
-e0c8 .. 00		sfaultso: 	db	"Stack over flow",0 
-e0d8 .. 00		sfaultru:	db "RTS underflow",0 
-e0e6 .. 00		sfaultro:	db "RTS overflow/LS underflow", 0 
-e100 .. 00		sfaultlo:	db "LS overflow/DTS underflow", 0 
-e11a .. 00		sfaultdo:	db "DTS overflow", 0 
-e127			 
-e127			 
-e127			fault_dsp_under: 
-e127 11 39 e1			ld de, .dsp_under 
-e12a c3 e9 e1			jp .show_fault 
+df29			 
+df29			 
+df29			; stack over and underflow checks 
+df29			 
+df29			; init the words to detect the under/overflow 
+df29			 
+df29			chk_stk_init: 
+df29				; a vague random number to check so we dont get any "lucky" hits 
+df29 3e 2d			ld a, 45 
+df2b 6f				ld l, a 
+df2c 00				nop 
+df2d 3e 17			ld a, 23 
+df2f 67				ld h, a 
+df30			 
+df30 22 b2 e2			ld (chk_word), hl     ; the word we need to check against 
+df33			 
+df33			;	ld (chk_stund), hl	; stack points.... 
+df33 22 00 ef			ld (chk_stovr), hl 
+df36 22 f6 e9			ld (chk_ret_und), hl 
+df39 22 b4 e9			ld (chk_ret_ovr), hl 
+df3c 22 32 e9			ld (chk_loop_ovr), hl 
+df3f 22 30 e8			ld (chk_data_ovr), hl 
+df42 c9				ret 
+df43				 
+df43			check_stacks: 
+df43				; check all stack words 
+df43			 
+df43 e5				push hl 
+df44 d5				push de 
+df45			 
+df45			;	ld de,(chk_word) 
+df45			;	ld hl, (chk_stund)	; stack points.... 
+df45			;	if DEBUG_STK_FAULT 
+df45			;		DMARK "FAa" 
+df45			;		CALLMONITOR 
+df45			;	endif 
+df45			;	call cmp16 
+df45			;	jp z, .chk_faulta 
+df45			; 
+df45			;	ld de, sfaultsu 
+df45			;	jp .chk_fault 
+df45			 
+df45 2a 00 ef		.chk_faulta: ld hl, (chk_stovr) 
+df48 ed 5b b2 e2		ld de,(chk_word) 
+df4c				if DEBUG_STK_FAULT 
+df4c					DMARK "FAb" 
+df4c					CALLMONITOR 
+df4c				endif 
+df4c cd c0 8c			call cmp16 
+df4f 28 06			jr z, .chk_fault1 
+df51 11 f2 df			ld de, sfaultso 
+df54 c3 a6 df			jp .chk_fault 
+df57			.chk_fault1:  
+df57 2a f6 e9			ld hl, (chk_ret_und) 
+df5a ed 5b b2 e2		ld de,(chk_word) 
+df5e				if DEBUG_STK_FAULT 
+df5e					DMARK "FAU" 
+df5e					CALLMONITOR 
+df5e				endif 
+df5e cd c0 8c			call cmp16 
+df61 ca 6a df			jp z, .chk_fault2 
+df64 11 02 e0			ld de, sfaultru 
+df67 c3 a6 df			jp .chk_fault 
+df6a			.chk_fault2:  
+df6a 2a b4 e9			ld hl, (chk_ret_ovr) 
+df6d ed 5b b2 e2		ld de,(chk_word) 
+df71				if DEBUG_STK_FAULT 
+df71					DMARK "FA1" 
+df71					CALLMONITOR 
+df71				endif 
+df71 cd c0 8c			call cmp16 
+df74 ca 7d df			jp z, .chk_fault3 
+df77 11 10 e0			ld de, sfaultro 
+df7a c3 a6 df			jp .chk_fault 
+df7d			.chk_fault3:  
+df7d 2a 32 e9			ld hl, (chk_loop_ovr) 
+df80 ed 5b b2 e2		ld de,(chk_word) 
+df84				if DEBUG_STK_FAULT 
+df84					DMARK "FA2" 
+df84					CALLMONITOR 
+df84				endif 
+df84 cd c0 8c			call cmp16 
+df87 ca 90 df			jp z, .chk_fault4 
+df8a 11 2a e0			ld de, sfaultlo 
+df8d c3 a6 df			jp .chk_fault 
+df90			.chk_fault4:  
+df90 2a 30 e8			ld hl, (chk_data_ovr) 
+df93 ed 5b b2 e2		ld de,(chk_word) 
+df97				if DEBUG_STK_FAULT 
+df97					DMARK "FA3" 
+df97					CALLMONITOR 
+df97				endif 
+df97 cd c0 8c			call cmp16 
+df9a ca a3 df			jp z, .chk_fault5 
+df9d 11 44 e0			ld de, sfaultdo 
+dfa0 c3 a6 df			jp .chk_fault 
+dfa3			 
+dfa3			 
+dfa3			.chk_fault5:  
+dfa3 d1				pop de 
+dfa4 e1				pop hl 
+dfa5			 
+dfa5 c9				ret 
+dfa6			 
+dfa6 cd 75 8a		.chk_fault: 	call clear_display 
+dfa9 3e 28				ld a, display_row_2 
+dfab cd 88 8a				call str_at_display 
+dfae 11 d4 df				   ld de, .stackfault 
+dfb1 3e 00				ld a, display_row_1 
+dfb3 cd 88 8a				call str_at_display 
+dfb6 11 71 ee				    ld de, debug_mark 
+dfb9 3e 11				ld a, display_row_1+17 
+dfbb cd 88 8a				call str_at_display 
+dfbe cd 98 8a				call update_display 
+dfc1			 
+dfc1				; prompt before entering montior for investigating issue 
+dfc1			 
+dfc1 3e 78			ld a, display_row_4 
+dfc3 11 2e 98			ld de, endprog 
+dfc6			 
+dfc6 cd 98 8a			call update_display		 
+dfc9			 
+dfc9 cd 8c 9a			call next_page_prompt 
+dfcc			 
+dfcc d1				pop de 
+dfcd e1				pop hl 
+dfce cd 82 98				call monitor 
+dfd1 c3 7c 97				jp warmstart 
+dfd4					;jp 0 
+dfd4					;halt 
+dfd4			 
+dfd4			 
+dfd4			 
+dfd4 .. 00		.stackfault: 	db "Stack fault:",0 
+dfe1			 
+dfe1 .. 00		sfaultsu: 	db	"Stack under flow",0 
+dff2 .. 00		sfaultso: 	db	"Stack over flow",0 
+e002 .. 00		sfaultru:	db "RTS underflow",0 
+e010 .. 00		sfaultro:	db "RTS overflow/LS underflow", 0 
+e02a .. 00		sfaultlo:	db "LS overflow/DTS underflow", 0 
+e044 .. 00		sfaultdo:	db "DTS overflow", 0 
+e051			 
+e051			 
+e051			fault_dsp_under: 
+e051 11 63 e0			ld de, .dsp_under 
+e054 c3 13 e1			jp .show_fault 
+e057			 
+e057			fault_rsp_under: 
+e057 11 71 e0			ld de, .rsp_under 
+e05a c3 13 e1			jp .show_fault 
+e05d			fault_loop_under: 
+e05d 11 7f e0			ld de, .loop_under 
+e060 c3 13 e1			jp .show_fault 
+e063			 
+e063 .. 00		.dsp_under: db "DSP Underflow",0 
+e071 .. 00		.rsp_under: db "RSP Underflow",0 
+e07f .. 00		.loop_under: db "LOOP Underflow",0 
+e08e			 
+e08e			 
+e08e d5			type_faultn: 	push de 
+e08f e5					push hl 
+e090 cd 75 8a				call clear_display 
+e093 11 ba e0				   ld de, .typefaultn 
+e096 3e 00				ld a, display_row_1 
+e098 cd 88 8a				call str_at_display 
+e09b 11 71 ee				    ld de, debug_mark 
+e09e 3e 11				ld a, display_row_1+17 
+e0a0 cd 88 8a				call str_at_display 
+e0a3 cd 98 8a				call update_display 
+e0a6			 
+e0a6				; prompt before entering montior for investigating issue 
+e0a6			 
+e0a6 3e 78			ld a, display_row_4 
+e0a8 11 2e 98			ld de, endprog 
+e0ab			 
+e0ab cd 98 8a			call update_display		 
+e0ae			 
+e0ae cd 8c 9a			call next_page_prompt 
+e0b1			 
+e0b1 e5					push hl 
+e0b2 d5					push de 
+e0b3 cd 82 98				call monitor 
+e0b6 c3 7c 97				jp warmstart 
+e0b9 76					halt 
+e0ba			 
+e0ba			 
+e0ba .. 00		.typefaultn: db "NUM Type Expected TOS!",0 
+e0d1			 
+e0d1 d5			type_faults: 	push de 
+e0d2 e5					push hl 
+e0d3 cd 75 8a				call clear_display 
+e0d6 11 fc e0				   ld de, .typefaults 
+e0d9 3e 00				ld a, display_row_1 
+e0db cd 88 8a				call str_at_display 
+e0de 11 71 ee				    ld de, debug_mark 
+e0e1 3e 11				ld a, display_row_1+17 
+e0e3 cd 88 8a				call str_at_display 
+e0e6 cd 98 8a				call update_display 
+e0e9			 
+e0e9				; prompt before entering montior for investigating issue 
+e0e9			 
+e0e9 3e 78			ld a, display_row_4 
+e0eb 11 2e 98			ld de, endprog 
+e0ee			 
+e0ee cd 98 8a			call update_display		 
+e0f1			 
+e0f1 cd 8c 9a			call next_page_prompt 
+e0f4			 
+e0f4 e1					pop hl 
+e0f5 d1					pop de 
+e0f6 cd 82 98				call monitor 
+e0f9 c3 7c 97				jp warmstart 
+e0fc			 
+e0fc			 
+e0fc .. 00		.typefaults: db "STR Type Expected TOS!",0 
+e113			 
+e113			.show_fault: 	 
+e113 d5					push de 
+e114 cd 75 8a				call clear_display 
+e117 d1					pop de 
+e118 3e 00				ld a, display_row_1 
+e11a cd 88 8a				call str_at_display 
+e11d 11 71 ee				    ld de, debug_mark 
+e120 3e 11				ld a, display_row_1+17 
+e122 cd 88 8a				call str_at_display 
+e125 cd 98 8a				call update_display 
+e128			 
+e128				; prompt before entering montior for investigating issue 
+e128			 
+e128 3e 78			ld a, display_row_4 
+e12a 11 2e 98			ld de, endprog 
 e12d			 
-e12d			fault_rsp_under: 
-e12d 11 47 e1			ld de, .rsp_under 
-e130 c3 e9 e1			jp .show_fault 
-e133			fault_loop_under: 
-e133 11 55 e1			ld de, .loop_under 
-e136 c3 e9 e1			jp .show_fault 
-e139			 
-e139 .. 00		.dsp_under: db "DSP Underflow",0 
-e147 .. 00		.rsp_under: db "RSP Underflow",0 
-e155 .. 00		.loop_under: db "LOOP Underflow",0 
-e164			 
-e164			 
-e164 d5			type_faultn: 	push de 
-e165 e5					push hl 
-e166 cd 75 8a				call clear_display 
-e169 11 90 e1				   ld de, .typefaultn 
-e16c 3e 00				ld a, display_row_1 
-e16e cd 88 8a				call str_at_display 
-e171 11 71 ee				    ld de, debug_mark 
-e174 3e 11				ld a, display_row_1+17 
-e176 cd 88 8a				call str_at_display 
-e179 cd 98 8a				call update_display 
-e17c			 
-e17c				; prompt before entering montior for investigating issue 
-e17c			 
-e17c 3e 78			ld a, display_row_4 
-e17e 11 2e 98			ld de, endprog 
-e181			 
-e181 cd 98 8a			call update_display		 
-e184			 
-e184 cd 8c 9a			call next_page_prompt 
-e187			 
-e187 e5					push hl 
-e188 d5					push de 
-e189 cd 82 98				call monitor 
-e18c c3 7c 97				jp warmstart 
-e18f 76					halt 
-e190			 
-e190			 
-e190 .. 00		.typefaultn: db "NUM Type Expected TOS!",0 
-e1a7			 
-e1a7 d5			type_faults: 	push de 
-e1a8 e5					push hl 
-e1a9 cd 75 8a				call clear_display 
-e1ac 11 d2 e1				   ld de, .typefaults 
-e1af 3e 00				ld a, display_row_1 
-e1b1 cd 88 8a				call str_at_display 
-e1b4 11 71 ee				    ld de, debug_mark 
-e1b7 3e 11				ld a, display_row_1+17 
-e1b9 cd 88 8a				call str_at_display 
-e1bc cd 98 8a				call update_display 
-e1bf			 
-e1bf				; prompt before entering montior for investigating issue 
-e1bf			 
-e1bf 3e 78			ld a, display_row_4 
-e1c1 11 2e 98			ld de, endprog 
-e1c4			 
-e1c4 cd 98 8a			call update_display		 
-e1c7			 
-e1c7 cd 8c 9a			call next_page_prompt 
-e1ca			 
-e1ca e1					pop hl 
-e1cb d1					pop de 
-e1cc cd 82 98				call monitor 
-e1cf c3 7c 97				jp warmstart 
-e1d2			 
-e1d2			 
-e1d2 .. 00		.typefaults: db "STR Type Expected TOS!",0 
-e1e9			 
-e1e9			.show_fault: 	 
-e1e9 d5					push de 
-e1ea cd 75 8a				call clear_display 
-e1ed d1					pop de 
-e1ee 3e 00				ld a, display_row_1 
-e1f0 cd 88 8a				call str_at_display 
-e1f3 11 71 ee				    ld de, debug_mark 
-e1f6 3e 11				ld a, display_row_1+17 
-e1f8 cd 88 8a				call str_at_display 
-e1fb cd 98 8a				call update_display 
-e1fe			 
-e1fe				; prompt before entering montior for investigating issue 
-e1fe			 
-e1fe 3e 78			ld a, display_row_4 
-e200 11 2e 98			ld de, endprog 
-e203			 
-e203 cd 98 8a			call update_display		 
-e206			 
-e206 cd 8c 9a			call next_page_prompt 
-e209			 
-e209 e1					pop hl 
-e20a d1					pop de 
-e20b cd 82 98				call monitor 
-e20e			; do a dump to cli and not warmstart so we preserve all of the uwords.  
-e20e			; TODO Make optional fault restart to cli or warm boot? 
-e20e					;jp warmstart 
-e20e c3 d4 97				jp cli 
-e211 76					halt 
-e212			 
-e212			; handle the auto run of code from files in storage 
-e212			 
-e212			 
+e12d cd 98 8a			call update_display		 
+e130			 
+e130 cd 8c 9a			call next_page_prompt 
+e133			 
+e133 e1					pop hl 
+e134 d1					pop de 
+e135 cd 82 98				call monitor 
+e138			; do a dump to cli and not warmstart so we preserve all of the uwords.  
+e138			; TODO Make optional fault restart to cli or warm boot? 
+e138					;jp warmstart 
+e138 c3 d4 97				jp cli 
+e13b 76					halt 
+e13c			 
+e13c			; handle the auto run of code from files in storage 
+e13c			 
+e13c			 
+e13c			include "forth_startup.asm" 
+e13c			; Which startup method to use? 
+e13c			; 
+e13c			; version 1 - allows for a single stored file to be selected to run at start up (if se storage is enabled) 
+e13c			; followed by loading of a list of scripts in eeprom 
+e13c			 
+e13c			; version 2 - if se storage is enabled then auto load all files which begin with a '*' else use loading 
+e13c			; from eeprom 
+e13c			 
+e13c			; Select with define in main stubs 
+e13c			 
+e13c			if STARTUP_V1 
+e13c				include "forth_startupv1.asm" 
+e13c			; Startup script loading version 1 
+e13c			 
+e13c			; If SE storage is available first stage is to use the selected file 
+e13c			; then go through the eeprom list 
+e13c			 
+e13c .. 00		sprompt1: db "Startup load...",0 
+e14c .. 00		sprompt2: db "Run? 1=No *=End #=All",0 
+e162			 
+e162			 
+e162			 
+e162			 
+e162			forth_startup: 
+e162 21 88 cc			ld hl, startcmds 
+e165 3e 00			ld a, 0 
+e167 32 f1 e6			ld (os_last_cmd), a    ; tmp var to skip prompts if doing all 
+e16a			 
+e16a e5			.start1:	push hl 
+e16b cd 75 8a			call clear_display 
+e16e 11 3c e1			ld de, sprompt1 
+e171 3e 00		        ld a, display_row_1 
+e173 cd 88 8a			call str_at_display 
+e176 11 4c e1			ld de, sprompt2 
+e179 3e 28		        ld a, display_row_2 
+e17b cd 88 8a			call str_at_display 
+e17e e1				pop hl 
+e17f e5				push hl 
+e180 5e				ld e,(hl) 
+e181 23				inc hl 
+e182 56				ld d,(hl) 
+e183 3e 50		        ld a, display_row_3 
+e185 cd 88 8a			call str_at_display 
+e188 cd 98 8a			call update_display 
+e18b			 
+e18b			 
+e18b 3a f1 e6			ld a, (os_last_cmd) 
+e18e fe 00			cp 0 
+e190 28 05			jr z, .startprompt 
+e192 cd e6 89			call delay250ms 
+e195 18 24			jr .startdo 
+e197				 
+e197				 
+e197			 
+e197			.startprompt: 
+e197			 
+e197 3e 9f			ld a,display_row_4 + display_cols - 1 
+e199 11 8a 9a		        ld de, endprg 
+e19c cd 88 8a			call str_at_display 
+e19f cd 98 8a			call update_display 
+e1a2 cd f2 89			call delay1s 
+e1a5 cd b5 e2			call cin_wait 
+e1a8						 
+e1a8 fe 2a			cp '*' 
+e1aa 28 5e			jr z, .startupend1 
+e1ac fe 23			cp '#' 
+e1ae 20 07			jr nz, .startno 
+e1b0 3e 01			ld a, 1 
+e1b2 32 f1 e6			ld (os_last_cmd),a 
+e1b5 18 04			jr .startdo 
+e1b7 fe 31		.startno:	cp '1' 
+e1b9 28 3a			jr z,.startnxt  
+e1bb			 
+e1bb				; exec startup line 
+e1bb			.startdo:	 
+e1bb e1				pop hl 
+e1bc e5				push hl 
+e1bd				 
+e1bd 5e				ld e,(hl) 
+e1be 23				inc hl 
+e1bf 56				ld d,(hl) 
+e1c0 eb				ex de,hl 
+e1c1			 
+e1c1 e5				push hl 
+e1c2			 
+e1c2 3e 00			ld a, 0 
+e1c4				;ld a, FORTH_END_BUFFER 
+e1c4 cd 0b 91			call strlent 
+e1c7 23				inc hl   ; include zero term to copy 
+e1c8 06 00			ld b,0 
+e1ca 4d				ld c,l 
+e1cb e1				pop hl 
+e1cc 11 cb e2			ld de, scratch 
+e1cf ed b0			ldir 
+e1d1			 
+e1d1			 
+e1d1 21 cb e2			ld hl, scratch 
+e1d4 cd 0f 9f			call forthparse 
+e1d7 cd 4f 9f			call forthexec 
+e1da cd 61 9e			call forthexec_cleanup 
+e1dd			 
+e1dd 3e 78			ld a, display_row_4 
+e1df 11 2e 98			ld de, endprog 
+e1e2			 
+e1e2 cd 98 8a			call update_display		 
+e1e5			 
+e1e5 3a f1 e6			ld a, (os_last_cmd) 
+e1e8 fe 00			cp 0 
+e1ea 20 09			jr nz, .startnxt 
+e1ec cd 8c 9a			call next_page_prompt 
+e1ef cd 75 8a		        call clear_display 
+e1f2 cd 98 8a			call update_display		 
+e1f5			 
+e1f5				; move onto next startup line? 
+e1f5			.startnxt: 
+e1f5			 
+e1f5 cd e6 89			call delay250ms 
+e1f8 e1				pop hl 
+e1f9			 
+e1f9 23				inc hl 
+e1fa 23				inc hl 
+e1fb			 
+e1fb e5				push hl 
+e1fc 5e				ld e, (hl) 
+e1fd 23				inc hl 
+e1fe 56				ld d, (hl) 
+e1ff e1				pop hl 
+e200				; TODO replace 0 test 
+e200			 
+e200 eb				ex de, hl 
+e201 cd cb 8c			call ishlzero 
+e204			;	ld a,e 
+e204			;	add d 
+e204			;	cp 0    ; any left to do? 
+e204 eb				ex de, hl 
+e205 c2 6a e1			jp nz, .start1 
+e208 18 01			jr .startupend 
+e20a			 
+e20a e1			.startupend1: pop hl 
+e20b			.startupend: 
+e20b			 
+e20b cd 75 8a			call clear_display 
+e20e cd 98 8a			call update_display 
+e211 c9				ret 
 e212			if STORAGE_SE 
 e212			 
 e212			sprompt3: db "Loading from start-up file?:",0 
@@ -24520,7 +24822,13 @@ e212
 e212			 
 e212			 
 e212			endif 
+# End of file forth_startupv1.asm
+e212			endif 
+e212			if STARTUP_V2 
+e212				include "forth_startupv2.asm" 
+e212			endif 
 e212			 
+# End of file forth_startup.asm
 e212			 
 e212			; eof 
 # End of file forth_kernel.asm

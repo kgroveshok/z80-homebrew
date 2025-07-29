@@ -14,7 +14,13 @@ config:
 	call z, .savetostore
 
 	cp 2
+if STARTUP_V1
 	call z, .selautoload
+endif
+
+if STARTUP_V2
+	call z, .enautoload
+endif
 	cp 3
 	call z, .disautoload
 	cp 4
@@ -25,7 +31,10 @@ config:
 	call z, .bpsgo
 	cp 7
 	call z, hardware_diags
-
+if STARTUP_V2
+	cp 8
+	call z, create_startup
+endif
 	jr config
 
 .configmn:
@@ -37,10 +46,36 @@ config:
 	dw prom_m4
 	dw prom_m4b
 	dw prom_c1
+if STARTUP_V2
+	dw prom_c9
+endif
 	dw 0
 	
 
+if STARTUP_V2
+.enautoload:
+	if STORAGE_SE
+	ld a, $fe      ; bit 0 clear
+	ld (spi_device), a
 
+	call storage_get_block_0
+
+	ld a, 1
+	ld (store_page+STORE_0_AUTOFILE), a
+
+		ld hl, 0
+		ld de, store_page
+	call storage_write_block	 ; save update
+	else
+
+	ld hl, prom_notav
+	ld de, prom_empty
+	call info_panel
+	endif
+
+
+	ret
+endif
 
 .disautoload:
 	if STORAGE_SE
@@ -65,7 +100,7 @@ config:
 
 	ret
 
-
+if STARTUP_V1
 
 ; Select auto start
 
@@ -158,7 +193,7 @@ config:
 
 	endif
 	ret
-
+endif
 
 
 ; Select storage bank
@@ -213,6 +248,218 @@ endif
 
 	ret
 
+if STARTUP_V2
+
+create_startup:
+
+	ld a, 0
+	ld hl, .crstart
+	call menu
+
+	cp 0
+	ret z
+
+	cp 1
+	call z, .genlsword
+	cp 2
+	call z, .genedword
+
+	cp 3
+	call z, .gendemword
+
+	cp 4
+	call z, .genutlword
+	cp 5
+	call z, .genspiword
+	cp 6
+	call z, .genkeyword
+	jr create_startup
+
+.genlsword:
+	ld hl, crs_s1
+	ld de, .lsworddef
+	call .genfile
+	ret
+
+.genedword:
+	ld de, .edworddef
+	ld hl, crs_s2
+	call .genfile
+	ret
+
+.gendemword:
+	ld de, .demoworddef
+	ld hl, crs_s3
+	call .genfile
+	ret
+
+.genutlword:
+	ld hl, crs_s4
+	ld de, .utilwordef
+	call .genfile
+	ret
+.genspiword:
+	ld hl, crs_s5
+	ld de, .spiworddef
+	call .genfile
+	ret
+.genkeyword:
+	ld hl, crs_s6
+	ld de, .keyworddef
+	call .genfile
+	ret
+
+; hl - points to file name
+; de - points to strings to add to file
+
+.genfile:
+	push de
+	call storage_create
+	; id in hl
+	pop de   ; table of strings to add
+
+.genloop:
+
+	push hl ; save id for next time around
+	push de ; save de for next time around
+
+	ex de, hl
+	call loadwordinhl
+	ex de, hl
+
+	; need hl to be the id
+	; need de to be the string ptr
+	
+	call storage_append
+
+	pop de
+	pop hl
+
+	inc de
+	inc de
+
+	ld a,(de)
+	cp 0
+	jr nz, .genloop
+	inc de
+	ld a, (de)
+	dec de
+	cp 0
+	jr nz, .genloop	
+
+	ret
+
+
+.utilwordef:
+	dw strncpy
+	dw type
+	dw clrstack
+	dw longread
+	dw start1
+	dw start2
+	dw start3b
+	dw start3c
+	dw list
+	dw 0
+
+.lsworddef:
+	dw start3b
+	dw 0
+
+.edworddef:
+	dw edit1
+	dw edit2
+	dw edit3
+	dw 0
+
+.demoworddef:
+	dw test5
+	dw test6
+	dw test7
+	dw test8
+	dw test9
+	dw test10
+	dw game1
+	dw game1a
+	dw game1b
+	dw game1c
+	dw game1d
+	dw game1s
+	dw game1t
+	dw game1f
+	dw game1z
+	dw game1zz
+	dw ssv2
+	dw ssv3
+	dw ssv4
+	dw ssv5
+	dw ssv1
+	dw ssv1cpm	
+	dw game2b
+	dw game2bf
+	dw game2mba
+	dw game2mbas	
+	dw game2mbht
+	dw game2mbms
+	dw game2mb
+	dw game3w
+	dw game3p
+	dw game3sc
+	dw game3vsi
+	dw game3vs
+	dw 0
+
+
+.spiworddef:
+
+    dw spi1
+    dw spi2
+    dw spi3
+    dw spi4
+    dw spi5
+    dw spi6
+    dw spi7
+
+    dw spi8
+    dw spi9
+    dw spi10
+    dw 0
+
+.keyworddef:
+
+	dw keyup
+	dw keydown
+	dw keyleft
+	dw keyright
+	dw 	keyf1
+	dw keyf2
+	dw keyf3
+	dw keyf4
+	dw keyf5
+	dw keyf6
+	dw keyf7
+	dw keyf8
+	dw keyf9
+	dw keyf10
+	dw keyf11
+	dw keyf12
+	dw keytab
+	dw keycr
+	dw keyhome
+	dw keyend
+	dw keybs
+	dw 0
+
+.crstart:
+	dw crs_s1
+	dw crs_s2
+	dw crs_s3
+	dw crs_s4
+	dw crs_s5
+	dw crs_s6
+	dw 0
+
+endif
 
 
 if STORAGE_SE

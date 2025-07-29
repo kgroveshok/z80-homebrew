@@ -5,6 +5,9 @@ BASE_SC114: equ 0
 BASE_KEV: equ 1
 BASE_CPM: equ 0
 
+STARTUP_V1: equ 1
+STARTUP_V2: equ 0
+
 ENABLE_BASIC: equ 0
 ; CPU clock
 ;

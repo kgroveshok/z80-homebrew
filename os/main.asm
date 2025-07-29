@@ -199,11 +199,25 @@ warmstart:
         ; TODO prevent this running at warmstart after crash 
 
 	if STARTUP_ENABLE
-		if STORAGE_SE
-			call forth_autoload
-		endif
-		call forth_startup
 
+		if STARTUP_V1
+
+			if STORAGE_SE
+				call forth_autoload
+			endif
+			call forth_startup
+		endif
+
+		if STARTUP_V2
+
+			if STORAGE_SE
+				call forth_autoload
+			else
+				call forth_startup
+			endif
+
+
+		endif
 
 	endif
 

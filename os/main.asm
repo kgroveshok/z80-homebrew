@@ -478,7 +478,7 @@ monitor:
 	ld a, (os_input)
 	call toUpper
         cp 'H'
-        jr z, .monhelp
+        jp z, .monhelp
 	cp 'D'		; dump
 	jp z, .mondump	
 	cp 'C'		; dump
@@ -486,7 +486,9 @@ monitor:
 	cp 'M'		; dump
 	jp z, .moneditstart
 	cp 'U'		; dump
-	jr z, .monedit	
+	jp z, .monedit	
+	cp 'G'		; dump
+	jp z, .monjump
 	cp 'Q'		; dump
 	ret z	
 
@@ -531,7 +533,8 @@ monitor:
 
 .monhelptext1: 	db "D-Dump, C-Cont Dump",0
 .monhelptext2:  db "M-Edit Start, U-Update Byte",0
-.monhelptext3:  db "Q-Quit",0
+.monhelptext3:  db "G-Call address",0
+.monhelptext4:  db "Q-Quit",0
        
 .monhelp:
 	ld a, display_row_1
@@ -546,9 +549,20 @@ monitor:
         ld de, .monhelptext3
 		
 	call str_at_display
+	ld a, display_row_4
+        ld de, .monhelptext4
+	call str_at_display
+
 	call update_display		
 
 	call next_page_prompt
+	jp monitor
+
+.monjump:   
+	ld hl,os_input+2
+	call get_word_hl
+
+	jp (hl)
 	jp monitor
 
 .mondump:   

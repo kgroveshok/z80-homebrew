@@ -8,6 +8,8 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE Tidy auto run loading screen
 * DONE Add ACTTVE word which returns the next in a cycle of progress
 * DONE Make monitor do a call warm boot. Does it already do this during stack crash or a different case? No add it.
+* DONE Monitor to have G command
+* DONE Monitor to have warm boot jump option
 
 
 * TODO New Uptr word to point to start of exec code of uword. Handy for writing forth hook code.
@@ -16,12 +18,11 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 
 * TODO NMI vector and switch - default to running monitor
 
-* TODO Monitor to have G command
-* TODO Monitor to have warm boot jump option
 * TODO Add to symbol some key vectors for commands eg. MALLOC, PUTCH, GETCH, Symbol table. 
 
 
 * TODO ed word has a rouge address pushed to stack when editing a record
+* TODO ed word cant cope with lread 
 
 * TODO Add op-amp circuit to SPISound and allow for selection at wire time
 

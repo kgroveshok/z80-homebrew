@@ -379,6 +379,12 @@ Also refer to the auto start list examples as these contain extra words created 
 ## Display Words
 
 
+### ACTIVE ( -- s ) Push the next char for an activity indicator to TOS | DONE
+
+
+ e.g. $ff $00 do active . $01 pause loop
+
+
 ### INFO ( u1 u2 -- )  Use the top two strings on stack to fill in an info window over two lines. Causes a wait for key press to continue. | DONE
 
 
@@ -1001,6 +1007,9 @@ Also refer to the auto start list examples as these contain extra words created 
 
 
 ### CARTDEV ( u1 -- ) Select cart device 1-8 (Disables BANK). Set to zero to disable devices. |  DONE
+
+
+### ACTIVE ( -- s ) Push the next char for an activity indicator to TOS | DONE
 
 
 ### INFO ( u1 u2 -- )  Use the top two strings on stack to fill in an info window over two lines. Causes a wait for key press to continue. | DONE

@@ -1411,7 +1411,7 @@ storage_clear_page:
 	ld (hl), a
 
 	ld de, store_page+1
-	ld bc, STORE_BLOCK_LOG
+	ld bc, STORE_BLOCK_LOG+1
 
 	ldir
 	

@@ -2,22 +2,20 @@
 Z80 Home Brew Micro-computer Project - Dev Diary
 ------------------------------------------------
 
-29th July 2025
+30th July 2025
 --------------
 
-* DONE RENAME word to allow for the new auto start method
-* DONE Change auto from file to run all files with asterisk in first chat of name
-* DONE BUG now forced to resolve the lread feature when loading from file
-
-* TODO Tidy auto run loading screen
+* DONE Tidy auto run loading screen
+* DONE Add ACTTVE word which returns the next in a cycle of progress
+* DONE Make monitor do a call warm boot. Does it already do this during stack crash or a different case? No add it.
 
 
+* TODO New Uptr word to point to start of exec code of uword. Handy for writing forth hook code.
 * TODO Add hook vectors. Can change  dbug checks to vector with return if disabled to save on push and asterisk checks. Add hook for stack checks to disable. Add hooks for some other points such as before and after words
 
 
 * TODO NMI vector and switch - default to running monitor
 
-* TODO Make monitor do a call warm boot. Does it already do this during stack crash or a different case? No add it.
 * TODO Monitor to have G command
 * TODO Monitor to have warm boot jump option
 * TODO Add to symbol some key vectors for commands eg. MALLOC, PUTCH, GETCH, Symbol table. 
@@ -141,6 +139,12 @@ Nice to haves:
 * TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs. FORGET and LIST use a scanner. Combine with main parser and have one for keyword and another for byte code
 * TODO Add a simple assembler feature like BBC Basic
 
+29th July 2025
+--------------
+
+* DONE RENAME word to allow for the new auto start method
+* DONE Change auto from file to run all files with asterisk in first chat of name
+* DONE BUG now forced to resolve the lread feature when loading from file
 
 28th July 2025
 --------------

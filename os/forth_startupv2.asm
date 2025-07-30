@@ -138,7 +138,8 @@ endif
 
 if STORAGE_SE
 
-sprompt3: db "Loading from start-up file:",0
+;sprompt3: db "Loading from start-up file:",0
+sprompt3: db "  Searching...",0
 ;sprompt4: db "(Any key to stop)",0
 
 
@@ -193,6 +194,20 @@ forth_autoload:
 		ld hl, STORE_BLOCK_PHY
 		ld d, 0		 ; look for extent 0 of block id as this contains file name
 		ld e,b
+
+		push de
+		push hl
+	call clear_display
+	ld a, display_row_2 + 10
+	ld de, sprompt3
+	call str_at_display
+	call active
+	ex de, hl
+	ld a, display_row_2 + 7
+	call str_at_display
+	call update_display
+	pop hl
+	pop de
 
 ;		if DEBUG_FORTH_WORDS
 ;			DMARK "DI2"
@@ -312,19 +327,25 @@ forth_autoload:
 		call ishlzero
 		ret z             ; file not found
 
+		; display file name we are loading
+
+		call clear_display
+
 		ld a, display_row_2 + 10
 		ld de, store_page+3
 		call str_at_display
 	
 ;
 
-	ld a, display_row_1+5
-	ld de, sprompt3
-	call str_at_display
-;	ld a, display_row_3+15
-;	ld de, sprompt4
+;	ld a, display_row_1+5
+;	ld de, sprompt3
 ;	call str_at_display
-
+;	ld a, display_row_2+7
+;	call active
+;	ex de, hl
+;;	ld de, sprompt4
+;	call str_at_display
+;
 	call update_display
 
 ;	call cin_wait
@@ -390,11 +411,16 @@ forth_autoload:
 			DMARK "ASc"
 			CALLMONITOR
 		endif
-	ld de, store_page+2
-	ld a, display_row_4
+	push hl	
+	push de
+	call active
+	ex de, hl
+	ld a, display_row_2 + 7
 	call str_at_display
 
 	call update_display
+	pop de 
+	pop hl
 ;	call delay250ms
 
 

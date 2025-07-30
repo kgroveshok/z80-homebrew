@@ -259,12 +259,12 @@ display_fb2: equ  display_fb3-display_fb_len - 1
 display_fb_active: equ display_fb2 - 2
 display_lcde1e2: equ display_fb_active - 1         ; 0=e1, 1=e2   For E1/E2 selection when using the lcd 4x40 display
 display_write_tmp: equ display_lcde1e2 - 2
-
+display_active:  equ display_write_tmp-3   ; current state of activity char (plus room to write string)
 
 ;
 
 ;; can load into de directory
-cursor_col: equ display_write_tmp-1
+cursor_col: equ display_active-1
 cursor_row: equ cursor_col-1
 cursor_ptr: equ cursor_row - 1     ;  actual offset into lcd memory for row and col combo
 cursor_shape: equ cursor_ptr - 2   ; char used for the current cursor 
@@ -288,7 +288,7 @@ store_bank_active: equ iErrorVer - (5 + 8 ) 		; TODO not used.  indicator of whi
 
 STORE_BLOCK_LOG:  equ   280      ; TODO remove.... Logical block size   
 
-store_page: equ store_bank_active-STORE_BLOCK_LOG            ; bigger than page size for eeprom so we can join multiple blocks if they are continuation records
+store_page: equ store_bank_active-STORE_BLOCK_LOG-1            ; bigger than page size for eeprom so we can join multiple blocks if they are continuation records
 ;?????store_ffpage: equ store_page-STORE_BLOCK_LOG            ; page size for eeprom?????
 store_readptr: equ store_page-2       ; tracks the file extent during storage_read of continuation blocks
 store_readbuf: equ store_readptr-2       ; tracks the position for the buffer during storage_read of continuation blocks

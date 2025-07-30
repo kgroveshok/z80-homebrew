@@ -24,8 +24,9 @@ malloc_guard_zerolen:
 	call update_display
 	call delay1s
 	call delay1s
-	ld a, 0
-	ld (os_view_disable), a
+	call bp_on
+;	ld a, 0
+;	ld (os_view_disable), a
 
 	pop de
 	pop hl
@@ -62,8 +63,9 @@ malloc_guard_entry:
 	call update_display
 	call delay1s
 	call delay1s
-	ld a, 0
-	ld (os_view_disable), a
+;	ld a, 0
+;	ld (os_view_disable), a
+	call bp_on
 
 	pop de
 	pop hl
@@ -102,8 +104,9 @@ malloc_guard_exit:
 	call update_display
 	call delay1s
 	call delay1s
-	ld a, 0
-	ld (os_view_disable), a
+;	ld a, 0
+;	ld (os_view_disable), a
+	call bp_on
 	pop de
 	pop hl
 

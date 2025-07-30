@@ -492,8 +492,10 @@ endif
 if DEBUG_FORTH_PARSE_EXEC
 	; see if disabled
 
-	ld a, (os_view_disable)
-	cp '*'
+;	ld a, (os_view_disable)
+;	cp '*'
+	ld a, (debug_vector)
+	cp $c9   ; RET 
 	jr z, .skip
 
 	push hl
@@ -532,8 +534,10 @@ endif
 if DEBUG_FORTH_PARSE_EXEC
 	; see if disabled
 
-	ld a, (os_view_disable)
-	cp '*'
+;	ld a, (os_view_disable)
+;	cp '*'
+	ld a, (debug_vector)
+	cp $C9  ; RET
 	jr z, .skip2
 
 ;	call clear_display
@@ -674,8 +678,10 @@ if DEBUG_FORTH_PARSE_EXEC
 
 	; see if disabled
 
-	ld a, (os_view_disable)
-	cp '*'
+;	ld a, (os_view_disable)
+;	cp '*'
+	ld a,(debug_vector)
+	cp $c9   ; RET
 	jr z, .noskip
 
 
@@ -709,8 +715,10 @@ endif
 if DEBUG_FORTH_PARSE_EXEC
 	; see if disabled
 
-	ld a, (os_view_disable)
-	cp '*'
+;	ld a, (os_view_disable)
+;	cp '*'
+	ld a,(debug_vector)
+	cp $c9   ; ret
 	jr z, .ispskip
 
 	call clear_display

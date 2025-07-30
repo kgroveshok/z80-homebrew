@@ -10,6 +10,10 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE Make monitor do a call warm boot. Does it already do this during stack crash or a different case? No add it.
 * DONE Monitor to have G command
 * DONE Monitor to have warm boot jump option
+* DONE Save auto run flags to block 0 on bank 1 and not on currently selected device. Need a function to load from block 0 into hardware_config and then repoint all menu options to load and save them.
+* DONE Add a flag to block 0 to decide if the auto startup prompt is given and/or run
+* DONE config var to auto run everything?
+* DONE Add LREAD support to the autostart exec
 
 
 * TODO New Uptr word to point to start of exec code of uword. Handy for writing forth hook code.
@@ -26,10 +30,6 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 
 * TODO Add op-amp circuit to SPISound and allow for selection at wire time
 
-* TODO Save auto run flags to block 0 on bank 1 and not on currently selected device. Need a function to load from block 0 into hardware_config and then repoint all menu options to load and save them.
-
-* TODO Add a flag to block 0 to decide if the auto startup prompt is given and/or run
-* TODO config var to auto run everything?
 * TODO Add selectable guard around SPIO to prevent accidental corruption of storage banks
 * TODO BUG Add reselection of BANK during auto load 
 * TODO need words to report on hardware e.g. screen dims
@@ -55,7 +55,6 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Fix IS 
 * TODO Add to start up a list of what storage labels are seen
 
-* TODO Add LREAD support to the autostart exec
 
 
 
@@ -68,11 +67,7 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO SPI Net send internet traffic and push results to message buffer. Does get URL but blows out on memory
 * TODO SPI Net get LAN status
 
-
-
-
 * TODO Future bug? stack imbalance on storage_read. Needs a pop of de if no record found. Have added code watch for further issues
-
 
 * TODO Stop menu scrolling past last item
 * TODO BUG If : word is in caps it wont work. This could be connected with caps on LIST which only works if given as lcase.
@@ -91,17 +86,12 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 
 * TODO read ext concat is the problem
 * TODO uword not exact match pulls wrong code
-* TODO file select to auto run
-* TODO file select to view
-* TODO file select to copy to del
-* TODO rename file
 * TODO delete record
 * TODO ui to call config
 * TODO backup and restore of banks to network
 * TODO change size to fsize?
 * TODO do random quotes from file as example code
 * TODO ui join files ui
-* TODO add file description
 
 Nice to haves:
 

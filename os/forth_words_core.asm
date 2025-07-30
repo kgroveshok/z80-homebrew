@@ -1142,9 +1142,13 @@ endif
 		ld a,0
 		cp l
 		jr z, .bpset
-		ld a, '*'
+;		ld a, '*'
+		call bp_off
+		NEXTW
 
-.bpset:		ld (os_view_disable), a
+.bpset:	
+		;	ld (os_view_disable), a
+		call bp_on
 
 
 		NEXTW
@@ -1183,8 +1187,9 @@ endif
 			DMARK "MON"
 			CALLMONITOR
 		endif
-		ld a, 0
-		ld (os_view_disable), a
+;		ld a, 0
+;		ld (os_view_disable), a
+		call bp_on
 
 		CALLMONITOR
 

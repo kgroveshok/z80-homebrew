@@ -79,7 +79,9 @@ FORTH_ENABLE_FLOATMATH: equ 0
 
 
 CALLMONITOR: macro
-	call break_point_state
+;	call break_point_state
+; now use the break point debug vector
+	call debug_vector
 	endm
 
 MALLOC_1: equ 1        ; from dk88 
@@ -220,7 +222,9 @@ hardware_word: equ hardware_config - 2
 
 ; debug marker - optional display of debug point on the debug screens
 
-debug_mark: equ hardware_word - 4
+debug_vector:  equ hardware_word - 3   ; vector to the debug handler
+
+debug_mark: equ debug_vector - 4
 
 ; input_str vars
 input_ptr:  equ debug_mark - 2    ; ptr to the current cursor position of string currently being edited  on entry starting 
@@ -374,8 +378,8 @@ os_new_exec_ptr: equ os_new_exec - 2
 
 ; resume memory alloocations....
 
-os_view_disable: equ os_new_exec_ptr - 1
-os_view_af: equ os_view_disable - 2
+;os_view_disable: equ os_new_exec_ptr - 1
+os_view_af: equ os_new_exec_ptr - 2
 os_view_hl: equ os_view_af -2
 os_view_de: equ os_view_hl - 2
 os_view_bc: equ os_view_de - 2

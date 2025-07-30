@@ -136,6 +136,7 @@ forth_warmstart:
 	ret
 
 
+
 ; Cold Start - this is called to setup the whole Forth system
 
 forth_init:
@@ -268,8 +269,9 @@ malloc_error:
 	;call break_point_state
 	call cin_wait
 
-	ld a, ' '
-	ld (os_view_disable), a
+;	ld a, ' '
+;	ld (os_view_disable), a
+	call bp_on
 	pop hl
 	pop af
 	pop de	
@@ -283,8 +285,11 @@ display_data_sp:
 
 	; see if disabled
 
-	ld a, (os_view_disable)
-	cp '*'
+
+	ld a, (debug_vector)
+	cp $C9  ; RET
+	;ld a, (os_view_disable)
+	;cp '*'
 	jr z, .skipdsp
 
 	push hl

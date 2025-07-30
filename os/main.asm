@@ -104,8 +104,12 @@ coldstart:
 
 	; disable breakpoint by default
 
-	ld a,'*'
-	ld (os_view_disable),a
+	;ld a,'*'
+;	ld a,' '
+;	ld (os_view_disable),a
+
+	; set break point vector as new break point on or off
+	call bp_off
 
 	; init hardware
 

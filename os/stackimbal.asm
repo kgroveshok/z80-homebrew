@@ -167,8 +167,9 @@ showsperror:
 	;call break_point_state
 	call cin_wait
 
-	ld a, ' '
-	ld (os_view_disable), a
+;	ld a, ' '
+;	ld (os_view_disable), a
+	call bp_on
 	pop de	
 	pop af
 	pop hl

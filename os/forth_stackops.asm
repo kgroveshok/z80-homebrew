@@ -317,8 +317,10 @@ if DEBUG_FORTH_PUSH
 	; see if disabled
 	push af
 
-	ld a, (os_view_disable)
-	cp '*'
+	ld a,(debug_vector)
+	cp $c9   ; ret
+	;ld a, (os_view_disable)
+	;cp '*'
 	jr z, .pskip1
 
 	call clear_display
@@ -462,8 +464,10 @@ if DEBUG_FORTH_PUSH
 
 
 	push af
-	ld a, (os_view_disable)
-	cp '*'
+	ld a,(debug_vector)
+	cp $c9   ; ret
+	;ld a, (os_view_disable)
+	;cp '*'
 	jr z, .pskip2
 	push hl
 push hl

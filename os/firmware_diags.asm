@@ -10,10 +10,10 @@ config:
 	cp 0
 	ret z
 
-	cp 1
-	call z, .savetostore
+;	cp 1
+;	call z, .savetostore
 
-	cp 2
+	cp 1
 if STARTUP_V1
 	call z, .selautoload
 endif
@@ -21,27 +21,27 @@ endif
 if STARTUP_V2
 	call z, .enautoload
 endif
-	cp 3
+	cp 2
 	call z, .disautoload
-	cp 4
-	call z, .selbank
-	cp 5
+;	cp 3
+;	call z, .selbank
+	cp 3
 	call z, .debug_tog
-	cp 6
+	cp 4
 	call z, .bpsgo
-	cp 7
+	cp 5
 	call z, hardware_diags
 if STARTUP_V2
-	cp 8
+	cp 6
 	call z, create_startup
 endif
 	jr config
 
 .configmn:
-	dw prom_c3
+;	dw prom_c3
 	dw prom_c2
 	dw prom_c2a
-	dw prom_c2b
+;	dw prom_c2b
 ;	dw prom_c4
 	dw prom_m4
 	dw prom_m4b
@@ -200,13 +200,13 @@ endif
 
 .selbank:
 
-	if STORAGE_SE
-	else
+;	if STORAGE_SE
+;	else
 
 	ld hl, prom_notav
 	ld de, prom_empty
 	call info_panel
-	endif
+;	endif
 	
 	ret
 
@@ -228,23 +228,23 @@ endif
 
 .savetostore:
 
-	if STORAGE_SE
-
-		call config_dir
-	        ld hl, scratch
-		ld a, 0
-		call menu
-		
-		ld hl, scratch
-		call config_fdir
-
-	else
+;	if STORAGE_SE
+;
+;		call config_dir
+;	        ld hl, scratch
+;		ld a, 0
+;		call menu
+;		
+;		ld hl, scratch
+;		call config_fdir
+;
+;	else
 
 	ld hl, prom_notav
 	ld de, prom_empty
 	call info_panel
 
-	endif
+;	endif
 
 	ret
 
@@ -739,8 +739,10 @@ endif
 .debug_tog:
 	ld hl, .menudebug
 	
-	ld a, (os_view_disable)
-	cp '*'
+;	ld a, (os_view_disable)
+;	cp '*'
+	ld a,(debug_vector)
+	cp $C9   ; RET
 	jr nz,.tdon 
 	ld a, 1
 	jr .tog1
@@ -754,8 +756,13 @@ endif
 	jr z, .dtog0
 	ld a, '*'
 	jr .dtogset
-.dtog0: ld a, 0
-.dtogset:  ld (os_view_disable), a
+.dtog0: 
+	;ld a, 0
+	call bp_on
+	jr .debug_tog
+.dtogset: 
+	; ld (os_view_disable), a
+	call bp_off
 	jp .debug_tog
 
 
@@ -979,16 +986,31 @@ display_ptr_state:
 	pop de
 	ret
 
-break_point_state:
-	push af
+; Update the break point vector so that the user can hook a new routine
 
-	; see if disabled
-
-	ld a, (os_view_disable)
-	cp '*'
-	jr nz, .bpsgo
-	pop af
+bp_on:
+	ld a, $c3    ; JP
+	ld (debug_vector), a
+	ld hl, break_point_state
+	ld (debug_vector+1), hl
 	ret
+
+bp_off:
+	ld a, $c9    ; RET
+	ld (debug_vector), a
+	ret
+
+
+break_point_state:
+;	push af
+;
+;	; see if disabled
+;
+;	ld a, (os_view_disable)
+;	cp '*'
+;	jr nz, .bpsgo
+;	pop af
+;	ret
 
 .bpsgo:
 	pop af
@@ -1007,8 +1029,9 @@ break_point_state:
 
 	ld a, '1'
 .bps1:  cp '*'
-	jr nz, .bps1b
-	ld (os_view_disable),a
+	call z, bp_off
+;	jr nz, .bps1b
+;	ld (os_view_disable),a
 .bps1b:  cp '1'
 	jr nz, .bps2
 

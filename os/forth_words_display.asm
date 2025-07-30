@@ -1,6 +1,25 @@
 
 ; | ## Display Words
 
+.ACT:
+
+	CWHEAD .INFO 78 "ACTIVE" 6 WORD_FLAG_CODE
+; | ACTIVE ( -- s ) Push the next char for an activity indicator to TOS | DONE
+; 
+; | | e.g. $ff $00 do active . $01 pause loop
+
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "ACT"
+			CALLMONITOR
+		endif
+		call active
+		if DEBUG_FORTH_WORDS
+			DMARK "ACp"
+			CALLMONITOR
+		endif
+		call forth_push_str
+
+		NEXTW
 .INFO:
 
 	CWHEAD .ATP 78 "INFO" 4 WORD_FLAG_CODE

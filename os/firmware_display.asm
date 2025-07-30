@@ -1,6 +1,58 @@
 ; display routines that use the physical hardware abstraction layer
 
 
+; Display an activity indicator
+; Each call returns the new char pointed to in hl
+
+active:
+	ld a, (display_active)
+	cp 6
+
+	jr nz, .sne
+	; gone past the last one reset sequence
+	ld a, 255
+
+.sne:  
+	; get the next char in seq
+	inc a
+	ld (display_active), a
+
+	; look up the string in the table
+	ld hl, actseq
+	sla a
+	call addatohl
+	call loadwordinhl
+
+	; forth will write the to string when pushing so move from rom to ram
+
+	ld de, display_active+1
+	ld bc, 2
+	ldir
+
+	ld hl, display_active+1
+	ret
+	
+	
+
+
+;db "|/-\|-\"
+
+actseq:
+
+dw spin0
+dw spin1
+dw spin2
+dw spin3
+dw spin2
+dw spin1
+dw spin0
+
+spin0: db " ", 0
+spin1: db "-", 0
+spin2: db "+", 0
+spin3: db "#", 0
+
+
 ; information window
 
 ; pass hl with 1st string to display

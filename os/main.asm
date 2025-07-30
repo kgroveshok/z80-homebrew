@@ -98,6 +98,9 @@ coldstart:
 	ld sp, tos
 ;	ei
 
+	; init spinner
+	ld a,0
+	ld (display_active), a
 
 	; disable breakpoint by default
 

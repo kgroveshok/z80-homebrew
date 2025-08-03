@@ -32,50 +32,50 @@ startcmds:
 
 	; start up words that are actually useful
 
-    dw spi1
-    dw spi2
-    dw spi3
-    dw spi4
-    dw spi5
-    dw spi6
-    dw spi7
-
-    dw spi8
-    dw spi9
-    dw spi10
+;    dw spi1
+;    dw spi2
+;    dw spi3
+;    dw spi4
+;    dw spi5
+;    dw spi6
+;    dw spi7
+;
+;    dw spi8
+;    dw spi9
+;    dw spi10
 
 ; file editor
-	dw edit1
-	dw edit2
-	dw edit3
+;	dw edit1
+;	dw edit2
+;	dw edit3
 
-	dw longread
+;	dw longread
 	dw clrstack
 	dw type
-	dw stest
+;	dw stest
 	dw strncpy
-	dw list
+;	dw list
 	dw start1
 	dw start2
 ;	dw start3
-	dw start3b
-	dw start3c
+;	dw start3b
+;	dw start3c
 
 	; (unit) testing words
 
-	dw mtesta
-	dw mtestb
-	dw mtestc
-	dw mtestd
-	dw mteste
+;	dw mtesta
+;	dw mtestb
+;	dw mtestc
+;	dw mtestd
+;	dw mteste
 
 	; demo/game words
 
-        dw game3w
-        dw game3p
-        dw game3sc
-        dw game3vsi
-        dw game3vs
+;        dw game3w
+;        dw game3p
+;        dw game3sc
+;        dw game3vsi
+;        dw game3vs
 	
 	dw game2b
 	dw game2bf
@@ -182,7 +182,7 @@ spi7:       db ": getstorestr spicel $13 spio spio \" \" repeat spii dup concat 
 ; ( node - )
 spi8:		db ": netchatp $00 $00 at accept ;", 0
 spi9: 		db ": netchatr repeat spigetchr dup dup $00 = not if emit then $00 = not until $02 pause ; ",0
-spi10:		db ": netchat v0! repeat netchatp count dup $00 > if spitype $01 pause then cls $00 $03 at \">\" . netchatr true until ;", 0
+spi10:		db ": netchat v0! repeat netchatp count dup $00 > if spitype $01 pause then cls $00 $03 at \">\" . netchatr true until nop ; ", 0
 
 
 ; Long read of currently open file
@@ -190,10 +190,10 @@ longread:   db ": lread read repeat readcont if read concat then readcont until 
 
 ; clear stack 
 
-clrstack:  db ": clrstk depth ?dup if $01 do drop loop then nop ;", 0
+clrstack:  db ": clrstk depth ?dup if $01 do drop loop then nop ; ", 0
 
 ; type ( addr count - )
-type:     db ": type $00 do dup i + @ emit loop ;", 0
+type:     db ": type $00 do dup i + @ emit loop ; ", 0
 
 ; some direct memory words
 ; strncpy ( len t f -- t )
@@ -264,6 +264,18 @@ test12:     	db "hello2 create .",0
 ;ifthtest1:     	db "$0001 IF is-true . $0005 pause THEN next-word . $0005 pause",0
 ;ifthtest2:     	db "$0000 IF is-true . $0005 pause THEN next-word . $0005 pause",0
 ;ifthtest3:     	db "$0002 $0003 - IF is-true . $0005 pause THEN next-word . $0005 pause",0
+
+
+sound1: db ": note spicel spio spiceh spicel ; ",0
+sound2: db ": slient $9f note $bf note $df note $ff note ; ", 0
+sound3: db ": sound $01 cartdev $00 spitime ! ; ",0
+sound4: db ": cha $00 ; ",0
+sound5: db ": chb $20 ; ",0
+sound6: db ": chc $40 ; ",0
+sound7: db ": chd $60 ; ",0
+sound8: db ": cnote $80 + + note ; ", 0
+sound9: db ": cvol $90 + + note ; ", 0
+
 
 
 

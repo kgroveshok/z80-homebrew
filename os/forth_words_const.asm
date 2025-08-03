@@ -30,6 +30,96 @@
 ; |
 ; | The value is the number reference and the final address is pushed to stack
 
+; | dw sym_table
+; | dw nmi_vector
+; | dw cli_autodisplay
+; | dw cli_data_sp
+; | dw cli_data_stack
+; | dw cli_loop_sp
+; | dw cli_loop_stack
+; | dw cli_var_array
+; | dw cursor_col
+; | dw cursor_ptr
+; | ; 10
+; | dw cursor_row
+; | dw debug_mark
+; | dw display_fb0
+; | dw display_fb1
+; | dw display_fb2
+; | dw display_fb3
+; | dw display_fb_active
+; | dw execscratch
+; | dw f_cursor_ptr
+; | dw hardware_word
+; | ;20
+; | dw input_at_cursor
+; | dw input_at_pos
+; | dw input_cur_flash
+; | dw input_cur_onoff
+; | dw input_cursor
+; | dw input_display_size
+; | dw input_len
+; | dw input_ptr
+; | dw input_size
+; | dw input_start
+; | ; 30
+; | dw input_str
+; | dw input_under_cursor
+; | dw os_cli_cmd
+; | dw os_cur_ptr
+; | dw os_current_i
+; | dw os_input
+; | dw os_last_cmd
+; | dw os_last_new_uword
+; | dw debug_vector
+; | dw os_view_hl
+; | ;40
+; | dw os_word_scratch
+; | dw portbctl
+; | dw portbdata
+; | dw spi_cartdev
+; | dw spi_cartdev2
+; | dw spi_clktime
+; | dw spi_device
+; | dw spi_device_id
+; | dw spi_portbyte
+; | dw stackstore
+; | ; 50
+; | if STORAGE_SE
+; | dw storage_actl
+; | dw storage_adata
+; | else
+; | dw 0
+; | dw 0
+; | endif
+; | dw storage_append
+; | if STORAGE_SE
+; | dw storage_bctl
+; | else
+; | dw 0
+; | endif
+; | dw store_bank_active
+; | dw store_filecache
+; | dw store_longread
+; | dw store_openaddr
+; | dw store_openext
+; | dw store_openmaxext
+; | ; 60
+; | dw store_page
+; | dw store_readbuf
+; | dw store_readcont
+; | dw store_readptr
+; | dw store_tmpext
+; | dw store_tmpid
+; | dw store_tmppageid
+; | dw malloc
+; | dw free
+; | dw cin
+; | ; 70
+; | dw cin_wait
+; | dw forth_push_numhl
+; | dw forth_push_str
+
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "SYM"
 			CALLMONITOR
@@ -68,29 +158,19 @@
 sym_table:
 
 ; 0
+dw sym_table
+dw nmi_vector
 dw cli_autodisplay
-dw cli_buffer
 dw cli_data_sp
 dw cli_data_stack
-dw cli_execword
 dw cli_loop_sp
 dw cli_loop_stack
-dw cli_mvdot
-dw cli_nextword
-dw cli_origptr
-dw cli_origtoken
-; 11
-dw cli_ptr
-dw cli_ret_sp
-dw cli_ret_stack
-dw cli_token
 dw cli_var_array
 dw cursor_col
 dw cursor_ptr
+; 10
 dw cursor_row
-dw cursor_shape
 dw debug_mark
-; 21
 dw display_fb0
 dw display_fb1
 dw display_fb2
@@ -99,9 +179,9 @@ dw display_fb_active
 dw execscratch
 dw f_cursor_ptr
 dw hardware_word
+;20
 dw input_at_cursor
 dw input_at_pos
-; 31
 dw input_cur_flash
 dw input_cur_onoff
 dw input_cursor
@@ -110,43 +190,20 @@ dw input_len
 dw input_ptr
 dw input_size
 dw input_start
+; 30
 dw input_str
 dw input_under_cursor
-; 41
-dw key_actual_pressed
-dw key_fa
-dw key_face_held
-dw key_fb
-dw key_fc
-dw key_fd
-dw key_held
-dw key_held_prev
-dw key_init
-dw key_repeat_ct
-; 51
-dw key_rows
-dw key_shift
-dw key_symbol
-dw keyscan_scancol
-dw keyscan_table
-dw keyscan_table_row1
-dw keyscan_table_row2
-dw keyscan_table_row3
-dw keyscan_table_row4
-dw keyscan_table_row5
-; 61
 dw os_cli_cmd
 dw os_cur_ptr
 dw os_current_i
 dw os_input
 dw os_last_cmd
 dw os_last_new_uword
-;dw os_view_disable
 dw debug_vector
 dw os_view_hl
+;40
 dw os_word_scratch
 dw portbctl
-; 71
 dw portbdata
 dw spi_cartdev
 dw spi_cartdev2
@@ -155,6 +212,7 @@ dw spi_device
 dw spi_device_id
 dw spi_portbyte
 dw stackstore
+; 50
 if STORAGE_SE
 dw storage_actl
 dw storage_adata
@@ -162,7 +220,6 @@ else
 dw 0
 dw 0
 endif
-; 81
 dw storage_append
 if STORAGE_SE
 dw storage_bctl
@@ -175,14 +232,22 @@ dw store_longread
 dw store_openaddr
 dw store_openext
 dw store_openmaxext
+; 60
 dw store_page
 dw store_readbuf
-; 91
 dw store_readcont
 dw store_readptr
 dw store_tmpext
 dw store_tmpid
 dw store_tmppageid
+dw malloc
+dw free
+dw cin
+; 70
+dw cin_wait
+dw forth_push_numhl
+dw forth_push_str
+
 
 .ENDCONST:
 

@@ -22,7 +22,9 @@ CPU_CLOCK_10MHZ: equ  0
 ; use microchip serial eeprom for storage
 
 STORAGE_SE: equ 1
-SOUND_ENABLE: equ 1
+ 
+; now handled by SPI support
+SOUND_ENABLE: equ 0   
 
 ; Number of bytes available in heap   TODO make all of user ram
 baseram: equ 08000h

@@ -23,7 +23,7 @@ Device_D: equ 0c0h             ; Keyboard and LCD
 
 ; Odd specific debug points for testing hardware dev
 
-DEBUG_SOUND: equ 1
+DEBUG_SOUND: equ 0     
 DEBUG_STK_FAULT: equ 0
 DEBUG_INPUT: equ 0     ; Debug input entry code
 DEBUG_KEYCINWAIT: equ 0
@@ -222,7 +222,8 @@ hardware_word: equ hardware_config - 2
 
 ; debug marker - optional display of debug point on the debug screens
 
-debug_vector:  equ hardware_word - 3   ; vector to the debug handler
+nmi_vector:  equ hardware_word - 3   ; vector to the nmi handler
+debug_vector:  equ nmi_vector - 3   ; vector to the debug handler
 
 debug_mark: equ debug_vector - 4
 
@@ -688,9 +689,10 @@ include "firmware_strings.asm"   ; string handling
 include "firmware_memory.asm"   ; malloc and free
 
 ; device C
-if SOUND_ENABLE
-	include "firmware_sound.asm"
-endif
+; Now handled by SPI
+;if SOUND_ENABLE
+;	include "firmware_sound.asm"
+;endif
 
 include "firmware_diags.asm"
 

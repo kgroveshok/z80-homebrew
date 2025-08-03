@@ -26,6 +26,7 @@ endif
 buildtime: db   "Build: 00/00/00 00:00:00",0
 
 
+
 ;        nop 
 ;        nop
 ;;	org 05h		; null out bdos call
@@ -73,6 +74,24 @@ buildtime: db   "Build: 00/00/00 00:00:00",0
 
 ; TODO any more important entry points to add to jump table for easier coding use?
 
+if BASE_KEV = 1 
+
+	; need to be at $66 for nmi support
+	db 0,255,0,255,0,255
+	db 0,255,0,255,0,255
+	db 0,255,0,255,0,255
+	db 0,255,0,255,0,255
+	db 0,255,0,255,0,255
+	db 0,255,0,255,0,255
+	db 0,255,0,255,0,255
+	db 0,255,0,255,0,255
+	db 0,255,0,255,0,255
+	db 0,255,0,255,0,255
+	db 0,255,0,255,0,255
+	db 0,255,0,255,0,255
+	db 0,255
+	jp nmi
+endif
 
 include "firmware.asm"
 
@@ -96,6 +115,7 @@ coldstart:
 
 	di
 	ld sp, tos
+	call init_nmi
 ;	ei
 
 	; init spinner
@@ -883,6 +903,25 @@ include "forth_kernel.asm"
 ; find out where the code ends if loaded into RAM (for SC114)
 ;endofcode: 
 ;	nop
+
+
+; jump to nmi vector
+
+init_nmi:
+	ld a, $c9   ; RET
+	ld (nmi_vector), a
+	ret
+nmi:
+	push hl
+	push de
+	push bc
+	push af
+	call nmi_vector
+	push af
+	push bc
+	push de
+	push hl
+	reti
 
 
 ; eof

@@ -2,31 +2,26 @@
 Z80 Home Brew Micro-computer Project - Dev Diary
 ------------------------------------------------
 
-30th July 2025
+31st July 2025
 --------------
 
-* DONE Tidy auto run loading screen
-* DONE Add ACTTVE word which returns the next in a cycle of progress
-* DONE Make monitor do a call warm boot. Does it already do this during stack crash or a different case? No add it.
-* DONE Monitor to have G command
-* DONE Monitor to have warm boot jump option
-* DONE Save auto run flags to block 0 on bank 1 and not on currently selected device. Need a function to load from block 0 into hardware_config and then repoint all menu options to load and save them.
-* DONE Add a flag to block 0 to decide if the auto startup prompt is given and/or run
-* DONE config var to auto run everything?
-* DONE Add LREAD support to the autostart exec
+* DONE Debug not right since switching to vector ditching too early. Rogue pop af at start of function
 
+* TODO Add stack and malloc guard vectors plus code to enable and disable then in config and cli
 
-* TODO New Uptr word to point to start of exec code of uword. Handy for writing forth hook code.
-* TODO Add hook vectors. Can change  dbug checks to vector with return if disabled to save on push and asterisk checks. Add hook for stack checks to disable. Add hooks for some other points such as before and after words
-
-
-* TODO NMI vector and switch - default to running monitor
-
-* TODO Add to symbol some key vectors for commands eg. MALLOC, PUTCH, GETCH, Symbol table. 
+* TODO add more editing features 
+* TODO fix editor bugs
+* TODO fix editor issues
+* TODO typing a long few lines and then back space, then insert ends up creating spurious characters - added clear of edit buffer
+* TODO Editor issue insert mid string causes loss of zero term giving random data
+* TODO Fix prev line recall and insertion. Corruption appears on the end of line - added clear of edit buffer
+* TODO Backspace mid string does not clean up shifted text
+* TODO Jump to end of line does not work should set to the number in last debug display
+* TODO If cursor at end of line, when go back it leaves custor displayed
 
 
 * TODO ed word has a rouge address pushed to stack when editing a record
-* TODO ed word cant cope with lread 
+* TODO ed word cant cope with lread. Do a check on READCONT and if true add a null to end of edit buffer
 
 * TODO Add op-amp circuit to SPISound and allow for selection at wire time
 
@@ -38,13 +33,13 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Add command to select different banks of common or node PicoSPINet storage banks
 * TODO BUG Uword can't have a numeric in the word name???? Odd...
 * TO TEST need word to report where cursor current at
-* TODO BUG swap of string and number leaves string ptr being left as number. Not swapping var type?
+* TODO BUG swap of string and number leaves string ptr being left as number. Not swapping var type? Should swap three bytes not two
 
 * TODO Add word to call fill_display with a char
 * TODO Add FILL word - ( addr n char -- ) fills address for n long with char
 * TODO Add ERASE word - ( addr n -- ) fills address for n long with zero
 * TODO LSHIFT and RSHIFT for bit shifting
-* TODO in dla handle empty dir
+* TODO in ls handle empty dir
 * TODO Word to define lcd user character 0-3. Then word to output via emit etc
 
 * TODO Fix NUM2STR. 
@@ -72,16 +67,6 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Stop menu scrolling past last item
 * TODO BUG If : word is in caps it wont work. This could be connected with caps on LIST which only works if given as lcase.
 
-* TODO add more editing features 
-* TODO fix editor bugs
-* TODO fix editor issues
-* TODO typing a long few lines and then back space, then insert ends up creating spurious characters - added clear of edit buffer
-* TODO PICK word to pick a value at a given value on stack and move to TOS
-* TODO Fix prev line recall and insertion. Corruption appears on the end of line - added clear of edit buffer
-* TODO Editor issue insert mid string causes loss of zero term giving random data
-* TODO Backspace mid string does not clean up shifted text
-* TODO Jump to end of line does not work should set to the number in last debug display
-* TODO If cursor at end of line, when go back it leaves custor displayed
 * TODO With the float code being so big need to do some opt via http://z80-heaven.wikidot.com/optimization
 
 * TODO read ext concat is the problem
@@ -95,7 +80,13 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 
 Nice to haves:
 
+* TODO Add a means to attach some code to a vector hook
+* TODO New Uptr word to point to start of exec code of uword. Handy for writing forth hook code. Locate the c3 byte as it does work with a call..
+* TODO Add hook vectors. Can change  dbug checks to vector with return if disabled to save on push and asterisk checks. Add hook for stack checks to disable. Add hooks for some other points such as before and after words
 
+* TODO Add config feature to select which devices are on specific SPI addresses and have words for easier selection???
+
+* TODO PICK word to pick a value at a given value on stack and move to TOS
 * TODO Conslidate all prompts into a single file to allow for removing duplicates and may even localisation
 * TODO Add scroll down indicator to menu code
 * TODO Cant use special chars in quoted strings??? Why? Emit works for the char code.
@@ -105,7 +96,6 @@ Nice to haves:
 * TODO Alt T is duplicated }. Free to reuse
 * TODO Alt H is duplicated |. Free to reuse
 * TODO Alt U, O, P, 5, 7, 8, 9, Enter are free
-* TODO for auto run storage include a CHAIN feature
 * TODO Do a nice FORTH primer with the hardware. Screen shots and all...
 * TODO New case design - Have a new one, printed and need to refine for use with PicoNET
 * TODO Add to docs that looking up file name of id is just id BREAD 
@@ -129,6 +119,21 @@ Nice to haves:
 * TODO Pico to handle display to have two way return of data
 * TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs. FORGET and LIST use a scanner. Combine with main parser and have one for keyword and another for byte code
 * TODO Add a simple assembler feature like BBC Basic
+
+30th July 2025
+--------------
+
+* DONE Tidy auto run loading screen
+* DONE Add ACTTVE word which returns the next in a cycle of progress
+* DONE Make monitor do a call warm boot. Does it already do this during stack crash or a different case? No add it.
+* DONE Monitor to have G command
+* DONE Monitor to have warm boot jump option
+* DONE Save auto run flags to block 0 on bank 1 and not on currently selected device. Need a function to load from block 0 into hardware_config and then repoint all menu options to load and save them.
+* DONE Add a flag to block 0 to decide if the auto startup prompt is given and/or run
+* DONE config var to auto run everything?
+* DONE Add LREAD support to the autostart exec
+* DONE NMI vector and switch - default to running monitor - add switch to +5v on r15z pin closest to clock
+* DONE Add to symbol some key vectors for commands eg. MALLOC, PUTCH, GETCH, Symbol table. 
 
 29th July 2025
 --------------

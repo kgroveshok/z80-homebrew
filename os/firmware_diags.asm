@@ -273,8 +273,15 @@ create_startup:
 	call z, .genspiword
 	cp 6
 	call z, .genkeyword
+	cp 7
+	call z, .gensoundword
 	jr create_startup
 
+.gensoundword:
+	ld hl, crs_sound
+	ld de, .soundworddef
+	call .genfile
+	ret
 .genlsword:
 	ld hl, crs_s1
 	ld de, .lsworddef
@@ -363,6 +370,18 @@ create_startup:
 	ret
 
 .genfiletxt:  db "Creating file...",0
+
+.soundworddef:
+	dw sound1
+	dw sound2
+	dw sound3
+	dw sound4
+	dw sound5
+	dw sound6
+	dw sound7
+	dw sound8
+	dw sound9
+	dw 0
 
 .utilwordef:
 	dw strncpy
@@ -471,6 +490,7 @@ create_startup:
 	dw crs_s4
 	dw crs_s5
 	dw crs_s6
+	dw crs_sound
 	dw 0
 
 endif
@@ -1013,7 +1033,7 @@ break_point_state:
 ;	ret
 
 .bpsgo:
-	pop af
+;	pop af
 	push af
 	ld (os_view_hl), hl
 	ld (os_view_de), de

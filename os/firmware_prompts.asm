@@ -25,6 +25,7 @@ crs_s3: db "*Demo-Programs", 0
 crs_s4: db "*Utils", 0
 crs_s5: db "*SPI-Addons", 0
 crs_s6: db "*Key-constants", 0
+crs_sound: db "*Sound-Util", 0
 
 
 

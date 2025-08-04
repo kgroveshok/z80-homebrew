@@ -117,7 +117,11 @@ Nice to haves:
 * TODO wire up a temp interface to the serial EEPROMS so I can test storage on the SC114 as I have the PIO and digital IO cards installed
 * TODO Take the vid out handshake lines and code up a Pico to handle display.
 * TODO Pico to handle display to have two way return of data
+
 * TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs. FORGET and LIST use a scanner. Combine with main parser and have one for keyword and another for byte code
+* TODO for the compiler. At runtime Have the parser detect if the first char to scan for has top bit set. if so then the rest of the byte is compiled keyword and use fast lookup instead. Does limit to top 127 keywords
+* TODO When compiling a uword. Parse tokens and replace with matched high bit words.
+
 * TODO Add a simple assembler feature like BBC Basic
 
 30th July 2025

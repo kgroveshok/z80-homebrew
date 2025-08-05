@@ -9,14 +9,14 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE Add 1- to sub one from the tos value
 * DONE Add 1+! to add one to the byte at address tos value
 * DONE Add 1+2! to add one to the word at address tos value
+* DONE show bytes free in dec
+* DONE show bytes free after auto load has happened
 
-
+* TODO BUG bytes free wrong (inverted). Using the correct pointers?
 
 * TODO BUG function to store three copies of three bytes used to move stack around for swap, over, rot etc and cope with type flag
 * TODO BUG Does OVER work with a string and a value on stack? I know swap does not so not expecting this to work. Yes copies as a pointer. Need to shift three bytes. Write a bit of code to store three bytes for stack movements.
 
-* TODO show bytes free in dec
-* TODO show bytes free after auto load has happened
 * TODO Add block/id count for auto load to show where it is looking
 
 

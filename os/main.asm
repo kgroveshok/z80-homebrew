@@ -253,9 +253,16 @@ warmstart:
 	ld a, display_row_1
 	call str_at_display
 
+	; get current heap start after loading any uwords
+
+	ld de, (os_last_new_uword)
+	;ex de, hl
+
 ; Or use heap_size word????
-	ld hl, heap_end
-	ld de, heap_start
+	;ld hl, heap_end
+	ld hl, heap_size
+	;ld de, topusermem
+	;ld de, heap_start
 	sbc hl, de
 	;push hl
 	;ld a,h	         	

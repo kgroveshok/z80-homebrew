@@ -13209,6 +13209,7 @@ a153				endm
 # End of macro CALLMONITOR
 a153					endif 
 a153			 
+a153			; TODO Use os stack swap memory 
 a153					FORTH_DSP_VALUEHL 
 a153 cd 33 9d			call macro_dsp_valuehl 
 a156				endm 
@@ -13931,6 +13932,7 @@ a407 cd 6f ee			call debug_vector
 a40a				endm  
 # End of macro CALLMONITOR
 a40a					endif 
+a40a			; TODO Use os stack swap memory 
 a40a					NEXTW 
 a40a c3 e9 9e			jp macro_next 
 a40d				endm 
@@ -14260,6 +14262,7 @@ a55d				endm
 # End of macro CALLMONITOR
 a55d					endif 
 a55d			 
+a55d			; TODO Use os stack swap memory 
 a55d					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
 a55d cd 33 9d			call macro_dsp_valuehl 
 a560				endm 
@@ -14460,6 +14463,7 @@ a647				endm
 # End of macro CALLMONITOR
 a647					endif 
 a647			 
+a647			; TODO Use os stack swap memory 
 a647					FORTH_DSP_VALUEHL 
 a647 cd 33 9d			call macro_dsp_valuehl 
 a64a				endm 

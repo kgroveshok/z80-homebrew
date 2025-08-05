@@ -14084,6 +14084,7 @@
 # End of macro CALLMONITOR
 271d					endif 
 271d			 
+271d			; TODO Use os stack swap memory 
 271d					FORTH_DSP_VALUEHL 
 271d cd fd 22			call macro_dsp_valuehl 
 2720				endm 
@@ -14806,6 +14807,7 @@
 29d4				endm  
 # End of macro CALLMONITOR
 29d4					endif 
+29d4			; TODO Use os stack swap memory 
 29d4					NEXTW 
 29d4 c3 b3 24			jp macro_next 
 29d7				endm 
@@ -15135,6 +15137,7 @@
 # End of macro CALLMONITOR
 2b27					endif 
 2b27			 
+2b27			; TODO Use os stack swap memory 
 2b27					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
 2b27 cd fd 22			call macro_dsp_valuehl 
 2b2a				endm 
@@ -15335,6 +15338,7 @@
 # End of macro CALLMONITOR
 2c11					endif 
 2c11			 
+2c11			; TODO Use os stack swap memory 
 2c11					FORTH_DSP_VALUEHL 
 2c11 cd fd 22			call macro_dsp_valuehl 
 2c14				endm 

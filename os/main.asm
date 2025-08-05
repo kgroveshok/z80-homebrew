@@ -255,14 +255,16 @@ warmstart:
 
 	; get current heap start after loading any uwords
 
-	ld de, (os_last_new_uword)
+	;ld de, (os_last_new_uword)
 	;ex de, hl
 
 ; Or use heap_size word????
 	;ld hl, heap_end
-	ld hl, heap_size
+	;ld hl, heap_size
 	;ld de, topusermem
 	;ld de, heap_start
+		ld de, (free_list )     
+		ld hl, heap_end
 	sbc hl, de
 	;push hl
 	;ld a,h	         	
@@ -276,7 +278,7 @@ warmstart:
 ;	ld hl, os_word_scratch+4
 ;	ld a, 0
 ;	ld (hl),a
-
+	ex de, hl
 	ld hl, os_word_scratch
 	call uitoa_16
 

@@ -19,6 +19,7 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 
 * TODO Add block/id count for auto load to show where it is looking
 
+* TODO Could I use frame buffers for cli line storage which would mean they are available for use by code if needed? Would then free up some memory.
 
 * TODO Add stack and malloc guard vectors plus code to enable and disable then in config and cli
 

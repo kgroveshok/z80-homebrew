@@ -366,10 +366,15 @@ os_input: equ os_last_new_uword-255    ; buffer for EDIT word
 execscratch: equ os_input-255        ; exec cmd eval buffer
 scratch: equ execscratch-255
 
+os_stack_1: equ scratch - 3       ; stack holding area 1
+os_stack_2: equ os_stack_1 - 3       ; stack holding area 2
+os_stack_3: equ os_stack_2 - 3       ; stack holding area 3
+os_stack_4: equ os_stack_3 - 3       ; stack holding area 4
+
 
 ; temp locations for new word processing to save on adding more 
 
-os_new_malloc: equ scratch-2
+os_new_malloc: equ os_stack_4-2
 os_new_parse_len: equ os_new_malloc - 2
 os_new_word_len: equ os_new_parse_len - 2
 os_new_work_ptr: equ os_new_word_len - 2

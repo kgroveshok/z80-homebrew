@@ -257,18 +257,23 @@ warmstart:
 	ld hl, heap_end
 	ld de, heap_start
 	sbc hl, de
-	push hl
-	ld a,h	         	
-	ld hl, os_word_scratch		; TODO do direct write to frame buffer instead and drop the str_at_display
-	call hexout
-   	pop hl
+	push de
+	;ld a,h	         	
+	;ld hl, os_word_scratch		; TODO do direct write to frame buffer instead and drop the str_at_display
+	;call hexout
+   	;pop hl
+;
+;	ld a,l
+;	ld hl, os_word_scratch+2
+;	call hexout
+;	ld hl, os_word_scratch+4
+;	ld a, 0
+;	ld (hl),a
 
-	ld a,l
-	ld hl, os_word_scratch+2
-	call hexout
-	ld hl, os_word_scratch+4
-	ld a, 0
-	ld (hl),a
+	ld hl, os_word_scratch
+	call uitoa_16
+
+
 	ld de, os_word_scratch
 	ld a, display_row_1 + 13
 	call str_at_display
@@ -406,7 +411,7 @@ cli:
 	ld a, display_row_1        ; TODO prompt using direct screen line address. Correct this to frame buffer
 	jp cli
 
-freeram: db "Free bytes: $",0
+freeram: db "Free bytes: ",0
 asc: db "1A2F"
 endprog: db "End prog...",0
 

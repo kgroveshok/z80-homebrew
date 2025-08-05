@@ -44,7 +44,7 @@
 		NEXTW
 .TZERO:
 	CWHEAD .LESS 26 "0=" 2 WORD_FLAG_CODE
-; | 0= ( u -- f ) Push true if u equals 0 | TEST NO DEBUG
+; | 0= ( u -- f ) Push true if u equals 0 | DONE
 	; TODO add floating point number detection
 		;v5 FORTH_DSP_VALUE
 		if DEBUG_FORTH_WORDS_KEY

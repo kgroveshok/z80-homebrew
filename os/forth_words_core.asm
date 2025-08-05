@@ -2155,10 +2155,76 @@ pop hl
 
 	       NEXTW
 .CONFIG:
-	CWHEAD .ENDCORE 91 "CONFIG" 6 WORD_FLAG_CODE
+	CWHEAD .ADTOS 91 "CONFIG" 6 WORD_FLAG_CODE
 ; | CONFIG ( -- )  Access the system configuration menu. Set boot from file, hardware diags, and more! | DONE
 
 		call config
+		NEXTW
+
+.ADTOS:
+	CWHEAD .SBTOS 91 "1+" 2 WORD_FLAG_CODE
+; | 1+ ( u -- u )  Increment value on TOS | DONE
+
+		FORTH_DSP_VALUEHL
+		push hl
+
+		FORTH_DSP_POP
+		pop hl
+
+		inc hl
+		call forth_push_numhl
+		
+		NEXTW
+.SBTOS:
+	CWHEAD .ADSTORE 91 "1-" 2 WORD_FLAG_CODE
+; | 1- ( u -- u )  Decrement value on TOS | DONE
+
+		FORTH_DSP_VALUEHL
+		push hl
+
+		FORTH_DSP_POP
+		pop hl
+
+		dec hl
+		call forth_push_numhl
+		
+		NEXTW
+.ADSTORE:
+	CWHEAD .ADWSTORE 91 "1+!" 3 WORD_FLAG_CODE
+; | 1+! ( addr -- )  Increment byte at address addr | DONE
+
+		FORTH_DSP_VALUEHL
+		push hl
+
+		FORTH_DSP_POP
+		pop hl
+
+		ld a, (hl)
+		inc a
+		ld (hl), a
+		
+		NEXTW
+.ADWSTORE:
+	CWHEAD .ENDCORE 91 "1+2!" 4 WORD_FLAG_CODE
+; | 1+2! ( addr -- )  Increment word at address addr | DONE
+
+		FORTH_DSP_VALUEHL
+		push hl
+
+		FORTH_DSP_POP
+		pop hl
+
+		push hl
+
+		call loadwordinhl
+		inc hl
+
+		pop de
+		ex de, hl
+		ld (hl), e
+		inc hl
+		ld (hl), d
+		
 		NEXTW
 .ENDCORE:
 

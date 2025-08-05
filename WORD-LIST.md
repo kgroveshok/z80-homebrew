@@ -34,6 +34,273 @@ Also refer to the auto start list examples as these contain extra words created 
 ### The value is the number reference and the final address is pushed to stack
 
 
+### dw sym_table
+
+
+### dw nmi_vector
+
+
+### dw cli_autodisplay
+
+
+### dw cli_data_sp
+
+
+### dw cli_data_stack
+
+
+### dw cli_loop_sp
+
+
+### dw cli_loop_stack
+
+
+### dw cli_var_array
+
+
+### dw cursor_col
+
+
+### dw cursor_ptr
+
+
+### ; 10
+
+
+### dw cursor_row
+
+
+### dw debug_mark
+
+
+### dw display_fb0
+
+
+### dw display_fb1
+
+
+### dw display_fb2
+
+
+### dw display_fb3
+
+
+### dw display_fb_active
+
+
+### dw execscratch
+
+
+### dw f_cursor_ptr
+
+
+### dw hardware_word
+
+
+### ;20
+
+
+### dw input_at_cursor
+
+
+### dw input_at_pos
+
+
+### dw input_cur_flash
+
+
+### dw input_cur_onoff
+
+
+### dw input_cursor
+
+
+### dw input_display_size
+
+
+### dw input_len
+
+
+### dw input_ptr
+
+
+### dw input_size
+
+
+### dw input_start
+
+
+### ; 30
+
+
+### dw input_str
+
+
+### dw input_under_cursor
+
+
+### dw os_cli_cmd
+
+
+### dw os_cur_ptr
+
+
+### dw os_current_i
+
+
+### dw os_input
+
+
+### dw os_last_cmd
+
+
+### dw os_last_new_uword
+
+
+### dw debug_vector
+
+
+### dw os_view_hl
+
+
+### ;40
+
+
+### dw os_word_scratch
+
+
+### dw portbctl
+
+
+### dw portbdata
+
+
+### dw spi_cartdev
+
+
+### dw spi_cartdev2
+
+
+### dw spi_clktime
+
+
+### dw spi_device
+
+
+### dw spi_device_id
+
+
+### dw spi_portbyte
+
+
+### dw stackstore
+
+
+### ; 50
+
+
+### if STORAGE_SE
+
+
+### dw storage_actl
+
+
+### dw storage_adata
+
+
+### else
+
+
+### dw 0
+
+
+### dw 0
+
+
+### endif
+
+
+### dw storage_append
+
+
+### if STORAGE_SE
+
+
+### dw storage_bctl
+
+
+### else
+
+
+### dw 0
+
+
+### endif
+
+
+### dw store_bank_active
+
+
+### dw store_filecache
+
+
+### dw store_longread
+
+
+### dw store_openaddr
+
+
+### dw store_openext
+
+
+### dw store_openmaxext
+
+
+### ; 60
+
+
+### dw store_page
+
+
+### dw store_readbuf
+
+
+### dw store_readcont
+
+
+### dw store_readptr
+
+
+### dw store_tmpext
+
+
+### dw store_tmpid
+
+
+### dw store_tmppageid
+
+
+### dw malloc
+
+
+### dw free
+
+
+### dw cin
+
+
+### ; 70
+
+
+### dw cin_wait
+
+
+### dw forth_push_numhl
+
+
+### dw forth_push_str
+
+
 ## Core Words
 
 
@@ -334,6 +601,18 @@ Also refer to the auto start list examples as these contain extra words created 
 ### CONFIG ( -- )  Access the system configuration menu. Set boot from file, hardware diags, and more! | DONE
 
 
+### 1+ ( u -- u )  Increment value on TOS | DONE
+
+
+### 1- ( u -- u )  Decrement value on TOS | DONE
+
+
+### 1+! ( addr -- )  Increment byte at address addr | DONE
+
+
+### 1+2! ( addr -- )  Increment word at address addr | DONE
+
+
 ## Device Words
 
 
@@ -517,7 +796,7 @@ Also refer to the auto start list examples as these contain extra words created 
 ### 0< ( u -- f ) Push true if u is less than o | CANT DO UNTIL FLOAT
 
 
-### 0= ( u -- f ) Push true if u equals 0 | TEST NO DEBUG
+### 0= ( u -- f ) Push true if u equals 0 | DONE
 
 
 ### < ( u1 u2 -- f ) True if u1 is less than u2 | DONE
@@ -988,6 +1267,18 @@ Also refer to the auto start list examples as these contain extra words created 
 ### CONFIG ( -- )  Access the system configuration menu. Set boot from file, hardware diags, and more! | DONE
 
 
+### 1+ ( u -- u )  Increment value on TOS | DONE
+
+
+### 1- ( u -- u )  Decrement value on TOS | DONE
+
+
+### 1+! ( addr -- )  Increment byte at address addr | DONE
+
+
+### 1+2! ( addr -- )  Increment word at address addr | DONE
+
+
 ### OUT ( u1 u2 -- ) Perform Z80 OUT to port u2 sending byte u1 | DONE
 
 
@@ -1094,6 +1385,9 @@ Also refer to the auto start list examples as these contain extra words created 
 
 
 ### NOT ( u  -- u ) Inverse true/false on stack | DONE
+
+
+### 0= ( u -- f ) Push true if u equals 0 | DONE
 
 
 ### < ( u1 u2 -- f ) True if u1 is less than u2 | DONE
@@ -1276,6 +1570,273 @@ Also refer to the auto start list examples as these contain extra words created 
 ### The value is the number reference and the final address is pushed to stack
 
 
+### dw sym_table
+
+
+### dw nmi_vector
+
+
+### dw cli_autodisplay
+
+
+### dw cli_data_sp
+
+
+### dw cli_data_stack
+
+
+### dw cli_loop_sp
+
+
+### dw cli_loop_stack
+
+
+### dw cli_var_array
+
+
+### dw cursor_col
+
+
+### dw cursor_ptr
+
+
+### ; 10
+
+
+### dw cursor_row
+
+
+### dw debug_mark
+
+
+### dw display_fb0
+
+
+### dw display_fb1
+
+
+### dw display_fb2
+
+
+### dw display_fb3
+
+
+### dw display_fb_active
+
+
+### dw execscratch
+
+
+### dw f_cursor_ptr
+
+
+### dw hardware_word
+
+
+### ;20
+
+
+### dw input_at_cursor
+
+
+### dw input_at_pos
+
+
+### dw input_cur_flash
+
+
+### dw input_cur_onoff
+
+
+### dw input_cursor
+
+
+### dw input_display_size
+
+
+### dw input_len
+
+
+### dw input_ptr
+
+
+### dw input_size
+
+
+### dw input_start
+
+
+### ; 30
+
+
+### dw input_str
+
+
+### dw input_under_cursor
+
+
+### dw os_cli_cmd
+
+
+### dw os_cur_ptr
+
+
+### dw os_current_i
+
+
+### dw os_input
+
+
+### dw os_last_cmd
+
+
+### dw os_last_new_uword
+
+
+### dw debug_vector
+
+
+### dw os_view_hl
+
+
+### ;40
+
+
+### dw os_word_scratch
+
+
+### dw portbctl
+
+
+### dw portbdata
+
+
+### dw spi_cartdev
+
+
+### dw spi_cartdev2
+
+
+### dw spi_clktime
+
+
+### dw spi_device
+
+
+### dw spi_device_id
+
+
+### dw spi_portbyte
+
+
+### dw stackstore
+
+
+### ; 50
+
+
+### if STORAGE_SE
+
+
+### dw storage_actl
+
+
+### dw storage_adata
+
+
+### else
+
+
+### dw 0
+
+
+### dw 0
+
+
+### endif
+
+
+### dw storage_append
+
+
+### if STORAGE_SE
+
+
+### dw storage_bctl
+
+
+### else
+
+
+### dw 0
+
+
+### endif
+
+
+### dw store_bank_active
+
+
+### dw store_filecache
+
+
+### dw store_longread
+
+
+### dw store_openaddr
+
+
+### dw store_openext
+
+
+### dw store_openmaxext
+
+
+### ; 60
+
+
+### dw store_page
+
+
+### dw store_readbuf
+
+
+### dw store_readcont
+
+
+### dw store_readptr
+
+
+### dw store_tmpext
+
+
+### dw store_tmpid
+
+
+### dw store_tmppageid
+
+
+### dw malloc
+
+
+### dw free
+
+
+### dw cin
+
+
+### ; 70
+
+
+### dw cin_wait
+
+
+### dw forth_push_numhl
+
+
+### dw forth_push_str
+
+
 ## Core Words
 
 
@@ -1349,9 +1910,6 @@ Also refer to the auto start list examples as these contain extra words created 
 
 
 ### 0< ( u -- f ) Push true if u is less than o | CANT DO UNTIL FLOAT
-
-
-### 0= ( u -- f ) Push true if u equals 0 | TEST NO DEBUG
 
 
 ## Maths Words

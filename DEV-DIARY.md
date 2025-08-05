@@ -2,12 +2,26 @@
 Z80 Home Brew Micro-computer Project - Dev Diary
 ------------------------------------------------
 
-31st July 2025
---------------
+5th August 2025
+---------------
 
-* DONE Debug not right since switching to vector ditching too early. Rogue pop af at start of function
+* DONE Add 1+ to add one to the tos value
+* DONE Add 1- to sub one from the tos value
+* DONE Add 1+! to add one to the byte at address tos value
+* DONE Add 1+2! to add one to the word at address tos value
+
+
+
+* TODO BUG function to store three copies of three bytes used to move stack around for swap, over, rot etc and cope with type flag
+* TODO BUG Does OVER work with a string and a value on stack? I know swap does not so not expecting this to work. Yes copies as a pointer. Need to shift three bytes. Write a bit of code to store three bytes for stack movements.
+
+* TODO show bytes free in dec
+* TODO show bytes free after auto load has happened
+* TODO Add block/id count for auto load to show where it is looking
+
 
 * TODO Add stack and malloc guard vectors plus code to enable and disable then in config and cli
+
 
 * TODO add more editing features 
 * TODO fix editor bugs
@@ -121,8 +135,15 @@ Nice to haves:
 * TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs. FORGET and LIST use a scanner. Combine with main parser and have one for keyword and another for byte code
 * TODO for the compiler. At runtime Have the parser detect if the first char to scan for has top bit set. if so then the rest of the byte is compiled keyword and use fast lookup instead. Does limit to top 127 keywords
 * TODO When compiling a uword. Parse tokens and replace with matched high bit words.
+* TODO prefix a uword block with a flag to say if the uword contains compiled tokens (useful for LIST)
+* TODO have a CONFIG flag to enable and disable auto compilation of uwords 
 
 * TODO Add a simple assembler feature like BBC Basic
+
+31st July 2025
+--------------
+
+* DONE Debug not right since switching to vector ditching too early. Rogue pop af at start of function
 
 30th July 2025
 --------------

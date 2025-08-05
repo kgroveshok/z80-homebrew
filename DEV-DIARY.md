@@ -13,7 +13,7 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE show bytes free after auto load has happened
 * DONE BUG bytes free wrong (inverted). Using the correct pointers?
 
-* TODO BUG function to store three copies of three bytes used to move stack around for swap, over, rot etc and cope with type flag
+* TODO BUG function to store three copies of three bytes used to move stack around for swap, over, rot etc and cope with type flag. Look for "TODO Use os stack swap memory"
 * TODO BUG Does OVER work with a string and a value on stack? I know swap does not so not expecting this to work. Yes copies as a pointer. Need to shift three bytes. Write a bit of code to store three bytes for stack movements.
 
 * TODO Add block/id count for auto load to show where it is looking

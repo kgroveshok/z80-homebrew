@@ -376,6 +376,7 @@
 			CALLMONITOR
 		endif
 
+; TODO Use os stack swap memory
 		FORTH_DSP_VALUEHL
 		push hl     ; w2
 
@@ -782,6 +783,7 @@ endif
 			DMARK "2SW"
 			CALLMONITOR
 		endif
+; TODO Use os stack swap memory
 		NEXTW
 .AT:
 	CWHEAD .CAT OPCODE_AT "@" 1 WORD_FLAG_CODE
@@ -919,6 +921,7 @@ endif
 			CALLMONITOR
 		endif
 
+; TODO Use os stack swap memory
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 		push hl    ; n2
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
@@ -993,6 +996,7 @@ endif
 			CALLMONITOR
 		endif
 
+; TODO Use os stack swap memory
 		FORTH_DSP_VALUEHL
 		push hl    ; u3 
 

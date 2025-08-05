@@ -257,7 +257,7 @@ warmstart:
 	ld hl, heap_end
 	ld de, heap_start
 	sbc hl, de
-	push de
+	;push hl
 	;ld a,h	         	
 	;ld hl, os_word_scratch		; TODO do direct write to frame buffer instead and drop the str_at_display
 	;call hexout

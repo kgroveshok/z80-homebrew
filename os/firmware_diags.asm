@@ -447,15 +447,16 @@ create_startup:
 
     dw spi1
     dw spi2
+    dw spi2b
     dw spi3
     dw spi4
     dw spi5
-    dw spi6
-    dw spi7
+;    dw spi6
+;    dw spi7
 
-    dw spi8
-    dw spi9
-    dw spi10
+;    dw spi8
+;    dw spi9
+;    dw spi10
     dw 0
 
 .keyworddef:

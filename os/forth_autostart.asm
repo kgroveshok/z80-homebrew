@@ -146,11 +146,13 @@ edit3: db ": ed dup v0! open $01 do i v0@ record cls . edc loop ; ",0
 ; ( str count - )
 spi1:       db ": spitype spiceh $00 do dup i + @ v0@ spicel $10 spio spio spio spiceh $01 pause loop ; ",0
 
-; spiputchr ( char node - )
-spi2:       db ": spiputchr spicel $10 spio spio ptr @ spio spiceh ; ",0
+; spiputc ( char node - )
+spi2:       db ": spiputc spicel $10 spio spio ptr @ spio spiceh ; ",0
+; spiputc ( u node - )
+spi2b:       db ": spiputb spicel $10 spio spio spio spiceh ; ",0
 
-; spigetchr ( - n )
-spi4:       db ": spigetchr spicel $11 spio spii spiceh ; ", 0
+; spigetc ( - n )
+spi4:       db ": spigetc spicel $11 spio spii spiceh ; ", 0
 
 ; getnode ( - n )
 spi5:       db ": getnode spicel $18 spio spii nop spiceh ; ", 0

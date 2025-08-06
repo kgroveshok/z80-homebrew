@@ -10,6 +10,7 @@ import machine
 import urequests
 import uasyncio as asyncio
 import sys
+import socket
 # use: "hello" ptr count clostro
 
 print("Starting PicoSPINet")
@@ -123,6 +124,9 @@ CMD_IPUTCHR=0x20
 
 CMD_IGETCHR=0x21
 # Listen for message to receive on external connection
+
+CMD_ISETCON=0x22
+# Send zts ip/port string. Used by IPUTCHR
 
 # All clocked in data from client to the server (z80) to be pushed to stack on the z80
 
@@ -250,6 +254,15 @@ SEQ_PROC=120
 # command sequence ops
 
 seq=[
+        { "cmd" : CMD_IPUTCHR,   # the command in operation for this node
+          # node to rec byte, byte to send it
+          "seq" : [ SEQ_INIT, 
+    #        SEQ_SPIINBIT7, SEQ_SPIINBIT6, SEQ_SPIINBIT5, SEQ_SPIINBIT4, SEQ_SPIINBIT3, SEQ_SPIINBIT2, SEQ_SPIINBIT1, SEQ_SPIINBIT0, 
+            SEQ_BYTEIN,
+            SEQ_SAVEBYTE, 
+    #        SEQ_SPIINBIT7, SEQ_SPIINBIT6, SEQ_SPIINBIT5, SEQ_SPIINBIT4, SEQ_SPIINBIT3, SEQ_SPIINBIT2, SEQ_SPIINBIT1, SEQ_SPIINBIT0, 
+            SEQ_END ]
+        },
         { "cmd" : CMD_PUTCHR,   # the command in operation for this node
           # node to rec byte, byte to send it
           "seq" : [ SEQ_INIT, 
@@ -262,6 +275,11 @@ seq=[
             SEQ_END ]
         },
         { "cmd" : CMD_GETCHR,   # the command in operation for this node
+          # send back byte in buffer
+          "seq" : [ SEQ_INIT,  SEQ_BYTEOUT, SEQ_END
+          ]
+        },
+        { "cmd" : CMD_IGETCHR,   # the command in operation for this node
           # send back byte in buffer
           "seq" : [ SEQ_INIT,  SEQ_BYTEOUT, SEQ_END
           ]
@@ -299,6 +317,15 @@ seq=[
           "seq" : [ SEQ_INIT,  SEQ_END ]
         },
 
+        { "cmd" : CMD_ISETCON,   # the command in operation for this node
+          # str index, then zero term string
+          "seq" : [ SEQ_INIT,
+                    SEQ_REPEAT,
+                    SEQ_BYTEIN,    # zero term str
+                    SEQ_SAVEBYTE,
+                    SEQ_UNTILZ,
+                    SEQ_END ]
+        },
         { "cmd" : CMD_PUTSSTRZ,   # the command in operation for this node
           # str index, then zero term string
           "seq" : [ SEQ_INIT,
@@ -793,6 +820,23 @@ def cmd_init(n):
         print("EEPROM Write Byte") if netdebug > 5 else 0    # STRIP
         pass
 
+    if n["cmd"] == CMD_ISETCON:
+            n["ipcon"]=None
+
+#    if n["cmd"] == CMD_GETCHR:
+#        # get remote char via socket.recv and add to buffer
+#            pass
+
+    if n["cmd"] == CMD_IGETCHR:
+            # sling char into buffer
+            i=0
+            try:
+                print("Getting byte...")  if netdebug > 5 else 0     # STRIP 
+                i=ord(n["socket"].recv(1))
+                print("Got... "+str(i))   if netdebug > 5 else 0     # STRIP 
+            except Exception as E:
+                print("Socket get error" + str(E))
+            n["byteclk"]=int(i)
 
     if n["cmd"] == CMD_GETCHR:
             # put a char from the current buffer into the param list to send back
@@ -871,6 +915,47 @@ def cmd_end(n):
             timetosync=n["params"][1]
             print("Set sync to " + str(timetosync))  if netdebug > 10 else 0
 
+    if n["cmd"] == CMD_IPUTCHR:
+            # send to socket in n["ipcon"]
+            try:
+                print("Sending byte...")   if netdebug > 5 else 0     # STRIP 
+                n["socket"].send(chr(n["params"][1]))
+                print("Sent...")   if netdebug > 5 else 0     # STRIP 
+            except Exception as E:
+                print("Socket send error" + str(E))
+
+    if n["cmd"] == CMD_ISETCON:
+            # setup remote socket connect
+            # socket.connect
+        p=1
+        s=""
+        try:
+            while 1:
+                
+                s2=chr(n["params"][p])
+                if int(n["params"][p]) != 0:
+                    s=s+s2
+                else:
+                    print("Skip null")  if netdebug > 5 else 0     # STRIP 
+                    pass
+                p=p+1
+        except:
+            pass
+        n["ipcon"]=s
+        print("Save string: "+str(s)) if netdebug > 10 else 0    # STRIP
+        try:
+            print("do split")  if netdebug > 10 else 0     # STRIP 
+            ip=s.split(":")
+            print(ip)    if netdebug > 10 else 0     # STRIP 
+            print("IP:"+str(ip[0]))    if netdebug > 5 else 0     # STRIP 
+            print("Port:"+str(ip[1]))    if netdebug > 5 else 0     # STRIP 
+            sockaddr = socket.getaddrinfo(ip[0], int(ip[1]))[0][-1]
+            n["socket"] = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+ #           n["socket"].setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            n["socket"].connect(sockaddr)
+            print("Connected...")   if netdebug > 5 else 0     # STRIP 
+        except Exception as E:
+            print("Socket connection error" + str(E))
 
 
     if n["cmd"] == CMD_PUTCHR:

@@ -8,11 +8,14 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE Add 1-! to dec one to the byte at address tos value
 * DONE Add 1-2! to dec one to the word at address tos value
 * DONE Add push and pop of hl before start of FORTH_DSP_POP to save on repeated use
+* DONE picospinet fix up the send byte to socket 
+* DONE picospinet fix up the receive byte from socket - append to node buffer - socket based on node id
 
+
+* TODO Add words that do some of the heavy lifting for SPISound out on the current CARTDEV - e.g. sending the three bytes to the spi for a note, playing a full tune
+* TODO Add words that do some of the heavy lifting for PicoSPINet out on the current CARTDEV e.g. native send and get char
 * TODO Warm reboot after stack underflow loads uwords on autostart again. Need to skip
 
-* TODO picospinet fix up the send byte to socket 
-* TODO picospinet fix up the receive byte from socket - append to node buffer - socket based on node id
 
 * TODO BUG function to store three copies of three bytes used to move stack around for swap, over, rot etc and cope with type flag. Look for "TODO Use os stack swap memory"
 * TODO BUG Does OVER work with a string and a value on stack? I know swap does not so not expecting this to work. Yes copies as a pointer. Need to shift three bytes. Write a bit of code to store three bytes for stack movements.

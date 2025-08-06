@@ -2,20 +2,24 @@
 Z80 Home Brew Micro-computer Project - Dev Diary
 ------------------------------------------------
 
-5th August 2025
+6th August 2025
 ---------------
 
-* DONE Add 1+ to add one to the tos value
-* DONE Add 1- to sub one from the tos value
-* DONE Add 1+! to add one to the byte at address tos value
-* DONE Add 1+2! to add one to the word at address tos value
-* DONE show bytes free in dec
-* DONE show bytes free after auto load has happened
-* DONE BUG bytes free wrong (inverted). Using the correct pointers?
+* DONE Add 1-! to dec one to the byte at address tos value
+* DONE Add 1-2! to dec one to the word at address tos value
+* DONE Add push and pop of hl before start of FORTH_DSP_POP to save on repeated use
+
+* TODO Warm reboot after stack underflow loads uwords on autostart again. Need to skip
+
+* TODO picospinet fix up the send byte to socket 
+* TODO picospinet fix up the receive byte from socket - append to node buffer - socket based on node id
 
 * TODO BUG function to store three copies of three bytes used to move stack around for swap, over, rot etc and cope with type flag. Look for "TODO Use os stack swap memory"
 * TODO BUG Does OVER work with a string and a value on stack? I know swap does not so not expecting this to work. Yes copies as a pointer. Need to shift three bytes. Write a bit of code to store three bytes for stack movements.
 
+* TODO Enhance the DUMP word to provide direct memory editing like the tec monitor
+* TODO if numeric is found with no leading $ assume is decimal and push
+* TODO Add to autostart to conditionally load if hardware switches are set. Need hardware config switches and then a char following the * to select. Perhaps the cartdev number? In config select device maps to hardware
 * TODO Add block/id count for auto load to show where it is looking
 
 * TODO Could I use frame buffers for cli line storage which would mean they are available for use by code if needed? Would then free up some memory.
@@ -23,10 +27,10 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Add stack and malloc guard vectors plus code to enable and disable then in config and cli
 
 
+* TODO So many bugs in editor below perhaps a rewrite now things have moved along?
 * TODO add more editing features 
 * TODO fix editor bugs
-* TODO fix editor issues
-* TODO typing a long few lines and then back space, then insert ends up creating spurious characters - added clear of edit buffer
+* TODO typing a long few lines and then back space, then insert ends up creating spurious characters - added clear of edit buffer???
 * TODO Editor issue insert mid string causes loss of zero term giving random data
 * TODO Fix prev line recall and insertion. Corruption appears on the end of line - added clear of edit buffer
 * TODO Backspace mid string does not clean up shifted text
@@ -139,6 +143,17 @@ Nice to haves:
 * TODO have a CONFIG flag to enable and disable auto compilation of uwords 
 
 * TODO Add a simple assembler feature like BBC Basic
+
+5th August 2025
+---------------
+
+* DONE Add 1+ to add one to the tos value
+* DONE Add 1- to sub one from the tos value
+* DONE Add 1+! to add one to the byte at address tos value
+* DONE Add 1+2! to add one to the word at address tos value
+* DONE show bytes free in dec
+* DONE show bytes free after auto load has happened
+* DONE BUG bytes free wrong (inverted). Using the correct pointers?
 
 31st July 2025
 --------------

@@ -1,4 +1,10 @@
-#!/bin/sh
+#!/bin/bash
+
+
+# generate assemble timestamp for rom
+
+now=$(date "+%F %H:%M")
+echo "db '$now'" >romtimestamp.asm
 
 # Make OS versions for various hardware configs
 

@@ -23,7 +23,9 @@ endif
 	jp coldstart     ; rst 0 - cold boot
 
 
-buildtime: db   "Build: 00/00/00 00:00:00",0
+buildtime: db   "Build: "
+		include "romtimestamp.asm"
+	   db 0
 
 
 

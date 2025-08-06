@@ -613,6 +613,12 @@ Also refer to the auto start list examples as these contain extra words created 
 ### 1+2! ( addr -- )  Increment word at address addr | DONE
 
 
+### 1-! ( addr -- )  Decrement byte at address addr | DONE
+
+
+### 1-2! ( addr -- )  Decrement word at address addr | DONE
+
+
 ## Device Words
 
 
@@ -1277,6 +1283,12 @@ Also refer to the auto start list examples as these contain extra words created 
 
 
 ### 1+2! ( addr -- )  Increment word at address addr | DONE
+
+
+### 1-! ( addr -- )  Decrement byte at address addr | DONE
+
+
+### 1-2! ( addr -- )  Decrement word at address addr | DONE
 
 
 ### OUT ( u1 u2 -- ) Perform Z80 OUT to port u2 sending byte u1 | DONE

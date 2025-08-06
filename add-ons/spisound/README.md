@@ -52,4 +52,24 @@ e.g.
 : cp v0! open $01 do i record cls . waitk $79 = if v1@ append then loop ;
 
 
+* Multichannel testing...
 
+: ican $00 scratch ;    chan 1 note pointer w
+: icad $02 scratch ;    chan 1 note duration b
+: icbn $03 scratch ;     chan 2 note pointer  w 
+: icbd $05 scratch ;    chan 2 note duration  b
+; indur $06 scratch ;    one beat duration in ms
+: iagi ican 2@ @ ican 1+2! ;
+: ibgi icbn 2@ @ icbn 1+2! ;
+: ichan iagi $8f note anote $90 note iagi $30 - icad ! ;
+: ichbn ibgi $8f note anote $90 note ibgi $30 - icbd ! ;
+: setchana ptr ican 2! $01 icad ! $ff indur ! ;
+: setchanb ptr icbn 2! $01 icbd ! $ff indur ! ;
+: ichap icad 1-! icad @ 0= if ichan then ;
+: ichbp icbd 1-! icbd @ 0= if ichbn then ;
+: iplaya repeat ichap indur @ pausems ican 2@ @ 0= not until ;
+: iplayab repeat ichap ichbp indur @ pausems ican 2@ @ 0= not until ;
+
+
+"h2i2k2h2! setchana
+"o4p4!" setchanb    iplayab

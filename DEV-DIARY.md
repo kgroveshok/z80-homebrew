@@ -14,7 +14,7 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 
 * TODO Add words that do some of the heavy lifting for SPISound out on the current CARTDEV - e.g. sending the three bytes to the spi for a note, playing a full tune
 * TODO Add words that do some of the heavy lifting for PicoSPINet out on the current CARTDEV e.g. native send and get char
-* TODO Warm reboot after stack underflow loads uwords on autostart again. Need to skip
+* TODO Warm reboot after stack underflow loads uwords on autostart again. Need to skip. Not doing it now....
 
 
 * TODO BUG function to store three copies of three bytes used to move stack around for swap, over, rot etc and cope with type flag. Look for "TODO Use os stack swap memory"

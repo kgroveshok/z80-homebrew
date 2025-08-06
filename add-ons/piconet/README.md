@@ -18,3 +18,31 @@ Demo of the prototype:
 
 
 [https://youtu.be/h5VUJ3j9RmY]
+
+
+
+Example comms
+-------------
+
+* Connecting to a remote server
+
+ On remote machine:    nc -klv 192.168.9.101 8000
+
+
+ On Mega:
+
+    * Create socket connection
+
+    $22 spio "192.168.9.101:8000" spistrz 
+
+    * Send ASCII char $65
+
+    $20 spio $65 spio
+
+    * Get back a character from the remote machine
+
+    $21 spio $01 pause spii emit
+
+
+
+

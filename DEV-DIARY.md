@@ -8,7 +8,8 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE Tidy some docs
 * DONE Recal stack size to actual stack item storage size
 
-* DONE Lower case word defintion for LIST output
+* TODO Lower case word defintion for LIST output
+* TODO generate word list md for the NOTE keywords is adding double spacing and breaking it. 
 * TODO Look at using 64k Serial EEPROMs to double storage. 128k page size so can keep the current page code, just change the PHY... var
 * TODO remove rubbish game code from file creation
 * TODO move games and major blocks to new files instead of demo

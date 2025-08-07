@@ -21,6 +21,7 @@ The data stack pointer (DSP) supports string and numbers on the same stack for o
 * $xxxx  - 16bit Hex int value
 * $xx    -  8bit Hex int value 
 * "xxx"  - String (250 char max)
+* 99999   - If first char is numeric then treat as decimal string (TODO)
 * %xxxxx  - 16bit binary value (todo)
 
 Note: If text appears to the parser that isnt above or a valid word in any form it will be pushed to the stack with the assumption that it is a string of some sort.
@@ -149,13 +150,16 @@ Restrictions
 
 * So far IF THEN is working but can't do nested IFs on same line (sub-words are fine). 
 * DO LOOP is working and can do nested loops.
-* 16bit Int maths is working.
-* Frame biuffer display is slowing things down so now have a word to disable refresh on every. and rely on DRAW to refresh on demand.
+* 16bit integer maths is working. Would like to add floating point...
+* Frame buffer display is slowing things down so now have a word to disable refresh on every update but that doesn't help. Needs a rewrite.
+* Keyword lookups while running so can be quite slow to run code. A lot of debug code is included as well as memory corruption sanity guards. Will look at speeding things up by switching on/off debug and guard code as well as working on a compile option.
 
 Bugs
 ====
 
 Oh boy, possibly a heck of a lot of bugs. Little sanity checking so watch out. 
+
+Look at ![DEV-DIARY.md](DEV-DIARY.md) for current state of the bugs.
 
 There is a built-in reg state display. It is enabled by default and at various break points (see firmware.asm defines) the current reg 
 state can be seen with options (via 1-9) dumps of 16bit reg pointers. Use '0' to step to the next point. All breakpoints can be

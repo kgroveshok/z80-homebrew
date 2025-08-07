@@ -390,8 +390,9 @@ create_startup:
 	dw longread
 	dw start1
 	dw start2
-	dw start3b
-	dw start3c
+; duplicated
+;	dw start3b
+;	dw start3c
 	dw list
 	dw 0
 

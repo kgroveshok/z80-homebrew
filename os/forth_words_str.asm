@@ -350,7 +350,7 @@
 	       NEXTW
 .NUM2STR:
 	CWHEAD .CONCAT 52 "NUM2STR" 7 WORD_FLAG_CODE
-; | NUM2STR ( n -- s ) Convert a number on TOS to string | NOT DOING
+; | NUM2STR ( n -- s ) Convert a number on TOS to string | TODO
 
 ;		; malloc a string to target
 ;		ld hl, 10     ; TODO max string size should be fine
@@ -548,7 +548,7 @@
 	       NEXTW
 .ASC:
 	CWHEAD .CHR 57 "ASC" 3 WORD_FLAG_CODE
-; | ASC ( u -- n ) Get the ascii value of the first character of the string on the stack | DONE
+; | ASC ( u -- n ) Get the ASCII value of the first character of the string on TOS | DONE
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "ASC"
 			CALLMONITOR

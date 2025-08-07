@@ -21,10 +21,13 @@ Z80 community and lots of great material to dust off my rusty electronics skills
 Therefore this project, is Z80 based. Turns out that is a good choice as the arch is very simple
 with a load of great chips that tie closely together. Makes for an easier life.
 
+Update: That said, with the PDIP Z80 now out of production so so great... But not completely lost :-)
+
+
 Current Specification/Feature Set
 ---------------------------------
 
-* Z80 4/8MHz
+* Z80 4/8/10MHz
 * 32K ROM
 * 32K RAM
 * PIO 1: Port A & B - Controlling LCD and keyboard:
@@ -35,15 +38,15 @@ Current Specification/Feature Set
    - Uses own file system with max file size of 16k 
    - 5 banks of independant storage each with own bank label
 * PIO 2: Port B - Exposed 8 bit bus and SPI bus. Used for more storage (512k/1024k), SPI devices or digital I/o
-* Auto startup scripts/demos built into ROM
+* Auto startup scripts/demos built into ROM and/or created on storage.
 * Exposed RC2014 connector
 * Digital video out (TODO)
 * Built-in address decoder for four devices (2 used above)
-* Sound chip (TODO)
+* Sound chip via SPI
 * External cart support via PIO 2 Port B. Adding support for:
-   - Real time clock (TODO)
+   - Real time clock SPI (TODO)
    - Extra storage via SD and/or Microchip serial EEPROMS  (TODO)
-   - RP Pico using SPI for extra features such as wifi network support
+   - RP Pico using SPI for extra features such as wifi network support via PicoSPINet addon
    - GPIO on the 8 pins (TODO) and independant control use of SPI bus
 * Feature to load a user dictionary from file storage at boot time
 * Highlevel and low level storage words
@@ -54,7 +57,7 @@ Current Specification/Feature Set
 * Using my own very simple malloc/free routinues or can switch to DK88 project version with defines
 * 3d printed case designs in 'case' directory.
 * To aid in board development and speed up the change and test cycle I've now added support for running on the wonderful Steven Cousin's SC114 board. This is quicker than having to remove the EEPROM (even in a zif socket), burn it and put it back.
-* Added CP/M support for even quicker test cyles!
+* Added CP/M support for even quicker test cyles via RunCPM!
 
 Expansions/Addons
 -----------------
@@ -75,6 +78,10 @@ Expansions/Addons
 ![](stage4.0/Schematic_z80-system-4-sbc-2024-03-02.pdf)
 ![](stage4.0/Schematic_z80-system-4-sbc-2024-03-02.png)
 
+
+* SPISound - Using a shift reg and the classic SN76489 sound chip we have four channel sound via SPI.
+
+   For more details look at the Addons README
 
 
 

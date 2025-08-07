@@ -1,0 +1,25 @@
+$31 spio $40 spio 
+$22 spio "192.168.10.103:8000" spistrz $05 pause $20 spio $65 spio
+
+$21 spio $01 pause spii emit
+
+socksstrz
+
+: ubi $01 do cls ptr count type waitk $79 = if list cr concat count soctype drop then 2drop loop ;
+ubie
+
+: ubiall $01 do cls ptr count type list cr concat count soctype 2drop loop ;
+
+"192.168.10.115:8000" soccon
+uwords
+count 
+: uback $01 do list count soctype loop ;
+
+vs
+vsi
+vsscl
+vsp
+vsw
+mb
+mbcms
+

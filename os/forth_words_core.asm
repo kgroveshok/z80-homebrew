@@ -1125,8 +1125,8 @@ CWHEAD .MONITOR 64 "BP" 2 WORD_FLAG_CODE
 ; | | 
 ; | | By default break points are off. Either the above can be used to enable them
 ; | | or if a key is held down during start up the spashscreen will appear to freeze
-; | | and on release of the pressed key a message will be disaplayed to notify
-; | | that break points are enabled. Pressing any key will then continue boot process.
+; | | and on release of the pressed key the CONFIG menu will be displayed where you
+; | | can disable break points. Exiting will then continue boot process.
 	; get byte count
 	if DEBUG_FORTH_WORDS_KEY
 		DMARK "BP."
@@ -1186,6 +1186,7 @@ CWHEAD .MALLOC 65 "MONITOR" 7 WORD_FLAG_CODE
 ; | |    C - Continue display a data dump from the last set address
 ; | |    M xxxx - Set start of memory edit at address xx
 ; | |    U xx - Poke the hex byte xx into the address set by M and increment the address to the next location
+; | |    G xxxx - Exec code at specific address
 ; | |    Q - Return to previous
 	if DEBUG_FORTH_WORDS_KEY
 		DMARK "MON"
@@ -1354,7 +1355,13 @@ endif
 		DMARK "LSc"
 		CALLMONITOR
 	endif
-		call strcmp
+; was exiting on the shorter of the words. swap and test is in favour of the longer word.
+; ie. If WOO is defined first and then WO. Couldnt list WO.
+; Nope that has gone the other way. It needs to be exact not on first zero
+;		call strcmp
+		push bc
+		call StrictStrCmp
+		pop bc
 		jp nz, .ldouscanm
 	
 
@@ -1654,7 +1661,7 @@ pop hl
 .FORGET:
 	CWHEAD .NOP 73 "FORGET" 6 WORD_FLAG_CODE
 ; | FORGET ( uword -- )    Forget the uword on TOS | DONE
-; | | Will flag the word's op code to be deleted as well as replace the first char of the word with '_'. Quote uword name must be in caps.
+; | | Will flag the word's op code to be deleted as well as replace the first char of the word with '_'. Quoted uword name must be in caps.
 ; | | 
 ; | | e.g. "MORE" forget
 		if DEBUG_FORTH_WORDS_KEY

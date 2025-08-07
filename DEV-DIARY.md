@@ -2,19 +2,21 @@
 Z80 Home Brew Micro-computer Project - Dev Diary
 ------------------------------------------------
 
-6th August 2025
+7th August 2025
 ---------------
+* DONE BUG UWORDS pushes the correct count of words, but only goes so far and stops pushing. problem with the demo code uwrods. renamed file so it didnt load and uwords now correct. might be one of the words being a problem with the mb code lists: vsp vsw mb and stops after mbcms. It was the strcmp function.
+* DONE Tidy some docs
+* DONE Recal stack size to actual stack item storage size
 
-* DONE Add 1-! to dec one to the byte at address tos value
-* DONE Add 1-2! to dec one to the word at address tos value
-* DONE Add push and pop of hl before start of FORTH_DSP_POP to save on repeated use
-* DONE picospinet fix up the send byte to socket 
-* DONE picospinet fix up the receive byte from socket - append to node buffer - socket based on node id
-
+* DONE Lower case word defintion for LIST output
+* TODO Look at using 64k Serial EEPROMs to double storage. 128k page size so can keep the current page code, just change the PHY... var
+* TODO remove rubbish game code from file creation
+* TODO move games and major blocks to new files instead of demo
+* TODO for op codes compile from dict but at run time look up a calculated table with jumps to the words to save having to scan dict to find op codes
 
 * TODO Add words that do some of the heavy lifting for SPISound out on the current CARTDEV - e.g. sending the three bytes to the spi for a note, playing a full tune
 * TODO Add words that do some of the heavy lifting for PicoSPINet out on the current CARTDEV e.g. native send and get char
-* TODO Warm reboot after stack underflow loads uwords on autostart again. Need to skip. Not doing it now....
+* TODO Warm reboot after stack underflow loads uwords on autostart again. Need to skip. Not doing it now.... Does sometimes...
 
 
 * TODO BUG function to store three copies of three bytes used to move stack around for swap, over, rot etc and cope with type flag. Look for "TODO Use os stack swap memory"
@@ -139,6 +141,7 @@ Nice to haves:
 * TODO Take the vid out handshake lines and code up a Pico to handle display.
 * TODO Pico to handle display to have two way return of data
 
+* TODO Produce BOM for all of the hardware projects to go with documentation
 * TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs. FORGET and LIST use a scanner. Combine with main parser and have one for keyword and another for byte code
 * TODO for the compiler. At runtime Have the parser detect if the first char to scan for has top bit set. if so then the rest of the byte is compiled keyword and use fast lookup instead. Does limit to top 127 keywords
 * TODO When compiling a uword. Parse tokens and replace with matched high bit words.
@@ -146,6 +149,15 @@ Nice to haves:
 * TODO have a CONFIG flag to enable and disable auto compilation of uwords 
 
 * TODO Add a simple assembler feature like BBC Basic
+
+6th August 2025
+---------------
+
+* DONE Add 1-! to dec one to the byte at address tos value
+* DONE Add 1-2! to dec one to the word at address tos value
+* DONE Add push and pop of hl before start of FORTH_DSP_POP to save on repeated use
+* DONE picospinet fix up the send byte to socket 
+* DONE picospinet fix up the receive byte from socket - append to node buffer - socket based on node id
 
 5th August 2025
 ---------------

@@ -90,7 +90,9 @@ MALLOC_3: equ 0           ; really broke
 MALLOC_4: equ 0              ; mine pretty basic reuse and max of 250 chars
 
 if BASE_KEV 
-stacksize: equ 256
+;stacksize: equ 256
+; each stack entry is three bytes (type + word)
+stacksize: equ 3*150
 
 STACK_RET_SIZE: equ 64
 STACK_LOOP_SIZE: equ 128
@@ -196,7 +198,6 @@ key_fb: equ key_fa -1 ;
 key_fc: equ key_fb -1 ;
 key_fd: equ key_fc -1 ;
 key_face_held: equ key_fd - 1 
-
 ; flag for enabling/disabling various hardware diag loading via block 0 on bank 1
 
 hardware_config: equ key_face_held - 10

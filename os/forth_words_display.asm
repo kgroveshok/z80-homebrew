@@ -6,7 +6,8 @@
 	CWHEAD .INFO 78 "ACTIVE" 6 WORD_FLAG_CODE
 ; | ACTIVE ( -- s ) Push the next char for an activity indicator to TOS | DONE
 ; 
-; | | e.g. $ff $00 do active . $01 pause loop
+; | | To display a pulsing activity indicator in a processing loop do this...
+; | | e.g. $ff $00 do active . ..... Your code ..... loop
 
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "ACT"
@@ -165,7 +166,7 @@ endif
 	NEXTW
 .DOTF:
 	CWHEAD .DOT 8 ".>" 2 WORD_FLAG_CODE
-        ; | .> ( u -- ) Display TOS and move the next display point with display  | WIP
+        ; | .> ( u -- ) Display TOS and move the next display point with display  | DONE
 		; get value off TOS and display it
         ; TODO BUG adds extra spaces
         ; TODO BUG handle numerics?
@@ -180,7 +181,7 @@ endif
 
 .DOT:
 	CWHEAD .CLS 8 "." 1 WORD_FLAG_CODE
-        ; | . ( u -- ) Display TOS | DONE
+        ; | . ( u -- ) Display TOS. Does not move next print position. Use .> if you want that. | DONE
 		; get value off TOS and display it
 
 		if DEBUG_FORTH_WORDS_KEY
@@ -461,7 +462,7 @@ endif
 
 
 .HOME:
-	CWHEAD .SPACE 45 "HOME" 4 WORD_FLAG_CODE
+	CWHEAD .CR 45 "HOME" 4 WORD_FLAG_CODE
 ; | HOME ( -- ) Reset the current cursor for output to home | DONE
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "HOM"
@@ -472,6 +473,23 @@ endif
 		NEXTW
 
 
+.CR:
+	CWHEAD .SPACE 50 "CR" 2 WORD_FLAG_CODE
+; | CR (  -- s ) Push CR/LF pair onto the stack as a string  | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "CR."
+			CALLMONITOR
+		endif
+		ld a, 13
+		ld (scratch),a
+		ld a, 10
+		ld (scratch+1),a
+		ld a, 0
+		ld (scratch+2),a
+		ld hl, scratch
+		call forth_push_str
+		
+	       NEXTW
 .SPACE:
 	CWHEAD .SPACES 50 "BL" 2 WORD_FLAG_CODE
 ; | BL (  -- c ) Push the value of space onto the stack as a string  | DONE
@@ -690,7 +708,7 @@ endif
 
 .MENU:
 	CWHEAD .ENDDISPLAY 92 "MENU" 4 WORD_FLAG_CODE
-; | MENU ( u1....ux n -- n ) Create a menu. n is the number of menu items on stack. Push number selection to TOS | TODO
+; | MENU ( u1....ux n -- n ) Create a menu. n is the number of menu items on stack. Push number selection to TOS | DONE
 
 ;		; get number of items on the stack
 ;

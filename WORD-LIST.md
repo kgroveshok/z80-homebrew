@@ -10,19 +10,19 @@ Also refer to the auto start list examples as these contain extra words created 
 ## Constants (i.e. Useful memory addresses that can set or get features)
 
 
-### SPITIME ( -- u1 )   Pushes address of the SPI pulse counter/delay to stack
+### SPITIME ( -- u1 )   Pushes address of the SPI pulse counter/delay to stack | DONE
 
 
-### If using BANK devices then leave as is.
+ If using BANK devices then leave as is.
 
 
-### Only really useful for the CARTDEV where other devices may be too far or slow. In particular
+ Only really useful for the CARTDEV where other devices may be far too slow. In particular
 
 
-### the multiplexing of the PicoSPINet device which might not be running fast enough for all of the nodes
+ the multiplexing of the PicoSPINet addon which might not be running fast enough for all of the nodes
 
 
-### VA ( -- u1 )   Pushes address of block of memory used for v1..5
+### VA ( -- u1 )   Pushes address of block of memory used for v1..5 | DONE
 
 
 ### SYMBOL ( u1 -- )  Get the address of a system symbol from a look up table to TOS  | DONE
@@ -31,274 +31,280 @@ Also refer to the auto start list examples as these contain extra words created 
 
 
 
-### The value is the number reference and the final address is pushed to stack
+ The value is the number reference and the final address is pushed to stack
 
 
-### dw sym_table
+ ```
 
 
-### dw nmi_vector
+ dw sym_table
 
 
-### dw cli_autodisplay
+ dw nmi_vector
 
 
-### dw cli_data_sp
+ dw cli_autodisplay
 
 
-### dw cli_data_stack
+ dw cli_data_sp
 
 
-### dw cli_loop_sp
+ dw cli_data_stack
 
 
-### dw cli_loop_stack
+ dw cli_loop_sp
 
 
-### dw cli_var_array
+ dw cli_loop_stack
 
 
-### dw cursor_col
+ dw cli_var_array
 
 
-### dw cursor_ptr
+ dw cursor_col
 
 
-### ; 10
+ dw cursor_ptr
 
 
-### dw cursor_row
+ ; 10
 
 
-### dw debug_mark
+ dw cursor_row
 
 
-### dw display_fb0
+ dw debug_mark
 
 
-### dw display_fb1
+ dw display_fb0
 
 
-### dw display_fb2
+ dw display_fb1
 
 
-### dw display_fb3
+ dw display_fb2
 
 
-### dw display_fb_active
+ dw display_fb3
 
 
-### dw execscratch
+ dw display_fb_active
 
 
-### dw f_cursor_ptr
+ dw execscratch
 
 
-### dw hardware_word
+ dw f_cursor_ptr
 
 
-### ;20
+ dw hardware_word
 
 
-### dw input_at_cursor
+ ;20
 
 
-### dw input_at_pos
+ dw input_at_cursor
 
 
-### dw input_cur_flash
+ dw input_at_pos
 
 
-### dw input_cur_onoff
+ dw input_cur_flash
 
 
-### dw input_cursor
+ dw input_cur_onoff
 
 
-### dw input_display_size
+ dw input_cursor
 
 
-### dw input_len
+ dw input_display_size
 
 
-### dw input_ptr
+ dw input_len
 
 
-### dw input_size
+ dw input_ptr
 
 
-### dw input_start
+ dw input_size
 
 
-### ; 30
+ dw input_start
 
 
-### dw input_str
+ ; 30
 
 
-### dw input_under_cursor
+ dw input_str
 
 
-### dw os_cli_cmd
+ dw input_under_cursor
 
 
-### dw os_cur_ptr
+ dw os_cli_cmd
 
 
-### dw os_current_i
+ dw os_cur_ptr
 
 
-### dw os_input
+ dw os_current_i
 
 
-### dw os_last_cmd
+ dw os_input
 
 
-### dw os_last_new_uword
+ dw os_last_cmd
 
 
-### dw debug_vector
+ dw os_last_new_uword
 
 
-### dw os_view_hl
+ dw debug_vector
 
 
-### ;40
+ dw os_view_hl
 
 
-### dw os_word_scratch
+ ;40
 
 
-### dw portbctl
+ dw os_word_scratch
 
 
-### dw portbdata
+ dw portbctl
 
 
-### dw spi_cartdev
+ dw portbdata
 
 
-### dw spi_cartdev2
+ dw spi_cartdev
 
 
-### dw spi_clktime
+ dw spi_cartdev2
 
 
-### dw spi_device
+ dw spi_clktime
 
 
-### dw spi_device_id
+ dw spi_device
 
 
-### dw spi_portbyte
+ dw spi_device_id
 
 
-### dw stackstore
+ dw spi_portbyte
 
 
-### ; 50
+ dw stackstore
 
 
-### if STORAGE_SE
+ ; 50
 
 
-### dw storage_actl
+ if STORAGE_SE
 
 
-### dw storage_adata
+ dw storage_actl
 
 
-### else
+ dw storage_adata
 
 
-### dw 0
+ else
 
 
-### dw 0
+ dw 0
 
 
-### endif
+ dw 0
 
 
-### dw storage_append
+ endif
 
 
-### if STORAGE_SE
+ dw storage_append
 
 
-### dw storage_bctl
+ if STORAGE_SE
 
 
-### else
+ dw storage_bctl
 
 
-### dw 0
+ else
 
 
-### endif
+ dw 0
 
 
-### dw store_bank_active
+ endif
 
 
-### dw store_filecache
+ dw store_bank_active
 
 
-### dw store_longread
+ dw store_filecache
 
 
-### dw store_openaddr
+ dw store_longread
 
 
-### dw store_openext
+ dw store_openaddr
 
 
-### dw store_openmaxext
+ dw store_openext
 
 
-### ; 60
+ dw store_openmaxext
 
 
-### dw store_page
+ ; 60
 
 
-### dw store_readbuf
+ dw store_page
 
 
-### dw store_readcont
+ dw store_readbuf
 
 
-### dw store_readptr
+ dw store_readcont
 
 
-### dw store_tmpext
+ dw store_readptr
 
 
-### dw store_tmpid
+ dw store_tmpext
 
 
-### dw store_tmppageid
+ dw store_tmpid
 
 
-### dw malloc
+ dw store_tmppageid
 
 
-### dw free
+ dw malloc
 
 
-### dw cin
+ dw free
 
 
-### ; 70
+ dw cin
 
 
-### dw cin_wait
+ ; 70
 
 
-### dw forth_push_numhl
+ dw cin_wait
 
 
-### dw forth_push_str
+ dw forth_push_numhl
+
+
+ dw forth_push_str
+
+
+ ```
 
 
 ## Core Words
@@ -421,10 +427,10 @@ Also refer to the auto start list examples as these contain extra words created 
  or if a key is held down during start up the spashscreen will appear to freeze
 
 
- and on release of the pressed key a message will be disaplayed to notify
+ and on release of the pressed key the CONFIG menu will be displayed where you
 
 
- that break points are enabled. Pressing any key will then continue boot process.
+ can disable break points. Exiting will then continue boot process.
 
 
 ### MONITOR ( -- ) Display system breakpoint/monitor | DONE
@@ -505,6 +511,9 @@ Also refer to the auto start list examples as these contain extra words created 
     U xx - Poke the hex byte xx into the address set by M and increment the address to the next location
 
 
+    G xxxx - Exec code at specific address
+
+
     Q - Return to previous
 
 
@@ -526,7 +535,7 @@ Also refer to the auto start list examples as these contain extra words created 
 ### FORGET ( uword -- )    Forget the uword on TOS | DONE
 
 
- Will flag the word's op code to be deleted as well as replace the first char of the word with '_'. Quote uword name must be in caps.
+ Will flag the word's op code to be deleted as well as replace the first char of the word with '_'. Quoted uword name must be in caps.
 
 
  
@@ -622,21 +631,6 @@ Also refer to the auto start list examples as these contain extra words created 
 ## Device Words
 
 
-### TODO
-
-
-### IOIN ( u1 -- u )    Perform a GPIO read of pin u1 and push result  | 
-
-
-### IOOUT ( u1 u2 --  )    Perform a GPIO write of pin u1 with pin set to 0 or 1 in u2  | 
-
-
-### IOBYTE ( u1 --  )    Perform a GPIO write of byte u1  | 
-
-
-### IOSET ( u1 --  )    Setup GPIO pins for I/O direction. Bit is set for write else read pin  | 
-
-
 ### IN ( u1 -- u )    Perform Z80 IN with u1 being the port number. Push result to TOS | TO TEST
 
 
@@ -667,7 +661,10 @@ Also refer to the auto start list examples as these contain extra words created 
 ### ACTIVE ( -- s ) Push the next char for an activity indicator to TOS | DONE
 
 
- e.g. $ff $00 do active . $01 pause loop
+ To display a pulsing activity indicator in a processing loop do this...
+
+
+ e.g. $ff $00 do active . ..... Your code ..... loop
 
 
 ### INFO ( u1 u2 -- )  Use the top two strings on stack to fill in an info window over two lines. Causes a wait for key press to continue. | DONE
@@ -694,10 +691,10 @@ Also refer to the auto start list examples as these contain extra words created 
 ### .- ( u -- ) Display TOS replacing any dashes with spaces. Means you dont need to wrap strings in double quotes!   | DONE
 
 
-### .> ( u -- ) Display TOS and move the next display point with display  | WIP
+### .> ( u -- ) Display TOS and move the next display point with display  | DONE
 
 
-### . ( u -- ) Display TOS | DONE
+### . ( u -- ) Display TOS. Does not move next print position. Use .> if you want that. | DONE
 
 
 ### CLS ( -- ) Clear current frame buffer and set next print position to top left corner  | DONE
@@ -716,6 +713,9 @@ Also refer to the auto start list examples as these contain extra words created 
 
 
 ### HOME ( -- ) Reset the current cursor for output to home | DONE
+
+
+### CR (  -- s ) Push CR/LF pair onto the stack as a string  | DONE
 
 
 ### BL (  -- c ) Push the value of space onto the stack as a string  | DONE
@@ -739,7 +739,7 @@ Also refer to the auto start list examples as these contain extra words created 
  If off, use DRAW to refresh. Default is on. $0003 will enable direct screen writes (TODO) 
 
 
-### MENU ( u1....ux n -- n ) Create a menu. n is the number of menu items on stack. Push number selection to TOS | TODO
+### MENU ( u1....ux n -- n ) Create a menu. n is the number of menu items on stack. Push number selection to TOS | DONE
 
 
 ## Program Flow Words
@@ -850,25 +850,37 @@ Also refer to the auto start list examples as these contain extra words created 
 ### RENAME ( s id -- ) With the current bank, rename the file id with the new label s  | DONE
 
 
- Compatible with PicoSPINet 
+ > [!NOTE]
+
+
+ > Compatible with PicoSPINet 
 
 
 ### RECORD ( u id -- s ) With the current bank, read record number u from file id and push to stack  | DONE
 
 
- Compatible with PicoSPINet 
+ > [!NOTE]
+
+
+ > Compatible with PicoSPINet 
 
 
 ### BREAD ( u -- u ) Lowlevel storage word. With the current bank, read a block from page id u (1-512) and push to stack  | DONE
 
 
- Compatible with PicoSPINet 
+ > [!NOTE]
+
+
+ > Compatible with PicoSPINet 
 
 
 ### BWRITE ( s u -- ) Lowlevel storage word. With the current bank, write the string s to page id u | DONE
 
 
- Compatible with PicoSPINet 
+ > [!NOTE]
+
+
+ > Compatible with PicoSPINet 
 
 
 ### BUPD ( u -- ) Lowlevel storage word. Write the contents of the current file system storage buffer directly to page id u | DONE
@@ -880,19 +892,28 @@ Also refer to the auto start list examples as these contain extra words created 
  or completely different file system structure.
 
 
- Compatible with PicoSPINet 
+ > [!NOTE]
+
+
+ > Compatible with PicoSPINet 
 
 
 ### GETID ( s -- u ) Get the file ID in the current BANK of the file named s | DONE
 
 
- Compatible with PicoSPINet 
+ > [!NOTE]
+
+
+ > Compatible with PicoSPINet 
 
 
 ### DIR ( u -- lab id ... c t ) Using bank number u push directory entries from persistent storage as w with count u  | DONE
 
 
- Compatible with PicoSPINet 
+ > [!NOTE]
+
+
+ > Compatible with PicoSPINet 
 
 
 ### SEO ( u1 u2 -- ) Send byte u1 to Serial EEPROM device at address u2 | DONE
@@ -904,13 +925,19 @@ Also refer to the auto start list examples as these contain extra words created 
 ### FFREE ( -- n )  Gets number of free file blocks on current storage bank | DONE
 
 
- Compatible with PicoSPINet 
+ > [!NOTE]
+
+
+ > Compatible with PicoSPINet 
 
 
 ### SIZE ( u -- n )  Gets number of blocks used by file id u and push to stack | DONE
 
 
- Compatible with PicoSPINet 
+ > [!NOTE]
+
+
+ > Compatible with PicoSPINet 
 
 
 ### CREATE ( u -- n )  Creates a file with name u on current storage bank and pushes the file id number to TOS | DONE
@@ -934,7 +961,10 @@ Also refer to the auto start list examples as these contain extra words created 
  
 
 
- Compatible with PicoSPINet 
+ > [!NOTE]
+
+
+ > Compatible with PicoSPINet 
 
 
 ### APPEND ( u n --  )  Appends data u to file id on current storage bank | DONE
@@ -955,13 +985,19 @@ Also refer to the auto start list examples as these contain extra words created 
  The maximum file size currently using 32k serial EEPROMS using 64 byte blocks is 15k.
 
 
- Compatible with PicoSPINet 
+ > [!NOTE]
+
+
+ > Compatible with PicoSPINet 
 
 
 ### ERA ( n --  )  Deletes all data for file id n on current storage bank | DONE
 
 
- Compatible with PicoSPINet 
+ > [!NOTE]
+
+
+ > Compatible with PicoSPINet 
 
 
 ### OPEN ( n -- n )  Sets file id to point to first data page for subsequent READs. Pushes the max number of blocks for this file | DONE
@@ -979,7 +1015,10 @@ Also refer to the auto start list examples as these contain extra words created 
  Will return with 255 blocks if the file does not exist
 
 
- Compatible with PicoSPINet 
+ > [!NOTE]
+
+
+ > Compatible with PicoSPINet 
 
 
 ### READ ( -- n  )  Reads next page of current file id and push to stack | DONE
@@ -1015,7 +1054,10 @@ Also refer to the auto start list examples as these contain extra words created 
  enable the code to automatically read futher blocks if full. It is BUGGY so don't use for now.
 
 
- Compatible with PicoSPINet 
+ > [!NOTE]
+
+
+ > Compatible with PicoSPINet 
 
 
 ### EOF ( -- u )  Returns EOF logical state of current open file id | DONE
@@ -1027,61 +1069,91 @@ Also refer to the auto start list examples as these contain extra words created 
  $01 OPEN REPEAT READ EOF $00 IF LOOP
 
 
- Compatible with PicoSPINet 
+ > [!NOTE]
+
+
+ > Compatible with PicoSPINet 
 
 
 ### FORMAT (  --  )  Formats the current bank selected (NO PROMPT!) | DONE
 
 
- Compatible with PicoSPINet 
+ > [!NOTE]
+
+
+ > Compatible with PicoSPINet 
 
 
 ### LABEL ( u --  )  Sets the storage bank label to string on top of stack  | DONE
 
 
- Compatible with PicoSPINet 
+ > [!NOTE]
+
+
+ > Compatible with PicoSPINet 
 
 
 ### STOREPAGE ( -- addr )  Pushes the address of the file system record buffer to stack for direct access  | DONE
 
 
- Compatible with PicoSPINet 
+ > [!NOTE]
 
 
-### LABELS (  -- b n .... c  )  Pushes each storage bank labels (n) along with id (b) onto the stack giving count (c) of banks  | TO TEST
+ > Compatible with PicoSPINet 
 
 
- *NOT* Compatible with PicoSPINet 
+### LABELS (  -- b n .... c  )  Pushes each storage bank labels (n) along with id (b) onto the stack giving count (c) of banks  | DONE
+
+
+ > [!CAUTION]
+
+
+ > *NOT* Compatible with PicoSPINet 
 
 
 ### FILEID (  -- u1  )  Pushes currently open file ID to stack | DONE
 
 
- Compatible with PicoSPINet 
+ > [!NOTE]
+
+
+ > Compatible with PicoSPINet 
 
 
 ### FILEEXT (  -- u1  )  Pushes the currently read file extent of the file to stack | DONE
 
 
- Compatible with PicoSPINet 
+ > [!NOTE]
+
+
+ > Compatible with PicoSPINet 
 
 
 ### FILEMAXEXT (  -- u1  )  Pushes the maximum file extent of the currenlty open file to stack | DONE
 
 
- Compatible with PicoSPINet 
+ > [!NOTE]
 
 
-### FILEADDR (  -- u1  )  Pushes the address of the block accessed for the currenlty open file to stack | DONE
+ > Compatible with PicoSPINet 
 
 
- Compatible with PicoSPINet 
+### FILEADDR (  -- u1  )  Pushes the address of the block accessed for the currently open file to stack | DONE
+
+
+ > [!NOTE]
+
+
+ > Compatible with PicoSPINet 
 
 
 ### FILEPAGE (  -- u1  )  Pushes the page id block accessed for the currenlty open file to stack | DONE
 
 
- Compatible with PicoSPINet 
+ > [!NOTE]
+
+
+ > Compatible with PicoSPINet 
 
 
 ### READCONT (  -- u1  )  Pushes the READ continuation flag to stack | DONE
@@ -1093,7 +1165,10 @@ Also refer to the auto start list examples as these contain extra words created 
  a further read should, if applicable, be CONCAT to the previous read.
 
 
- Compatible with PicoSPINet 
+ > [!NOTE]
+
+
+ > Compatible with PicoSPINet 
 
 
 ## String Words
@@ -1132,7 +1207,7 @@ Also refer to the auto start list examples as these contain extra words created 
 ### STR2NUM ( s -- n ) Convert a string on TOS to number | DONE
 
 
-### NUM2STR ( n -- s ) Convert a number on TOS to string | NOT DOING
+### NUM2STR ( n -- s ) Convert a number on TOS to string | TODO
 
 
 ### CONCAT ( s1 s2 -- s3 ) A s1 + s2 is pushed onto the stack | DONE
@@ -1144,7 +1219,7 @@ Also refer to the auto start list examples as these contain extra words created 
 ### COUNT (  str -- str u1 ) Push the length of the string str on TOS as u1 | DONE
 
 
-### ASC ( u -- n ) Get the ascii value of the first character of the string on the stack | DONE
+### ASC ( u -- n ) Get the ASCII value of the first character of the string on TOS | DONE
 
 
 ### CHR ( u -- n ) The ASCII character value of u is turned into a string n on the stack | DONE
@@ -1154,6 +1229,12 @@ Also refer to the auto start list examples as these contain extra words created 
 
 
 
+
+
+### SPITIME ( -- u1 )   Pushes address of the SPI pulse counter/delay to stack | DONE
+
+
+### VA ( -- u1 )   Pushes address of block of memory used for v1..5 | DONE
 
 
 ### SYMBOL ( u1 -- )  Get the address of a system symbol from a look up table to TOS  | DONE
@@ -1327,7 +1408,10 @@ Also refer to the auto start list examples as these contain extra words created 
 ### .- ( u -- ) Display TOS replacing any dashes with spaces. Means you dont need to wrap strings in double quotes!   | DONE
 
 
-### . ( u -- ) Display TOS | DONE
+### .> ( u -- ) Display TOS and move the next display point with display  | DONE
+
+
+### . ( u -- ) Display TOS. Does not move next print position. Use .> if you want that. | DONE
 
 
 ### CLS ( -- ) Clear current frame buffer and set next print position to top left corner  | DONE
@@ -1348,6 +1432,9 @@ Also refer to the auto start list examples as these contain extra words created 
 ### HOME ( -- ) Reset the current cursor for output to home | DONE
 
 
+### CR (  -- s ) Push CR/LF pair onto the stack as a string  | DONE
+
+
 ### BL (  -- c ) Push the value of space onto the stack as a string  | DONE
 
 
@@ -1361,6 +1448,9 @@ Also refer to the auto start list examples as these contain extra words created 
 
 
 ### ADSP ( u1 --  ) Enable/Disable Auto screen updates (SLOW). | DONE
+
+
+### MENU ( u1....ux n -- n ) Create a menu. n is the number of menu items on stack. Push number selection to TOS | DONE
 
 
 ### IF ( w -- f ) If TOS is true exec code following up to THEN - Note: currently not supporting ELSE or nested IF | DONE
@@ -1498,6 +1588,9 @@ Also refer to the auto start list examples as these contain extra words created 
 ### STOREPAGE ( -- addr )  Pushes the address of the file system record buffer to stack for direct access  | DONE
 
 
+### LABELS (  -- b n .... c  )  Pushes each storage bank labels (n) along with id (b) onto the stack giving count (c) of banks  | DONE
+
+
 ### FILEID (  -- u1  )  Pushes currently open file ID to stack | DONE
 
 
@@ -1507,7 +1600,7 @@ Also refer to the auto start list examples as these contain extra words created 
 ### FILEMAXEXT (  -- u1  )  Pushes the maximum file extent of the currenlty open file to stack | DONE
 
 
-### FILEADDR (  -- u1  )  Pushes the address of the block accessed for the currenlty open file to stack | DONE
+### FILEADDR (  -- u1  )  Pushes the address of the block accessed for the currently open file to stack | DONE
 
 
 ### FILEPAGE (  -- u1  )  Pushes the page id block accessed for the currenlty open file to stack | DONE
@@ -1546,7 +1639,7 @@ Also refer to the auto start list examples as these contain extra words created 
 ### COUNT (  str -- str u1 ) Push the length of the string str on TOS as u1 | DONE
 
 
-### ASC ( u -- n ) Get the ascii value of the first character of the string on the stack | DONE
+### ASC ( u -- n ) Get the ASCII value of the first character of the string on TOS | DONE
 
 
 ### CHR ( u -- n ) The ASCII character value of u is turned into a string n on the stack | DONE
@@ -1561,292 +1654,7 @@ Also refer to the auto start list examples as these contain extra words created 
 ## Constants (i.e. Useful memory addresses that can set or get features)
 
 
-### SPITIME ( -- u1 )   Pushes address of the SPI pulse counter/delay to stack
 
-
-### If using BANK devices then leave as is.
-
-
-### Only really useful for the CARTDEV where other devices may be too far or slow. In particular
-
-
-### the multiplexing of the PicoSPINet device which might not be running fast enough for all of the nodes
-
-
-### VA ( -- u1 )   Pushes address of block of memory used for v1..5
-
-
-
-
-
-### The value is the number reference and the final address is pushed to stack
-
-
-### dw sym_table
-
-
-### dw nmi_vector
-
-
-### dw cli_autodisplay
-
-
-### dw cli_data_sp
-
-
-### dw cli_data_stack
-
-
-### dw cli_loop_sp
-
-
-### dw cli_loop_stack
-
-
-### dw cli_var_array
-
-
-### dw cursor_col
-
-
-### dw cursor_ptr
-
-
-### ; 10
-
-
-### dw cursor_row
-
-
-### dw debug_mark
-
-
-### dw display_fb0
-
-
-### dw display_fb1
-
-
-### dw display_fb2
-
-
-### dw display_fb3
-
-
-### dw display_fb_active
-
-
-### dw execscratch
-
-
-### dw f_cursor_ptr
-
-
-### dw hardware_word
-
-
-### ;20
-
-
-### dw input_at_cursor
-
-
-### dw input_at_pos
-
-
-### dw input_cur_flash
-
-
-### dw input_cur_onoff
-
-
-### dw input_cursor
-
-
-### dw input_display_size
-
-
-### dw input_len
-
-
-### dw input_ptr
-
-
-### dw input_size
-
-
-### dw input_start
-
-
-### ; 30
-
-
-### dw input_str
-
-
-### dw input_under_cursor
-
-
-### dw os_cli_cmd
-
-
-### dw os_cur_ptr
-
-
-### dw os_current_i
-
-
-### dw os_input
-
-
-### dw os_last_cmd
-
-
-### dw os_last_new_uword
-
-
-### dw debug_vector
-
-
-### dw os_view_hl
-
-
-### ;40
-
-
-### dw os_word_scratch
-
-
-### dw portbctl
-
-
-### dw portbdata
-
-
-### dw spi_cartdev
-
-
-### dw spi_cartdev2
-
-
-### dw spi_clktime
-
-
-### dw spi_device
-
-
-### dw spi_device_id
-
-
-### dw spi_portbyte
-
-
-### dw stackstore
-
-
-### ; 50
-
-
-### if STORAGE_SE
-
-
-### dw storage_actl
-
-
-### dw storage_adata
-
-
-### else
-
-
-### dw 0
-
-
-### dw 0
-
-
-### endif
-
-
-### dw storage_append
-
-
-### if STORAGE_SE
-
-
-### dw storage_bctl
-
-
-### else
-
-
-### dw 0
-
-
-### endif
-
-
-### dw store_bank_active
-
-
-### dw store_filecache
-
-
-### dw store_longread
-
-
-### dw store_openaddr
-
-
-### dw store_openext
-
-
-### dw store_openmaxext
-
-
-### ; 60
-
-
-### dw store_page
-
-
-### dw store_readbuf
-
-
-### dw store_readcont
-
-
-### dw store_readptr
-
-
-### dw store_tmpext
-
-
-### dw store_tmpid
-
-
-### dw store_tmppageid
-
-
-### dw malloc
-
-
-### dw free
-
-
-### dw cin
-
-
-### ; 70
-
-
-### dw cin_wait
-
-
-### dw forth_push_numhl
-
-
-### dw forth_push_str
 
 
 ## Core Words
@@ -1867,21 +1675,6 @@ Also refer to the auto start list examples as these contain extra words created 
 ## Device Words
 
 
-### TODO
-
-
-### IOIN ( u1 -- u )    Perform a GPIO read of pin u1 and push result  | 
-
-
-### IOOUT ( u1 u2 --  )    Perform a GPIO write of pin u1 with pin set to 0 or 1 in u2  | 
-
-
-### IOBYTE ( u1 --  )    Perform a GPIO write of byte u1  | 
-
-
-### IOSET ( u1 --  )    Setup GPIO pins for I/O direction. Bit is set for write else read pin  | 
-
-
 ### IN ( u1 -- u )    Perform Z80 IN with u1 being the port number. Push result to TOS | TO TEST
 
 
@@ -1891,13 +1684,7 @@ Also refer to the auto start list examples as these contain extra words created 
 ### AT? ( -- c r )  Push to stack the current position of the next print | TO TEST
 
 
-### .> ( u -- ) Display TOS and move the next display point with display  | WIP
-
-
 ### SCROLLD ( -- ) Scroll down one line - next write will update if required | TO DO
-
-
-### MENU ( u1....ux n -- n ) Create a menu. n is the number of menu items on stack. Push number selection to TOS | TODO
 
 
 ## Program Flow Words
@@ -1936,9 +1723,6 @@ Also refer to the auto start list examples as these contain extra words created 
 
 
 
-### LABELS (  -- b n .... c  )  Pushes each storage bank labels (n) along with id (b) onto the stack giving count (c) of banks  | TO TEST
-
-
 ## String Words
 
 
@@ -1948,6 +1732,6 @@ Also refer to the auto start list examples as these contain extra words created 
 ### RIGHT ( s u -- s sub ) Push to TOS string u long starting from right of s  | TODO
 
 
-### NUM2STR ( n -- s ) Convert a number on TOS to string | NOT DOING
+### NUM2STR ( n -- s ) Convert a number on TOS to string | TODO
 
 

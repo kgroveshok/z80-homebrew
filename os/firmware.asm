@@ -26,6 +26,7 @@ Device_D: equ 0c0h             ; Keyboard and LCD
 DEBUG_SOUND: equ 0     
 DEBUG_STK_FAULT: equ 0
 DEBUG_INPUT: equ 0     ; Debug input entry code
+DEBUG_INPUTV2: equ 1     ; Debug input entry code
 DEBUG_KEYCINWAIT: equ 0
 DEBUG_KEYCIN: equ 0
 DEBUG_KEY: equ 0
@@ -241,7 +242,9 @@ input_cur_onoff: equ input_cur_flash - 1 ;  cursor blink on or off
 input_len: equ input_cur_onoff - 5 ; length of current input
 input_cursor: equ input_len - 5 ; offset of cursor to current start of string
 
-CUR_BLINK_RATE: equ 15
+; cursor blink rate
+CUR_BLINK_RATE: equ $09
+;CUR_BLINK_RATE: equ 15
 
 key_actual_pressed: equ input_cursor - 1 
 key_symbol: equ key_actual_pressed - 1 

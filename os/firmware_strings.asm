@@ -6,7 +6,7 @@
 ; d is max length
 ; e is display size TODO
 ; c is current cursor position
-; hl is ptr to where string will be stored
+; hl is ptr to where string will be stored and edited directly
 
 
 ; TODO check limit of buffer for new inserts
@@ -21,7 +21,432 @@
 ; TODO handle KEY_END
 ; TODO use LCD cursor?
 
-input_str:    	ld (input_at_pos),a      ; save display position to start
+EDIT_V1: equ 0
+EDIT_V2: equ 1
+
+
+
+if EDIT_V2
+input_str:
+else
+input_str_new:
+endif
+
+	    	ld (input_at_pos),a      ; save display position to start
+;		ld (input_at_cursor),a	; save draw pos of cursor relative to start
+		ld (input_start), hl     ; save ptr to buffer
+;		ld a, c
+;		call addatohl
+;		ld (input_ptr), hl     ; save ptr to point under the cursor
+		ld a,d
+	        ld (input_size), a       ; save length of input area
+		ld a, c
+		ld (input_cursor),a      ; init cursor start position relative to start of string
+		ld a,e
+	        ld (input_display_size), a       ; save length of input area that is displayed TODO
+
+
+		; add a trailing space to make screen refresh nicer
+
+		;ld hl, (input_start)
+		;push hl
+		;ld a, 0
+		;call strlent
+		;ld a, l
+		;pop hl
+		;call addatohl
+		;dec hl
+		;ld a, ' '
+		;ld (hl), a
+		;inc hl
+		;ld (hl), a
+		;inc hl
+		;ld a, 0
+		;ld (hl), a
+
+; TODO move out to cin as cursor shape is used by the 4x4 ???
+		; init cursor shape if not set by the cin routines
+		ld hl, cursor_shape
+if BASE_KEV
+		ld a, 255
+else
+		ld a, '#'
+endif
+		ld (hl), a
+		inc hl
+		ld a, 0
+		ld (hl), a
+
+		ld a, CUR_BLINK_RATE
+		ld (input_cur_flash), a
+		ld a, 1
+		ld (input_cur_onoff),a
+.inmain:	
+
+		ld hl, (input_start)
+		ld a, 0
+		call strlent
+		ld a, l
+		ld (input_len),a
+		call input_disp_ref
+		;call input_disp_oncur
+
+		; TODO display current state of input buffer
+
+
+		; pause 1ms
+
+		ld a, 1
+		call aDelayInMS
+
+; display cursor if visible on this cycle
+
+		; dec flash counter
+		ld a, (input_cur_flash)
+		dec a
+		ld (input_cur_flash), a
+		cp 0
+		jr nz, .inochgstate
+
+
+		; reset on change of state
+		ld a, CUR_BLINK_RATE
+		ld (input_cur_flash), a
+
+		; change state
+		ld a,(input_cur_onoff)
+		neg
+		ld (input_cur_onoff),a
+
+
+
+
+		; TODO is cursor visible?
+		; TODO if so then over write the char at curspos pos with the cursor shape
+
+					
+
+.inochgstate:
+		ld a,(input_cur_onoff)
+		cp 255
+		jr z, .skipcursor
+		ld a, (input_at_pos)
+		ld b, a
+		ld a, (input_cursor)
+		add b
+		ld de, cursor_shape
+		
+		call str_at_display
+
+.skipcursor:
+	if DEBUG_INPUTV2
+
+		ld a,(input_at_pos)
+		ld hl, LFSRSeed
+		call hexout
+		ld a, (input_cursor)
+		ld hl, LFSRSeed+2
+		call hexout
+		ld a,(input_size)
+		ld hl, LFSRSeed+4
+		call hexout
+
+		ld a,(input_cur_onoff)
+		ld hl, LFSRSeed+6
+		call hexout
+
+		ld a,(input_cur_flash)
+		ld hl, LFSRSeed+8
+		call hexout
+
+		ld a,(input_len)
+		ld hl, LFSRSeed+10
+		call hexout
+		ld hl, LFSRSeed+12
+		ld a, 0
+		ld (hl),a
+		ld a, display_row_4
+		ld de, LFSRSeed
+		call str_at_display
+	endif
+		call update_display
+
+		; TODO keyboard processing
+
+if BASE_CPM
+		call cin_wait
+else
+		call cin    ; _wait
+endif
+		cp 0
+		jp z, .inmain
+
+		cp KEY_LEFT    ; cursor left
+		jp z, input_left
+	
+		cp KEY_RIGHT      ; cursor right
+		jp z, input_right
+
+		cp KEY_CR
+		ret z
+
+		cp KEY_BS
+		jp z, input_delchar
+
+;		cp KEY_HOME    ; jump to start of line
+;		jr nz, .instr5
+;		dec hl
+;		ld (input_ptr),hl
+;		jr .instr1
+
+;		cp KEY_END     ; jump to end of line
+;		jr nz, .instr6
+;		dec hl
+;		ld (input_ptr),hl
+;		jr .instr1
+;	        cp KEY_UP      ; recall last command
+;		jr nz, .instrnew
+;
+;	ld hl, scratch
+;	ld de, os_last_cmd
+;	call strcpy
+;		jr .instr1
+
+
+		; if no special key then insert as a char
+
+		jp input_inschr
+
+	
+
+
+
+input_left:
+	; move cursor left
+	ld a, (input_cursor)
+;	cp 0
+;	jp z, .inmain    ; ignore left as at the start of the string
+	dec a
+	ld (input_cursor), a
+	jp .inmain
+
+input_right:
+	; move cursor right
+	
+	;ld a, (input_size)
+	;ld b, a
+	ld a, (input_cursor)
+	;dec b
+	;cp 0
+	;jp z, .inmain   ; ignore as at end of the string buffer
+	;ld a, b
+	inc a
+	ld (input_cursor), a
+	jp .inmain
+
+
+
+input_disp_ref:
+	; display the text from start of buffer (ie full refresh)
+	ld a, (input_at_pos)
+	ld hl,(input_start)
+	ex de, hl
+	call str_at_display 
+	ret
+input_disp_oncur:
+	; display the text from cursor position to end of buffer
+	; TODO position start of string at cursor position on screen
+	; TODO draw from that point on
+	ld a, (input_cursor)
+	ld b, a
+	ld a, (input_at_pos)
+	add b
+	ld c, b     ; save a
+	ld a, b     ; inc string start for cursor
+	ld hl,(input_start)
+	call addatohl
+	ex de, hl
+	ld a, c
+	call str_at_display 
+	ret
+
+input_nxtw:
+	; Find next word
+	ret
+
+input_prvw:
+	; Find previous word
+	ret
+
+input_lenrem:  
+	; Calculate the length of string remaining from current cursor
+	; position to end of buffer (exc null term)
+	
+	ld a, (input_cursor)
+	ld c, a
+	ld a, (input_size)
+	sub c
+	ld b, 0
+	dec c
+	ret	
+	
+
+input_inschr:
+	; Insert char at cursor position
+	push af   ; save char
+	;call input_lenrem    ; get bc length of remaining string
+
+	
+
+	ld hl, (input_start)
+	ld a, (input_cursor)
+	call addatohl
+	;push hl   ; save to come back to
+
+	; shift everything up one to end of buffer
+
+	;push hl
+	;dec de
+	;inc de
+;	ldir
+	
+	;pop hl
+
+	; are we adding to the end of line?
+
+	ld a, (input_cursor)
+	ld b, a
+	ld a, (input_len)
+	cp b
+	jr nz, .insmid   ; no, insert in middle of text
+
+	; tack on the end of the line
+	pop af
+	ld (hl), a   ; save new char
+	inc hl
+	ld a, 0
+	ld (hl), a
+	jp input_right
+	
+.insmid:
+	; hl has insertion point so move everything up one to allow for insertion
+	;call input_shiftright
+	pop af
+
+.shufinsmid:
+	ld b, a     ; b contains new char, c prev char at this position 
+	ld a, (hl)
+
+	cp 0    ; at end of string need to then dump new char and add term
+	jr z, .endinsmid
+	ld c, a
+	ld a, b
+	ld (hl), a
+	inc hl
+	ld a, c
+	jr .shufinsmid
+	
+
+
+
+.endinsmid:
+	ld a, b
+	ld (hl), a
+	inc hl
+	ld a, 0
+	ld (hl), a
+
+
+;	ld (hl), a   ; save new char
+
+	jp input_right
+
+;input_shiftright:
+;	; shift text right at cursor, hl has shift start
+;	push hl
+;	push de
+;	push bc
+;
+;
+;	; move to end of string past zero term
+;	ld hl,(input_start)
+;	ld a, (input_len)
+;	call addatohl
+;	inc hl
+;;	inc hl
+;;	inc hl
+;	ld a, 0
+;	ld (hl), a
+;;	dec hl
+;	
+;;	ld (hl), a
+;;	dec hl
+;
+;	push hl
+;	pop de
+;	inc de
+;	
+;
+;;	ld hl,(input_start)
+;;	ld a, (input_cursor)
+;;	call addatohl
+;
+;
+;	; calc how many bytes from cursor pos to end of string we need to shift
+;	call input_lenrem    ; get bc length of remaining string
+;	;ld a, (input_cursor)
+;	;ld c, a
+;	ld a, (input_len)
+;	cp 2
+;	jr z, .iskipzero	
+;	;sub c
+;	;inc a
+;	;ld c, a
+;	;ld b, 0
+;	inc c
+;	inc c
+;	; move data
+;	lddr
+;.iskipzero:
+;
+;	pop bc
+;	pop de
+;	pop hl
+;	ret	
+
+input_delchar:
+	; Delete char at cursor position
+	call input_lenrem    ; get bc length of remaining string
+	ld hl, (input_start)
+	ld a, (input_cursor)
+	call addatohl
+
+	push hl
+	pop de
+	dec de
+
+.dl:	
+	ldi 
+	ld a, (hl)
+	cp 0
+	jr z, .dldone
+	jr .dl
+.dldone:
+	ldi
+
+	jp input_left
+
+
+
+
+
+if EDIT_V1
+input_str:
+else
+input_str_old:
+endif
+
+	    	ld (input_at_pos),a      ; save display position to start
 		add c
 		ld (input_at_cursor),a	; save draw pos of cursor
 		ld (input_start), hl     ; save ptr to buffer
@@ -43,7 +468,11 @@ input_str:    	ld (input_at_pos),a      ; save display position to start
 ; TODO move out to cin as cursor shape is used by the 4x4 ???
 		; init cursor shape if not set by the cin routines
 		ld hl, cursor_shape
+if BASE_KEV
 		ld a, 255
+else
+		ld a, '#'
+endif
 		ld (hl), a
 		inc hl
 		ld a, 0
@@ -622,7 +1051,7 @@ input_str_prev:	ld (input_at_pos), a
 		ld (input_ptr),hl
 		jr .instr1
 	
-.instr3:	cp KEY_RIGHT ; cursor right
+.instr3:	cp KEY_RIGHT      ; cursor right
 		jr nz, .instr4
 		inc hl
 		ld (input_ptr),hl

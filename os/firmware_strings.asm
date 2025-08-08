@@ -89,9 +89,11 @@ endif
 		ld a, l
 		ld (input_len),a
 		call input_disp_ref
+		; TODO clean any backspace chars
+
 		;call input_disp_oncur
 
-		; TODO display current state of input buffer
+		; display current state of input buffer
 
 
 		; pause 1ms
@@ -205,7 +207,10 @@ endif
 ;		ld (input_ptr),hl
 ;		jr .instr1
 ;	        cp KEY_UP      ; recall last command
-;		jr nz, .instrnew
+;		ijr nz, .instrnew
+; TODO next word
+; TODO prev word
+; 
 ;
 ;	ld hl, scratch
 ;	ld de, os_last_cmd

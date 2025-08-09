@@ -26,7 +26,7 @@ Device_D: equ 0c0h             ; Keyboard and LCD
 DEBUG_SOUND: equ 0     
 DEBUG_STK_FAULT: equ 0
 DEBUG_INPUT: equ 0     ; Debug input entry code
-DEBUG_INPUTV2: equ 1     ; Debug input entry code
+DEBUG_INPUTV2: equ 0     ; Debug input entry code
 DEBUG_KEYCINWAIT: equ 0
 DEBUG_KEYCIN: equ 0
 DEBUG_KEY: equ 0

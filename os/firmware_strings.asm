@@ -15,10 +15,6 @@
 ; TODO scroll whole screen on page wrap
 
 
-; TODO handle KEY_PREVWORD
-; TODO handle KEY_NEXTWORD
-; TODO handle KEY_HOME
-; TODO handle KEY_END
 ; TODO use LCD cursor?
 
 EDIT_V1: equ 0
@@ -83,18 +79,30 @@ endif
 		ld (input_cur_onoff),a
 .inmain:	
 
+		call input_disp_ref
+
+		; save current length of string
+
 		ld hl, (input_start)
 		ld a, 0
 		call strlent
-		ld a, l
-		ld (input_len),a
-		call input_disp_ref
-		; TODO clean any backspace chars
+		ld a,l
+		ld (input_len), a
 
 		;call input_disp_oncur
 
 		; display current state of input buffer
 
+		; clean any backspace chars
+
+		ld a, "_"
+		ld (scratch),a
+		ld a, 0
+		ld (scratch+1),a
+		ld a,(input_at_pos)
+		add l
+		ld de, scratch
+		call str_at_display
 
 		; pause 1ms
 
@@ -195,26 +203,38 @@ endif
 		cp KEY_BS
 		jp z, input_delchar
 
-;		cp KEY_HOME    ; jump to start of line
-;		jr nz, .instr5
-;		dec hl
-;		ld (input_ptr),hl
-;		jr .instr1
+		cp KEY_NEXTWORD
+		jp z, input_nxtword
 
-;		cp KEY_END     ; jump to end of line
-;		jr nz, .instr6
-;		dec hl
-;		ld (input_ptr),hl
-;		jr .instr1
-;	        cp KEY_UP      ; recall last command
-;		ijr nz, .instrnew
+		cp KEY_PREVWORD
+		jp z, input_prvword
+		cp KEY_F1
+		jp z, input_prvword
+.inskl:
+		cp KEY_HOME    ; jump to start of line
+		jr nz, .ikh
+		ld a, 0
+		ld (input_cursor), a
+		jp z, .inmain
+.ikh:
+
+		cp KEY_END     ; jump to end of line
+		jr nz, .ike
+		ld a, (input_len)
+		ld (input_cursor),a
+		jp z, .inmain
+.ike:
+	        cp KEY_UP      ; recall last command
+		jr nz, .irec
 ; TODO next word
 ; TODO prev word
 ; 
 ;
-;	ld hl, scratch
-;	ld de, os_last_cmd
-;	call strcpy
+	ld hl, scratch
+	ld de, os_last_cmd
+	call strcpy
+		jp z, .inmain
+.irec:
 ;		jr .instr1
 
 
@@ -223,16 +243,102 @@ endif
 		jp input_inschr
 
 	
+input_nxtword:
+	; jump to start next word after the cursor
 
+.insknwn:	
+		call input_curptr	
+		ld a,(hl)	
+		cp 0
+		jp z, .inmain    ; end of string
+
+; if we are on a word, then move off of it
+
+		cp ' '
+		jr z, .inspace     ; we are on space so eat the space until we hit non-space
+		ld hl, input_cursor
+		inc (hl)
+		jr .insknwn
+
+.inspace:
+
+		call input_curptr	
+		ld a,(hl)	
+		cp 0
+		jp z, .inmain    ; end of string
+
+; if we are on a word, then move off of it
+
+		cp ' '
+		jp nz, .inmain     ; we are on non space so at next word
+		ld hl, input_cursor
+		inc (hl)
+		jr .inspace
+
+
+
+
+input_prvword:
+	; jump to the start of previous word before the cursor
+.inskpwn:	
+		ld a,(input_cursor)
+		cp 0
+		jp z, .inmain    ; start of string
+
+; if we are on a word, then move off of it
+
+		call input_curptr	
+		cp ' '
+		jr z, .inspacep     ; we are on space so eat the space until we hit non-space
+		;jp z, .inmain    ; start of string
+		ld hl, input_cursor
+		dec (hl)
+		jr .inskpwn
+
+.inspacep:
+
+		ld a,(input_cursor)
+		cp 0
+		jp z, .inmain    ; start of string
+
+; if we are on a word, then move off of it
+
+		call input_curptr	
+		cp ' '
+		jp nz, .incharp     ; we are on non space so at end of prev word
+		ld hl, input_cursor
+		dec (hl)
+		jr .inspacep
+
+
+.incharp:	
+		; eat the word to get to the start
+		ld a,(input_cursor)
+		cp 0
+		jp z, .inmain    ; start of string
+
+; if we are on a word, then move off of it
+
+		call input_curptr	
+		cp ' '
+		jr z, .ipwordst     ; we are on space so eat the space until we hit non-space
+		ld hl, input_cursor
+		dec (hl)
+		jr .incharp
+.ipwordst:
+		; at space before the prev word so reposition over it
+		ld hl, input_cursor
+		inc (hl)
+		jr .inskpwn
+		
 
 
 input_left:
 	; move cursor left
-	ld a, (input_cursor)
+	ld hl, input_cursor
+	dec (hl)
 ;	cp 0
 ;	jp z, .inmain    ; ignore left as at the start of the string
-	dec a
-	ld (input_cursor), a
 	jp .inmain
 
 input_right:
@@ -240,13 +346,14 @@ input_right:
 	
 	;ld a, (input_size)
 	;ld b, a
-	ld a, (input_cursor)
+	ld hl, input_cursor
+	inc (hl)
 	;dec b
 	;cp 0
 	;jp z, .inmain   ; ignore as at end of the string buffer
 	;ld a, b
-	inc a
-	ld (input_cursor), a
+	;inc a
+	;ld (input_cursor), a
 	jp .inmain
 
 
@@ -294,7 +401,14 @@ input_lenrem:
 	ld b, 0
 	dec c
 	ret	
+
+input_curptr:
+	; calc address of the character under the cursor
 	
+	ld hl, (input_start)
+	ld a, (input_cursor)
+	call addatohl
+	ret
 
 input_inschr:
 	; Insert char at cursor position
@@ -302,10 +416,10 @@ input_inschr:
 	;call input_lenrem    ; get bc length of remaining string
 
 	
-
-	ld hl, (input_start)
-	ld a, (input_cursor)
-	call addatohl
+	call input_curptr
+;	ld hl, (input_start)
+;	ld a, (input_cursor)
+;	call addatohl
 	;push hl   ; save to come back to
 
 	; shift everything up one to end of buffer
@@ -616,7 +730,8 @@ ld hl, (input_ptr)
 
 		; save length of current input string
 		ld hl, (input_start)
-		call strlenz
+		ld a, 0
+		call strlent
 		ld a,l
 		ld (input_len),a
 

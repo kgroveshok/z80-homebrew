@@ -250,6 +250,8 @@ warmstart:
 
 	endif
 
+warmstart_afterauto:
+
 	; show free memory after boot
 	ld de, freeram
 	ld a, display_row_1

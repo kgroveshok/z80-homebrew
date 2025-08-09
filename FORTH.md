@@ -118,9 +118,20 @@ file record number to the first one and then each use of the 'READ' word to retr
 As such, only one open file for reading is possible, but it is possible to APPEND to multiple output files.
 
 
+Autostart
+=========
+
 
 In bank $01, if a file begins with an asterisk the file will be auto loaded at start up. Use RENAME to switch files on and off.
 Or for blanket enable and disable use CONFIG word to toggle in the UI.
+
+> [!NOTE]
+> Usually files will contain a list of user word definitions, however it should be possible to exec words 
+> as they are loaded using already loaded words, in this case be aware that if any code on the single line affects $01 BANK selection
+> ensure that $01 BANK occurs before end so that auto loading can continue as this is not done
+> automatically between each line load just in case that effect is needed.
+
+
 
 
 Words

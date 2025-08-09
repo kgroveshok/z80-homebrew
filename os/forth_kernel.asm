@@ -533,7 +533,8 @@ check_stacks:
 	pop de
 	pop hl
 		call monitor
-		jp warmstart
+		call forth_warmstart
+		jp warmstart_afterauto
 		;jp 0
 		;halt
 
@@ -588,7 +589,8 @@ type_faultn: 	push de
 		push hl
 		push de
 		call monitor
-		jp warmstart
+		call forth_warmstart
+		jp warmstart_afterauto
 		halt
 
 
@@ -617,7 +619,8 @@ type_faults: 	push de
 		pop hl
 		pop de
 		call monitor
-		jp warmstart
+		call forth_warmstart
+		jp warmstart_afterauto
 
 
 .typefaults: db "STR Type Expected TOS!",0

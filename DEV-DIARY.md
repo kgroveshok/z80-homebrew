@@ -16,20 +16,53 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE move games and major blocks to new files instead of demo
 * DONE remove rubbish game code from file creation
 * DONE For now prefix dec with # to push
+* DONE Add command to select between common or node PicoSPINet storage banks. Use user words as specific to hook up
+* DONE Add command to select different banks of common or node PicoSPINet storage banks. Use user words as specific to hook up
+* DONE Warm reboot after stack underflow loads uwords on autostart again. Need to skip. Not doing it now.... Does sometimes... possibly is bank selection is active???
+* DONE BUG Add reselection of BANK during auto load. No, it is noted in docs and could be a feature.
+* DONE TODO Handle socket level iputchr
+* DONE TODO Handle socket level igetchr
+* DONE uword not exact match pulls wrong code. Maybe resolved now if connected with LIST
+* DONE Saved setting to enable/disable auto start
+* DONE Saved setting to select words to auto load from storage. Now using file name
 
-* TODO add more editing features 
+
+* TODO look at hooking up a RTC on SPI
+
+Bug list:
+
+* TODO BUG If : word is in caps it wont work. This could be connected with caps on LIST which only works if given as lcase.
+* TODO Stop menu scrolling past last item
 * TODO Lower case word defintion for LIST output
+* TODO BUG function to store three copies of three bytes used to move stack around for swap, over, rot etc and cope with type flag. Look for "TODO Use os stack swap memory"
+* TODO BUG Does OVER work with a string and a value on stack? I know swap does not so not expecting this to work. Yes copies as a pointer. Need to shift three bytes. Write a bit of code to store three bytes for stack movements.
+* TODO BUG Uword can't have a numeric in the word name???? Odd...
+
+
 * TODO generate word list md for the NOTE keywords is adding double spacing and breaking it. 
+
+* TODO BUG swap of string and number leaves string ptr being left as number. Not swapping var type? Should swap three bytes not two
+
+* TODO LSHIFT and RSHIFT for bit shifting
+* TODO Fix NUM2STR. 
+* TODO Fix LEFT
+* TODO Fix RIGHT
+* TODO Fix 2SWAP
+* TODO Fix KEY
+* TODO Fix IS 
+
+
+Enhancements:
+
+
+* TODO add more editing features. Like what?
 * TODO Look at using 64k Serial EEPROMs to double storage. 128k page size so can keep the current page code, just change the PHY... var
 * TODO for op codes compile from dict but at run time look up a calculated table with jumps to the words to save having to scan dict to find op codes
 
 * TODO Add words that do some of the heavy lifting for SPISound out on the current CARTDEV - e.g. sending the three bytes to the spi for a note, playing a full tune
 * TODO Add words that do some of the heavy lifting for PicoSPINet out on the current CARTDEV e.g. native send and get char
-* TODO Warm reboot after stack underflow loads uwords on autostart again. Need to skip. Not doing it now.... Does sometimes...
 
 
-* TODO BUG function to store three copies of three bytes used to move stack around for swap, over, rot etc and cope with type flag. Look for "TODO Use os stack swap memory"
-* TODO BUG Does OVER work with a string and a value on stack? I know swap does not so not expecting this to work. Yes copies as a pointer. Need to shift three bytes. Write a bit of code to store three bytes for stack movements.
 
 * TODO Enhance the DUMP word to provide direct memory editing like the tec monitor
 * TODO Add to autostart to conditionally load if hardware switches are set. Need hardware config switches and then a char following the * to select. Perhaps the cartdev number? In config select device maps to hardware
@@ -48,35 +81,21 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Add op-amp circuit to SPISound and allow for selection at wire time
 
 * TODO Add selectable guard around SPIO to prevent accidental corruption of storage banks
-* TODO BUG Add reselection of BANK during auto load 
 * TODO need words to report on hardware e.g. screen dims
 
-* TODO Add command to select between common or node PicoSPINet storage banks
-* TODO Add command to select different banks of common or node PicoSPINet storage banks
-* TODO BUG Uword can't have a numeric in the word name???? Odd...
 * TO TEST need word to report where cursor current at
-* TODO BUG swap of string and number leaves string ptr being left as number. Not swapping var type? Should swap three bytes not two
 
-* TODO Add word to call fill_display with a char
+* TODO Add word to call fill_display with a char. accesss it via the symbol list???
 * TODO Add FILL word - ( addr n char -- ) fills address for n long with char
 * TODO Add ERASE word - ( addr n -- ) fills address for n long with zero
-* TODO LSHIFT and RSHIFT for bit shifting
 * TODO in ls handle empty dir
 * TODO Word to define lcd user character 0-3. Then word to output via emit etc
 
-* TODO Fix NUM2STR. 
-* TODO Fix LEFT
-* TODO Fix RIGHT
-* TODO Fix 2SWAP
-* TODO Fix KEY
-* TODO Fix IS 
 * TODO Add to start up a list of what storage labels are seen
 
 
 
 
-* TODO Handle socket level iputchr
-* TODO Handle socket level igetchr
 
 * TODO Combine VAR and SCRATCH?
 * TODO Add word for setting node number to talk to???
@@ -86,22 +105,16 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 
 * TODO Future bug? stack imbalance on storage_read. Needs a pop of de if no record found. Have added code watch for further issues
 
-* TODO Stop menu scrolling past last item
-* TODO BUG If : word is in caps it wont work. This could be connected with caps on LIST which only works if given as lcase.
 
 * TODO With the float code being so big need to do some opt via http://z80-heaven.wikidot.com/optimization
 
 * TODO read ext concat is the problem
-* TODO uword not exact match pulls wrong code
 * TODO delete record
 * TODO ui to call config
 * TODO backup and restore of banks to network
 * TODO change size to fsize?
 * TODO do random quotes from file as example code
 * TODO ui join files ui
-
-Nice to haves:
-
 * TODO Add a means to attach some code to a vector hook
 * TODO New Uptr word to point to start of exec code of uword. Handy for writing forth hook code. Locate the c3 byte as it does work with a call..
 * TODO Add hook vectors. Can change  dbug checks to vector with return if disabled to save on push and asterisk checks. Add hook for stack checks to disable. Add hooks for some other points such as before and after words
@@ -112,8 +125,6 @@ Nice to haves:
 * TODO Conslidate all prompts into a single file to allow for removing duplicates and may even localisation
 * TODO Add scroll down indicator to menu code
 * TODO Cant use special chars in quoted strings??? Why? Emit works for the char code.
-* TODO Saved setting to enable/disable auto start
-* TODO Saved setting to select words to auto load from storage
 * TODO add ram test to the diags
 * TODO Alt T is duplicated }. Free to reuse
 * TODO Alt H is duplicated |. Free to reuse

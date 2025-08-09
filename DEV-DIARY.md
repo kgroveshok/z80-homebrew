@@ -15,6 +15,7 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE Fix prev line recall and insertion. Corruption appears on the end of line - added clear of edit buffer
 * DONE move games and major blocks to new files instead of demo
 * DONE remove rubbish game code from file creation
+* DONE For now prefix dec with # to push
 
 * TODO add more editing features 
 * TODO Lower case word defintion for LIST output
@@ -31,7 +32,6 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO BUG Does OVER work with a string and a value on stack? I know swap does not so not expecting this to work. Yes copies as a pointer. Need to shift three bytes. Write a bit of code to store three bytes for stack movements.
 
 * TODO Enhance the DUMP word to provide direct memory editing like the tec monitor
-* TODO if numeric is found with no leading $ assume is decimal and push
 * TODO Add to autostart to conditionally load if hardware switches are set. Need hardware config switches and then a char following the * to select. Perhaps the cartdev number? In config select device maps to hardware
 * TODO Add block/id count for auto load to show where it is looking
 

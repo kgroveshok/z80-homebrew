@@ -21,7 +21,7 @@ The data stack pointer (DSP) supports string and numbers on the same stack for o
 * $xxxx  - 16bit Hex int value
 * $xx    -  8bit Hex int value 
 * "xxx"  - String (250 char max)
-* 99999   - If first char is numeric then treat as decimal string (TODO)
+* #99999   - A decimal string 
 * %xxxxx  - 16bit binary value (todo)
 
 Note: If text appears to the parser that isnt above or a valid word in any form it will be pushed to the stack with the assumption that it is a string of some sort.

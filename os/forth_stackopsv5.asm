@@ -292,6 +292,8 @@ if DEBUG_FORTH_PUSH
 			DMARK "PSQ"
 	CALLMONITOR
 endif	
+
+
    
 	push hl
 	push hl
@@ -433,6 +435,11 @@ endif
 	; identify input type
 
 	ld a,(hl)
+
+	cp '#'
+	jp z, .fapdec
+
+
 	cp '"'
 	jr z, .fapstr
 	cp '$'
@@ -495,7 +502,15 @@ endif
 
 
 	ret
-
+.fapdec:	
+	; string to dec conversion
+	inc hl
+	ex de, hl
+	call string_to_uint16
+	jp forth_push_numhl
+	ret
+	
+;atoui_16:
 
 ; get either a string ptr or a 16bit word from the data stack
 

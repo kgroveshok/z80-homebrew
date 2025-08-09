@@ -329,6 +329,9 @@ cli:
 	;pop af
 	;inc a
 	;ld a, kLCD_Line4+1	 ; TODO using direct screen line writes. Correct this to frame buffer
+
+.lastrecall:
+
 	ld c, 0
 	ld d, 255    ; TODO fix input_str to actually take note of max string input length
 	ld e, 40
@@ -340,6 +343,24 @@ cli:
 	call input_str
 
 	STACKFRAMECHK OFF $fefe $9f9f
+
+
+	; check to see if last line recall has been requested
+
+if EDIT_V2
+	cp KEY_UP
+	jr nz, .noexecline
+
+	ld de, os_cli_cmd
+	ld hl, os_last_cmd
+	ld bc, 255
+	ldir
+	ld a, 0
+	jr .lastrecall
+endif
+
+.noexecline:
+	; no so exec the line		
 
 	; copy input to last command
 

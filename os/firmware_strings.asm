@@ -220,19 +220,29 @@ endif
 		jp z, .inmain
 .ike:
 	        cp KEY_UP      ; recall last command
-		jr nz, .irec
+		ret z
+;jr nz, .irec
 ; TODO next word
 ; TODO prev word
 ; 
 ;
-	ld hl, scratch
-	ld de, os_last_cmd
-	call strcpy
-		jp z, .inmain
+;	ld hl, scratch
+;	ld de, os_last_cmd
+;	call strcpy
+;		jp  .inmain
 .irec:
 ;		jr .instr1
 
 
+
+		; if any keys not intercepted by above but are special keys like function keys then return them to the program
+
+; TODO return if any special keys are given
+;		ld l, a
+;		ld a, 28 ; KEY_F12   ; 27
+;		sub l
+;		ret m
+;		ld a, l
 		; if no special key then insert as a char
 
 		jp input_inschr

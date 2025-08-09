@@ -77,11 +77,11 @@ startcmds:
 ;        dw game3vsi
 ;        dw game3vs
 	
-	dw game2b
-	dw game2bf
-	dw game2mba
-	dw game2mbas
-	dw game2mb
+;	dw game2b
+;	dw game2bf
+;	dw game2mba
+;	dw game2mbas
+;	dw game2mb
 
 	dw game1
 	dw game1a
@@ -216,25 +216,25 @@ list:            db ": more cls repeat scroll $01 $04 at depth . $0a $04 at .> $
 ; test stack 
 ; rnd8 stest
 
-stest:   db ": stest cls  v0! v0@ $00 do rnd8 $01 $01 at i . $01 pause loop v0@ $00 do drop $12 $01 at depth . $01 pause loop nop ;",0 
+;stest:   db ": stest cls  v0! v0@ $00 do rnd8 $01 $01 at i . $01 pause loop v0@ $00 do drop $12 $01 at depth . $01 pause loop nop ;",0 
 
 ; random malloc and free cycles
 
-mtesta:      db ": mtesta $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . rnd8 dup $13 $01 at . malloc heap $1f $01 at . $1f $02 at . $01 pause free $01 until nop ;", 0
+;mtesta:      db ": mtesta $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . rnd8 dup $13 $01 at . malloc heap $1f $01 at . $1f $02 at . $01 pause free $01 until nop ;", 0
 
 ; fixed malloc and free cycles
 
-mtestb:      db ": mtestb $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . $80 malloc heap $1f $01 at . $1f $02 at . $01 pause free $01 until nop ;", 0
+;mtestb:      db ": mtestb $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . $80 malloc heap $1f $01 at . $1f $02 at . $01 pause free $01 until nop ;", 0
 
 ; fixed double string push and drop cycle 
 
-mtestc:      db ": mtestc $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . $80 spaces $2f spaces  heap $1f $01 at . $1f $02 at . $01 pause drop drop $01 until nop ; ", 0
+;mtestc:      db ": mtestc $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . $80 spaces $2f spaces  heap $1f $01 at . $1f $02 at . $01 pause drop drop $01 until nop ; ", 0
 
 ; consistent fixed string push and drop cycle 
 
-mtestd:      db ": mtestd $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . $80 spaces heap $1f $01 at . $1f $02 at . $01 pause drop $01 until nop ; ", 0
+;mtestd:      db ": mtestd $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . $80 spaces heap $1f $01 at . $1f $02 at . $01 pause drop $01 until nop ; ", 0
 
-mteste:      db ": mteste $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . rnd8 dup spaces $0f $02 at . heap $1f $01 at . $1f $02 at . $01 pause drop $01 until nop ; ", 0
+;mteste:      db ": mteste $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . rnd8 dup spaces $0f $02 at . heap $1f $01 at . $1f $02 at . $01 pause drop $01 until nop ; ", 0
 
 ;test1:		db ": aa 1 2 3 ;", 0
 ;test2:     	db "111 aa 888 999",0
@@ -247,8 +247,8 @@ test7:     	db ": box hline vline ;",0
 test8:     	db ": world cls box $03 $03 at Hello-World! . ;",0
 test9:     	db ": sw $01 adsp world ;",0
 test10:     	db ": fw $00 adsp world draw $05 pause ;",0
-test11:     	db "hello create .",0
-test12:     	db "hello2 create .",0
+;test11:     	db "hello create .",0
+;test12:     	db "hello2 create .",0
 
 ;mmtest1:     	db "cls $0001 $0008 MIN . $0002 pause",0
 ;mmtest2:     	db "cls $0101 $0008 MIN . $0002 pause",0
@@ -327,16 +327,16 @@ ssv1cpm:          db ": ssvcpm cls repeat ssvposx ssvposy v0@ v1@ at ssvchr emit
 ; when hit or miss says how many may be in the area
 
 ; setup the game board and then hide it
-game2b:          db ": mbsetup $02 fb cls $04 $01 do i v2! $10 $01 do i v2@ at rnd8 $30 < if A . then loop loop $05 pause $01 fb ;",0
-game2bf:         db ": mbsetupf cls $04 $01 do i v2! $10 $01 do i v2@ at \"+\" . loop loop nop ;",0
-; prompt for where to target
-game2mba:        db ": mbp $12 $04 at Turns .> v3@ . $12 $03 at Score .> v0@ . $12 $01 at Enter-X-__ .- $1a $01 at accept $12 $02 at Enter-Y-__ .- $1a $02 at accept nop ;", 0 
-game2mbas:        db ": mbsv str2num v2! str2num v1! nop ;", 0 
-; TODO see if the entered coords hits or misses pushes char hit of miss
-game2mbht:      db ": mbckht nop ;",0
-game2mbms:      db ": mbcms nop ;",0
+;game2b:          db ": mbsetup $02 fb cls $04 $01 do i v2! $10 $01 do i v2@ at rnd8 $30 < if A . then loop loop $05 pause $01 fb ;",0
+;game2bf:         db ": mbsetupf cls $04 $01 do i v2! $10 $01 do i v2@ at \"+\" . loop loop nop ;",0
+;; prompt for where to target
+;game2mba:        db ": mbp $12 $04 at Turns .> v3@ . $12 $03 at Score .> v0@ . $12 $01 at Enter-X-__ .- $1a $01 at accept $12 $02 at Enter-Y-__ .- $1a $02 at accept nop ;", 0 
+;game2mbas:        db ": mbsv str2num v2! str2num v1! nop ;", 0 
+;; TODO see if the entered coords hits or misses pushes char hit of miss
+;game2mbht:      db ": mbckht nop ;",0
+;game2mbms:      db ": mbcms nop ;",0
 ; TODO how many might be near by
-game2mb:          db ": mb $00 v0! $00 v3! mbsetup mbsetupf repeat mbp mbsv $02 fb mbckht mbcms v1@ v2@ at@ $01 fb v1@ v2@ at emit $01 until nop ;",0
+;game2mb:          db ": mb $00 v0! $00 v3! mbsetup mbsetupf repeat mbp mbsv $02 fb mbckht mbcms v1@ v2@ at@ $01 fb v1@ v2@ at emit $01 until nop ;",0
 
 ; Game 3
 
@@ -349,10 +349,10 @@ game2mb:          db ": mb $00 v0! $00 v3! mbsetup mbsetupf repeat mbp mbsv $02 
 
 ; Draw side walls randomly
 
-game3w:   db ": vsw v2@ $04 at \"|\" . v3@ $04 at \"|\" . nop ;", 0
+;game3w:   db ": vsw v2@ $04 at \"|\" . v3@ $04 at \"|\" . nop ;", 0
 
 ; Draw player
-game3p:   db ": vsp v1@ $01 at \"V\" . nop ; ", 0
+;game3p:   db ": vsp v1@ $01 at \"V\" . nop ; ", 0
 
 ; TODO Get Key
 
@@ -360,12 +360,12 @@ game3p:   db ": vsp v1@ $01 at \"V\" . nop ; ", 0
 
 ; scroll and move walls a bit
 
-game3sc:  db ": vsscl v2@ $01 + v2! v3@ $01 - v3! scroll nop ;", 0
+;game3sc:  db ": vsscl v2@ $01 + v2! v3@ $01 - v3! scroll nop ;", 0
 
 ; main game loop
 
-game3vsi:    db ": vsi $00 v0! $01 v2! $12 v3! $06 v1! nop ;",0
-game3vs:    db ": vs vsi repeat vsw vsp vsscl $05 pause scroll $01 until nop ;",0
+;game3vsi:    db ": vsi $00 v0! $01 v2! $12 v3! $06 v1! nop ;",0
+;game3vs:    db ": vs vsi repeat vsw vsp vsscl $05 pause scroll $01 until nop ;",0
 
 ; key board defs
 

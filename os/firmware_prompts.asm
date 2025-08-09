@@ -21,11 +21,12 @@ prom_c2a: db "Disable Autoload Files", 0
 
 crs_s1: db "*ls-word", 0
 crs_s2: db "*ed-word", 0
-crs_s3: db "*Demo-Programs", 0
+crs_s3: db "*Demo-Games", 0
 crs_s4: db "*Utils", 0
 crs_s5: db "*SPI-Util", 0
-crs_s6: db "*Key-constants", 0
+crs_s6: db "*Key-Constants", 0
 crs_sound: db "*Sound-Util", 0
+crs_hw: db "*Hello-World",0
 
 
 

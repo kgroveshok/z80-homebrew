@@ -2,12 +2,19 @@
 Z80 Home Brew Micro-computer Project - Dev Diary
 ------------------------------------------------
 
-7th August 2025
+9th August 2025
 ---------------
-* DONE BUG UWORDS pushes the correct count of words, but only goes so far and stops pushing. problem with the demo code uwrods. renamed file so it didnt load and uwords now correct. might be one of the words being a problem with the mb code lists: vsp vsw mb and stops after mbcms. It was the strcmp function.
-* DONE Tidy some docs
-* DONE Recal stack size to actual stack item storage size
 
+* DONE So many bugs in editor below perhaps a rewrite now things have moved along?
+* DONE fix editor bugs
+* DONE typing a long few lines and then back space, then insert ends up creating spurious characters - added clear of edit buffer???
+* DONE Editor issue insert mid string causes loss of zero term giving random data
+* DONE Backspace mid string does not clean up shifted text
+* DONE Jump to end of line does not work should set to the number in last debug display
+* DONE If cursor at end of line, when go back it leaves custor displayed
+* DONE Fix prev line recall and insertion. Corruption appears on the end of line - added clear of edit buffer
+
+* TODO add more editing features 
 * TODO Lower case word defintion for LIST output
 * TODO generate word list md for the NOTE keywords is adding double spacing and breaking it. 
 * TODO Look at using 64k Serial EEPROMs to double storage. 128k page size so can keep the current page code, just change the PHY... var
@@ -33,15 +40,6 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Add stack and malloc guard vectors plus code to enable and disable then in config and cli
 
 
-* TODO So many bugs in editor below perhaps a rewrite now things have moved along?
-* TODO add more editing features 
-* TODO fix editor bugs
-* TODO typing a long few lines and then back space, then insert ends up creating spurious characters - added clear of edit buffer???
-* TODO Editor issue insert mid string causes loss of zero term giving random data
-* TODO Fix prev line recall and insertion. Corruption appears on the end of line - added clear of edit buffer
-* TODO Backspace mid string does not clean up shifted text
-* TODO Jump to end of line does not work should set to the number in last debug display
-* TODO If cursor at end of line, when go back it leaves custor displayed
 
 
 * TODO ed word has a rouge address pushed to stack when editing a record
@@ -150,6 +148,12 @@ Nice to haves:
 * TODO have a CONFIG flag to enable and disable auto compilation of uwords 
 
 * TODO Add a simple assembler feature like BBC Basic
+
+7th August 2025
+---------------
+* DONE BUG UWORDS pushes the correct count of words, but only goes so far and stops pushing. problem with the demo code uwrods. renamed file so it didnt load and uwords now correct. might be one of the words being a problem with the mb code lists: vsp vsw mb and stops after mbcms. It was the strcmp function.
+* DONE Tidy some docs
+* DONE Recal stack size to actual stack item storage size
 
 6th August 2025
 ---------------

@@ -275,8 +275,15 @@ create_startup:
 	call z, .genkeyword
 	cp 7
 	call z, .gensoundword
+	cp 7
+	call z, .genhwword
 	jr create_startup
 
+.genhwword:
+	ld hl, crs_hw
+	ld de, .hwworddef
+	call .genfile
+	ret
 .gensoundword:
 	ld hl, crs_sound
 	ld de, .soundworddef
@@ -371,6 +378,15 @@ create_startup:
 
 .genfiletxt:  db "Creating file...",0
 
+.hwworddef:
+	dw test5
+	dw test6
+	dw test7
+	dw test8
+	dw test9
+	dw test10
+	dw 0
+
 .soundworddef:
 	dw sound1
 	dw sound2
@@ -407,12 +423,6 @@ create_startup:
 	dw 0
 
 .demoworddef:
-	dw test5
-	dw test6
-	dw test7
-	dw test8
-	dw test9
-	dw test10
 	dw game1
 	dw game1a
 	dw game1b
@@ -429,18 +439,18 @@ create_startup:
 	dw ssv5
 	dw ssv1
 	dw ssv1cpm	
-	dw game2b
-	dw game2bf
-	dw game2mba
-	dw game2mbas	
-	dw game2mbht
-	dw game2mbms
-	dw game2mb
-	dw game3w
-	dw game3p
-	dw game3sc
-	dw game3vsi
-	dw game3vs
+;	dw game2b
+;	dw game2bf
+;	dw game2mba
+;	dw game2mbas	
+;	dw game2mbht
+;	dw game2mbms
+;	dw game2mb
+;	dw game3w
+;	dw game3p
+;	dw game3sc
+;	dw game3vsi
+;	dw game3vs
 	dw 0
 
 
@@ -493,6 +503,7 @@ create_startup:
 	dw crs_s5
 	dw crs_s6
 	dw crs_sound
+	dw crs_hw
 	dw 0
 
 endif

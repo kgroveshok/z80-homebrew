@@ -24,9 +24,6 @@ EDIT_V2: equ 1
 
 if EDIT_V2
 input_str:
-else
-input_str_new:
-endif
 
 	    	ld (input_at_pos),a      ; save display position to start
 ;		ld (input_at_cursor),a	; save draw pos of cursor relative to start
@@ -95,7 +92,7 @@ endif
 
 		; clean any backspace chars
 
-		ld a, "_"
+		ld a, " "
 		ld (scratch),a
 		ld a, 0
 		ld (scratch+1),a
@@ -208,9 +205,7 @@ endif
 
 		cp KEY_PREVWORD
 		jp z, input_prvword
-		cp KEY_F1
-		jp z, input_prvword
-.inskl:
+
 		cp KEY_HOME    ; jump to start of line
 		jr nz, .ikh
 		ld a, 0
@@ -280,22 +275,42 @@ input_nxtword:
 
 input_prvword:
 	; jump to the start of previous word before the cursor
+
+; where are we to start with currently?
+
+		call input_curptr	
+		ld a, (hl)
+		cp ' '
+		jr z, .inspacep     ; we are on space so eat the space until we hit non-space
+
+
+
 .inskpwn:	
 		ld a,(input_cursor)
 		cp 0
 		jp z, .inmain    ; start of string
 
-; if we are on a word, then move off of it
+;if we are on a word, then move off of it
 
 		call input_curptr	
+		ld a, (hl)
 		cp ' '
-		jr z, .inspacep     ; we are on space so eat the space until we hit non-space
+		jr z, .iwstart     ; we are on space so eat the space until we hit non-space
 		;jp z, .inmain    ; start of string
 		ld hl, input_cursor
 		dec (hl)
 		jr .inskpwn
+.iwstart:
+		ld hl, input_cursor
+		inc (hl)
+		jp .inmain
+		
 
 .inspacep:
+
+		;jp .inmain    ; start of string
+
+
 
 		ld a,(input_cursor)
 		cp 0
@@ -304,6 +319,7 @@ input_prvword:
 ; if we are on a word, then move off of it
 
 		call input_curptr	
+		ld a, (hl)
 		cp ' '
 		jp nz, .incharp     ; we are on non space so at end of prev word
 		ld hl, input_cursor
@@ -320,6 +336,7 @@ input_prvword:
 ; if we are on a word, then move off of it
 
 		call input_curptr	
+		ld a, (hl)
 		cp ' '
 		jr z, .ipwordst     ; we are on space so eat the space until we hit non-space
 		ld hl, input_cursor
@@ -556,14 +573,12 @@ input_delchar:
 	jp input_left
 
 
+endif
 
 
 
 if EDIT_V1
 input_str:
-else
-input_str_old:
-endif
 
 	    	ld (input_at_pos),a      ; save display position to start
 		add c
@@ -1229,6 +1244,7 @@ input_str_prev:	ld (input_at_pos), a
 		ret
 
 
+endif
 ; strcpy hl = dest, de source
 
 strcpy:   LD   A, (DE)        ;Get character from string

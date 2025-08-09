@@ -13,13 +13,13 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE Jump to end of line does not work should set to the number in last debug display
 * DONE If cursor at end of line, when go back it leaves custor displayed
 * DONE Fix prev line recall and insertion. Corruption appears on the end of line - added clear of edit buffer
+* DONE move games and major blocks to new files instead of demo
+* DONE remove rubbish game code from file creation
 
 * TODO add more editing features 
 * TODO Lower case word defintion for LIST output
 * TODO generate word list md for the NOTE keywords is adding double spacing and breaking it. 
 * TODO Look at using 64k Serial EEPROMs to double storage. 128k page size so can keep the current page code, just change the PHY... var
-* TODO remove rubbish game code from file creation
-* TODO move games and major blocks to new files instead of demo
 * TODO for op codes compile from dict but at run time look up a calculated table with jumps to the words to save having to scan dict to find op codes
 
 * TODO Add words that do some of the heavy lifting for SPISound out on the current CARTDEV - e.g. sending the three bytes to the spi for a note, playing a full tune

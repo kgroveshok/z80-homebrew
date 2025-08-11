@@ -137,7 +137,7 @@
 8003			 
 8003 ..			buildtime: db   "Build: " 
 800a					include "romtimestamp.asm" 
-800a ..			db '2025-08-11 21:25' 
+800a ..			db '2025-08-11 21:57' 
 # End of file romtimestamp.asm
 801a 00				   db 0 
 801b .. 32 00		debuglevel: db   "DL",DEBUG_LEVEL, 0 
@@ -13315,6 +13315,16 @@
 9fce			sysdict: 
 9fce			include "forth_opcodes.asm" 
 9fce			; op codes for forth keywords 
+9fce			 
+9fce			; Changing use of opcodes to flag is the word exists in compiled form or not.  
+9fce			; This provides a means to compile uwords if required for higher performance 
+9fce			; by avoiding the use of the keyword parser and just jumping directly to the code 
+9fce			; Actually there is already a flag for if the code exists as binary thinking about it... 
+9fce			 
+9fce			 
+9fce			 
+9fce			 
+9fce			 
 9fce			; free to use code 0  
 9fce				OPCODE_HEAP: equ  1 
 9fce				OPCODE_EXEC: equ 2 

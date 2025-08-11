@@ -1,4 +1,14 @@
 ; op codes for forth keywords
+
+; Changing use of opcodes to flag is the word exists in compiled form or not. 
+; This provides a means to compile uwords if required for higher performance
+; by avoiding the use of the keyword parser and just jumping directly to the code
+; Actually there is already a flag for if the code exists as binary thinking about it...
+
+
+
+
+
 ; free to use code 0 
 	OPCODE_HEAP: equ  1
 	OPCODE_EXEC: equ 2

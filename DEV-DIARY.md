@@ -46,13 +46,22 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 
 
 
-* TODO to make compile easier to work with only apply to colon word defs and not immediate 
-
 * TODO Add a shift reg to the sound card pcb so i can have gpio output on spi
-
 * TODO PICK word to pick a value at a given value on stack and move to TOS. Some code in place. Needs fixing as not quite right
 
+
+* TODO Actuall forget using op code, there is already a flag to define if the word exists as binary form on the CHEAD WORD_FLAG_CODE. What is being used for uwords? yes WORD_SYS_UWORD is used for detecting if sysdict or udict. No, that SYS flag is used in op code. WORD_FLAG_CODE isnt coded for a memory space. Only opcode, so back to that idea
+
+* TODO to make compile easier to work with only apply to colon word defs and not immediate 
 * TODO a better means of compling is not to use op codes but as in trad forth and create a pointer to the direct code block to exec and by pass the token scanning. Would need a flag before the pointer to indicate that what comes next is a pointer and not something to throw at the parser. This would work for system and uword exec. Dont forget to make sure the next token pointers are kept up to date. Perhaps if the item is known to be a string or number it can short circut the parser. We know the symbols that work for this. 
+* TODO Change op code to be flags: a. this word is in binary form and cant list it.... should be able to compile all words as even single char would be quicker with a jump
+* TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs. FORGET and LIST use a scanner. Combine with main parser and have one for keyword and another for byte code
+* TODO for the compiler. At runtime Have the parser detect if the first char to scan for has top bit set. if so then the rest of the byte is compiled keyword and use fast lookup instead. Does limit to top 127 keywords
+* TODO When compiling a uword. Parse tokens and replace with matched high bit words.
+* TODO prefix a uword block with a flag to say if the uword contains compiled tokens (useful for LIST)
+* TODO have a CONFIG flag to enable and disable auto compilation of uwords 
+
+
 
 * TODO A save and restore word for device/cartdev. If needed could I use symbol reference instead?
 * TODO storage block reuse working?
@@ -74,6 +83,7 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 Bug list:
 
 * TODO Fix 2SWAP for type flag
+* TODO Fix 2SWAP
 * TODO BUG If : word is in caps it wont work. This could be connected with caps on LIST which only works if given as lcase.
 * TODO BUG Uword can't have a numeric in the word name???? Odd...
 * TODO Stop menu scrolling past last item
@@ -86,7 +96,6 @@ Bug list:
 * TODO Fix NUM2STR. 
 * TODO Fix LEFT
 * TODO Fix RIGHT
-* TODO Fix 2SWAP
 * TODO Fix IS 
 
 
@@ -188,11 +197,6 @@ Enhancements:
 * TODO Pico to handle display to have two way return of data
 
 * TODO Produce BOM for all of the hardware projects to go with documentation
-* TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs. FORGET and LIST use a scanner. Combine with main parser and have one for keyword and another for byte code
-* TODO for the compiler. At runtime Have the parser detect if the first char to scan for has top bit set. if so then the rest of the byte is compiled keyword and use fast lookup instead. Does limit to top 127 keywords
-* TODO When compiling a uword. Parse tokens and replace with matched high bit words.
-* TODO prefix a uword block with a flag to say if the uword contains compiled tokens (useful for LIST)
-* TODO have a CONFIG flag to enable and disable auto compilation of uwords 
 
 * TODO Add a simple assembler feature like BBC Basic
 

@@ -295,7 +295,7 @@ CWHEAD .EXEC OPCODE_HEAP "HEAP" 4 WORD_FLAG_CODE
 
 .DUP:
 CWHEAD .ZDUP OPCODE_DUP "DUP" 3 WORD_FLAG_CODE
-; | DUP ( u -- u u )     Duplicate whatever item is on TOS | TOFIX
+; | DUP ( u -- u u )     Duplicate whatever item is on TOS | DONE
 
 	if DEBUG_FORTH_WORDS_KEY
 		DMARK "DUP"
@@ -338,7 +338,7 @@ endif
 	NEXTW
 .ZDUP:
 CWHEAD .SWAP OPCODE_ZDUP "?DUP" 4 WORD_FLAG_CODE
-; | ?DUP ( u -- u u )     Duplicate item on TOS if the item is non-zero | TOFIX
+; | ?DUP ( u -- u u )     Duplicate item on TOS if the item is non-zero (Only works for numerics) | DONE
 
 	if DEBUG_FORTH_WORDS_KEY
 		DMARK "qDU"
@@ -370,32 +370,44 @@ CWHEAD .SWAP OPCODE_ZDUP "?DUP" 4 WORD_FLAG_CODE
 	NEXTW
 .SWAP:
 CWHEAD .COLN OPCODE_SWAP "SWAP" 4 WORD_FLAG_CODE
-; | SWAP ( w1 w2 -- w2 w1 )    Swap top two items on TOS | TOFIX
+; | SWAP ( w1 w2 -- w2 w1 )    Swap top two items on TOS | DONE
 	if DEBUG_FORTH_WORDS_KEY
 		DMARK "SWP"
 		CALLMONITOR
 	endif
 
-; TODO Use os stack swap memory
-	FORTH_DSP_VALUEHL
-	push hl     ; w2
+; DONE Use os stack swap memory
 
-	FORTH_DSP_POP
+	FORTH_DSP_PTR 0     ; TOS
+	call hltostack1
+ 
+	FORTH_DSP_PTR 1     ; TOS
+	call hltostack2
 
-	FORTH_DSP_VALUEHL
+	FORTH_DSP_PTR 0     ; TOS
+	call hlfromstack2
 
-	FORTH_DSP_POP
-
-	pop de     ; w2	, hl = w1
-
-	ex de, hl
-	push de
-
-	call forth_push_numhl
-
-	pop hl
-
-	call forth_push_numhl
+	FORTH_DSP_PTR 1     ; TOS
+	call hlfromstack1
+;	FORTH_DSP_VALUEHL
+;	push hl     ; w2
+;
+;	FORTH_DSP_POP
+;
+;	FORTH_DSP_VALUEHL
+;
+;	FORTH_DSP_POP
+;
+;	pop de     ; w2	, hl = w1
+;
+;	ex de, hl
+;	push de
+;
+;	call forth_push_numhl
+;
+;	pop hl
+;
+;	call forth_push_numhl
 	
 
 	NEXTW
@@ -735,7 +747,7 @@ CWHEAD .DUP2 OPCODE_DROP "DROP" 4 WORD_FLAG_CODE
 	NEXTW
 .DUP2:
 CWHEAD .DROP2 OPCODE_DUP2 "2DUP" 4 WORD_FLAG_CODE
-; | 2DUP ( w1 w2 -- w1 w2 w1 w2 ) Duplicate the top two items on TOS  | TOFIX
+; | 2DUP ( w1 w2 -- w1 w2 w1 w2 ) Duplicate the top two items on TOS  (Only works for numerics) | DONE
 	if DEBUG_FORTH_WORDS_KEY
 		DMARK "2DU"
 		CALLMONITOR
@@ -778,7 +790,7 @@ CWHEAD .SWAP2 OPCODE_DROP2 "2DROP" 5 WORD_FLAG_CODE
 	NEXTW
 .SWAP2:
 CWHEAD .AT OPCODE_SWAP2 "2SWAP" 5 WORD_FLAG_CODE
-; | 2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items | TOFIX
+; | 2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items | TODO
 	if DEBUG_FORTH_WORDS_KEY
 		DMARK "2SW"
 		CALLMONITOR
@@ -922,29 +934,63 @@ CWHEAD .PAUSE 46 "OVER" 4 WORD_FLAG_CODE
 	endif
 
 ; TODO Use os stack swap memory
-	FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
-	push hl    ; n2
-	FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
-	FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
-	push hl    ; n1
-	FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+	; work out what type we are looking at
 
-	pop de     ; n1
-	pop hl     ; n2
+	FORTH_DSP_PTR 1
 
-	push de
-	push hl
-	push de
+	ld a, (hl)
+	
+	push af
+	; whatever the type lets get the pointer or word
+	inc hl
+;;
+
+	; type check now to decide on how to push 
+
+	call loadwordinhl
+	pop af
+	cp DS_TYPE_STR
+	jr z, .ovstr
+
+	; we have a numeric so load the word and push
+;	ld e, (hl)
+;	inc hl
+;	ld d, (hl)
+;	ex de, hl
+	call forth_push_numhl
+	NEXTW
+
+.ovstr:
+	; ok, a string so get the pointer and push as a string
+
+;	call loadwordinhl
+	call forth_push_str
+	NEXTW
+
+;	FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+;	push hl    ; n2
+;	FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+;
+;	FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+;	push hl    ; n1
+;	FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+;
+;	pop de     ; n1
+;	pop hl     ; n2
+;
+;	push de
+;	push hl
+;	push de
 
 	; push back 
 
-	pop hl
-	call forth_push_numhl
-	pop hl
-	call forth_push_numhl
-	pop hl
-	call forth_push_numhl
+;	pop hl
+;	call forth_push_numhl
+;	pop hl
+;	call forth_push_numhl
+;	pop hl
+;	call forth_push_numhl
 	NEXTW
 
 .PAUSE:
@@ -996,40 +1042,61 @@ CWHEAD .UWORDS 49 "ROT" 3 WORD_FLAG_CODE
 		CALLMONITOR
 	endif
 
-; TODO Use os stack swap memory
-	FORTH_DSP_VALUEHL
-	push hl    ; u3 
+; DONE Use os stack swap memory
 
-	FORTH_DSP_POP
+	FORTH_DSP_PTR 0     ; u3
+	call hltostack1    
+ 
+	FORTH_DSP_PTR 1     ; u2
+	call hltostack2     
 
-	FORTH_DSP_VALUEHL
-	push hl     ; u2
-
-	FORTH_DSP_POP
-
-	FORTH_DSP_VALUEHL
-	push hl     ; u1
-
-	FORTH_DSP_POP
-
-	pop bc      ; u1
-	pop hl      ; u2
-	pop de      ; u3
+	FORTH_DSP_PTR 2     ; u1
+	call hltostack3
 
 
-	push bc
-	push de
-	push hl
+	FORTH_DSP_PTR 0     ; 
+	call hlfromstack3
+
+	FORTH_DSP_PTR 1     ; TOS
+	call hlfromstack1
+
+	FORTH_DSP_PTR 2     ; TOS
+	call hlfromstack2
 
 
-	pop hl
-	call forth_push_numhl
-
-	pop hl
-	call forth_push_numhl
-
-	pop hl
-	call forth_push_numhl
+;	FORTH_DSP_VALUEHL
+;	push hl    ; u3 
+;
+;	FORTH_DSP_POP
+;
+;	FORTH_DSP_VALUEHL
+;	push hl     ; u2
+;
+;	FORTH_DSP_POP
+;
+;	FORTH_DSP_VALUEHL
+;	push hl     ; u1
+;
+;	FORTH_DSP_POP
+;
+;	pop bc      ; u1
+;	pop hl      ; u2
+;	pop de      ; u3
+;
+;
+;	push bc
+;	push de
+;	push hl
+;
+;
+;	pop hl
+;	call forth_push_numhl
+;
+;	pop hl
+;	call forth_push_numhl
+;
+;	pop hl
+;	call forth_push_numhl
 	
 
 

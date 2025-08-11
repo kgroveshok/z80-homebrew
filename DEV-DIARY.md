@@ -32,13 +32,25 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE Lower case word defintion for LIST output
 * DONE when underflow instead of going to > got to monitor first as that will help with using word mark clues
 * DONE  try not debug firmware to see if that speeds up system. It does.
+* DONE Fixed SWAP for type flag
+* DONE Fix ROT for type flag
+* DONE have added hltostack1-4 and reverse
+* DONE Need som FORTH_DSP macros to provide pointer offsets to top n stack items
+* DONE How to swap string items as calls tO FORTH_DSP_POP will destroy memory allocs? Just move bytes?
+* DONE BUG function to store three copies of three bytes used to move stack around for swap, over, rot etc and cope with type flag. Look for "TODO Use os stack swap memory"
+* DONE BUG swap of string and number leaves string ptr being left as number. Not swapping var type? Should swap three bytes not two
+* DONE Fixed OVER
+* DONE If DUP string then may new malloc copy as any use will do a double free which is bad. Already set to detect type
+* DONE BUG Does OVER work with a string and a value on stack? I know swap does not so not expecting this to work. Yes copies as a pointer. Need to shift three bytes. Write a bit of code to store three bytes for stack movements.
+
+* TODO Fix 2SWAP for type flag
 
 
-* TODO a better means of compling is not to use op codes but as in trad forth and create a pointer to the direct code block to exec and by pass the token scanning. Would need a flag before the pointer to indicate that what comes next is a pointer and not something to throw at the parser. This would work for system and uword exec. Dont forget to make sure the next token pointers are kept up to date. Perhaps if the item is known to be a string or number it can short circut the parser. We know the symbols that work for this. 
 * TODO to make compile easier to work with only apply to colon word defs and not immediate 
 
 
 
+* TODO a better means of compling is not to use op codes but as in trad forth and create a pointer to the direct code block to exec and by pass the token scanning. Would need a flag before the pointer to indicate that what comes next is a pointer and not something to throw at the parser. This would work for system and uword exec. Dont forget to make sure the next token pointers are kept up to date. Perhaps if the item is known to be a string or number it can short circut the parser. We know the symbols that work for this. 
 * TODO Add a shift reg to the sound card pcb so i can have gpio output on spi
 
 * TODO A save and restore word for device/cartdev. If needed could I use symbol reference instead?
@@ -63,14 +75,6 @@ Bug list:
 * TODO BUG If : word is in caps it wont work. This could be connected with caps on LIST which only works if given as lcase.
 * TODO BUG Uword can't have a numeric in the word name???? Odd...
 * TODO Stop menu scrolling past last item
-
-* DONE have added hltostack1-4 and reverse
-* TODO Need som FORTH_DSP macros to provide pointer offsets to top n stack items
-* TODO How to swap string items as calls tO FORTH_DSP_POP will destroy memory allocs? Just move bytes?
-* TODO If DUP string then may new malloc copy as any use will do a double free which is bad.
-* TODO BUG function to store three copies of three bytes used to move stack around for swap, over, rot etc and cope with type flag. Look for "TODO Use os stack swap memory"
-* TODO BUG swap of string and number leaves string ptr being left as number. Not swapping var type? Should swap three bytes not two
-* TODO BUG Does OVER work with a string and a value on stack? I know swap does not so not expecting this to work. Yes copies as a pointer. Need to shift three bytes. Write a bit of code to store three bytes for stack movements.
 
 
 * TODO generate word list md for the NOTE keywords is adding double spacing and breaking it. 

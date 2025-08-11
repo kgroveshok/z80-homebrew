@@ -799,7 +799,17 @@ getwordathl:
 	ret
 
 
-; functions to manuplite stack points
+; functions to manuplite stack pointers
+
+; generate fragment to set hl to be pointer to a stack item
+
+FORTH_DSP_PTR: macro  x
+	ld hl,(cli_data_sp)
+	ld de, x * 3
+	sbc hl, de
+	endm
+
+
 
 ; copy point in hl to stack tmp storage slots 1-4
 hltostack1:

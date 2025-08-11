@@ -137,7 +137,7 @@
 8003			 
 8003 ..			buildtime: db   "Build: " 
 800a					include "romtimestamp.asm" 
-800a ..			db '2025-08-11 13:11' 
+800a ..			db '2025-08-11 13:24' 
 # End of file romtimestamp.asm
 801a 00				   db 0 
 801b .. 32 00		debuglevel: db   "DL",DEBUG_LEVEL, 0 
@@ -13773,7 +13773,7 @@ a010 04				db 3 + 1
 a011 .. 00			db "DUP",0              
 a015				endm 
 # End of macro CWHEAD
-a015			; | DUP ( u -- u u )     Duplicate whatever item is on TOS | DONE 
+a015			; | DUP ( u -- u u )     Duplicate whatever item is on TOS | TOFIX 
 a015			 
 a015				if DEBUG_FORTH_WORDS_KEY 
 a015					DMARK "DUP" 
@@ -13882,7 +13882,7 @@ a086 05				db 4 + 1
 a087 .. 00			db "?DUP",0              
 a08c				endm 
 # End of macro CWHEAD
-a08c			; | ?DUP ( u -- u u )     Duplicate item on TOS if the item is non-zero | DONE 
+a08c			; | ?DUP ( u -- u u )     Duplicate item on TOS if the item is non-zero | TOFIX 
 a08c			 
 a08c				if DEBUG_FORTH_WORDS_KEY 
 a08c					DMARK "qDU" 
@@ -13941,7 +13941,7 @@ a0be 05				db 4 + 1
 a0bf .. 00			db "SWAP",0              
 a0c4				endm 
 # End of macro CWHEAD
-a0c4			; | SWAP ( w1 w2 -- w2 w1 )    Swap top two items on TOS | DONE 
+a0c4			; | SWAP ( w1 w2 -- w2 w1 )    Swap top two items on TOS | TOFIX 
 a0c4				if DEBUG_FORTH_WORDS_KEY 
 a0c4					DMARK "SWP" 
 a0c4 f5				push af  
@@ -14556,7 +14556,7 @@ a300 05				db 4 + 1
 a301 .. 00			db "2DUP",0              
 a306				endm 
 # End of macro CWHEAD
-a306			; | 2DUP ( w1 w2 -- w1 w2 w1 w2 ) Duplicate the top two items on TOS  | DONE 
+a306			; | 2DUP ( w1 w2 -- w1 w2 w1 w2 ) Duplicate the top two items on TOS  | TOFIX 
 a306				if DEBUG_FORTH_WORDS_KEY 
 a306					DMARK "2DU" 
 a306 f5				push af  
@@ -14665,7 +14665,7 @@ a374 06				db 5 + 1
 a375 .. 00			db "2SWAP",0              
 a37b				endm 
 # End of macro CWHEAD
-a37b			; | 2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items | TODO 
+a37b			; | 2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items | TOFIX 
 a37b				if DEBUG_FORTH_WORDS_KEY 
 a37b					DMARK "2SW" 
 a37b f5				push af  
@@ -14994,7 +14994,7 @@ a4c8 05				db 4 + 1
 a4c9 .. 00			db "OVER",0              
 a4ce				endm 
 # End of macro CWHEAD
-a4ce			; | OVER ( n1 n2 -- n1 n2 n1 )  Copy one below TOS onto TOS | DONE 
+a4ce			; | OVER ( n1 n2 -- n1 n2 n1 )  Copy one below TOS onto TOS | TOFIX 
 a4ce				if DEBUG_FORTH_WORDS_KEY 
 a4ce					DMARK "OVR" 
 a4ce f5				push af  
@@ -15195,7 +15195,7 @@ a5b3 04				db 3 + 1
 a5b4 .. 00			db "ROT",0              
 a5b8				endm 
 # End of macro CWHEAD
-a5b8			; | ROT ( u1 u2 u3 -- u2 u3 u1 ) Rotate top three items on stack | DONE 
+a5b8			; | ROT ( u1 u2 u3 -- u2 u3 u1 ) Rotate top three items on stack | TOFIX 
 a5b8				if DEBUG_FORTH_WORDS_KEY 
 a5b8					DMARK "ROT" 
 a5b8 f5				push af  

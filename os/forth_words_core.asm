@@ -1404,7 +1404,19 @@ pop hl
 
 		; copy uword name to scratch
 
-		ldir
+;		ldir
+.licplw:	; copy uword name to scratch converting to lower case as we go
+		ldi
+		dec de
+		ld a, (de)
+		call to_lower
+		ld (de),a
+		inc de
+		ld a, 0
+		cp c
+		jr nz, .licplw
+
+
 
 		dec de
 		ld a, ' '    ; change null to space

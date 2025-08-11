@@ -29,6 +29,10 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE look at hooking up a RTC on SPI. Most are i2c. Use PicoNet instead
 * DONE provide various debug level versions of the binary. One with no debug, one with most debug and a key debug only
 * DONE include what the ROM assemble options/targets are in the file on splash screen to easily id what the machine has in it
+* DONE Lower case word defintion for LIST output
+
+
+
 
 * TODO A save and restore word for device/cartdev
 * TODO storage block reuse working?
@@ -52,7 +56,6 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 Bug list:
 
 * TODO BUG If : word is in caps it wont work. This could be connected with caps on LIST which only works if given as lcase.
-* TODO Lower case word defintion for LIST output
 * TODO Stop menu scrolling past last item
 * TODO BUG function to store three copies of three bytes used to move stack around for swap, over, rot etc and cope with type flag. Look for "TODO Use os stack swap memory"
 * TODO BUG swap of string and number leaves string ptr being left as number. Not swapping var type? Should swap three bytes not two

@@ -126,7 +126,7 @@ In bank $01, if a file begins with an asterisk the file will be auto loaded at s
 Or for blanket enable and disable use CONFIG word to toggle in the UI.
 
 > [!NOTE]
-> Usually files will contain a list of user word definitions, however it should be possible to exec words 
+> Usually files will contain a list of user word definitions, however it is possible to exec words 
 > as they are loaded using already loaded words, in this case be aware that if any code on the single line affects $01 BANK selection
 > ensure that $01 BANK occurs before end so that auto loading can continue as this is not done
 > automatically between each line load just in case that effect is needed.
@@ -190,7 +190,10 @@ Using '#' will launch a full featured monitor.
 Holding down a key at boot will halt at the end of the splash screen. Releasing the key will display a hardware/system diags screen. Can also get to that point with the use of the CONFIG word.
 
 
+The firmware.asm file contains many debug switches. If they are all off the resulting binary file is around half the size and runs at a reasonable rate. Will full debug on there isn't much ROM space left and performance does suffer but the level of debug tracking is really useful especially if new words are being developed or a bug is identified in one.
 
+
+The make.sh will also generate three debug levels of the ROM. Level DL0 is with no debug or system guards in place. Could be a problem if you mess up code but it will run the fastest. DL1 has some debug code in place to help with tracing programs and has stack corruption guards in place. DL2 has the most debug code in place. Will run pretty slow but should be robust if you are testing lowlevel stuff.
 
 
 

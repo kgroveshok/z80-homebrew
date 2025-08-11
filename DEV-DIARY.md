@@ -25,30 +25,49 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE uword not exact match pulls wrong code. Maybe resolved now if connected with LIST
 * DONE Saved setting to enable/disable auto start
 * DONE Saved setting to select words to auto load from storage. Now using file name
+* DONE Fix KEY. KEY word is ok. if no press then zero otherwise ascii 
+* DONE look at hooking up a RTC on SPI. Most are i2c. Use PicoNet instead
+* DONE provide various debug level versions of the binary. One with no debug, one with most debug and a key debug only
+* DONE include what the ROM assemble options/targets are in the file on splash screen to easily id what the machine has in it
+
+* TODO A save and restore word for device/cartdev
+* TODO storage block reuse working?
+* TODO when underflow instead of going to > got to monitor first as that will help with using word mark clues
+* TODO  film videos of z80 for bespoke website
+* TODO  a split word could be useful that pushes each bit to stack
+* TODO provideca f key hook which can be triggered at any get key
+* TODO  add uuword dmark as an extra set when a uword is looked up to exec
+* TODO sort out ntp get 
+* TODO  save file from socket
+* TODO  copy file to isocket backup 
+* TODO  try not debug firmware to see if that speeds up system 
+* TODO getid is slow. does it bail on first hit?
+* TODO add write protect to bank
+* TODO tidy up config menu - hellow world not working plus diags etc
+* TODO add more to config menu
 
 
-* TODO look at hooking up a RTC on SPI
+
 
 Bug list:
 
 * TODO BUG If : word is in caps it wont work. This could be connected with caps on LIST which only works if given as lcase.
-* TODO Stop menu scrolling past last item
 * TODO Lower case word defintion for LIST output
+* TODO Stop menu scrolling past last item
 * TODO BUG function to store three copies of three bytes used to move stack around for swap, over, rot etc and cope with type flag. Look for "TODO Use os stack swap memory"
+* TODO BUG swap of string and number leaves string ptr being left as number. Not swapping var type? Should swap three bytes not two
 * TODO BUG Does OVER work with a string and a value on stack? I know swap does not so not expecting this to work. Yes copies as a pointer. Need to shift three bytes. Write a bit of code to store three bytes for stack movements.
 * TODO BUG Uword can't have a numeric in the word name???? Odd...
 
 
 * TODO generate word list md for the NOTE keywords is adding double spacing and breaking it. 
 
-* TODO BUG swap of string and number leaves string ptr being left as number. Not swapping var type? Should swap three bytes not two
 
 * TODO LSHIFT and RSHIFT for bit shifting
 * TODO Fix NUM2STR. 
 * TODO Fix LEFT
 * TODO Fix RIGHT
 * TODO Fix 2SWAP
-* TODO Fix KEY
 * TODO Fix IS 
 
 

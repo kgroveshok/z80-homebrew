@@ -3,7 +3,10 @@
 
 .KEY:
 	CWHEAD .WAITK 42 "KEY" 3 WORD_FLAG_CODE
-; | KEY ( -- w f ) Scan for keypress but do not wait true if next item on stack is key press | TODO
+; | KEY ( -- u ) A non-blocking read of keypress | DONE
+; | | The ASCII key (or key code) is pushed to stack. If no key is currently held down then push a 0
+; | | Can use something like this to process:
+; | | > repeat active . key ?dup if emit then #1 until 
 
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "KEY"

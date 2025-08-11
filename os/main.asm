@@ -26,6 +26,7 @@ endif
 buildtime: db   "Build: "
 		include "romtimestamp.asm"
 	   db 0
+debuglevel: db   "DL",DEBUG_LEVEL, 0
 
 
 

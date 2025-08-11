@@ -654,6 +654,7 @@ type_faults: 	push de
 		jp cli
 		halt
 
+
 ; handle the auto run of code from files in storage
 
 

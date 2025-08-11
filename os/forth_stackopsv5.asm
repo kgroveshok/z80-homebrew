@@ -799,8 +799,52 @@ getwordathl:
 	ret
 
 
+; functions to manuplite stack points
 
+; copy point in hl to stack tmp storage slots 1-4
+hltostack1:
+	ld de, os_stack_1 
+	jp hltostackmv
 
+hltostack2: 
+	ld de, os_stack_2
+	jp hltostackmv
+
+hltostack3: 
+	ld de, os_stack_3
+	jp hltostackmv
+
+hltostack4: 
+	ld de, os_stack_4 
+	jp hltostackmv
+
+; copy to point in hl from stack tmp storage slots 1-4
+hlfromstack1:
+	ld de, os_stack_1
+	jp hlfromsttackmv
+
+hlfromstack2: 
+	ld de, os_stack_2
+	jp hlfromsttackmv
+
+hlfromstack3: 
+	ld de, os_stack_3
+	jp hlfromsttackmv
+
+hlfromstack4: 
+	ld de, os_stack_4
+
+hlfromsttackmv:
+	ex de, hl
+
+hltostackmv:
+
+	; do stack move
+	push bc
+	ld bc, 3
+	ldir 
+	pop bc	
+	ret
 
 ; eof
 

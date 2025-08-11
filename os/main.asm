@@ -553,6 +553,8 @@ monitor:
 	jp z, .monedit	
 	cp 'G'		; dump
 	jp z, .monjump
+	cp 'B'		; forth breakpoint
+	call z, break_point_state
 	cp 'Q'		; dump
 	ret z	
 
@@ -597,7 +599,7 @@ monitor:
 
 .monhelptext1: 	db "D-Dump, C-Cont Dump",0
 .monhelptext2:  db "M-Edit Start, U-Update Byte",0
-.monhelptext3:  db "G-Call address",0
+.monhelptext3:  db "G-Call address, B-Breakpoints",0
 .monhelptext4:  db "Q-Quit",0
        
 .monhelp:

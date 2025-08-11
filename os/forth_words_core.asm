@@ -295,7 +295,7 @@ CWHEAD .EXEC OPCODE_HEAP "HEAP" 4 WORD_FLAG_CODE
 
 .DUP:
 CWHEAD .ZDUP OPCODE_DUP "DUP" 3 WORD_FLAG_CODE
-; | DUP ( u -- u u )     Duplicate whatever item is on TOS | DONE
+; | DUP ( u -- u u )     Duplicate whatever item is on TOS | TOFIX
 
 	if DEBUG_FORTH_WORDS_KEY
 		DMARK "DUP"
@@ -338,7 +338,7 @@ endif
 	NEXTW
 .ZDUP:
 CWHEAD .SWAP OPCODE_ZDUP "?DUP" 4 WORD_FLAG_CODE
-; | ?DUP ( u -- u u )     Duplicate item on TOS if the item is non-zero | DONE
+; | ?DUP ( u -- u u )     Duplicate item on TOS if the item is non-zero | TOFIX
 
 	if DEBUG_FORTH_WORDS_KEY
 		DMARK "qDU"
@@ -370,7 +370,7 @@ CWHEAD .SWAP OPCODE_ZDUP "?DUP" 4 WORD_FLAG_CODE
 	NEXTW
 .SWAP:
 CWHEAD .COLN OPCODE_SWAP "SWAP" 4 WORD_FLAG_CODE
-; | SWAP ( w1 w2 -- w2 w1 )    Swap top two items on TOS | DONE
+; | SWAP ( w1 w2 -- w2 w1 )    Swap top two items on TOS | TOFIX
 	if DEBUG_FORTH_WORDS_KEY
 		DMARK "SWP"
 		CALLMONITOR
@@ -735,7 +735,7 @@ CWHEAD .DUP2 OPCODE_DROP "DROP" 4 WORD_FLAG_CODE
 	NEXTW
 .DUP2:
 CWHEAD .DROP2 OPCODE_DUP2 "2DUP" 4 WORD_FLAG_CODE
-; | 2DUP ( w1 w2 -- w1 w2 w1 w2 ) Duplicate the top two items on TOS  | DONE
+; | 2DUP ( w1 w2 -- w1 w2 w1 w2 ) Duplicate the top two items on TOS  | TOFIX
 	if DEBUG_FORTH_WORDS_KEY
 		DMARK "2DU"
 		CALLMONITOR
@@ -778,7 +778,7 @@ CWHEAD .SWAP2 OPCODE_DROP2 "2DROP" 5 WORD_FLAG_CODE
 	NEXTW
 .SWAP2:
 CWHEAD .AT OPCODE_SWAP2 "2SWAP" 5 WORD_FLAG_CODE
-; | 2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items | TODO
+; | 2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items | TOFIX
 	if DEBUG_FORTH_WORDS_KEY
 		DMARK "2SW"
 		CALLMONITOR
@@ -915,7 +915,7 @@ ld h,0
 	NEXTW
 .OVER:
 CWHEAD .PAUSE 46 "OVER" 4 WORD_FLAG_CODE
-; | OVER ( n1 n2 -- n1 n2 n1 )  Copy one below TOS onto TOS | DONE
+; | OVER ( n1 n2 -- n1 n2 n1 )  Copy one below TOS onto TOS | TOFIX
 	if DEBUG_FORTH_WORDS_KEY
 		DMARK "OVR"
 		CALLMONITOR
@@ -990,7 +990,7 @@ CWHEAD .ROT 48 "PAUSE" 5 WORD_FLAG_CODE
        NEXTW
 .ROT:
 CWHEAD .UWORDS 49 "ROT" 3 WORD_FLAG_CODE
-; | ROT ( u1 u2 u3 -- u2 u3 u1 ) Rotate top three items on stack | DONE
+; | ROT ( u1 u2 u3 -- u2 u3 u1 ) Rotate top three items on stack | TOFIX
 	if DEBUG_FORTH_WORDS_KEY
 		DMARK "ROT"
 		CALLMONITOR

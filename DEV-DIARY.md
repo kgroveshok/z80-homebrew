@@ -30,37 +30,43 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE provide various debug level versions of the binary. One with no debug, one with most debug and a key debug only
 * DONE include what the ROM assemble options/targets are in the file on splash screen to easily id what the machine has in it
 * DONE Lower case word defintion for LIST output
+* DONE when underflow instead of going to > got to monitor first as that will help with using word mark clues
+* DONE  try not debug firmware to see if that speeds up system. It does.
 
 
 
+* TODO Add a shift reg to the sound card pcb so i can have gpio output on spi
 
-* TODO A save and restore word for device/cartdev
+* TODO A save and restore word for device/cartdev. If needed could I use symbol reference instead?
 * TODO storage block reuse working?
-* TODO when underflow instead of going to > got to monitor first as that will help with using word mark clues
 * TODO  film videos of z80 for bespoke website
 * TODO  a split word could be useful that pushes each bit to stack
 * TODO provideca f key hook which can be triggered at any get key
-* TODO  add uuword dmark as an extra set when a uword is looked up to exec
 * TODO sort out ntp get 
 * TODO  save file from socket
 * TODO  copy file to isocket backup 
-* TODO  try not debug firmware to see if that speeds up system 
 * TODO getid is slow. does it bail on first hit?
-* TODO add write protect to bank
+* TODO add write protect to bank - byte zero? any attempt to write should throw system message
 * TODO tidy up config menu - hellow world not working plus diags etc
 * TODO add more to config menu
 
+* TODO  add uuword dmark as an extra set when a uword is looked up to exec. Added to firmware. need display on break point screen and where to intercept in parser
 
 
 
 Bug list:
 
 * TODO BUG If : word is in caps it wont work. This could be connected with caps on LIST which only works if given as lcase.
+* TODO BUG Uword can't have a numeric in the word name???? Odd...
 * TODO Stop menu scrolling past last item
+
+* DONE have added hltostack1-4 and reverse
+* TODO Need som FORTH_DSP macros to provide pointer offsets to top n stack items
+* TODO How to swap string items as calls tO FORTH_DSP_POP will destroy memory allocs? Just move bytes?
+* TODO If DUP string then may new malloc copy as any use will do a double free which is bad.
 * TODO BUG function to store three copies of three bytes used to move stack around for swap, over, rot etc and cope with type flag. Look for "TODO Use os stack swap memory"
 * TODO BUG swap of string and number leaves string ptr being left as number. Not swapping var type? Should swap three bytes not two
 * TODO BUG Does OVER work with a string and a value on stack? I know swap does not so not expecting this to work. Yes copies as a pointer. Need to shift three bytes. Write a bit of code to store three bytes for stack movements.
-* TODO BUG Uword can't have a numeric in the word name???? Odd...
 
 
 * TODO generate word list md for the NOTE keywords is adding double spacing and breaking it. 

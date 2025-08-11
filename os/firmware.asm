@@ -182,7 +182,8 @@ hardware_word: equ hardware_config - 2
 nmi_vector:  equ hardware_word - 3   ; vector to the nmi handler
 debug_vector:  equ nmi_vector - 3   ; vector to the debug handler
 
-debug_mark: equ debug_vector - 4
+debug_umark: equ debug_vector - 6  ; current user mark
+debug_mark: equ debug_umark - 4    ; internal word debug points
 
 ; input_str vars
 input_ptr:  equ debug_mark - 2    ; ptr to the current cursor position of string currently being edited  on entry starting 
@@ -591,6 +592,7 @@ ld (debug_mark+1),a
 ld (debug_mark+2),a
 ld a,0
 ld (debug_mark+3),a
+ld (debug_umark),a
 
 		ret
 

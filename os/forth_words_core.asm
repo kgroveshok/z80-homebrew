@@ -779,7 +779,7 @@ CWHEAD .DROP2 OPCODE_DUP2 "2DUP" 4 WORD_FLAG_CODE
 
 	NEXTW
 .DROP2:
-CWHEAD .SWAP2 OPCODE_DROP2 "2DROP" 5 WORD_FLAG_CODE
+CWHEAD .PICK OPCODE_DROP2 "2DROP" 5 WORD_FLAG_CODE
 ; | 2DROP ( w w -- )    Double drop | DONE
 	if DEBUG_FORTH_WORDS_KEY
 		DMARK "2DR"
@@ -787,6 +787,36 @@ CWHEAD .SWAP2 OPCODE_DROP2 "2DROP" 5 WORD_FLAG_CODE
 	endif
 	FORTH_DSP_POP
 	FORTH_DSP_POP
+	NEXTW
+.PICK:
+CWHEAD .SWAP2 99 "PICK" 4 WORD_FLAG_CODE
+; | PICK ( ux ... u x -- ux ... u n )    Replace x on stack with the item from position x on stack  | TODO
+	if DEBUG_FORTH_WORDS_KEY
+		DMARK "PIK"
+		CALLMONITOR
+	endif
+
+	FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+	
+	FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+	; init from TOS
+	ld b, l
+	ld hl, cli_data_sp
+.pkl:
+	dec hl
+	dec hl
+	dec hl
+
+	djnz .pkl
+
+	
+	; TODO do type check with correct push
+
+	inc hl
+	call loadwordinhl
+	call forth_push_numhl
+
 	NEXTW
 .SWAP2:
 CWHEAD .AT OPCODE_SWAP2 "2SWAP" 5 WORD_FLAG_CODE

@@ -42,16 +42,17 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE Fixed OVER
 * DONE If DUP string then may new malloc copy as any use will do a double free which is bad. Already set to detect type
 * DONE BUG Does OVER work with a string and a value on stack? I know swap does not so not expecting this to work. Yes copies as a pointer. Need to shift three bytes. Write a bit of code to store three bytes for stack movements.
+* DONE backup and restore of banks to network. ubiall word
 
-* TODO Fix 2SWAP for type flag
 
 
 * TODO to make compile easier to work with only apply to colon word defs and not immediate 
 
+* TODO Add a shift reg to the sound card pcb so i can have gpio output on spi
 
+* TODO PICK word to pick a value at a given value on stack and move to TOS. Some code in place. Needs fixing as not quite right
 
 * TODO a better means of compling is not to use op codes but as in trad forth and create a pointer to the direct code block to exec and by pass the token scanning. Would need a flag before the pointer to indicate that what comes next is a pointer and not something to throw at the parser. This would work for system and uword exec. Dont forget to make sure the next token pointers are kept up to date. Perhaps if the item is known to be a string or number it can short circut the parser. We know the symbols that work for this. 
-* TODO Add a shift reg to the sound card pcb so i can have gpio output on spi
 
 * TODO A save and restore word for device/cartdev. If needed could I use symbol reference instead?
 * TODO storage block reuse working?
@@ -72,6 +73,7 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 
 Bug list:
 
+* TODO Fix 2SWAP for type flag
 * TODO BUG If : word is in caps it wont work. This could be connected with caps on LIST which only works if given as lcase.
 * TODO BUG Uword can't have a numeric in the word name???? Odd...
 * TODO Stop menu scrolling past last item
@@ -123,7 +125,7 @@ Enhancements:
 
 * TODO Add word to call fill_display with a char. accesss it via the symbol list???
 * TODO Add FILL word - ( addr n char -- ) fills address for n long with char
-* TODO Add ERASE word - ( addr n -- ) fills address for n long with zero
+* TODO Add ERASE word - ( addr n -- ) fills address for n long with zero  
 * TODO in ls handle empty dir
 * TODO Word to define lcd user character 0-3. Then word to output via emit etc
 
@@ -147,7 +149,6 @@ Enhancements:
 * TODO read ext concat is the problem
 * TODO delete record
 * TODO ui to call config
-* TODO backup and restore of banks to network
 * TODO change size to fsize?
 * TODO do random quotes from file as example code
 * TODO ui join files ui
@@ -157,7 +158,6 @@ Enhancements:
 
 * TODO Add config feature to select which devices are on specific SPI addresses and have words for easier selection???
 
-* TODO PICK word to pick a value at a given value on stack and move to TOS
 * TODO Conslidate all prompts into a single file to allow for removing duplicates and may even localisation
 * TODO Add scroll down indicator to menu code
 * TODO Cant use special chars in quoted strings??? Why? Emit works for the char code.

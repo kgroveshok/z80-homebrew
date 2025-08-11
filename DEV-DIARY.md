@@ -34,6 +34,10 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE  try not debug firmware to see if that speeds up system. It does.
 
 
+* TODO a better means of compling is not to use op codes but as in trad forth and create a pointer to the direct code block to exec and by pass the token scanning. Would need a flag before the pointer to indicate that what comes next is a pointer and not something to throw at the parser. This would work for system and uword exec. Dont forget to make sure the next token pointers are kept up to date. Perhaps if the item is known to be a string or number it can short circut the parser. We know the symbols that work for this. 
+* TODO to make compile easier to work with only apply to colon word defs and not immediate 
+
+
 
 * TODO Add a shift reg to the sound card pcb so i can have gpio output on spi
 

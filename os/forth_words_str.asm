@@ -1,6 +1,94 @@
 
 ; | ## String Words
 
+.SPLIT:  
+
+	CWHEAD .PTR 52 "SPLIT" 5 WORD_FLAG_CODE
+; | SPLIT ( s d -- s s...sn c ) Using delimter d, add strings found in s to stack pushing item count c | TODO
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "SPT"
+			CALLMONITOR
+		endif
+
+		; get delim
+		FORTH_DSP_VALUEHL
+
+		FORTH_DSP_POP
+		
+
+		ld b, l    ; move delim to b
+		ld c, 1   ; count of poritions
+
+		push bc
+
+		if DEBUG_FORTH_WORDS
+			DMARK "SPa"
+			CALLMONITOR
+		endif
+		; get pointer to string to chop up
+		FORTH_DSP_VALUEHL
+
+;		push hl
+		ld de, scratch
+.spllop:
+		pop bc
+		push bc
+;		pop hl
+		if DEBUG_FORTH_WORDS
+			DMARK "SPl"
+			CALLMONITOR
+		endif
+		ld a, (hl)
+		cp b
+		jr z, .splnxt
+		cp 0
+		jr z, .splend
+		ldi
+		jr .spllop
+
+		; hit dlim
+
+.splnxt:
+		if DEBUG_FORTH_WORDS
+			DMARK "SPx"
+			CALLMONITOR
+		endif
+		ld a, 0
+		ld (de), a
+		ex de, hl
+		push hl
+		ld hl, scratch
+		call forth_push_str
+		pop hl
+		ex de, hl
+		pop bc
+		inc c
+		push bc
+		ld de, scratch
+		jr .spllop
+
+.splend:		
+		if DEBUG_FORTH_WORDS
+			DMARK "SPe"
+			CALLMONITOR
+		endif
+		ld (de), a
+		ex de, hl
+;		push hl
+		call forth_push_str
+		
+		if DEBUG_FORTH_WORDS
+			DMARK "SPc"
+			CALLMONITOR
+		endif
+
+		pop hl    ; get counter from bc which has been push
+		ld h, 0
+;		ld l, c
+		call forth_push_numhl
+
+
+	NEXTW
 .PTR:  
 
 	CWHEAD .STYPE 52 "PTR" 3 WORD_FLAG_CODE

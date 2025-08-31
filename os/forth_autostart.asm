@@ -207,6 +207,7 @@ start2:     	db ": bpoff $01 bp ;",0
 start3b:         db ": ls dir cls drop dup $00 > if $01 do $08 $04 at . $01 $04 at . $04 $04 at . $23 $04 at accept drop scroll loop then nop ;",0
 start3c:         db ": dirlist dir cls drop dup $00 > if $01 do \"/\" .> .> \"Ext:\" .> .> \"Id: \" .> .>  loop then nop ;",0
 
+tuck:         db ": tuck swap over ;", 0
 
 ; a handy word to list items on the stack
 

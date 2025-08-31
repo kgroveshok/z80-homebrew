@@ -2,53 +2,17 @@
 Z80 Home Brew Micro-computer Project - Dev Diary
 ------------------------------------------------
 
-9th August 2025
----------------
+31st Augusg 2025
+----------------
 
-* DONE So many bugs in editor below perhaps a rewrite now things have moved along?
-* DONE fix editor bugs
-* DONE typing a long few lines and then back space, then insert ends up creating spurious characters - added clear of edit buffer???
-* DONE Editor issue insert mid string causes loss of zero term giving random data
-* DONE Backspace mid string does not clean up shifted text
-* DONE Jump to end of line does not work should set to the number in last debug display
-* DONE If cursor at end of line, when go back it leaves custor displayed
-* DONE Fix prev line recall and insertion. Corruption appears on the end of line - added clear of edit buffer
-* DONE move games and major blocks to new files instead of demo
-* DONE remove rubbish game code from file creation
-* DONE For now prefix dec with # to push
-* DONE Add command to select between common or node PicoSPINet storage banks. Use user words as specific to hook up
-* DONE Add command to select different banks of common or node PicoSPINet storage banks. Use user words as specific to hook up
-* DONE Warm reboot after stack underflow loads uwords on autostart again. Need to skip. Not doing it now.... Does sometimes... possibly is bank selection is active???
-* DONE BUG Add reselection of BANK during auto load. No, it is noted in docs and could be a feature.
-* DONE TODO Handle socket level iputchr
-* DONE TODO Handle socket level igetchr
-* DONE uword not exact match pulls wrong code. Maybe resolved now if connected with LIST
-* DONE Saved setting to enable/disable auto start
-* DONE Saved setting to select words to auto load from storage. Now using file name
-* DONE Fix KEY. KEY word is ok. if no press then zero otherwise ascii 
-* DONE look at hooking up a RTC on SPI. Most are i2c. Use PicoNet instead
-* DONE provide various debug level versions of the binary. One with no debug, one with most debug and a key debug only
-* DONE include what the ROM assemble options/targets are in the file on splash screen to easily id what the machine has in it
-* DONE Lower case word defintion for LIST output
-* DONE when underflow instead of going to > got to monitor first as that will help with using word mark clues
-* DONE  try not debug firmware to see if that speeds up system. It does.
-* DONE Fixed SWAP for type flag
-* DONE Fix ROT for type flag
-* DONE have added hltostack1-4 and reverse
-* DONE Need som FORTH_DSP macros to provide pointer offsets to top n stack items
-* DONE How to swap string items as calls tO FORTH_DSP_POP will destroy memory allocs? Just move bytes?
-* DONE BUG function to store three copies of three bytes used to move stack around for swap, over, rot etc and cope with type flag. Look for "TODO Use os stack swap memory"
-* DONE BUG swap of string and number leaves string ptr being left as number. Not swapping var type? Should swap three bytes not two
-* DONE Fixed OVER
-* DONE If DUP string then may new malloc copy as any use will do a double free which is bad. Already set to detect type
-* DONE BUG Does OVER work with a string and a value on stack? I know swap does not so not expecting this to work. Yes copies as a pointer. Need to shift three bytes. Write a bit of code to store three bytes for stack movements.
-* DONE backup and restore of banks to network. ubiall word
+* DONE Add a shift reg to the sound card pcb so i can have gpio output on spi
+* DONE Added TUCK to Utils file
 
+* TODO  a split word could be useful that pushes each bit to stack
 
-
-* TODO Add a shift reg to the sound card pcb so i can have gpio output on spi
 * TODO PICK word to pick a value at a given value on stack and move to TOS. Some code in place. Needs fixing as not quite right
-
+* TODO KEY word waits for key release. Add a KEYR which does not do key bounce checks
+* TODO Add .R to right align a number. Need to fix NUM2STR to get it to work.
 
 * TODO Actuall forget using op code, there is already a flag to define if the word exists as binary form on the CHEAD WORD_FLAG_CODE. What is being used for uwords? yes WORD_SYS_UWORD is used for detecting if sysdict or udict. No, that SYS flag is used in op code. WORD_FLAG_CODE isnt coded for a memory space. Only opcode, so back to that idea
 
@@ -66,7 +30,6 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO A save and restore word for device/cartdev. If needed could I use symbol reference instead?
 * TODO storage block reuse working?
 * TODO  film videos of z80 for bespoke website
-* TODO  a split word could be useful that pushes each bit to stack
 * TODO provideca f key hook which can be triggered at any get key
 * TODO sort out ntp get 
 * TODO  save file from socket
@@ -199,6 +162,51 @@ Enhancements:
 * TODO Produce BOM for all of the hardware projects to go with documentation
 
 * TODO Add a simple assembler feature like BBC Basic
+
+9th August 2025
+---------------
+
+* DONE So many bugs in editor below perhaps a rewrite now things have moved along?
+* DONE fix editor bugs
+* DONE typing a long few lines and then back space, then insert ends up creating spurious characters - added clear of edit buffer???
+* DONE Editor issue insert mid string causes loss of zero term giving random data
+* DONE Backspace mid string does not clean up shifted text
+* DONE Jump to end of line does not work should set to the number in last debug display
+* DONE If cursor at end of line, when go back it leaves custor displayed
+* DONE Fix prev line recall and insertion. Corruption appears on the end of line - added clear of edit buffer
+* DONE move games and major blocks to new files instead of demo
+* DONE remove rubbish game code from file creation
+* DONE For now prefix dec with # to push
+* DONE Add command to select between common or node PicoSPINet storage banks. Use user words as specific to hook up
+* DONE Add command to select different banks of common or node PicoSPINet storage banks. Use user words as specific to hook up
+* DONE Warm reboot after stack underflow loads uwords on autostart again. Need to skip. Not doing it now.... Does sometimes... possibly is bank selection is active???
+* DONE BUG Add reselection of BANK during auto load. No, it is noted in docs and could be a feature.
+* DONE TODO Handle socket level iputchr
+* DONE TODO Handle socket level igetchr
+* DONE uword not exact match pulls wrong code. Maybe resolved now if connected with LIST
+* DONE Saved setting to enable/disable auto start
+* DONE Saved setting to select words to auto load from storage. Now using file name
+* DONE Fix KEY. KEY word is ok. if no press then zero otherwise ascii 
+* DONE look at hooking up a RTC on SPI. Most are i2c. Use PicoNet instead
+* DONE provide various debug level versions of the binary. One with no debug, one with most debug and a key debug only
+* DONE include what the ROM assemble options/targets are in the file on splash screen to easily id what the machine has in it
+* DONE Lower case word defintion for LIST output
+* DONE when underflow instead of going to > got to monitor first as that will help with using word mark clues
+* DONE  try not debug firmware to see if that speeds up system. It does.
+* DONE Fixed SWAP for type flag
+* DONE Fix ROT for type flag
+* DONE have added hltostack1-4 and reverse
+* DONE Need som FORTH_DSP macros to provide pointer offsets to top n stack items
+* DONE How to swap string items as calls tO FORTH_DSP_POP will destroy memory allocs? Just move bytes?
+* DONE BUG function to store three copies of three bytes used to move stack around for swap, over, rot etc and cope with type flag. Look for "TODO Use os stack swap memory"
+* DONE BUG swap of string and number leaves string ptr being left as number. Not swapping var type? Should swap three bytes not two
+* DONE Fixed OVER
+* DONE If DUP string then may new malloc copy as any use will do a double free which is bad. Already set to detect type
+* DONE BUG Does OVER work with a string and a value on stack? I know swap does not so not expecting this to work. Yes copies as a pointer. Need to shift three bytes. Write a bit of code to store three bytes for stack movements.
+* DONE backup and restore of banks to network. ubiall word
+
+
+
 
 7th August 2025
 ---------------

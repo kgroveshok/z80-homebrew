@@ -402,6 +402,7 @@ create_startup:
 .utilwordef:
 	dw strncpy
 	dw type
+	dw tuck
 	dw clrstack
 	dw longread
 	dw start1

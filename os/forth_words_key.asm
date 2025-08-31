@@ -111,7 +111,7 @@
 
 .DEDIT:
 	CWHEAD .ENDKEY 44 "DEDIT" 5 WORD_FLAG_CODE
-; | DEDIT ( ptr --  ) Takes an address for direct editing in memory. | TO TEST
+; | DEDIT ( ptr --  ) Takes an address for direct editing in memory. | DONE
 
 		; TODO does not copy from stack
 		if DEBUG_FORTH_WORDS_KEY

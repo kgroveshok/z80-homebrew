@@ -10,7 +10,8 @@ FORTH_PARSEV1: equ 0
 FORTH_PARSEV2: equ 0
 FORTH_PARSEV3: equ 0
 FORTH_PARSEV4: equ 0
-FORTH_PARSEV5: equ 1
+FORTH_PARSEV5: equ 0
+FORTH_PARSEV6: equ 1
 
 ;if FORTH_PARSEV5
 ;	FORTH_END_BUFFER: equ 0
@@ -29,6 +30,9 @@ if FORTH_PARSEV5
 include "forth_stackopsv5.asm"
 endif
 
+if FORTH_PARSEV6
+include "forth_stackopsv5.asm"
+endif
 loadwordinhl:	
 
 	push de
@@ -202,26 +206,22 @@ if FORTH_PARSEV1
 endif
 	
 if FORTH_PARSEV3
-
-
-
       include "forth_parserv3.asm"
 	include "forth_wordsv3.asm"
 endif
 
 if FORTH_PARSEV4
-
-
-
       include "forth_parserv4.asm"
 	include "forth_wordsv4.asm"
 endif
 
 if FORTH_PARSEV5
-
-
-
       include "forth_parserv5.asm"
+	include "forth_wordsv4.asm"
+endif
+
+if FORTH_PARSEV6
+      include "forth_parserv6.asm"
 	include "forth_wordsv4.asm"
 endif
 ;;;;;;;;;;;;;; Debug code

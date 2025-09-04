@@ -814,7 +814,11 @@ CWHEAD .SWAP2 99 "PICK" 4 WORD_FLAG_CODE
 	; TODO do type check with correct push
 
 	inc hl
-	call loadwordinhl
+	;call loadwordinhl
+	ld e, (hl)
+	inc hl
+	ld d, (hl)
+	ex de,hl
 	call forth_push_numhl
 
 	NEXTW

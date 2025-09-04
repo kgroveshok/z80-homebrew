@@ -33,7 +33,7 @@ NEXTW: macro
 	endm
 
 macro_next:
-if DEBUG_FORTH_PARSE_KEY
+if DEBUG_FORTH_PARSE_EXEC
 	DMARK "NXT"
 	CALLMONITOR
 endif	
@@ -41,7 +41,7 @@ endif
 	ld bc,(cli_ptr)   ; move to next token to parse in the input stream
 	ld de,(cli_origptr)   ; move to next token to parse in the input stream
 	ld hl,(os_tok_ptr)   ; move to next token to parse in the input stream
-if DEBUG_FORTH_PARSE_KEY
+if DEBUG_FORTH_PARSE_EXEC
 	DMARK "}AA"
 	CALLMONITOR
 endif	
@@ -141,8 +141,8 @@ endif
 	ld a, FORTH_END_BUFFER
 	ld (hl),a
 	inc hl
-	ld a, '!'
-	ld (hl),a
+;	ld a, '!'
+;	ld (hl),a
 
 	ld hl,(os_tok_ptr)
         
@@ -236,9 +236,9 @@ endif
 	;inc hl
 	ld a, FORTH_END_BUFFER
 	ld (hl),a
-	inc hl
-	ld a, '!'
-	ld (hl),a
+;	inc hl
+;	ld a, '!'
+;	ld (hl),a
 
 	ld hl,(os_tok_ptr)
         
@@ -403,7 +403,7 @@ exec1:
 
 
 
-if DEBUG_FORTH_PARSE_KEY
+if DEBUG_FORTH_PARSE_EXEC
 			DMARK "KYQ"
 	CALLMONITOR
 endif
@@ -420,7 +420,7 @@ ld (cli_nextword),hl
 ;           if line term pop rsp and exit
 ;       
 
-if DEBUG_FORTH_PARSE_KEY
+if DEBUG_FORTH_PARSE_EXEC
 			DMARK "KYq"
 	CALLMONITOR
 endif
@@ -486,7 +486,7 @@ endif
 	inc hl     ; skip string length (use zero term instead to end)
 	ld (cli_token), hl
 
-if DEBUG_FORTH_PARSE_KEY
+if DEBUG_FORTH_PARSE_EXEC
 			DMARK "KY2"
 endif
 if DEBUG_FORTH_PARSE_EXEC
@@ -528,7 +528,7 @@ if DEBUG_FORTH_PARSE_EXEC
 endif	
 .execpnchar:    ; compare char between token and string to parse
 
-if DEBUG_FORTH_PARSE_KEY
+if DEBUG_FORTH_PARSE_EXEC
 			DMARK "Ky3"
 endif
 if DEBUG_FORTH_PARSE_EXEC
@@ -579,7 +579,7 @@ endif
 ;
 ;.pnskipspace:
 
-if DEBUG_FORTH_PARSE_KEY
+if DEBUG_FORTH_PARSE_EXEC
 			DMARK "KY7"
 endif
 	cp b
@@ -589,7 +589,7 @@ endif
 ;       scan for string terms 0 for token and 32 for input
 
 	
-if DEBUG_FORTH_PARSE_KEY
+if DEBUG_FORTH_PARSE_EXEC
 			DMARK "KY8"
 endif
 
@@ -609,7 +609,7 @@ endif
 	ld (cli_origptr), hl     ; save for any restart of current string ie a number or string to push to data stack
 	
 	
-if DEBUG_FORTH_PARSE_KEY
+if DEBUG_FORTH_PARSE_EXEC
 			DMARK "KY3"
 endif
 
@@ -649,7 +649,7 @@ if DEBUG_FORTH_JP
 	call delay1s
 endif
 
-if DEBUG_FORTH_PARSE_KEY
+if DEBUG_FORTH_PARSE_EXEC
 			DMARK "KYj"
 endif
 	; TODO save the word pointer in this exec
@@ -671,7 +671,7 @@ endif
 ;	cp 0
 	jr z, .execendofdict			 ; at end of words
 
-if DEBUG_FORTH_PARSE_KEY
+if DEBUG_FORTH_PARSE_EXEC
 			DMARK "KY4"
 endif
 if DEBUG_FORTH_PARSE_EXEC
@@ -702,14 +702,14 @@ endif
 	ld hl,(cli_origptr)
 	ld (cli_ptr),hl
 
-if DEBUG_FORTH_PARSE_KEY
+if DEBUG_FORTH_PARSE_EXEC
 			DMARK "KY5"
 endif
 	jp .execpnword			; else go to next word
 
 .execendofdict: 
 
-if DEBUG_FORTH_PARSE_KEY
+if DEBUG_FORTH_PARSE_EXEC
 			DMARK "KYe"
 endif
 if DEBUG_FORTH_PARSE_EXEC
@@ -758,7 +758,7 @@ call forth_apush
 
 execnext:
 
-if DEBUG_FORTH_PARSE_KEY
+if DEBUG_FORTH_PARSE_EXEC
 			DMARK "KY>"
 endif
 ; move past token to next word
@@ -768,7 +768,7 @@ ld a, 0
 ld bc, 255     ; input buffer size
 cpir
 
-if DEBUG_FORTH_PARSE_KEY
+if DEBUG_FORTH_PARSE_EXEC
 			DMARK "KY!"
 	CALLMONITOR
 endif	

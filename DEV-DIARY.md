@@ -2,20 +2,32 @@
 Z80 Home Brew Micro-computer Project - Dev Diary
 ------------------------------------------------
 
-31st Augusg 2025
-----------------
+3rd Sep 2025
+------------
 
-* DONE Add a shift reg to the sound card pcb so i can have gpio output on spi
-* DONE Added TUCK to Utils file
+* DONE KEY word waits for key release. To make it compatible use a non debounce version and add a KEYDB which does key bounce checks
+* DONE Looking at the parser there are a few opts I could make, such as the constant saving of pointers. Why?
+* DONE  a split word could be useful that pushes each bit to stack
+* DONE Add .R to right align a number. Need to fix NUM2STR to get it to work. NUM2STR zero pads string by default
+* DONE Fix NUM2STR. 
 
-* TODO  a split word could be useful that pushes each bit to stack
-
+* TODO Add user interrupts by putting a hook into the parser or on NEXTW (as if using compiled version)
+* TODO Add user 'threads' by putting a hook into the parser or on NEXTW (as if using compiled version)
+* TODO Add user watch break points by putting a hook into the parser or on NEXTW (as if using compiled version)
 * TODO PICK word to pick a value at a given value on stack and move to TOS. Some code in place. Needs fixing as not quite right
-* TODO KEY word waits for key release. Add a KEYR which does not do key bounce checks
-* TODO Add .R to right align a number. Need to fix NUM2STR to get it to work.
 
-* TODO Actuall forget using op code, there is already a flag to define if the word exists as binary form on the CHEAD WORD_FLAG_CODE. What is being used for uwords? yes WORD_SYS_UWORD is used for detecting if sysdict or udict. No, that SYS flag is used in op code. WORD_FLAG_CODE isnt coded for a memory space. Only opcode, so back to that idea
+* TODO Fix 2SWAP for type flag
+* TODO Fix 2SWAP
+* TODO LSHIFT and RSHIFT for bit shifting
+* TODO Fix LEFT
+* TODO Fix RIGHT
+* TODO Fix IS 
+* TODO /STRING for string cut (substr???)
+* TODO REPLACES/SUBSTITUTE for string replace
+* TODO SEARCH is simliar to FIND
+* TODO IS string compare should be renamed to COMPARE
 
+* TODO Actually forget using op code, there is already a flag to define if the word exists as binary form on the CHEAD WORD_FLAG_CODE. What is being used for uwords? yes WORD_SYS_UWORD is used for detecting if sysdict or udict. No, that SYS flag is used in op code. WORD_FLAG_CODE isnt coded for a memory space. Only opcode, so back to that idea
 * TODO to make compile easier to work with only apply to colon word defs and not immediate 
 * TODO a better means of compling is not to use op codes but as in trad forth and create a pointer to the direct code block to exec and by pass the token scanning. Would need a flag before the pointer to indicate that what comes next is a pointer and not something to throw at the parser. This would work for system and uword exec. Dont forget to make sure the next token pointers are kept up to date. Perhaps if the item is known to be a string or number it can short circut the parser. We know the symbols that work for this. 
 * TODO Change op code to be flags: a. this word is in binary form and cant list it.... should be able to compile all words as even single char would be quicker with a jump
@@ -45,8 +57,6 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 
 Bug list:
 
-* TODO Fix 2SWAP for type flag
-* TODO Fix 2SWAP
 * TODO BUG If : word is in caps it wont work. This could be connected with caps on LIST which only works if given as lcase.
 * TODO BUG Uword can't have a numeric in the word name???? Odd...
 * TODO Stop menu scrolling past last item
@@ -55,11 +65,6 @@ Bug list:
 * TODO generate word list md for the NOTE keywords is adding double spacing and breaking it. 
 
 
-* TODO LSHIFT and RSHIFT for bit shifting
-* TODO Fix NUM2STR. 
-* TODO Fix LEFT
-* TODO Fix RIGHT
-* TODO Fix IS 
 
 
 Enhancements:
@@ -162,6 +167,12 @@ Enhancements:
 * TODO Produce BOM for all of the hardware projects to go with documentation
 
 * TODO Add a simple assembler feature like BBC Basic
+
+31st August 2025
+----------------
+
+* DONE Add a shift reg to the sound card pcb so i can have gpio output on spi
+* DONE Added TUCK to Utils file
 
 9th August 2025
 ---------------

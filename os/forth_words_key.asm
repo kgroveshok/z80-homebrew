@@ -2,7 +2,7 @@
 ; | ## Keyboard Words
 
 .KEY:
-	CWHEAD .WAITK 42 "KEY" 3 WORD_FLAG_CODE
+	CWHEAD .KEYDB 42 "KEY" 3 WORD_FLAG_CODE
 ; | KEY ( -- u ) A non-blocking read of keypress | DONE
 ; | | The ASCII key (or key code) is pushed to stack. If no key is currently held down then push a 0
 ; | | Can use something like this to process:
@@ -10,6 +10,24 @@
 
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "KEY"
+			CALLMONITOR
+		endif
+; TODO currently waits
+		call cinndb
+		;call cin_wait
+		ld l, a
+		ld h, 0
+		call forth_push_numhl
+		NEXTW
+.KEYDB:
+	CWHEAD .WAITK 42 "KEYDB" 5 WORD_FLAG_CODE
+; | KEYDB ( -- u ) A non-blocking read of keypress with key release debounce | DONE
+; | | The ASCII key (or key code) is pushed to stack. If no key is currently held down then push a 0
+; | | Can use something like this to process:
+; | | > repeat active . key ?dup if emit then #1 until 
+
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "KEB"
 			CALLMONITOR
 		endif
 ; TODO currently waits

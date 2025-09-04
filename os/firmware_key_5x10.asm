@@ -231,6 +231,8 @@ endif
 	ret
 
 
+; cin - key non-blocking except for keybounce release
+
 cin: 	call .mtoc
 
 if DEBUG_KEYCIN
@@ -338,6 +340,84 @@ if DEBUG_KEYCIN
 endif
 	ret
 
+; cinndb - key non-blocking without keybounce release
+
+cinndb: 	call .mtoc
+
+if DEBUG_KEYCIN
+	push af
+	
+	ld hl,key_repeat_ct
+	ld (hl),a
+	inc hl
+	call hexout
+	ld hl,key_repeat_ct+3
+	ld a,0
+	ld (hl),a
+
+            LD   A, kLCD_Line3+15
+            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   DE, key_repeat_ct
+            ;LD   DE, MsgHello
+            CALL fLCD_Str       ;Display string pointed to by DE
+
+
+call delay500ms
+
+	pop af
+endif
+
+
+	; no key held
+	cp 0
+	ret z
+
+if DEBUG_KEYCIN
+	push af
+
+	ld a, '1'	
+	ld hl,key_repeat_ct
+	ld (hl),a
+	inc hl
+	ld a,0
+	ld (hl),a
+
+            LD   A, kLCD_Line4+15
+            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   DE, key_repeat_ct
+            ;LD   DE, MsgHello
+            CALL fLCD_Str       ;Display string pointed to by DE
+
+
+call delay500ms
+
+	pop af
+endif
+
+	ld (key_held),a		 ; save it
+
+if DEBUG_KEYCIN
+	push af
+
+	ld hl,key_repeat_ct
+	inc hl
+	call hexout
+	ld hl,key_repeat_ct+3
+	ld a,0
+	ld (hl),a
+	ld hl,key_repeat_ct
+	ld a, '3'	
+	ld (hl),a
+
+            LD   A, kLCD_Line4+15
+            CALL fLCD_Pos       ;Position cursor to location in A
+            LD   DE, key_repeat_ct
+            ;LD   DE, MsgHello
+            CALL fLCD_Str       ;Display string pointed to by DE
+
+	pop af
+endif
+	ret
 ; detect keyboard modifier key press and apply new overlay to the face key held
 ; hl is the key modifer flag, de map to apply to key_face_held and store in key_actual_pressed
 

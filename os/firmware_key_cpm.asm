@@ -20,6 +20,7 @@ cin_wait:
 	pop bc
 	ret
 
+cinndb: 
 cin:
 
 

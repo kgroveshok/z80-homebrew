@@ -4,7 +4,7 @@
 .SPLIT:  
 
 	CWHEAD .PTR 52 "SPLIT" 5 WORD_FLAG_CODE
-; | SPLIT ( s d -- s s...sn c ) Using delimter d, add strings found in s to stack pushing item count c | TODO
+; | SPLIT ( s d -- s s...sn c ) Using delimter d, add strings found in s to stack pushing item count c | DONE
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "SPT"
 			CALLMONITOR
@@ -55,12 +55,13 @@
 		endif
 		ld a, 0
 		ld (de), a
-		ex de, hl
+		;ex de, hl
 		push hl
 		ld hl, scratch
 		call forth_push_str
 		pop hl
-		ex de, hl
+		;ex de, hl
+		inc hl
 		pop bc
 		inc c
 		push bc
@@ -75,6 +76,7 @@
 		ld (de), a
 		ex de, hl
 ;		push hl
+		ld hl, scratch
 		call forth_push_str
 		
 		if DEBUG_FORTH_WORDS
@@ -438,7 +440,7 @@
 	       NEXTW
 .NUM2STR:
 	CWHEAD .CONCAT 52 "NUM2STR" 7 WORD_FLAG_CODE
-; | NUM2STR ( n -- s ) Convert a number on TOS to string | TODO
+; | NUM2STR ( n -- s ) Convert a number on TOS to zero padded string | DONE
 
 ;		; malloc a string to target
 ;		ld hl, 10     ; TODO max string size should be fine
@@ -447,7 +449,32 @@
 ;
 ;
 ;; TODO check int type
-;		FORTH_DSP_VALUEHL
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "N2S"
+			CALLMONITOR
+		endif
+
+		FORTH_DSP_VALUEHL
+
+		if DEBUG_FORTH_WORDS
+			DMARK "NS1"
+			CALLMONITOR
+		endif
+		FORTH_DSP_POP
+
+		ex de, hl
+		ld hl, scratch
+		if DEBUG_FORTH_WORDS
+			DMARK "NS2"
+			CALLMONITOR
+		endif
+		call uitoa_16
+		ld hl, scratch
+		if DEBUG_FORTH_WORDS
+			DMARK "NS3"
+			CALLMONITOR
+		endif
+		call forth_push_str
 ;		ld a, l
 ;		call DispAToASCII  
 ;;TODO need to chage above call to dump into string

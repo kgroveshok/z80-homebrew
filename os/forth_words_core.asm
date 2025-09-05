@@ -830,6 +830,38 @@ CWHEAD .AT OPCODE_SWAP2 "2SWAP" 5 WORD_FLAG_CODE
 		CALLMONITOR
 	endif
 ; TODO Use os stack swap memory
+
+	FORTH_DSP_PTR 0     ; TOS    w4
+	call hltostack1
+ 
+	FORTH_DSP_PTR 1     ; TOS    w3
+	call hltostack2
+
+
+
+	FORTH_DSP_PTR 2     ; TOS    w2
+	call hltostack3
+
+	FORTH_DSP_PTR 3     ; TOS   w1
+	call hltostack4
+
+
+
+
+	FORTH_DSP_PTR 0     ; TOS
+	call hlfromstack3
+
+	FORTH_DSP_PTR 1     ; TOS
+	call hlfromstack4
+
+
+
+	FORTH_DSP_PTR 2     ; TOS
+	call hlfromstack1
+
+	FORTH_DSP_PTR 3     ; TOS
+	call hlfromstack2
+
 	NEXTW
 .AT:
 CWHEAD .CAT OPCODE_AT "@" 1 WORD_FLAG_CODE

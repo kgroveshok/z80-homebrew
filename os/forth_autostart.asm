@@ -54,7 +54,7 @@ startcmds:
 	dw type
 ;	dw stest
 	dw strncpy
-;	dw list
+	dw list
 	dw start1
 	dw start2
 ;	dw start3

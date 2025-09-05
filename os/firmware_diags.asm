@@ -275,7 +275,7 @@ create_startup:
 	call z, .genkeyword
 	cp 7
 	call z, .gensoundword
-	cp 7
+	cp 8
 	call z, .genhwword
 	jr create_startup
 

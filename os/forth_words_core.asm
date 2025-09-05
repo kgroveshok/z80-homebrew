@@ -827,15 +827,29 @@ CWHEAD .SWAP2 99 "PICK" 4 WORD_FLAG_CODE
 	FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
 	; init from TOS
-	ld b, l
-	ld hl, cli_data_sp
+	push hl
+	FORTH_DSP
+;	ld hl, cli_data_sp
+	if DEBUG_FORTH_WORDS
+		DMARK "PK1"
+		CALLMONITOR
+	endif
+	pop bc
+	ld b,c
+	ld a, 0
+	cp b
+	jr z, .pdone	
 .pkl:
 	dec hl
 	dec hl
 	dec hl
 
+	if DEBUG_FORTH_WORDS
+		DMARK "PKl"
+		CALLMONITOR
+	endif
 	djnz .pkl
-
+.pdone:
 	
 	; TODO do type check with correct push
 
@@ -845,6 +859,10 @@ CWHEAD .SWAP2 99 "PICK" 4 WORD_FLAG_CODE
 	inc hl
 	ld d, (hl)
 	ex de,hl
+	if DEBUG_FORTH_WORDS
+		DMARK "PKp"
+		CALLMONITOR
+	endif
 	call forth_push_numhl
 
 	NEXTW

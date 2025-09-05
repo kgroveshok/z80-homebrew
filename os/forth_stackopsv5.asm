@@ -750,7 +750,7 @@ if FORTH_ENABLE_DSPPOPFREE
 	jr nz, .skippopfree
 
 	FORTH_DSP_VALUEHL
-	nop
+;	nop
 if DEBUG_FORTH_DOT
 	DMARK "DPf"
 	CALLMONITOR

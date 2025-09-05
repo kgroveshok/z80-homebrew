@@ -13,13 +13,13 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE Fixed generate Hello World file
 * DONE Fix 2SWAP for type flag
 * DONE Fix 2SWAP
+* DONE LSHIFT and RSHIFT for bit shifting
 
 * TODO Add user interrupts by putting a hook into the parser or on NEXTW (as if using compiled version)
 * TODO Add user 'threads' by putting a hook into the parser or on NEXTW (as if using compiled version)
 * TODO Add user watch break points by putting a hook into the parser or on NEXTW (as if using compiled version)
 * TODO PICK word to pick a value at a given value on stack and move to TOS. Some code in place. Needs fixing as not quite right
 
-* TODO LSHIFT and RSHIFT for bit shifting
 * TODO Fix LEFT
 * TODO Fix RIGHT
 * TODO Fix IS 

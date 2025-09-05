@@ -337,7 +337,7 @@ endif
 	call forth_push_numhl
 	NEXTW
 .ZDUP:
-CWHEAD .SWAP OPCODE_ZDUP "?DUP" 4 WORD_FLAG_CODE
+CWHEAD .LSHIFT OPCODE_ZDUP "?DUP" 4 WORD_FLAG_CODE
 ; | ?DUP ( u -- u u )     Duplicate item on TOS if the item is non-zero (Only works for numerics) | DONE
 
 	if DEBUG_FORTH_WORDS_KEY
@@ -367,6 +367,32 @@ CWHEAD .SWAP OPCODE_ZDUP "?DUP" 4 WORD_FLAG_CODE
 
 .dup2orig:
 
+	NEXTW
+.LSHIFT:
+CWHEAD .RSHIFT OPCODE_ZDUP "LSHIFT" 6 WORD_FLAG_CODE
+; | LSHIFT ( w -- w )    16 bit left shift | DONE
+	if DEBUG_FORTH_WORDS_KEY
+		DMARK "LSH"
+		CALLMONITOR
+	endif
+	FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+	FORTH_DSP_POP
+
+	add hl, hl
+	call forth_push_numhl
+	NEXTW
+.RSHIFT:
+CWHEAD .SWAP OPCODE_ZDUP "RSHIFT" 6 WORD_FLAG_CODE
+; | RSHIFT ( w -- w )    16 bit right shift | DONE
+	if DEBUG_FORTH_WORDS_KEY
+		DMARK "RSH"
+		CALLMONITOR
+	endif
+	FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+	FORTH_DSP_POP
+	srl h
+	rr l
+	call forth_push_numhl
 	NEXTW
 .SWAP:
 CWHEAD .COLN OPCODE_SWAP "SWAP" 4 WORD_FLAG_CODE

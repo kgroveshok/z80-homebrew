@@ -412,7 +412,7 @@
 		NEXTW
 .RIGHT:
 	CWHEAD .STR2NUM 52 "RIGHT" 5 WORD_FLAG_CODE
-; | RIGHT ( s u -- s sub ) Push to TOS string u long starting from right of s  | TO FIX
+; | RIGHT ( s u -- s sub ) Push to TOS string u long starting from right of s  | DONE
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "RIG"
 			CALLMONITOR
@@ -436,6 +436,7 @@
 		ld bc, 255
 		ld a, 0
 		cpir
+		dec hl
 
 		; 
 
@@ -445,7 +446,6 @@
 		endif
 
 		pop bc    ;  length of string to copy
-		inc bc
 
 		ld a, c
 		ex de, hl
@@ -459,6 +459,7 @@
 			CALLMONITOR
 		endif
 
+		inc bc
 		lddr
 		
 		ld hl, scratch

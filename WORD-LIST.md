@@ -109,13 +109,19 @@ Also refer to the auto start list examples as these contain extra words created 
  The heap is used for storing user defined words as well as any values pushed to stack.
 ### DUP ( u -- u u )     Duplicate whatever item is on TOS | DONE
 ### ?DUP ( u -- u u )     Duplicate item on TOS if the item is non-zero (Only works for numerics) | DONE
+### DMARK ( s --  )  Set the debug marker id to first three chars of s | DONE
+ Most useful for tracing your code for errors as you can set various markers to display when MONITOR is called
+### LSHIFT ( w -- w )    16 bit left shift | DONE
+### RSHIFT ( w -- w )    16 bit right shift | DONE
 ### SWAP ( w1 w2 -- w2 w1 )    Swap top two items on TOS | DONE
 ### : ( -- )         Create new word | DONE
 ### ; ( -- )     Terminate new word and return exec to previous exec level | DONE
 ### DROP ( w -- )   drop the TOS item   | DONE
 ### 2DUP ( w1 w2 -- w1 w2 w1 w2 ) Duplicate the top two items on TOS  (Only works for numerics) | DONE
 ### 2DROP ( w w -- )    Double drop | DONE
-### PICK ( ux ... u x -- ux ... u n )    Replace x on stack with the item from position x on stack  | TODO
+### PICK ( ux ... u x -- ux ... u n )    Replace x on stack with the item from position x on stack  | DONE
+ >[!NOTE]
+ > If the chosen item is a string the pointer is pushed to TOS. The string is not safely duplicated.
 ### 2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items | TODO
 ### @ ( w -- ) Push onto TOS byte stored at address   | DONE
 ### C@  ( w -- ) Push onto TOS byte stored at address   | DONE
@@ -123,10 +129,11 @@ Also refer to the auto start list examples as these contain extra words created 
 ### C!  ( x w -- ) Store x at address w  | DONE
 ### CALL ( w -- w  ) machine code call to address w  push the result of hl to stack | DONE
 ### DEPTH ( -- u ) Push count of stack | DONE
-### OVER ( n1 n2 -- n1 n2 n1 )  Copy one below TOS onto TOS | TOFIX
+### OVER ( n1 n2 -- n1 n2 n1 )  Copy one below TOS onto TOS | DONE
+ If the copied item is a string it is properly duplicated allowing for a safe release after use. 
 ### PAUSEMS ( n -- )  Pause for n millisconds | DONE
 ### PAUSE ( n -- )  Pause for n seconds | DONE
-### ROT ( u1 u2 u3 -- u2 u3 u1 ) Rotate top three items on stack | TOFIX
+### ROT ( u1 u2 u3 -- u2 u3 u1 ) Rotate top three items on stack | DONE
 ### UWORDS (  -- s1 ... sn u )   List user word dict | DONE
  After use the TOS will have a count of the number of user words that have been pushed to stack.
  Following the count are the individual words.
@@ -248,7 +255,8 @@ Also refer to the auto start list examples as these contain extra words created 
  If off, use DRAW to refresh. Default is on. $0003 will enable direct screen writes (TODO) 
 ### MENU ( u1....ux n -- n ) Create a menu. n is the number of menu items on stack. Push number selection to TOS | DONE
 ## Program Flow Words
-### IF ( w -- f ) If TOS is true exec code following up to THEN - Note: currently not supporting ELSE or nested IF | DONE
+### IF ( w -- f ) If TOS is true exec code following up to THEN  | DONE
+ Note: currently not supporting ELSE or nested IF
 ### THEN ( -- ) Does nothing. It is a marker for the end of an IF block | DONE
 ### ELSE ( -- ) Not supported - does nothing | TODO
 ### DO ( u1 u2 -- ) Loop starting at u2 with a limit of u1 | DONE
@@ -272,7 +280,7 @@ Also refer to the auto start list examples as these contain extra words created 
 ### DEDIT ( ptr --  ) Takes an address for direct editing in memory. | DONE
 ## Logic Words
 ### NOT ( u  -- u ) Inverse true/false on stack | DONE
-### IS ( s1 s2  -- f ) Push true if string s1 is the same as s2 | TODO
+### COMPARE ( s1 s2  -- f ) Push true if string s1 is the same as s2 | DONE
 ### 0< ( u -- f ) Push true if u is less than o | CANT DO UNTIL FLOAT
 ### 0= ( u -- f ) Push true if u equals 0 | DONE
 ### < ( u1 u2 -- f ) True if u1 is less than u2 | DONE
@@ -402,13 +410,14 @@ Also refer to the auto start list examples as these contain extra words created 
 ### PTR ( -- addr ) Low level push pointer to the value on TOS | DONE
  If a string will give the address of the string without dropping it. Handy for direct string access
  If a number can then use 2@ and 2! for direct value update without using stack words 
-### STYPE ( u -- u type ) Push type of value on TOS - 's' string, 'i' integer...   | DONE
+### STYPE ( u -- u type ) Push type of value on TOS  | DONE
+ 's' string or 'i' integer
 ### UPPER ( s -- s ) Upper case string s  | DONE
 ### LOWER ( s -- s ) Lower case string s  | DONE
 ### TCASE ( s -- s ) Title case string s  | DONE
 ### SUBSTR ( s u1 u2 -- s sb ) Push to TOS chars starting at position u1 and with length u2 from string s  | DONE
-### LEFT ( s u -- s sub ) Push to TOS string u long starting from left of s  | TODO
-### RIGHT ( s u -- s sub ) Push to TOS string u long starting from right of s  | TODO
+### LEFT ( s u -- s sub ) Push to TOS string u long starting from left of s  | DONE
+### RIGHT ( s u -- s sub ) Push to TOS string u long starting from right of s  | DONE
 ### STR2NUM ( s -- n ) Convert a string on TOS to number | DONE
 ### NUM2STR ( n -- s ) Convert a number on TOS to zero padded string | DONE
 ### CONCAT ( s1 s2 -- s3 ) A s1 + s2 is pushed onto the stack | DONE
@@ -424,20 +433,26 @@ Also refer to the auto start list examples as these contain extra words created 
 ### HEAP ( -- u1 u2 )   Pushes u1 the current number of bytes in the heap and u2 the remaining bytes - Only present if using my MALLOC | DONE
 ### DUP ( u -- u u )     Duplicate whatever item is on TOS | DONE
 ### ?DUP ( u -- u u )     Duplicate item on TOS if the item is non-zero (Only works for numerics) | DONE
+### DMARK ( s --  )  Set the debug marker id to first three chars of s | DONE
+### LSHIFT ( w -- w )    16 bit left shift | DONE
+### RSHIFT ( w -- w )    16 bit right shift | DONE
 ### SWAP ( w1 w2 -- w2 w1 )    Swap top two items on TOS | DONE
 ### : ( -- )         Create new word | DONE
 ### ; ( -- )     Terminate new word and return exec to previous exec level | DONE
 ### DROP ( w -- )   drop the TOS item   | DONE
 ### 2DUP ( w1 w2 -- w1 w2 w1 w2 ) Duplicate the top two items on TOS  (Only works for numerics) | DONE
 ### 2DROP ( w w -- )    Double drop | DONE
+### PICK ( ux ... u x -- ux ... u n )    Replace x on stack with the item from position x on stack  | DONE
 ### @ ( w -- ) Push onto TOS byte stored at address   | DONE
 ### C@  ( w -- ) Push onto TOS byte stored at address   | DONE
 ### ! ( x w -- ) Store x at address w      | DONE
 ### C!  ( x w -- ) Store x at address w  | DONE
 ### CALL ( w -- w  ) machine code call to address w  push the result of hl to stack | DONE
 ### DEPTH ( -- u ) Push count of stack | DONE
+### OVER ( n1 n2 -- n1 n2 n1 )  Copy one below TOS onto TOS | DONE
 ### PAUSEMS ( n -- )  Pause for n millisconds | DONE
 ### PAUSE ( n -- )  Pause for n seconds | DONE
+### ROT ( u1 u2 u3 -- u2 u3 u1 ) Rotate top three items on stack | DONE
 ### UWORDS (  -- s1 ... sn u )   List user word dict | DONE
 ### BP ( u1 -- ) Enable or disable break point monitoring | DONE
 ### MONITOR ( -- ) Display system breakpoint/monitor | DONE
@@ -490,7 +505,7 @@ Also refer to the auto start list examples as these contain extra words created 
 ### AT@ ( u1 u2 -- n ) Push to stack ASCII value at row u2 col u1 | DONE
 ### ADSP ( u1 --  ) Enable/Disable Auto screen updates (SLOW). | DONE
 ### MENU ( u1....ux n -- n ) Create a menu. n is the number of menu items on stack. Push number selection to TOS | DONE
-### IF ( w -- f ) If TOS is true exec code following up to THEN - Note: currently not supporting ELSE or nested IF | DONE
+### IF ( w -- f ) If TOS is true exec code following up to THEN  | DONE
 ### THEN ( -- ) Does nothing. It is a marker for the end of an IF block | DONE
 ### DO ( u1 u2 -- ) Loop starting at u2 with a limit of u1 | DONE
 ### LOOP ( -- ) Increment and test loop counter  | DONE
@@ -505,6 +520,7 @@ Also refer to the auto start list examples as these contain extra words created 
 ### EDIT ( u -- u ) Takes string on TOS and allows editing of it. Pushes it back once done. | DONE
 ### DEDIT ( ptr --  ) Takes an address for direct editing in memory. | DONE
 ### NOT ( u  -- u ) Inverse true/false on stack | DONE
+### COMPARE ( s1 s2  -- f ) Push true if string s1 is the same as s2 | DONE
 ### 0= ( u -- f ) Push true if u equals 0 | DONE
 ### < ( u1 u2 -- f ) True if u1 is less than u2 | DONE
 ### > ( u1 u2 -- f ) True if u1 is greater than u2 | DONE
@@ -547,11 +563,13 @@ Also refer to the auto start list examples as these contain extra words created 
 ### READCONT (  -- u1  )  Pushes the READ continuation flag to stack | DONE
 ### SPLIT ( s d -- s s...sn c ) Using delimter d, add strings found in s to stack pushing item count c | DONE
 ### PTR ( -- addr ) Low level push pointer to the value on TOS | DONE
-### STYPE ( u -- u type ) Push type of value on TOS - 's' string, 'i' integer...   | DONE
+### STYPE ( u -- u type ) Push type of value on TOS  | DONE
 ### UPPER ( s -- s ) Upper case string s  | DONE
 ### LOWER ( s -- s ) Lower case string s  | DONE
 ### TCASE ( s -- s ) Title case string s  | DONE
 ### SUBSTR ( s u1 u2 -- s sb ) Push to TOS chars starting at position u1 and with length u2 from string s  | DONE
+### LEFT ( s u -- s sub ) Push to TOS string u long starting from left of s  | DONE
+### RIGHT ( s u -- s sub ) Push to TOS string u long starting from right of s  | DONE
 ### STR2NUM ( s -- n ) Convert a string on TOS to number | DONE
 ### NUM2STR ( n -- s ) Convert a number on TOS to zero padded string | DONE
 ### CONCAT ( s1 s2 -- s3 ) A s1 + s2 is pushed onto the stack | DONE
@@ -564,10 +582,7 @@ Also refer to the auto start list examples as these contain extra words created 
 ## Constants (i.e. Useful memory addresses that can set or get features)
 
 ## Core Words
-### PICK ( ux ... u x -- ux ... u n )    Replace x on stack with the item from position x on stack  | TODO
 ### 2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items | TODO
-### OVER ( n1 n2 -- n1 n2 n1 )  Copy one below TOS onto TOS | TOFIX
-### ROT ( u1 u2 u3 -- u2 u3 u1 ) Rotate top three items on stack | TOFIX
 
 
 
@@ -580,12 +595,9 @@ Also refer to the auto start list examples as these contain extra words created 
 ### ELSE ( -- ) Not supported - does nothing | TODO
 ## Keyboard Words
 ## Logic Words
-### IS ( s1 s2  -- f ) Push true if string s1 is the same as s2 | TODO
 ### 0< ( u -- f ) Push true if u is less than o | CANT DO UNTIL FLOAT
 ## Maths Words
 ## Fixed Storage Words
 
 
 ## String Words
-### LEFT ( s u -- s sub ) Push to TOS string u long starting from left of s  | TODO
-### RIGHT ( s u -- s sub ) Push to TOS string u long starting from right of s  | TODO

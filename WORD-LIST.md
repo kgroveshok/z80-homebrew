@@ -182,6 +182,7 @@ Also refer to the auto start list examples as these contain extra words created 
 ### ALLOT ( u -- u ) Allocate u bytes of memory space and push the pointer TOS  | DONE
 ### MALLOC ( u -- u ) Allocate u bytes of memory space and push the pointer TOS  | DONE
 ### FREE ( u --  ) Free memory block from malloc given u address  | DONE
+### UPTR ( s -- u ) Push the address of the exec code for the quoted used word s  | TODO
 ### LIST ( uword -- u )    List the code to the word that is quoted (so as not to exec) on TOS | DONE
  The quoted word must be in upper case.
 ### FORGET ( uword -- )    Forget the uword on TOS | DONE
@@ -585,6 +586,7 @@ Also refer to the auto start list examples as these contain extra words created 
 ### 2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items | TODO
 
 
+### UPTR ( s -- u ) Push the address of the exec code for the quoted used word s  | TODO
 
 ## Device Words
 ### IN ( u1 -- u )    Perform Z80 IN with u1 being the port number. Push result to TOS | TO TEST

@@ -20,6 +20,12 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE Added DMARK for user code tracing useful for DL0 rom
 * DONE Fix LEFT
 * DONE Fix RIGHT
+* DONE UPTR word to get a user word code ptr
+* DONE generate word list md for the NOTE keywords is adding double spacing and breaking it. 
+* DONE New Uptr word to point to start of exec code of uword. Handy for writing forth hook code. Locate the c3 byte as it does work with a call..
+
+
+
 
 * TODO Add user interrupts by putting a hook into the parser or on NEXTW (as if using compiled version)
 * TODO Add user 'threads' by putting a hook into the parser or on NEXTW (as if using compiled version)
@@ -82,7 +88,6 @@ Bug list:
 * TODO Stop menu scrolling past last item
 
 
-* TODO generate word list md for the NOTE keywords is adding double spacing and breaking it. 
 
 
 
@@ -150,7 +155,6 @@ Enhancements:
 * TODO do random quotes from file as example code
 * TODO ui join files ui
 * TODO Add a means to attach some code to a vector hook
-* TODO New Uptr word to point to start of exec code of uword. Handy for writing forth hook code. Locate the c3 byte as it does work with a call..
 * TODO Add hook vectors. Can change  dbug checks to vector with return if disabled to save on push and asterisk checks. Add hook for stack checks to disable. Add hooks for some other points such as before and after words
 
 * TODO Add config feature to select which devices are on specific SPI addresses and have words for easier selection???

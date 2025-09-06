@@ -1447,7 +1447,7 @@ endif
 	NEXTW
 
 .FREE:
-CWHEAD .LIST 67 "FREE" 4 WORD_FLAG_CODE
+CWHEAD .UPTR 67 "FREE" 4 WORD_FLAG_CODE
 ; | FREE ( u --  ) Free memory block from malloc given u address  | DONE
 	if DEBUG_FORTH_WORDS_KEY
 		DMARK "FRE"
@@ -1467,6 +1467,128 @@ CWHEAD .LIST 67 "FREE" 4 WORD_FLAG_CODE
 if FORTH_ENABLE_MALLOCFREE
 	call free
 endif
+	NEXTW
+.UPTR:
+CWHEAD .LIST 67 "UPTR" 4 WORD_FLAG_CODE
+; | UPTR ( s -- u ) Push the address of the exec code for the quoted used word s  | TODO
+	if DEBUG_FORTH_WORDS_KEY
+		DMARK "UPT"
+		CALLMONITOR
+	endif
+	FORTH_DSP_VALUEHL
+
+	push hl
+	FORTH_DSP_POP
+	pop bc
+
+
+	; Get ptr to the word we need to look up
+
+;		FORTH_DSP_VALUEHL
+	;v5 FORTH_DSP_VALUE
+; TODO type check
+;		inc hl    ; Skip type check 
+;		push hl
+;		ex de, hl    ; put into DE
+
+
+	ld hl, baseram
+	;ld hl, baseusermem
+
+push hl   ; sacreifical push
+
+.uldouscanm:
+pop hl
+.uldouscan:
+if DEBUG_FORTH_WORDS
+	DMARK "LSs"
+	CALLMONITOR
+endif
+; skip dict stub
+	call forth_tok_next
+
+
+; while we have words to look for
+
+ld a, (hl)     
+if DEBUG_FORTH_WORDS
+	DMARK "LSk"
+	CALLMONITOR
+endif
+	;cp WORD_SYS_END
+	;jp z, .lunotfound
+
+		; if we hit non uwords then gone too far
+		cp WORD_SYS_UWORD
+		jp nz, .ulunotfound
+
+	if DEBUG_FORTH_WORDS
+		DMARK "LSu"
+		CALLMONITOR
+	endif
+
+		; found a uword but is it the one we want...
+
+		push bc     ; uword to find is on bc
+		pop de
+
+		push hl  ; to save the ptr
+
+		; skip opcode
+		inc hl 
+		; skip next ptr
+		inc hl 
+		inc hl
+		; skip len
+		inc hl
+
+	if DEBUG_FORTH_WORDS
+		DMARK "LSc"
+		CALLMONITOR
+	endif
+; was exiting on the shorter of the words. swap and test is in favour of the longer word.
+; ie. If WOO is defined first and then WO. Couldnt list WO.
+; Nope that has gone the other way. It needs to be exact not on first zero
+;		call strcmp
+		push bc
+		call StrictStrCmp
+		pop bc
+		jp nz, .uldouscanm
+	
+
+
+		; we have a uword so push its name to the stack
+
+;	   	push hl  ; save so we can move to next dict block
+pop hl
+
+	if DEBUG_FORTH_WORDS
+		DMARK "LSm"
+		CALLMONITOR
+	endif
+
+		; skip opcode
+		inc hl 
+		; skip next ptr
+		inc hl 
+		inc hl
+		; skip len
+		ld a, (hl)   ; save length to add
+	if DEBUG_FORTH_WORDS
+		DMARK "LS2"
+		CALLMONITOR
+	endif
+
+	; skip zero term and other uword defs to position right at the exec code
+	ld b, 4
+	add a,b
+
+	call addatohl
+		; save this location
+	
+.ulunotfound:
+	call forth_push_numhl
+			
 	NEXTW
 .LIST:
 CWHEAD .FORGET 72 "LIST" 4 WORD_FLAG_CODE

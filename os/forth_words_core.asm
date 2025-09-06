@@ -296,6 +296,8 @@ CWHEAD .EXEC OPCODE_HEAP "HEAP" 4 WORD_FLAG_CODE
 .DUP:
 CWHEAD .ZDUP OPCODE_DUP "DUP" 3 WORD_FLAG_CODE
 ; | DUP ( u -- u u )     Duplicate whatever item is on TOS | DONE
+; | | >[!NOTE]
+; | | > If the duplicated item is a string it is safely duplicated
 
 	if DEBUG_FORTH_WORDS_KEY
 		DMARK "DUP"
@@ -339,6 +341,8 @@ endif
 .ZDUP:
 CWHEAD .DMRK OPCODE_ZDUP "?DUP" 4 WORD_FLAG_CODE
 ; | ?DUP ( u -- u u )     Duplicate item on TOS if the item is non-zero (Only works for numerics) | DONE
+; | | >[!NOTE]
+; | | > If the duplicated item is a string it is not safely duplicated and remain as pointer to the origin
 
 	if DEBUG_FORTH_WORDS_KEY
 		DMARK "qDU"
@@ -796,6 +800,8 @@ CWHEAD .DUP2 OPCODE_DROP "DROP" 4 WORD_FLAG_CODE
 .DUP2:
 CWHEAD .DROP2 OPCODE_DUP2 "2DUP" 4 WORD_FLAG_CODE
 ; | 2DUP ( w1 w2 -- w1 w2 w1 w2 ) Duplicate the top two items on TOS  (Only works for numerics) | DONE
+; | | >[!NOTE]
+; | | > If the duplicated items are string pointers, string are not safely duplicated and remain as pointers to the origin
 	if DEBUG_FORTH_WORDS_KEY
 		DMARK "2DU"
 		CALLMONITOR
@@ -892,7 +898,7 @@ CWHEAD .SWAP2 99 "PICK" 4 WORD_FLAG_CODE
 	NEXTW
 .SWAP2:
 CWHEAD .AT OPCODE_SWAP2 "2SWAP" 5 WORD_FLAG_CODE
-; | 2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items | TODO
+; | 2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items | DONE
 	if DEBUG_FORTH_WORDS_KEY
 		DMARK "2SW"
 		CALLMONITOR
@@ -1062,7 +1068,8 @@ ld h,0
 .OVER:
 CWHEAD .PAUSE 46 "OVER" 4 WORD_FLAG_CODE
 ; | OVER ( n1 n2 -- n1 n2 n1 )  Copy one below TOS onto TOS | DONE
-; | | If the copied item is a string it is properly duplicated allowing for a safe release after use. 
+; | | >[!NOTE]
+; | | > If the copied item is a string it is properly duplicated allowing for a safe release after use. 
 	if DEBUG_FORTH_WORDS_KEY
 		DMARK "OVR"
 		CALLMONITOR
@@ -1368,18 +1375,31 @@ CWHEAD .MALLOC 65 "MONITOR" 7 WORD_FLAG_CODE
 ; | | The bottom of the screen will also show the values of the data stack pointer (DSP)
 ; | | and the return stack pointer (RSP).
 ; | | Pressing:
+; | | 
 ; | |    1 - Initial screen
+; | | 
 ; | |    2 - Display a data dump of HL
+; | | 
 ; | |    3 - Display a data dump of DE
+; | | 
 ; | |    4 - Display a data dump of BC
+; | | 
 ; | |    5 - Display a data dump of HL
+; | | 
 ; | |    6 - Display a data dump of DSP
+; | | 
 ; | |    7 - Display a data dump of RSP
+; | | 
 ; | |    8 - Display a data dump of what is at DSP
+; | | 
 ; | |    9 - Display a data dump of what is at RSP
+; | | 
 ; | |    0 - Exit monitor and continue running. This will also enable break points
+; | | 
 ; | |    * - Disable break points
+; | | 
 ; | |    # - Enter traditional monitor mode
+; | | 
 ; | |
 ; | | Monitor Mode
 ; | | ------------

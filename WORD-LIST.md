@@ -109,7 +109,11 @@ Also refer to the auto start list examples as these contain extra words created 
  
  The heap is used for storing user defined words as well as any values pushed to stack.
 ### DUP ( u -- u u )     Duplicate whatever item is on TOS | DONE
+ >[!NOTE]
+ > If the duplicated item is a string it is safely duplicated
 ### ?DUP ( u -- u u )     Duplicate item on TOS if the item is non-zero (Only works for numerics) | DONE
+ >[!NOTE]
+ > If the duplicated item is a string it is not safely duplicated and remain as pointer to the origin
 ### DMARK ( s --  )  Set the debug marker id to first three chars of s | DONE
  Most useful for tracing your code for errors as you can set various markers to display when MONITOR is called
 ### LSHIFT ( w -- w )    16 bit left shift | DONE
@@ -119,11 +123,13 @@ Also refer to the auto start list examples as these contain extra words created 
 ### ; ( -- )     Terminate new word and return exec to previous exec level | DONE
 ### DROP ( w -- )   drop the TOS item   | DONE
 ### 2DUP ( w1 w2 -- w1 w2 w1 w2 ) Duplicate the top two items on TOS  (Only works for numerics) | DONE
+ >[!NOTE]
+ > If the duplicated items are string pointers, string are not safely duplicated and remain as pointers to the origin
 ### 2DROP ( w w -- )    Double drop | DONE
 ### PICK ( ux ... u x -- ux ... u n )    Replace x on stack with the item from position x on stack  | DONE
  >[!NOTE]
  > If the chosen item is a string the pointer is pushed to TOS. The string is not safely duplicated.
-### 2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items | TODO
+### 2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items | DONE
 ### @ ( w -- ) Push onto TOS byte stored at address   | DONE
 ### C@  ( w -- ) Push onto TOS byte stored at address   | DONE
 ### ! ( x w -- ) Store x at address w      | DONE
@@ -131,7 +137,8 @@ Also refer to the auto start list examples as these contain extra words created 
 ### CALL ( w -- w  ) machine code call to address w  push the result of hl to stack | DONE
 ### DEPTH ( -- u ) Push count of stack | DONE
 ### OVER ( n1 n2 -- n1 n2 n1 )  Copy one below TOS onto TOS | DONE
- If the copied item is a string it is properly duplicated allowing for a safe release after use. 
+ >[!NOTE]
+ > If the copied item is a string it is properly duplicated allowing for a safe release after use. 
 ### PAUSEMS ( n -- )  Pause for n millisconds | DONE
 ### PAUSE ( n -- )  Pause for n seconds | DONE
 ### ROT ( u1 u2 u3 -- u2 u3 u1 ) Rotate top three items on stack | DONE
@@ -158,18 +165,31 @@ Also refer to the auto start list examples as these contain extra words created 
  The bottom of the screen will also show the values of the data stack pointer (DSP)
  and the return stack pointer (RSP).
  Pressing:
+ 
     1 - Initial screen
+ 
     2 - Display a data dump of HL
+ 
     3 - Display a data dump of DE
+ 
     4 - Display a data dump of BC
+ 
     5 - Display a data dump of HL
+ 
     6 - Display a data dump of DSP
+ 
     7 - Display a data dump of RSP
+ 
     8 - Display a data dump of what is at DSP
+ 
     9 - Display a data dump of what is at RSP
+ 
     0 - Exit monitor and continue running. This will also enable break points
+ 
     * - Disable break points
+ 
     # - Enter traditional monitor mode
+ 
 
  Monitor Mode
  ------------
@@ -445,6 +465,7 @@ Also refer to the auto start list examples as these contain extra words created 
 ### 2DUP ( w1 w2 -- w1 w2 w1 w2 ) Duplicate the top two items on TOS  (Only works for numerics) | DONE
 ### 2DROP ( w w -- )    Double drop | DONE
 ### PICK ( ux ... u x -- ux ... u n )    Replace x on stack with the item from position x on stack  | DONE
+### 2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items | DONE
 ### @ ( w -- ) Push onto TOS byte stored at address   | DONE
 ### C@  ( w -- ) Push onto TOS byte stored at address   | DONE
 ### ! ( x w -- ) Store x at address w      | DONE
@@ -584,7 +605,6 @@ Also refer to the auto start list examples as these contain extra words created 
 ## Constants (i.e. Useful memory addresses that can set or get features)
 
 ## Core Words
-### 2SWAP ( w1 w2 w3 w4 -- w3 w4 w1 w2 ) Swap top pair of items | TODO
 
 
 ### UPTR ( s -- u ) Push the address of the exec code for the quoted used word s  | TODO

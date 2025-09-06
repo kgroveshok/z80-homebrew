@@ -137,7 +137,7 @@
 8003			 
 8003 ..			buildtime: db   "Build: " 
 800a					include "romtimestamp.asm" 
-800a ..			db '2025-09-06 12:17' 
+800a ..			db '2025-09-06 12:18' 
 # End of file romtimestamp.asm
 801a 00				   db 0 
 801b .. 32 00		debuglevel: db   "DL",DEBUG_LEVEL, 0 

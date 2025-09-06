@@ -18,13 +18,13 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE Fix IS 
 * DONE IS string compare should be renamed to COMPARE
 * DONE Added DMARK for user code tracing useful for DL0 rom
+* DONE Fix LEFT
+* DONE Fix RIGHT
 
 * TODO Add user interrupts by putting a hook into the parser or on NEXTW (as if using compiled version)
 * TODO Add user 'threads' by putting a hook into the parser or on NEXTW (as if using compiled version)
 * TODO Add user watch break points by putting a hook into the parser or on NEXTW (as if using compiled version)
 
-* TODO Fix LEFT
-* TODO Fix RIGHT
 * TODO /STRING for string cut (substr???)
 * TODO REPLACES/SUBSTITUTE for string replace
 * TODO SEARCH is simliar to FIND

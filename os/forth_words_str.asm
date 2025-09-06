@@ -383,7 +383,7 @@
 
 .LEFT:
 	CWHEAD .RIGHT 52 "LEFT" 4 WORD_FLAG_CODE
-; | LEFT ( s u -- s sub ) Push to TOS string u long starting from left of s  | TODO
+; | LEFT ( s u -- s sub ) Push to TOS string u long starting from left of s  | DONE
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "LEF"
 			CALLMONITOR
@@ -412,11 +412,62 @@
 		NEXTW
 .RIGHT:
 	CWHEAD .STR2NUM 52 "RIGHT" 5 WORD_FLAG_CODE
-; | RIGHT ( s u -- s sub ) Push to TOS string u long starting from right of s  | TODO
+; | RIGHT ( s u -- s sub ) Push to TOS string u long starting from right of s  | TO FIX
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "RIG"
 			CALLMONITOR
 		endif
+
+; TODO check string type
+		FORTH_DSP_VALUEHL
+
+		push hl      ; string length
+
+		FORTH_DSP_POP
+
+		FORTH_DSP_VALUEHL
+
+		if DEBUG_FORTH_WORDS
+			DMARK "RI1"
+			CALLMONITOR
+		endif
+		; from the pointer to string get to the end of string
+
+		ld bc, 255
+		ld a, 0
+		cpir
+
+		; 
+
+		if DEBUG_FORTH_WORDS
+			DMARK "RI2"
+			CALLMONITOR
+		endif
+
+		pop bc    ;  length of string to copy
+		inc bc
+
+		ld a, c
+		ex de, hl
+		ld hl, scratch 
+		call addatohl
+
+		ex de, hl
+
+		if DEBUG_FORTH_WORDS
+			DMARK "RI3"
+			CALLMONITOR
+		endif
+
+		lddr
+		
+		ld hl, scratch
+		if DEBUG_FORTH_WORDS
+			DMARK "RI4"
+			CALLMONITOR
+		endif
+		call forth_push_str
+
 
 		NEXTW
 

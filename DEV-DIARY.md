@@ -17,6 +17,7 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE PICK word to pick a value at a given value on stack and move to TOS. Some code in place. Needs fixing as not quite right
 * DONE Fix IS 
 * DONE IS string compare should be renamed to COMPARE
+* DONE Added DMARK for user code tracing useful for DL0 rom
 
 * TODO Add user interrupts by putting a hook into the parser or on NEXTW (as if using compiled version)
 * TODO Add user 'threads' by putting a hook into the parser or on NEXTW (as if using compiled version)

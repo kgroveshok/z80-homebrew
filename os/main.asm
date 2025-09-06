@@ -134,6 +134,11 @@ coldstart:
 	; set break point vector as new break point on or off
 	call bp_off
 
+
+	; default the parse vector to just a RET
+	ld a, $c9
+	ld (parse_vector), a
+
 	; init hardware
 
 	; init keyboard and screen hardware

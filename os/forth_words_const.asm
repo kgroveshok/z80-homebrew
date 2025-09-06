@@ -120,6 +120,7 @@
 ; | | dw cin_wait
 ; | | dw forth_push_numhl
 ; | | dw forth_push_str
+; | | dw parse_vector
 ; | | ```
 
 		if DEBUG_FORTH_WORDS_KEY
@@ -249,7 +250,7 @@ dw cin
 dw cin_wait
 dw forth_push_numhl
 dw forth_push_str
-
+dw parse_vector
 
 .ENDCONST:
 

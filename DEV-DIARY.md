@@ -23,10 +23,13 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE UPTR word to get a user word code ptr
 * DONE generate word list md for the NOTE keywords is adding double spacing and breaking it. 
 * DONE New Uptr word to point to start of exec code of uword. Handy for writing forth hook code. Locate the c3 byte as it does work with a call..
+* DONE Added parse_vector to NEXTW 
+* DONE tidy up config menu - hellow world not working plus diags etc
 
 
 
 
+* TODO Using the vector hook though means only jumps. Need a wrapper around use to preserve current concontext and then restore it after
 * TODO Add user interrupts by putting a hook into the parser or on NEXTW (as if using compiled version)
 * TODO Add user 'threads' by putting a hook into the parser or on NEXTW (as if using compiled version)
 * TODO Add user watch break points by putting a hook into the parser or on NEXTW (as if using compiled version)
@@ -74,7 +77,6 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO  copy file to isocket backup 
 * TODO getid is slow. does it bail on first hit?
 * TODO add write protect to bank - byte zero? any attempt to write should throw system message
-* TODO tidy up config menu - hellow world not working plus diags etc
 * TODO add more to config menu
 
 * TODO  add uuword dmark as an extra set when a uword is looked up to exec. Added to firmware. need display on break point screen and where to intercept in parser

@@ -35,7 +35,7 @@ endif
 prom_c4: db "Settings",0
 prom_m4:   db "Debug & Breakpoints On/Off",0
 prom_m4b:   db "Monitor",0
-prom_c1: db "Hardware Diags",0
+;prom_c1: db "Hardware Diags",0
 
 
 if STARTUP_V2

@@ -29,10 +29,10 @@ endif
 	call z, .debug_tog
 	cp 4
 	call z, .bpsgo
-	cp 5
-	call z, hardware_diags
+;	cp 5
+;	call z, hardware_diags
 if STARTUP_V2
-	cp 6
+	cp 5
 	call z, create_startup
 endif
 	jr config
@@ -45,7 +45,7 @@ endif
 ;	dw prom_c4
 	dw prom_m4
 	dw prom_m4b
-	dw prom_c1
+;	dw prom_c1
 if STARTUP_V2
 	dw prom_c9
 endif
@@ -800,8 +800,17 @@ endif
 	jp .debug_tog
 
 
-hardware_diags:      
+.menudebug:
+		dw .m6
+		dw .m7
+		dw 0
+.m6:   db "Debug ON",0
+.m7:   db "Debug OFF",0
+;hardware_diags:      
 
+ENABLE_HDIAGS: equ 0
+
+if ENABLE_HDIAGS
 .diagm:
 	ld hl, .menuitems
 	ld a, 0
@@ -831,10 +840,6 @@ hardware_diags:
 		dw .m5b
 		dw 0
 
-.menudebug:
-		dw .m6
-		dw .m7
-		dw 0
 
 .m1:   db "Key Matrix",0
 .m2:   db "Editor",0
@@ -843,8 +848,6 @@ hardware_diags:
 .m5a:  db "RAM Test",0
 .m5b:  db "LCD Test",0
 
-.m6:   db "Debug ON",0
-.m7:   db "Debug OFF",0
 
 ; debug editor
 
@@ -880,7 +883,7 @@ hardware_diags:
 	call update_display
 
 	jp .diloop
-
+endif
 
 ; pass word in hl
 ; a has display location

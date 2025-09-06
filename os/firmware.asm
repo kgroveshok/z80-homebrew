@@ -181,8 +181,9 @@ hardware_word: equ hardware_config - 2
 
 nmi_vector:  equ hardware_word - 3   ; vector to the nmi handler
 debug_vector:  equ nmi_vector - 3   ; vector to the debug handler
+parse_vector:  equ debug_vector - 3 ; vector to the parser vector
 
-debug_umark: equ debug_vector - 6  ; current user mark
+debug_umark: equ parse_vector - 6  ; current user mark
 debug_mark: equ debug_umark - 4    ; internal word debug points
 
 ; input_str vars

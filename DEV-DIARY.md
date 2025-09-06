@@ -30,6 +30,21 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO SEARCH is simliar to FIND
 * TODO Add support for ELSE and ENDIF. IF THEN ELSE ENDIF   or IF THEN ENDIF. Or IF ... ELSE ... THEN
 
+
+* Compiler:
+*    For : def: tokenise string
+*               Locate tok and obtain pointer to start of exec code
+*                 Save jp code flag
+*                 Save pointer
+*               If token not found then assume push. Save section. Skip section
+*              
+*    For runtime:   Parser obtain start of token
+*                   If at start of token is jp code flag then assume following word pointer to code
+*                      Get pointer
+*                      Forward cli pointer to after code pointer
+*                      Jump to code pointer
+*                   If jp code flag not set then push through raw text parser
+*               
 * TODO Actually forget using op code, there is already a flag to define if the word exists as binary form on the CHEAD WORD_FLAG_CODE. What is being used for uwords? yes WORD_SYS_UWORD is used for detecting if sysdict or udict. No, that SYS flag is used in op code. WORD_FLAG_CODE isnt coded for a memory space. Only opcode, so back to that idea
 * TODO to make compile easier to work with only apply to colon word defs and not immediate 
 * TODO a better means of compling is not to use op codes but as in trad forth and create a pointer to the direct code block to exec and by pass the token scanning. Would need a flag before the pointer to indicate that what comes next is a pointer and not something to throw at the parser. This would work for system and uword exec. Dont forget to make sure the next token pointers are kept up to date. Perhaps if the item is known to be a string or number it can short circut the parser. We know the symbols that work for this. 

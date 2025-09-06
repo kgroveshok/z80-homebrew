@@ -32,6 +32,8 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 
 
 * Compiler:
+*    For the TOKEN flag on the CWHEAD macro, only allow use of direct code if the flag allows it. This will prevent some tokens from being issued
+*      direct such as THEN which is a search of the string. Maybe other tokens will need this.
 *    For : def: tokenise string
 *               Locate tok and obtain pointer to start of exec code
 *                 Save jp code flag

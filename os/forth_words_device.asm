@@ -207,7 +207,8 @@ if STORAGE_SE
 
 .SESEL:
 	CWHEAD .CARTDEV 82 "BANK" 4 WORD_FLAG_CODE
-; | BANK ( u1 -- ) Select Serial EEPROM Bank Device at bank address u1 1-5 (disables CARTDEV). Set to zero to disable storage. | DONE
+; | BANK ( u1 -- ) Select Serial EEPROM Bank Device at bank address u1 1-5 (disables CARTDEV).  | DONE
+; | | Set to zero to disable storage.
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "BNK"
 			CALLMONITOR
@@ -285,7 +286,8 @@ if STORAGE_SE
 
 .CARTDEV:
 	CWHEAD .ENDDEVICE 82 "CARTDEV" 7 WORD_FLAG_CODE
-; | CARTDEV ( u1 -- ) Select cart device 1-8 (Disables BANK). Set to zero to disable devices. |  DONE
+; | CARTDEV ( u1 -- ) Select cart device 1-8 (Disables BANK). | DONE
+; | | Set to zero to disable devices.
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "CDV"
 			CALLMONITOR

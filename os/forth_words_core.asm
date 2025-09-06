@@ -1404,11 +1404,17 @@ CWHEAD .MALLOC 65 "MONITOR" 7 WORD_FLAG_CODE
 ; | | Monitor Mode
 ; | | ------------
 ; | | A prompt of '>' will be shown for various commands:
+; | | 
 ; | |    D xxxx - Display a data dump starting from hex address xxxx
+; | | 
 ; | |    C - Continue display a data dump from the last set address
+; | | 
 ; | |    M xxxx - Set start of memory edit at address xx
+; | | 
 ; | |    U xx - Poke the hex byte xx into the address set by M and increment the address to the next location
+; | | 
 ; | |    G xxxx - Exec code at specific address
+; | | 
 ; | |    Q - Return to previous
 	if DEBUG_FORTH_WORDS_KEY
 		DMARK "MON"

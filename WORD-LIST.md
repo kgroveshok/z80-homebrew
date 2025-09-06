@@ -194,11 +194,17 @@ Also refer to the auto start list examples as these contain extra words created 
  Monitor Mode
  ------------
  A prompt of '>' will be shown for various commands:
+ 
     D xxxx - Display a data dump starting from hex address xxxx
+ 
     C - Continue display a data dump from the last set address
+ 
     M xxxx - Set start of memory edit at address xx
+ 
     U xx - Poke the hex byte xx into the address set by M and increment the address to the next location
+ 
     G xxxx - Exec code at specific address
+ 
     Q - Return to previous
 ### ALLOT ( u -- u ) Allocate u bytes of memory space and push the pointer TOS  | DONE
 ### MALLOC ( u -- u ) Allocate u bytes of memory space and push the pointer TOS  | DONE

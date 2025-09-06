@@ -100,6 +100,7 @@ Also refer to the auto start list examples as these contain extra words created 
  dw cin_wait
  dw forth_push_numhl
  dw forth_push_str
+ dw parse_vector
  ```
 ## Core Words
 ### HEAP ( -- u1 u2 )   Pushes u1 the current number of bytes in the heap and u2 the remaining bytes - Only present if using my MALLOC | DONE

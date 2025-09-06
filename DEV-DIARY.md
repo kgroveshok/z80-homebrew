@@ -28,6 +28,7 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO /STRING for string cut (substr???)
 * TODO REPLACES/SUBSTITUTE for string replace
 * TODO SEARCH is simliar to FIND
+* TODO Add support for ELSE and ENDIF. IF THEN ELSE ENDIF   or IF THEN ENDIF. Or IF ... ELSE ... THEN
 
 * TODO Actually forget using op code, there is already a flag to define if the word exists as binary form on the CHEAD WORD_FLAG_CODE. What is being used for uwords? yes WORD_SYS_UWORD is used for detecting if sysdict or udict. No, that SYS flag is used in op code. WORD_FLAG_CODE isnt coded for a memory space. Only opcode, so back to that idea
 * TODO to make compile easier to work with only apply to colon word defs and not immediate 
@@ -151,7 +152,6 @@ Enhancements:
 * TODO New value type for signed and unsigned val. Add to maths. added DS_TYPE_SNUM need a word to convert type. SIGN/UNSIGN. Fix up <= and dot.
 * TODO Speed up screen updates - instead of writing whole screen detect what has changed? 
 * TODO Add no bank chip detection to format
-* TODO Add support for ELSE and ENDIF. IF THEN ELSE ENDIF   or IF THEN ENDIF. Or IF ... ELSE ... THEN
 
 * TODO need word to get file id by name
 * TODO need word to get file name by id

@@ -109,7 +109,8 @@
 		NEXTW
 .STYPE:
 	CWHEAD .UPPER 52 "STYPE" 5 WORD_FLAG_CODE
-; | STYPE ( u -- u type ) Push type of value on TOS - 's' string, 'i' integer...   | DONE
+; | STYPE ( u -- u type ) Push type of value on TOS  | DONE
+; | | 's' string or 'i' integer
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "STY"
 			CALLMONITOR
@@ -387,6 +388,26 @@
 			DMARK "LEF"
 			CALLMONITOR
 		endif
+
+		
+; TODO check string type
+		FORTH_DSP_VALUEHL
+
+		push hl      ; string length
+
+		FORTH_DSP_POP
+
+		FORTH_DSP_VALUEHL
+
+		pop bc
+
+		ld de, scratch
+		ldir
+		ld a, 0
+		ld (de), a
+		
+		ld hl, scratch
+		call forth_push_str
 
 		NEXTW
 .RIGHT:

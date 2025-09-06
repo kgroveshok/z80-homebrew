@@ -669,6 +669,5 @@ include "firmware_diags.asm"
 
 include "firmware_prompts.asm"
 
-
 ; eof
 

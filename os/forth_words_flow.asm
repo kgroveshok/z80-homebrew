@@ -3,7 +3,8 @@
 
 .IF:
 	CWHEAD .THEN 10 "IF" 2 WORD_FLAG_CODE
-; | IF ( w -- f ) If TOS is true exec code following up to THEN - Note: currently not supporting ELSE or nested IF | DONE
+; | IF ( w -- f ) If TOS is true exec code following up to THEN  | DONE
+; | | Note: currently not supporting ELSE or nested IF
 ;
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "IF."

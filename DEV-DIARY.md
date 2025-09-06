@@ -15,6 +15,8 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE Fix 2SWAP
 * DONE LSHIFT and RSHIFT for bit shifting
 * DONE PICK word to pick a value at a given value on stack and move to TOS. Some code in place. Needs fixing as not quite right
+* DONE Fix IS 
+* DONE IS string compare should be renamed to COMPARE
 
 * TODO Add user interrupts by putting a hook into the parser or on NEXTW (as if using compiled version)
 * TODO Add user 'threads' by putting a hook into the parser or on NEXTW (as if using compiled version)
@@ -22,11 +24,9 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 
 * TODO Fix LEFT
 * TODO Fix RIGHT
-* TODO Fix IS 
 * TODO /STRING for string cut (substr???)
 * TODO REPLACES/SUBSTITUTE for string replace
 * TODO SEARCH is simliar to FIND
-* TODO IS string compare should be renamed to COMPARE
 
 * TODO Actually forget using op code, there is already a flag to define if the word exists as binary form on the CHEAD WORD_FLAG_CODE. What is being used for uwords? yes WORD_SYS_UWORD is used for detecting if sysdict or udict. No, that SYS flag is used in op code. WORD_FLAG_CODE isnt coded for a memory space. Only opcode, so back to that idea
 * TODO to make compile easier to work with only apply to colon word defs and not immediate 

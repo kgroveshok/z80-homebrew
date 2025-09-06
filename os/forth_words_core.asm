@@ -337,7 +337,7 @@ endif
 	call forth_push_numhl
 	NEXTW
 .ZDUP:
-CWHEAD .LSHIFT OPCODE_ZDUP "?DUP" 4 WORD_FLAG_CODE
+CWHEAD .DMRK OPCODE_ZDUP "?DUP" 4 WORD_FLAG_CODE
 ; | ?DUP ( u -- u u )     Duplicate item on TOS if the item is non-zero (Only works for numerics) | DONE
 
 	if DEBUG_FORTH_WORDS_KEY
@@ -367,6 +367,28 @@ CWHEAD .LSHIFT OPCODE_ZDUP "?DUP" 4 WORD_FLAG_CODE
 
 .dup2orig:
 
+	NEXTW
+.DMRK:
+CWHEAD .LSHIFT OPCODE_ZDUP "DMARK" 5 WORD_FLAG_CODE
+; | DMARK ( s --  )  Set the debug marker id to first three chars of s | DONE
+; | | Most useful for tracing your code for errors as you can set various markers to display when MONITOR is called
+	if DEBUG_FORTH_WORDS_KEY
+		DMARK "DMK"
+		CALLMONITOR
+	endif
+	FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+	ld a, (hl)
+	ld (debug_mark),a
+	inc hl
+	ld a, (hl)
+	ld (debug_mark+1),a
+	inc hl
+	ld a, (hl)
+	ld (debug_mark+2),a
+
+
+	FORTH_DSP_POP
 	NEXTW
 .LSHIFT:
 CWHEAD .RSHIFT OPCODE_ZDUP "LSHIFT" 6 WORD_FLAG_CODE
@@ -816,7 +838,9 @@ CWHEAD .PICK OPCODE_DROP2 "2DROP" 5 WORD_FLAG_CODE
 	NEXTW
 .PICK:
 CWHEAD .SWAP2 99 "PICK" 4 WORD_FLAG_CODE
-; | PICK ( ux ... u x -- ux ... u n )    Replace x on stack with the item from position x on stack  | TODO
+; | PICK ( ux ... u x -- ux ... u n )    Replace x on stack with the item from position x on stack  | DONE
+; | | >[!NOTE]
+; | | > If the chosen item is a string the pointer is pushed to TOS. The string is not safely duplicated.
 	if DEBUG_FORTH_WORDS_KEY
 		DMARK "PIK"
 		CALLMONITOR
@@ -1037,7 +1061,8 @@ ld h,0
 	NEXTW
 .OVER:
 CWHEAD .PAUSE 46 "OVER" 4 WORD_FLAG_CODE
-; | OVER ( n1 n2 -- n1 n2 n1 )  Copy one below TOS onto TOS | TOFIX
+; | OVER ( n1 n2 -- n1 n2 n1 )  Copy one below TOS onto TOS | DONE
+; | | If the copied item is a string it is properly duplicated allowing for a safe release after use. 
 	if DEBUG_FORTH_WORDS_KEY
 		DMARK "OVR"
 		CALLMONITOR
@@ -1146,7 +1171,7 @@ CWHEAD .ROT 48 "PAUSE" 5 WORD_FLAG_CODE
        NEXTW
 .ROT:
 CWHEAD .UWORDS 49 "ROT" 3 WORD_FLAG_CODE
-; | ROT ( u1 u2 u3 -- u2 u3 u1 ) Rotate top three items on stack | TOFIX
+; | ROT ( u1 u2 u3 -- u2 u3 u1 ) Rotate top three items on stack | DONE
 	if DEBUG_FORTH_WORDS_KEY
 		DMARK "ROT"
 		CALLMONITOR

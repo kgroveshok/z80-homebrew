@@ -31,12 +31,32 @@
 		NEXTW
 
 .IS:
-	CWHEAD .LZERO 25 "IS" 2 WORD_FLAG_CODE
-; | IS ( s1 s2  -- f ) Push true if string s1 is the same as s2 | TODO
+	CWHEAD .LZERO 25 "COMPARE" 7 WORD_FLAG_CODE
+; | COMPARE ( s1 s2  -- f ) Push true if string s1 is the same as s2 | DONE
 		if DEBUG_FORTH_WORDS_KEY
-			DMARK "IS."
+			DMARK "CMP"
 			CALLMONITOR
 		endif
+
+		FORTH_DSP_VALUEHL
+
+		push hl
+
+		FORTH_DSP_VALUEM1
+
+		pop de
+
+		; got pointers to both. Now check.
+
+		call strcmp
+	
+		ld h, 0
+		ld l, 0
+		jr nz, .compnsame
+		ld l, 1	
+.compnsame:
+		call forth_push_numhl
+
 		NEXTW
 .LZERO:
 	CWHEAD .TZERO 25 "0<" 2 WORD_FLAG_CODE

@@ -59,8 +59,8 @@ user_word_eol:
 	; db string + 0 term
 	; db exec code.... 
 
-	ld a, WORD_SYS_ROOT     ; root word
-	ld (hl), a		; word id
+;	ld a, WORD_SYS_ROOT     ; root word
+	ld (hl), WORD_SYS_ROOT		; word id
 	inc hl
 
 	ld de, sysdict
@@ -76,15 +76,15 @@ user_word_eol:
 ;	inc hl
 ;	inc hl
 
-	ld a, 2			; word length is 0
-	ld (hl), a	
+;	ld a, 2			; word length is 0
+	ld (hl), 2
 	inc hl
 
-	ld a, '~'			; word length is 0
-	ld (hl), a	
+;	ld a, '~'			; word length is 0
+	ld (hl), '~'
 	inc hl
-	ld a, 0			; save empty word
-	ld (hl), a
+;	ld a, 0			; save empty word
+	ld (hl), 0
 
 	ret
 
@@ -111,26 +111,26 @@ forth_warmstart:
 	ld hl, cli_ret_stack
 	ld (cli_ret_sp), hl	
 	; set bottom of stack
-	ld a,0
-	ld (hl),a
+;	ld a,0
+	ld (hl),0
 	inc hl
-	ld (hl),a
+	ld (hl),0
 
 	ld hl, cli_data_stack
 	ld (cli_data_sp), hl	
 	; set bottom of stack
-	ld a,0
-	ld (hl),a
+;	ld a,0
+	ld (hl),0
 	inc hl
-	ld (hl),a
+	ld (hl),0
 
 	ld hl, cli_loop_stack
 	ld (cli_loop_sp), hl	
 	; set bottom of stack
-	ld a,0
-	ld (hl),a
+;	ld a,0
+	ld (hl),0
 	inc hl
-	ld (hl),a
+	ld (hl),0
 
 	; init extent of current open file
 
@@ -305,8 +305,8 @@ pop hl
 	ld hl, os_word_scratch+2
 	call hexout
 	ld hl, os_word_scratch+4
-	ld a,0
-	ld (hl),a
+;	ld a,0
+	ld (hl),0
 	ld de,os_word_scratch
 		ld a, display_row_2
 		call str_at_display
@@ -334,8 +334,8 @@ pop hl
 	ld hl, os_word_scratch+2
 	call hexout
 	ld hl, os_word_scratch+4
-	ld a,0
-	ld (hl),a
+;	ld a,0
+	ld (hl),0
 	ld de,os_word_scratch
 		ld a, display_row_2 + 11
 		call str_at_display
@@ -365,8 +365,8 @@ pop hl
 	ld hl, os_word_scratch+2
 	call hexout
 	ld hl, os_word_scratch+4
-	ld a,0
-	ld (hl),a
+;	ld a,0
+	ld (hl),0
 	ld de,os_word_scratch
 		ld a, display_row_2
 		call str_at_display
@@ -390,8 +390,8 @@ pop hl
 	ld hl, os_word_scratch+2
 	call hexout
 	ld hl, os_word_scratch+4
-	ld a,0
-	ld (hl),a
+;	ld a,0
+	ld (hl),0
 	ld de,os_word_scratch
 		ld a, display_row_2 + 11
 		call str_at_display

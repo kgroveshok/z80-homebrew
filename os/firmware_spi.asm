@@ -32,7 +32,8 @@ SPI_CE_HIGH:  equ 255
 spi_clk:
 	push af
 	ld a, (spi_clktime)
-	cp 0
+;	cp 0
+	or a
 	jr z, .scskip
 	call aDelayInMS
 .scskip:
@@ -87,16 +88,16 @@ spi_send_byte:
 	set SPI_DI,a
 .ssb2:  ; output bit to ensure it is stable
 	out (storage_adata),a
-	nop
+;	nop
 	; clock bit high
 	set SPI_SCLK,a
 	out (storage_adata),a
-	nop
+;	nop
 	call spi_clk
 	; then low
 	res SPI_SCLK,a
 	out (storage_adata),a
-	nop
+;	nop
 	call spi_clk
 	djnz .ssb1
 
@@ -117,7 +118,7 @@ spi_read_byte:
 	; clock bit high
 	set SPI_SCLK,a
 	out (storage_adata),a
-	nop
+;	nop
 	call spi_clk
 
     ; read DO 
@@ -131,14 +132,14 @@ spi_read_byte:
 	; then low
 	res SPI_SCLK,a
 	out (storage_adata),a
-	nop
+;	nop
 	call spi_clk
     
 
 	; clock bit high
 	set SPI_SCLK,a
 	out (storage_adata),a
-	nop
+;	nop
 	call spi_clk
 
     ; read DO 
@@ -152,13 +153,13 @@ spi_read_byte:
 	; then low
 	res SPI_SCLK,a
 	out (storage_adata),a
-	nop
+;	nop
 	call spi_clk
 
 	; clock bit high
 	set SPI_SCLK,a
 	out (storage_adata),a
-	nop
+;	nop
 	call spi_clk
 
 
@@ -173,12 +174,12 @@ spi_read_byte:
 	; then low
 	res SPI_SCLK,a
 	out (storage_adata),a
-	nop
+;	nop
 	call spi_clk
 	; clock bit high
 	set SPI_SCLK,a
 	out (storage_adata),a
-	nop
+;	nop
 	call spi_clk
 
     ; read DO 
@@ -192,12 +193,12 @@ spi_read_byte:
 	; then low
 	res SPI_SCLK,a
 	out (storage_adata),a
-	nop
+;	nop
 	call spi_clk
 	; clock bit high
 	set SPI_SCLK,a
 	out (storage_adata),a
-	nop
+;	nop
 	call spi_clk
 
     ; read DO 
@@ -211,12 +212,12 @@ spi_read_byte:
 	; then low
 	res SPI_SCLK,a
 	out (storage_adata),a
-	nop
+;	nop
 	call spi_clk
 	; clock bit high
 	set SPI_SCLK,a
 	out (storage_adata),a
-	nop
+;	nop
 	call spi_clk
 
     ; read DO 
@@ -230,12 +231,12 @@ spi_read_byte:
 	; then low
 	res SPI_SCLK,a
 	out (storage_adata),a
-	nop
+;	nop
 	call spi_clk
 	; clock bit high
 	set SPI_SCLK,a
 	out (storage_adata),a
-	nop
+;	nop
 	call spi_clk
 
     ; read DO 
@@ -249,12 +250,12 @@ spi_read_byte:
 	; then low
 	res SPI_SCLK,a
 	out (storage_adata),a
-	nop
+;	nop
 	call spi_clk
 	; clock bit high
 	set SPI_SCLK,a
 	out (storage_adata),a
-	nop
+;	nop
 	call spi_clk
 
     ; read DO 
@@ -268,7 +269,7 @@ spi_read_byte:
 	; then low
 	res SPI_SCLK,a
 	out (storage_adata),a
-	nop
+;	nop
 	call spi_clk
 
 

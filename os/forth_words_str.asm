@@ -41,7 +41,8 @@
 		ld a, (hl)
 		cp b
 		jr z, .splnxt
-		cp 0
+;		cp 0
+		or a
 		jr z, .splend
 		ldi
 		jr .spllop
@@ -166,7 +167,8 @@
 ; get pointer to string in hl
 
 .toup:		ld a, (hl)
-		cp 0
+;		cp 0
+		or a
 		jr z, .toupdone
 
 		call to_upper
@@ -200,7 +202,8 @@
 ; get pointer to string in hl
 
 .tolow:		ld a, (hl)
-		cp 0
+;		cp 0
+		or a
 		jr z, .tolowdone
 
 		call to_lower
@@ -243,7 +246,8 @@
 
 
 .tot:		ld a, (hl)
-		cp 0
+;		cp 0
+		or a
 		jp z, .totdone
 
 		if DEBUG_FORTH_WORDS
@@ -278,7 +282,9 @@
 			CALLMONITOR
 		endif
 		jr .totsp
-.totsiptou:    cp 0
+.totsiptou:    
+		;cp 0
+		or a
 		jr z, .totdone
 		; not space and not zero term so upper case it
 		call to_upper
@@ -363,8 +369,8 @@
 
 
 		ex de, hl
-		ld a, 0
-		ld (hl), a   ; term substr
+;		ld a, 0
+		ld (hl), 0   ; term substr
 
 		
 		pop hl    ; get malloc so we can push it
@@ -675,7 +681,8 @@
 		
 		ld bc, 0
 .findchar:      ld a,(hl)
-		cp 0   		
+;		cp 0   		
+		or a
 		jr z, .finddone    
 		cp d
 		jr z, .foundchar

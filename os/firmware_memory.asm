@@ -206,7 +206,8 @@ malloc_internal:
 malloc_search_loop:
     ; Check if current block is free
     ld a, (hl)         ; Load current block's status (free or used)
-    cp 0               ; Compare with zero (free)
+;    cp 0               ; Compare with zero (free)
+	or a
     jr nz, malloc_skip_block_check  ; If not free, skip to the next block
 
     ; Check if current block is large enough
@@ -247,7 +248,8 @@ malloc_skip_block_check:
     cp (hl)            ; Compare with low byte of current address
     jr nz, malloc_search_loop  ; If not equal, continue searching
     ld a, d            ; Load high byte of heap end address
-    cp 0               ; Check if it's zero (end of memory)
+;    cp 0               ; Check if it's zero (end of memory)
+	or a
     jr nz, malloc_search_loop  ; If not zero, continue searching
 
     ; If we reached here, allocation failed
@@ -300,7 +302,8 @@ free_skip_block_check:
     cp (hl)             ; Compare with low byte of current address
     jr nz, free_search_loop  ; If not equal, continue searching
     ld a, d             ; Load high byte of heap end address
-    cp 0                ; Check if it's zero (end of memory)
+;    cp 0                ; Check if it's zero (end of memory)
+	or a
     jr nz, free_search_loop  ; If not zero, continue searching
 
     ; If we reached here, pointer is not found in heap
@@ -1589,11 +1592,11 @@ heap_init:
 	; 
 
 	ld hl, heap_start
-	ld a, 0
-	ld (hl), a      ; empty block
+;	ld a, 0
+	ld (hl), 0      ; empty block
 	inc hl
-	ld a, 0
-	ld (hl), a      ; length of block
+;	ld a, 0
+	ld (hl), 0      ; length of block
 	; write end of list
 	inc hl
 	ld a,(hl)
@@ -1607,8 +1610,8 @@ heap_init:
 	ld (free_list), hl       ; store last malloc location
 
 	ld hl, free_list+3      ; flag for 'free' being used and force a rescan for reuse of block 
-	ld a, 0
-	ld (hl), a
+;	ld a, 0
+	ld (hl), 0
 
 
 	ld hl, heap_start
@@ -1650,7 +1653,8 @@ malloc:
 	; start at heap if a free has been issued so we can reclaim it otherwise continue from last time
 
 	ld a, (free_list+3)
-	cp 0
+;	cp 0
+	or a
 	jr z, .contheap
 
 	ld hl, (free_list)     ; get last alloc
@@ -1678,7 +1682,8 @@ malloc:
 	ld a,(hl) 
 	; if byte is zero then clear to use
 
-	cp 0
+;	cp 0
+	or a
 	jr z, .foundemptyblock
 
 	; if byte is not clear
@@ -1722,7 +1727,8 @@ malloc:
 	inc hl
 	ld a, (hl)
 	dec hl
-	cp 0
+;	cp 0
+	or a
 	jr z, .newblock
 
 		if DEBUG_FORTH_MALLOC_INT
@@ -1803,14 +1809,14 @@ malloc:
 
 ;	inc hl ; move past end of block
 
-	ld a, 0
-	ld (hl), a   ; empty marker
+;	ld a, 0
+	ld (hl), 0   ; empty marker
 	inc hl
-	ld (hl), a   ; size
+	ld (hl), 0   ; size
 	inc hl 
-	ld (hl), a   ; ptr
+	ld (hl), 0   ; ptr
 	inc hl
-	ld (hl), a   ; ptr
+	ld (hl), 0   ; ptr
 
 
 	pop hl
@@ -1859,8 +1865,8 @@ free:
 
 	; yes good chance we are on a malloc node
 
-	ld a, 0     
-	ld (hl), a   ; mark as free
+;	ld a, 0     
+	ld (hl), 0   ; mark as free
 
 	ld (free_list+3), a	 ; flag reuse of existing block on next malloc
 

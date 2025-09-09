@@ -552,7 +552,7 @@ endif
 
 
 	ret
-	 nop
+;	 nop
 
 .fabin:   ; TODO bin conversion
 

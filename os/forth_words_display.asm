@@ -137,7 +137,8 @@ endif
 
 
 		ld a,(cli_autodisplay)
-		cp 0
+;		cp 0
+		or a
 		jr z, .enoupdate
 				call update_display
 		.enoupdate:
@@ -269,12 +270,13 @@ if DEBUG_FORTH_DOT
 	CALLMONITOR
 endif	
 .dashscan:	ld a, (hl)
-		cp 0
+;		cp 0
+		or a
 		jr z, .nodashswap
 		cp '-'
 		jr nz, .dashskip
-		ld a, ' '
-		ld (hl), a
+;		ld a, ' '
+		ld (hl), ' '
 .dashskip:	inc hl
 if DEBUG_FORTH_DOT
 	DMARK "D-2"
@@ -299,7 +301,8 @@ endif
 		ld a, (f_cursor_ptr)
 		call str_at_display
 		ld a,(cli_autodisplay)
-		cp 0
+;		cp 0
+		or a
 		jr z, .noupdate
 				call update_display
 		.noupdate:
@@ -316,7 +319,8 @@ if DEBUG_FORTH_DOT
 	DMARK "D>1"
 	CALLMONITOR
 endif	
-		cp 0
+;		cp 0
+		or a
 		jr z, .noadv
 		; yes, lets advance the print position
 		ld a, 0
@@ -535,14 +539,14 @@ endif
 			DMARK "SP2"
 			CALLMONITOR
 		endif
-		ld a, ' '
+;		ld a, ' '
 .spaces1:	
-		ld (hl),a
+		ld (hl),' '
 		inc hl
 		
 		djnz .spaces1
-		ld a,0
-		ld (hl),a
+;		ld a,0
+		ld (hl),0
 		ld hl, scratch
 		if DEBUG_FORTH_WORDS
 			DMARK "SP3"

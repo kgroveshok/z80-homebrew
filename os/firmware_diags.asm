@@ -666,11 +666,11 @@ config_dir:
 	
 .dirdone:	
 
-		ld a, 0
+;		ld a, 0
 		ld hl, (store_tmp2)
-		ld (hl), a
+		ld (hl), 0
 		inc hl
-		ld (hl), a
+		ld (hl), 0
 		inc hl
 		; push a count of the dir items found
 
@@ -857,12 +857,12 @@ if ENABLE_HDIAGS
 ;	ld bc, 250
 ;	ldir
 	; TODO ldir is not working strcpy may not get all the terms on the input line????
-	ld a, 0
-	ld (hl), a
+;	ld a, 0
+	ld (hl), 0
 	inc hl
-	ld (hl), a
+	ld (hl), 0
 	inc hl
-	ld (hl), a
+	ld (hl), 0
 
         call clear_display
 	call update_display
@@ -898,8 +898,8 @@ display_word_at:
 	ld hl, os_word_scratch+2
 	call hexout
 	ld hl, os_word_scratch+4
-	ld a,0
-	ld (hl),a
+;	ld a,0
+	ld (hl),0
 	ld de,os_word_scratch
 	pop af
 		call str_at_display

@@ -140,9 +140,9 @@ scroll_up:
 	ld de, display_cols*display_rows
 	add hl, de
 	ld b, display_cols
-	ld a, ' '
+;	ld a, ' '
 .scwipe:
-	ld (hl), a
+	ld (hl), ' '
 	dec hl
 	djnz .scwipe
 
@@ -258,8 +258,8 @@ fill_display:
 	inc hl
 	djnz .fd1
 	inc hl
-	ld a,0
-	ld (hl),a
+;	ld a,0
+	ld (hl),0
 
 
 	ret
@@ -367,7 +367,8 @@ menu:
 if BASE_KEV
 
 .mbounce:	call cin
-		cp 0
+;		cp 0
+		or a
 		jr nz, .mbounce
 endif
 		; for ease use ex
@@ -440,7 +441,8 @@ endif
 		; if current option is 2 or more then display ^ in top
 
 .nodn:		ld a, (store_tmp2)
-		cp 0
+;		cp 0
+		or a
 		jr z, .noup
 
 		ld a, 0
@@ -490,7 +492,8 @@ endif
 	; move up one
 .mgoup:
 		ld a, (store_tmp2)
-		cp 0
+;		cp 0
+		or a
 		jp z, .mloop
 		dec a
 		ld (store_tmp2), a

@@ -236,8 +236,8 @@ pop hl
 	call hexout
 
 	ld hl, os_word_scratch+4
-	ld a,0
-	ld (hl),a
+;	ld a,0
+	ld (hl),0
 	ld de,os_word_scratch
 		ld a, display_row_2
 		call str_at_display
@@ -261,17 +261,17 @@ endif
 	ld hl, (cli_data_sp)
 
 	; save item type
-	ld a,  DS_TYPE_INUM
-	ld (hl), a
+;	ld a,  DS_TYPE_INUM
+	ld (hl), DS_TYPE_INUM
 	inc hl
 
 	; get word off stack
 	pop de
-	ld a,e
-	ld (hl), a
+	;ld a,e
+	ld (hl), e
 	inc hl
-	ld a,d
-	ld (hl), a
+;	ld a,d
+	ld (hl), d
 
 if DEBUG_FORTH_PUSH
 	dec hl
@@ -320,12 +320,12 @@ endif
 	ld a,(hl)
 	cp '"'
 	jr nz, .strnoq
-	ld a, 0      ; get rid of double quote
-	ld (hl), a
+;	ld a, 0      ; get rid of double quote
+	ld (hl), 0
 .strnoq: inc hl
 
-	ld a, 0
-	ld (hl), a     ; add null term and get rid of trailing double quote
+;	ld a, 0
+	ld (hl), 0     ; add null term and get rid of trailing double quote
 
 	inc de ; add one for the type string
 	inc de ; add one for null term???
@@ -377,8 +377,8 @@ endif
 	ld hl, (cli_data_sp)
 
 	; save item type
-	ld a,  DS_TYPE_STR
-	ld (hl), a
+;	ld a,  DS_TYPE_STR
+	ld (hl), DS_TYPE_STR
 	inc hl
 
 	; get malloc word off stack
@@ -468,7 +468,8 @@ endif
 
 .fapbinshift:	inc hl 
 	ld a,(hl)
-	cp 0     ; done scanning 
+;	cp 0     ; done scanning 
+	or a
 	jr z, .fapbdone  	; got it in HL so push 
 
 	; left shift de
@@ -496,7 +497,7 @@ endif
 
 	jp forth_push_numhl
 
-	 nop
+;	 nop
 
 .fabin:   ; TODO bin conversion
 

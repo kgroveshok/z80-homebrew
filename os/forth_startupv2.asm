@@ -36,7 +36,8 @@ forth_startup:
 
 
 	ld a, (os_last_cmd)
-	cp 0
+;	cp 0
+	or a
 	jr z, .startprompt
 	call delay250ms
 	jr .startdo
@@ -96,7 +97,8 @@ forth_startup:
 	call update_display		
 
 	ld a, (os_last_cmd)
-	cp 0
+;	cp 0
+	or a
 	jr nz, .startnxt
 	call next_page_prompt
         call clear_display
@@ -154,7 +156,8 @@ forth_autoload:
 
 	ld a, (store_page+STORE_0_AUTOFILE)
 
-	cp 0
+;	cp 0
+	or a
 	ret z     ; auto start not enabled
 
 	call clear_display
@@ -402,7 +405,8 @@ forth_autoload:
 ; check (store_readcont) if 0 then exec, if not then load on the end of the exec buffer until 0
 	
 	ld a, (store_readcont)
-	cp 0
+;	cp 0
+	or a
 	jr nz, .readext
 
 ;	jr z, .autoend

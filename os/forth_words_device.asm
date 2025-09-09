@@ -244,7 +244,8 @@ if STORAGE_SE
 
 		; active low
 
-		cp 0
+;		cp 0
+		or a
 		jr z, .bset
 		cp 1
 		jr nz, .b2
@@ -321,7 +322,8 @@ if STORAGE_SE
 			DMARK "CDV"
 			CALLMONITOR
 		endif
-		cp 0
+;		cp 0
+		or a
 		jr z, .cset
 		cp 1
 		jr nz, .c2

@@ -360,7 +360,8 @@ CWHEAD .DMRK OPCODE_ZDUP "?DUP" 4 WORD_FLAG_CODE
 
 	pop hl
 
-	cp 0
+;	cp 0
+	or a
 	jr z, .dup2orig
 
 
@@ -546,8 +547,8 @@ endif
 	ld (os_new_malloc), hl     ; save malloc start
 
 ;    db   1     ; user defined word 
-	ld a, WORD_SYS_UWORD 
-	ld (hl), a
+;	ld a, WORD_SYS_UWORD 
+	ld (hl), WORD_SYS_UWORD
 
 inc hl   
 ;    dw   sysdict
@@ -1635,11 +1636,11 @@ endif
 
 	ld hl, scratch
 
-	ld a, ':'
-	ld (hl),a
+;	ld a, ':'
+	ld (hl),':'
 	inc hl
-	ld a, ' '
-	ld (hl), a
+;	ld a, ' '
+	ld (hl), ' '
 
 	; Get ptr to the word we need to look up
 
@@ -1815,7 +1816,8 @@ pop hl
 		pop de
 
 .listl:         ld a,(hl)
-		cp 0
+;		cp 0
+		or a
 		jr z, .lreplsp     ; replace zero with space
 		;cp FORTH_END_BUFFER
 		cp ';'    ; No end buffer flag but the ';' will be a good sign of the end of definition
@@ -2168,8 +2170,8 @@ pop hl
 ;pop hl
 
 		; update opcode to deleted
-		ld a, WORD_SYS_DELETED
-		ld (hl), a
+;		ld a, WORD_SYS_DELETED
+		ld (hl), WORD_SYS_DELETED
 
 		inc hl 
 		; skip next ptr

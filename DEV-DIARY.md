@@ -34,10 +34,39 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Add user 'threads' by putting a hook into the parser or on NEXTW (as if using compiled version)
 * TODO Add user watch break points by putting a hook into the parser or on NEXTW (as if using compiled version)
 
+* TODO Get rid of VAR and use prefix ~^',\ x as local var references. Much tighter
+* TODO -rot reverse rot   w1 w2 w3 – w3 w1 w2   
+* TODO NIP w1 w2 - w2
+* TODO 2nip       w1 w2 w3 w4 – w3 w4
+* TODO 2tuck       w1 w2 w3 w4 – w3 w4 w1 w2 w3 w4 
+* TODO 2rot       w1 w2 w3 w4 w5 w6 – w3 w4 w5 w6 w1 w2
+* TODO LEAVE to exit DO LOOP
+* TODO between woord s e -- x ..... x    generates a list of numbers on stack in range
+
+
 * TODO /STRING for string cut (substr???)
 * TODO REPLACES/SUBSTITUTE for string replace
 * TODO SEARCH is simliar to FIND
 * TODO Add support for ELSE and ENDIF. IF THEN ELSE ENDIF   or IF THEN ENDIF. Or IF ... ELSE ... THEN
+
+* DONE Opt: ld (hl),a to ld (hl),<lit>
+* DONE Opt: ld a,0 to xor a (watch in case of flag change)
+* DONE Opt: cp 0 to or a
+
+* TODO A word that will allow the loading of a file into memory with strings held in pointer array. 
+
+* TODO A Simon says game demo
+* TODO A simple solo card game demo
+* TODO A simple character fighting stat game
+* TODO Top trump like game
+* TODO Mine sweeper
+* TODO Mastermind
+* TODO Connect 4
+* TODO a small tetris or three in a row shape matching 
+* TODO Find the pairs
+* TODO Note taker with menu list selection
+* TODO score trackers
+
 
 
 * Compiler:

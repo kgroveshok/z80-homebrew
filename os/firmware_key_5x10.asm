@@ -141,8 +141,8 @@ cin_wait: 	call cin
 				inc hl
 				call hexout
 				ld hl,key_repeat_ct+3
-				ld a,0
-				ld (hl),a
+;				ld a,0
+				ld (hl),0
 
 				    LD   A, kLCD_Line1+11
 				    CALL fLCD_Pos       ;Position cursor to location in A
@@ -154,18 +154,19 @@ cin_wait: 	call cin
 
 				pop af
 			endif
-	cp 0
+;	cp 0
+	or a
 	jr z, cin_wait   ; block until key press
 
 				if DEBUG_KEYCINWAIT
 					push af
 
-					ld a, 'A'	
+;					ld a, 'A'	
 					ld hl,key_repeat_ct
-					ld (hl),a
+					ld (hl),'A'
 					inc hl
-					ld a,0
-					ld (hl),a
+;					ld a,0
+					ld (hl),0
 
 					    LD   A, kLCD_Line2+11
 					    CALL fLCD_Pos       ;Position cursor to location in A
@@ -183,12 +184,12 @@ cin_wait: 	call cin
 				if DEBUG_KEYCINWAIT
 					push af
 
-					ld a, 'b'	
+;					ld a, 'b'	
 					ld hl,key_repeat_ct
-					ld (hl),a
+					ld (hl),'b'
 					inc hl
-					ld a,0
-					ld (hl),a
+;					ld a,0
+					ld (hl),0
 
 					    LD   A, kLCD_Line2+11
 					    CALL fLCD_Pos       ;Position cursor to location in A
@@ -203,17 +204,18 @@ cin_wait: 	call cin
 				endif
 
 call cin
-	cp 0
+;	cp 0
+	or a
 	jr nz, .cin_wait1  	; wait for key release
 if DEBUG_KEYCINWAIT
 	push af
 
-	ld a, '3'	
+;	ld a, '3'	
 	ld hl,key_repeat_ct
-	ld (hl),a
+	ld (hl),'3'
 	inc hl
-	ld a,0
-	ld (hl),a
+;	ld a,0
+	ld (hl),0
 
             LD   A, kLCD_Line2+11
             CALL fLCD_Pos       ;Position cursor to location in A
@@ -243,8 +245,8 @@ if DEBUG_KEYCIN
 	inc hl
 	call hexout
 	ld hl,key_repeat_ct+3
-	ld a,0
-	ld (hl),a
+;	ld a,0
+	ld (hl),0
 
             LD   A, kLCD_Line3+15
             CALL fLCD_Pos       ;Position cursor to location in A
@@ -260,18 +262,19 @@ endif
 
 
 	; no key held
-	cp 0
+;	cp 0
+	or a
 	ret z
 
 if DEBUG_KEYCIN
 	push af
 
-	ld a, '1'	
+;	ld a, '1'	
 	ld hl,key_repeat_ct
-	ld (hl),a
+	ld (hl),'1'
 	inc hl
-	ld a,0
-	ld (hl),a
+;	ld a,0
+	ld (hl),0
 
             LD   A, kLCD_Line4+15
             CALL fLCD_Pos       ;Position cursor to location in A
@@ -298,11 +301,11 @@ if DEBUG_KEYCIN
 	inc hl
 	call hexout
 	ld hl,key_repeat_ct+3
-	ld a,0
-	ld (hl),a
+;	ld a,0
+	ld (hl),0
 	ld hl,key_repeat_ct
-	ld a, '2'	
-	ld (hl),a
+;	ld a, '2'	
+	ld (hl),'2'
 
             LD   A, kLCD_Line4+15
             CALL fLCD_Pos       ;Position cursor to location in A
@@ -324,11 +327,11 @@ if DEBUG_KEYCIN
 	inc hl
 	call hexout
 	ld hl,key_repeat_ct+3
-	ld a,0
-	ld (hl),a
+;	ld a,0
+	ld (hl),0
 	ld hl,key_repeat_ct
-	ld a, '3'	
-	ld (hl),a
+;	ld a, '3'	
+	ld (hl),'3'
 
             LD   A, kLCD_Line4+15
             CALL fLCD_Pos       ;Position cursor to location in A
@@ -352,8 +355,8 @@ if DEBUG_KEYCIN
 	inc hl
 	call hexout
 	ld hl,key_repeat_ct+3
-	ld a,0
-	ld (hl),a
+;	ld a,0
+	ld (hl),0
 
             LD   A, kLCD_Line3+15
             CALL fLCD_Pos       ;Position cursor to location in A
@@ -369,18 +372,19 @@ endif
 
 
 	; no key held
-	cp 0
+;	cp 0
+	or a
 	ret z
 
 if DEBUG_KEYCIN
 	push af
 
-	ld a, '1'	
+;	ld a, '1'	
 	ld hl,key_repeat_ct
-	ld (hl),a
+	ld (hl),'1'
 	inc hl
-	ld a,0
-	ld (hl),a
+;	ld a,0
+	ld (hl),0
 
             LD   A, kLCD_Line4+15
             CALL fLCD_Pos       ;Position cursor to location in A
@@ -403,11 +407,11 @@ if DEBUG_KEYCIN
 	inc hl
 	call hexout
 	ld hl,key_repeat_ct+3
-	ld a,0
-	ld (hl),a
+;	ld a,0
+	ld (hl),0
 	ld hl,key_repeat_ct
-	ld a, '3'	
-	ld (hl),a
+;	ld a, '3'	
+	ld (hl),'3'
 
             LD   A, kLCD_Line4+15
             CALL fLCD_Pos       ;Position cursor to location in A
@@ -627,7 +631,8 @@ endif
 	ld b, (key_cols+1)*key_rows    ; 30 keys to remap + 8 nulls 
 .findkey:
 	ld a,(hl)
-	cp 0
+;	cp 0
+	or a
 	jr z, .nextkey
 	cp KEY_MATRIX_NO_PRESS
 	jr nz, .foundkey
@@ -743,10 +748,10 @@ endif
 	cp '.'
 	jr z, .key_shift11
 	ld b, 255
-	ld a, '+'    ; hide key from later scans
-	ld (hl),a
+;	ld a, '+'    ; hide key from later scans
+	ld (hl),'+'
 	ld a, 2
-	ld (cursor_shape),a
+	ld (cursor_shape), a
 .key_shift11:
 	; write flag indicator
 	ld a,b
@@ -904,33 +909,33 @@ djnz .colscan
 ld a,10
 LD   hl, keyscan_table_row1
 call addatohl
-ld a, 0
-ld (hl), a
+;ld a, 0
+ld (hl), 0
 
 
 ld a,10
 LD   hl, keyscan_table_row2
 call addatohl
-ld a, 0
-ld (hl), a
+;ld a, 0
+ld (hl), 0
 
 ld a,10
 LD   hl, keyscan_table_row3
 call addatohl
-ld a, 0
-ld (hl), a
+;ld a, 0
+ld (hl), 0
 
 ld a,10
 LD   hl, keyscan_table_row4
 call addatohl
-ld a, 0
-ld (hl), a
+;ld a, 0
+ld (hl), 0
 
 ld a,10
 LD   hl, keyscan_table_row5
 call addatohl
-ld a, 0
-ld (hl), a
+;ld a, 0
+ld (hl), 0
 
 if DEBUG_KEY_MATRIX
 
@@ -1457,8 +1462,8 @@ out (portbdata),a
 	ld (hl), b
 	inc hl
 ; zero term
-	ld b,0
-	ld (hl), b
+;	ld b,0
+	ld (hl), 0
 
 .rscandone: ret
 

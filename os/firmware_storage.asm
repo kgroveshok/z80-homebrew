@@ -278,9 +278,9 @@ storage_write_block:
 ;	endif
 	call se_writebyte
 ;	call delay250ms
-	nop
-	nop
-	nop
+;	nop
+;	nop
+;	nop
 ;	if DEBUG_STORESE
 ;		push af
 ;		ld a, 'w'
@@ -379,9 +379,9 @@ storage_get_block_0:
 	call storage_clear_page
 
 	ld hl, store_page
-	ld a, 0
+;	ld a, 0
 	
-	ld (hl),a   ; reset file counter
+	ld (hl),0   ; reset file counter
 
 	ld hl, 0x2780     ;      Byte - 1-2 formated: Byte pattern: 0x80 x27
  	ld (store_page+1), hl	
@@ -420,9 +420,9 @@ storage_get_block_0:
 		CALLMONITOR
 	endif
 
-	nop
-	nop
-	nop
+;	nop
+;	nop
+;	nop
 
 	; now set 0 in every page to mark as a free block
 
@@ -809,7 +809,8 @@ storage_freeblocks:
 		pop hl
 
 		; is free?
-		cp 0
+;		cp 0
+		or a
 		jr nz, .ff1cont
 		inc de
 
@@ -831,7 +832,8 @@ storage_freeblocks:
 		pop hl
 
 		; is free?
-		cp 0
+;		cp 0
+		or a
 		jr nz, .ff2cont
 		inc de
 
@@ -1077,7 +1079,8 @@ storage_read:
 	ld a, STORE_BLOCK_PHY-1
 	call addatohl
 	ld a,(hl)
-	cp 0
+;	cp 0
+	or a
 	jr z, .markiscont
 	ld a, 255
 
@@ -1091,7 +1094,8 @@ storage_read:
 	; only short reads enabled
 
 	ld a, (store_longread)
-	cp 0
+;	cp 0
+	or a
 	jp z, .readdone
 
 ; TODO if block has no zeros then need to read next block 
@@ -1110,7 +1114,8 @@ storage_read:
 		DMARK "sr?"
 		CALLMONITOR
 	endif
-	cp 0
+;	cp 0
+	or a
 	jp z, .readdone
 
 	; last byte is not zero so there is more in the next extent. Load it on the end.	
@@ -1291,8 +1296,8 @@ storage_append:
 
 		ld hl, store_page
 		ld b, STORE_BLOCK_PHY
-		ld a, 0
-.zeroblock:	ld (hl), a
+;		ld a, 0
+.zeroblock:	ld (hl), 0
 		inc hl
 		djnz .zeroblock
 
@@ -1321,7 +1326,8 @@ storage_append:
 
 .appd:		ld a, (hl)
 		ld (de), a
-		cp 0
+;		cp 0
+		or a
 		jr z, .appdone
 		inc hl
 		inc de
@@ -1348,7 +1354,8 @@ storage_append:
 		pop af
 		pop de
 
-		cp 0		 ; no, string was fully written
+		;cp 0		 ; no, string was fully written
+		or a
 		ret z
 
 		; setup vars for next cycle
@@ -1371,8 +1378,8 @@ storageput:
 storageread:
 		ld hl, store_page
 		ld b, 200
-		ld a,0
-.src:		ld (hl),a
+;		ld a,0
+.src:		ld (hl),0
 		inc hl
 		djnz .src
 		
@@ -1386,8 +1393,8 @@ storageread:
 	ld hl,scratch
 	call hexout
 	ld hl, scratch+2
-	ld a, 0
-	ld (hl),a
+;	ld a, 0
+	ld (hl),0
 	ld de, scratch
 	ld a,display_row_1
 	call str_at_display
@@ -1407,8 +1414,8 @@ storage_clear_page:
 	push de
 	push bc
 	ld hl, store_page
-	ld a, 0
-	ld (hl), a
+;	ld a, 0
+	ld (hl), 0
 
 	ld de, store_page+1
 	ld bc, STORE_BLOCK_LOG+1

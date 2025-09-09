@@ -61,14 +61,15 @@ input_str:
 		; init cursor shape if not set by the cin routines
 		ld hl, cursor_shape
 if BASE_KEV
-		ld a, 255
+;		ld a, 255
+		ld (hl), 255
 else
-		ld a, '#'
+		;ld a, '#'
+		ld (hl), '#'
 endif
-		ld (hl), a
 		inc hl
-		ld a, 0
-		ld (hl), a
+;		ld a, 0
+		ld (hl), 0
 
 		ld a, CUR_BLINK_RATE
 		ld (input_cur_flash), a
@@ -112,7 +113,8 @@ endif
 		ld a, (input_cur_flash)
 		dec a
 		ld (input_cur_flash), a
-		cp 0
+;		cp 0
+		or a
 		jr nz, .inochgstate
 
 
@@ -170,8 +172,8 @@ endif
 		ld hl, LFSRSeed+10
 		call hexout
 		ld hl, LFSRSeed+12
-		ld a, 0
-		ld (hl),a
+;		ld a, 0
+		ld (hl),0
 		ld a, display_row_4
 		ld de, LFSRSeed
 		call str_at_display
@@ -185,7 +187,8 @@ if BASE_CPM
 else
 		call cin    ; _wait
 endif
-		cp 0
+;		cp 0
+		or a
 		jp z, .inmain
 
 		cp KEY_LEFT    ; cursor left
@@ -254,7 +257,8 @@ input_nxtword:
 .insknwn:	
 		call input_curptr	
 		ld a,(hl)	
-		cp 0
+;		cp 0
+		or a
 		jp z, .inmain    ; end of string
 
 ; if we are on a word, then move off of it
@@ -269,7 +273,8 @@ input_nxtword:
 
 		call input_curptr	
 		ld a,(hl)	
-		cp 0
+;		cp 0
+		or a
 		jp z, .inmain    ; end of string
 
 ; if we are on a word, then move off of it
@@ -297,7 +302,8 @@ input_prvword:
 
 .inskpwn:	
 		ld a,(input_cursor)
-		cp 0
+;		cp 0
+		or a
 		jp z, .inmain    ; start of string
 
 ;if we are on a word, then move off of it
@@ -323,7 +329,8 @@ input_prvword:
 
 
 		ld a,(input_cursor)
-		cp 0
+;		cp 0
+		or a
 		jp z, .inmain    ; start of string
 
 ; if we are on a word, then move off of it
@@ -340,7 +347,8 @@ input_prvword:
 .incharp:	
 		; eat the word to get to the start
 		ld a,(input_cursor)
-		cp 0
+;		cp 0
+		or a
 		jp z, .inmain    ; start of string
 
 ; if we are on a word, then move off of it
@@ -470,8 +478,8 @@ input_inschr:
 	pop af
 	ld (hl), a   ; save new char
 	inc hl
-	ld a, 0
-	ld (hl), a
+;	ld a, 0
+	ld (hl), 0
 	jp input_right
 	
 .insmid:
@@ -483,7 +491,8 @@ input_inschr:
 	ld b, a     ; b contains new char, c prev char at this position 
 	ld a, (hl)
 
-	cp 0    ; at end of string need to then dump new char and add term
+;	cp 0    ; at end of string need to then dump new char and add term
+	or a
 	jr z, .endinsmid
 	ld c, a
 	ld a, b
@@ -499,8 +508,8 @@ input_inschr:
 	ld a, b
 	ld (hl), a
 	inc hl
-	ld a, 0
-	ld (hl), a
+;	ld a, 0
+	ld (hl), 0
 
 
 ;	ld (hl), a   ; save new char
@@ -574,7 +583,8 @@ input_delchar:
 .dl:	
 	ldi 
 	ld a, (hl)
-	cp 0
+;	cp 0
+	or a
 	jr z, .dldone
 	jr .dl
 .dldone:
@@ -647,7 +657,8 @@ endif
 		ld a, (input_cur_flash)
 		dec a
 		ld (input_cur_flash), a
-		cp 0
+;		cp 0
+		or a
 		jr nz, .nochgstate
 
 
@@ -709,7 +720,8 @@ ld hl, (input_ptr)
 
 	if DEBUG_INPUT
 		ld a, (hardware_diag)
-		cp 0
+;		cp 0
+		or a
 		jr z, .skip_input_diag
 
 		ld a,(input_at_pos)
@@ -771,7 +783,8 @@ ld hl, (input_ptr)
 		; TODO loop without wait to flash the cursor and char under cursor	
 		call cin    ; _wait
 
-		cp 0
+;		cp 0
+		or a
 		jp z, .is1
 
 		; get ptr to char to input into
@@ -814,7 +827,8 @@ ld hl, (input_ptr)
 
 .isknwm:	ld hl, (input_ptr)
 		ld a,(hl)	
-		cp 0
+;		cp 0
+		or a
 		jp z, .is1    ; end of string
 		cp ' '
 		jp z, .is1    ; end of word
@@ -830,7 +844,8 @@ ld hl, (input_ptr)
 .iskpwm:	
 		ld hl, (input_ptr)
 		ld a,(hl)	
-		cp 0 
+;		cp 0 
+		or a
 		jp z, .is1    ; end of string
 		cp ' '
 		jp z, .is1    ; end of word
@@ -847,7 +862,8 @@ ld hl, (input_ptr)
 
 		ld a, (input_cursor)
 
-		cp 0
+;		cp 0
+		or a
 		jp z, .is1 		; at start of line to ignore 
 
 		dec  a 		; TODO check underflow
@@ -937,7 +953,8 @@ ld hl, (input_ptr)
 
 		ld a, (input_cursor)
 
-		cp 0
+;		cp 0
+		or a
 		jp z, .is1 		; at start of line to ignore 
 
 		dec  a 		; TODO check underflow
@@ -994,7 +1011,8 @@ ld hl, (input_ptr)
 
 		ld a,(hl)		; get what is currently under char
 
-		cp 0			; we are at the end of the string
+;		cp 0			; we are at the end of the string
+		or a
 		jr nz, .onchar
 		
 		; add a char to the end of the string
@@ -1162,7 +1180,8 @@ input_str_prev:	ld (input_at_pos), a
             	CALL fLCD_Str       ;Display string pointed to by DE
 
 		call cin
-		cp 0
+;		cp 0
+		or a
 		jr z, .instr1
 
 		; proecess keyboard controls first
@@ -1616,7 +1635,8 @@ get_word_hl:
 ;	jr c, .single_byte_hl		; <
 
 	;call isdigithl
-	cp 0
+;	cp 0
+	or a
 	jr z, .single_byte_hl
 
 .getwhln:   ; hex word so get next byte
@@ -2059,7 +2079,8 @@ strcmp:
 	ret
 
 .ssame: 
-	cp 0
+;	cp 0
+	or a
 	ret z
 
 	inc hl

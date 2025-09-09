@@ -305,10 +305,10 @@ warmstart_afterauto:
 	; init scratch input area for cli commands
 
 	ld hl, os_cli_cmd
-	ld a,0
-	ld (hl),a
+;	ld a,0
+	ld (hl),0
 	inc hl
-	ld (hl),a
+	ld (hl),0
 
 	ld a,0
 	ld (os_last_cmd),a	; current command in use to enable repeated use with an enter etc
@@ -323,8 +323,8 @@ warmstart_afterauto:
 	;ld a, kLCD_Line2        ; TODO prompt using direct screen line address. Correct this to frame buffer
 	ld hl, os_cli_cmd
 
-	ld a, 0		 ; init cli input
-	ld (hl), a
+;	ld a, 0		 ; init cli input
+	ld (hl), 0
 	ld a, display_row_2        ; TODO prompt using direct screen line address. Correct this to frame buffer
 cli:
 	; show cli prompt
@@ -430,8 +430,8 @@ endif
 
 	ld hl, os_cli_cmd
 
-	ld a, 0		 ; init cli input
-	ld (hl), a
+;	ld a, 0		 ; init cli input
+	ld (hl), 0
 
 	; TODO f_cursor_ptr should inc row (scroll if required) and set start of row for next input 
 
@@ -532,11 +532,11 @@ monitor:
 	ld c, 0     ; entry at top left
 	ld d, 100   ; max buffer size
 	ld e, 15    ; input scroll area
-	ld a, 0     ; init string
+;	ld a, 0     ; init string
 	ld hl, os_input
-	ld (hl), a
+	ld (hl), 0
 	inc hl
-	ld (hl), a
+	ld (hl), 0
 	ld hl, os_input
 	ld a, 1     ; init string
 	call input_str
@@ -752,8 +752,8 @@ endif
 	inc hl
 	inc hl
 	;ld hl, os_word_scratch+4
-	ld a, ':'
-	ld (hl),a
+;	ld a, ':'
+	ld (hl),':'
 	inc hl
 	;ld a, 0
 	;ld (hl),a
@@ -862,8 +862,8 @@ demo:
 
 	; init scratch input area for testing
 	ld hl, scratch	
-	ld a,0
-	ld (hl),a
+;	ld a,0
+	ld (hl),0
 
 
             LD   A, display_row_2
@@ -904,11 +904,11 @@ cloop:
 		call str_at_display
 	call update_display
 
-		ld a,0
+;		ld a,0
 	ld hl, scratch
-	ld (hl),a
+	ld (hl),0
 
-	nop
+;	nop
 	jp cloop
 
 

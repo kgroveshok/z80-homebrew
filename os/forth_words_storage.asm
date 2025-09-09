@@ -940,7 +940,8 @@
 		DMARK "OPx"
 		CALLMONITOR
 	endif
-		cp 0
+;		cp 0
+		or a
 		jr nz, .skipopeneof
 		; have opened an empty file
 		
@@ -1006,7 +1007,8 @@
 		ld a, (store_openext)
 		ld l, a
 		
-		cp 0
+;		cp 0
+		or a
 		jp z, .ateof     ; dont read past eof
 
 		call storage_clear_page
@@ -1105,10 +1107,12 @@
 .testeof:
 		ld l, 1
 		ld a, (store_openmaxext)
-		cp 0
+;		cp 0
+		or a
 		jr  z, .eofdone   ; empty file
 		ld a, (store_openext)
-		cp 0
+;		cp 0
+		or a
 		jr  z, .eofdone
 		ld l, 0
 .eofdone:	ld h, 0

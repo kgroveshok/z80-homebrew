@@ -158,13 +158,13 @@ se_writebyte:
        out (storage_adata),a
        ld (spi_portbyte), a
 
-	nop
+;	nop
     ;
     ; intial write data
     ;
     ; cs low
     
-       ld a,(spi_portbyte)
+;       ld a,(spi_portbyte)
 	call spi_ce_low
        ;res SPI_CE0,a           ; TODO pass the ce bank bit mask
        out (storage_adata),a
@@ -231,13 +231,13 @@ se_writepage:
        out (storage_adata),a
        ld (spi_portbyte), a
 
-	nop
+;	nop
     ;
     ; intial write data
     ;
     ; cs low
     
-       ld a,(spi_portbyte)
+;       ld a,(spi_portbyte)
        ;res SPI_CE0,a           ; TODO pass the ce bank bit mask
 	call spi_ce_low
        out (storage_adata),a
@@ -356,7 +356,8 @@ storageput:
 ; loop writing char of string to eeprom
 
 .writestr:	ld a,(hl)
-		cp 0
+;		cp 0
+		or a
 		jr z, .wsdone		; done writing
 		push hl
 		ld hl,(os_cur_ptr)

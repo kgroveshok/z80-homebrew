@@ -1,6 +1,175 @@
 
 ; | ## String Words
 
+.CONST:
+	
+	CWHEAD .MOVE 52 "CONST" 5 WORD_FLAG_CODE
+; | CONST ( u -- u ) Change the type of var on TOS to a constant. i.e. if a string it won't be freed on consuption, | TODO
+		FORTH_DSP
+		ld (hl), DS_TYPE_CONST
+		NEXTW
+
+.MOVE:  
+
+	CWHEAD .ZMOVE 52 "MOVE" 4 WORD_FLAG_CODE
+; | MOVE ( a1 a2 c -- ) Copy from address a1 to address a2 for the length of c | DONE
+
+		FORTH_DSP_VALUEHL
+		push hl    ; push count
+
+		FORTH_DSP_POP
+
+		FORTH_DSP_VALUEHL
+		push hl    ; dest
+
+		FORTH_DSP_POP
+
+		FORTH_DSP_VALUEHL
+
+		FORTH_DSP_POP
+
+		pop de
+		pop bc
+	
+		ldir
+	NEXTW
+.ZMOVE:  
+
+	CWHEAD .TABLE 52 "ZMOVE" 5 WORD_FLAG_CODE
+		
+; | ZMOVE ( a1 a2 -- ) Copy from address a1 to address a2 until a1 hits zero term string | DONE
+; | | Ensure you have enough space!
+
+
+		FORTH_DSP_VALUEHL
+		push hl    ; dest
+
+		FORTH_DSP_POP
+
+		FORTH_DSP_VALUEHL
+
+		FORTH_DSP_POP
+
+		pop de
+
+		ld bc, 255
+.zmovel:	ldi
+		dec hl
+		ld a,(hl)
+		inc hl
+		or a 
+		jr nz, .zmovel   
+		
+
+	NEXTW
+
+.TABLE:  
+
+	CWHEAD .SPLIT 52 "TABLE" 5 WORD_FLAG_CODE
+		
+; | TABLE ( s .. sx c -- a) For the number c of strings s on the stack. Generate a look up table array a | DONE
+; | | Takes a list of strings and creates a block of pointers to each string which can then be used
+; | | in any kind of lookup or iteration. 
+; | | Last item in the array will be a zero pointer for ease of iteration
+
+
+	; get the count of strings
+
+		FORTH_DSP_VALUEHL
+
+		FORTH_DSP_POP
+
+	; allocate memory for (count + 1 ) * 2 for word array plus zero pointer
+
+		; l contains count
+
+		ld a,l
+		ld (scratch), a     ; save it for the loading loop
+
+		inc l  ; for zero pointer
+		ex de, hl
+		ld a, 2
+		call Mult16
+
+		; hl is the size of block to allocate
+
+		call malloc
+	if DEBUG_FORTH_MALLOC_GUARD
+		call z,malloc_error
+	endif
+		; hl is the pointer to the array block
+			
+		ld (scratch+1), hl    ; save the base for later push to stack
+		ld (scratch+3), hl    ; save the base for current string to push
+
+		ld a, (scratch)
+		ld b, a
+
+	; for each string
+
+.tablelop:
+
+		push bc
+
+	;     get string pointer
+
+		FORTH_DSP_VALUEHL
+
+		push hl
+
+	;     get string length
+
+		ld a,0
+		call strlent
+
+		inc hl
+		push hl
+
+	;     allocate string length
+
+		call malloc
+
+        ;     copy string to block
+
+		pop bc
+		ex de, hl
+		pop hl
+		push de
+
+		ldir
+
+
+        ;     add pointer to string to array block
+
+		ld hl, (scratch+3)    ; save the base for current string to push
+
+		pop de     ; the pointer to the newly copied string to add to the array
+		ld (hl), e
+		inc hl
+		ld (hl), d	
+		inc hl
+	
+		ld (scratch+3), hl    ; save the base for current string to push
+
+		FORTH_DSP_POP
+
+		pop bc
+		djnz .tablelop
+
+        ;  push array block pointer
+
+		ld hl, (scratch+3)    ; save the base for current string to push
+		ld (hl), 0
+		inc hl
+		ld (hl), 0
+
+
+	
+		ld hl, (scratch+1)    ; save the base for current string to push
+		call forth_push_numhl
+
+	NEXTW
+
 .SPLIT:  
 
 	CWHEAD .PTR 52 "SPLIT" 5 WORD_FLAG_CODE
@@ -111,7 +280,7 @@
 .STYPE:
 	CWHEAD .UPPER 52 "STYPE" 5 WORD_FLAG_CODE
 ; | STYPE ( u -- u type ) Push type of value on TOS  | DONE
-; | | 's' string or 'i' integer
+; | | 's' string or 'i' integer or 'c' const
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "STY"
 			CALLMONITOR
@@ -129,6 +298,8 @@
 
 		cp DS_TYPE_STR
 		jr z, .typestr
+		cp DS_TYPE_CONST
+		jr z, .typeconst
 
 		cp DS_TYPE_INUM
 		jr z, .typeinum
@@ -136,6 +307,8 @@
 		ld hl, .tna
 		jr .tpush
 
+.typeconst:	ld hl, .tconst
+		jr .tpush
 .typestr:	ld hl, .tstr
 		jr .tpush
 .typeinum:	ld hl, .tinum
@@ -147,6 +320,7 @@
 
 		NEXTW
 .tstr:	db "s",0
+.tconst:	db "c",0
 .tinum:  db "i",0
 .tna:   db "?", 0
 

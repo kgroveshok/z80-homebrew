@@ -25,23 +25,30 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE New Uptr word to point to start of exec code of uword. Handy for writing forth hook code. Locate the c3 byte as it does work with a call..
 * DONE Added parse_vector to NEXTW 
 * DONE tidy up config menu - hellow world not working plus diags etc
+* DONE MOVE,CMOVE words  ( a1 a2 c --- ) from a1 to a2 for length c
+* DONE TABLE word like MENU that will take a bunch of string on the stack, allocate the memory for all of them creating a table of pointers to each string and returns a pointer to that pointer table
+* DONE CONST word. How to have a string a constant so that printing it does not free it?   What about a CONST word that changes the string type to not being freed?
+* DONE Opt: ld (hl),a to ld (hl),<lit>
+* DONE Opt: ld a,0 to xor a (watch in case of flag change)
+* DONE Opt: cp 0 to or a
+* DONE UPTR word. add uuword dmark as an extra set when a uword is looked up to exec. Added to firmware. need display on break point screen and where to intercept in parser
 
 
 
 
-* TODO Using the vector hook though means only jumps. Need a wrapper around use to preserve current concontext and then restore it after
-* TODO Add user interrupts by putting a hook into the parser or on NEXTW (as if using compiled version)
-* TODO Add user 'threads' by putting a hook into the parser or on NEXTW (as if using compiled version)
-* TODO Add user watch break points by putting a hook into the parser or on NEXTW (as if using compiled version)
 
-* TODO Get rid of VAR and use prefix ~^',\ x as local var references. Much tighter
+* TODO Handle CONST on all DS_TYPE_STR. Can then use "hello" ptr const . to print a pointer as a string which destroying the original
+* TODO add a ztype which prints chars until zero term 
+
+
 * TODO -rot reverse rot   w1 w2 w3 – w3 w1 w2   
 * TODO NIP w1 w2 - w2
 * TODO 2nip       w1 w2 w3 w4 – w3 w4
 * TODO 2tuck       w1 w2 w3 w4 – w3 w4 w1 w2 w3 w4 
 * TODO 2rot       w1 w2 w3 w4 w5 w6 – w3 w4 w5 w6 w1 w2
 * TODO LEAVE to exit DO LOOP
-* TODO between woord s e -- x ..... x    generates a list of numbers on stack in range
+* TODO between word s e -- x ..... x    generates a list of numbers on stack in range
+* TODO Include BDOS rst #5 support. Get CPM BDOS code and insert it
 
 
 * TODO /STRING for string cut (substr???)
@@ -49,11 +56,7 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO SEARCH is simliar to FIND
 * TODO Add support for ELSE and ENDIF. IF THEN ELSE ENDIF   or IF THEN ENDIF. Or IF ... ELSE ... THEN
 
-* DONE Opt: ld (hl),a to ld (hl),<lit>
-* DONE Opt: ld a,0 to xor a (watch in case of flag change)
-* DONE Opt: cp 0 to or a
-
-* TODO A word that will allow the loading of a file into memory with strings held in pointer array. 
+* TODO A word that will allow the loading of a file into memory with strings held in pointer array. Use with TABLE word.
 
 * TODO A Simon says game demo
 * TODO A simple solo card game demo
@@ -67,6 +70,36 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Note taker with menu list selection
 * TODO score trackers
 
+
+
+
+* TODO A save and restore word for device/cartdev. If needed could I use symbol reference instead?
+* TODO storage block reuse working?
+* TODO  film videos of z80 for bespoke website
+* TODO Do a nice FORTH primer with the hardware. Screen shots and all...
+* TODO provideca f key hook which can be triggered at any get key
+* TODO sort out ntp get 
+* TODO  save file from socket
+* TODO  copy file to isocket backup 
+* TODO getid is slow. does it bail on first hit?
+* TODO add write protect to bank - byte zero? any attempt to write should throw system message
+* TODO add more to config menu
+
+
+
+
+Bug list:
+
+* TODO BUG If : word is in caps it wont work. This could be connected with caps on LIST which only works if given as lcase.
+* TODO BUG Uword can't have a numeric in the word name???? Odd...
+* TODO Stop menu scrolling past last item
+
+
+
+
+
+
+Enhancements:
 
 
 * Compiler:
@@ -96,89 +129,37 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO have a CONFIG flag to enable and disable auto compilation of uwords 
 
 
-
-* TODO A save and restore word for device/cartdev. If needed could I use symbol reference instead?
-* TODO storage block reuse working?
-* TODO  film videos of z80 for bespoke website
-* TODO provideca f key hook which can be triggered at any get key
-* TODO sort out ntp get 
-* TODO  save file from socket
-* TODO  copy file to isocket backup 
-* TODO getid is slow. does it bail on first hit?
-* TODO add write protect to bank - byte zero? any attempt to write should throw system message
-* TODO add more to config menu
-
-* TODO  add uuword dmark as an extra set when a uword is looked up to exec. Added to firmware. need display on break point screen and where to intercept in parser
-
-
-
-Bug list:
-
-* TODO BUG If : word is in caps it wont work. This could be connected with caps on LIST which only works if given as lcase.
-* TODO BUG Uword can't have a numeric in the word name???? Odd...
-* TODO Stop menu scrolling past last item
-
-
-
-
-
-
-Enhancements:
-
-
+* TODO Using the vector hook though means only jumps. Need a wrapper around use to preserve current concontext and then restore it after
+* TODO Add user interrupts by putting a hook into the parser or on NEXTW (as if using compiled version)
+* TODO Add user 'threads' by putting a hook into the parser or on NEXTW (as if using compiled version)
+* TODO Add user watch break points by putting a hook into the parser or on NEXTW (as if using compiled version)
 * TODO add more editing features. Like what?
 * TODO Look at using 64k Serial EEPROMs to double storage. 128k page size so can keep the current page code, just change the PHY... var
 * TODO for op codes compile from dict but at run time look up a calculated table with jumps to the words to save having to scan dict to find op codes
-
 * TODO Add words that do some of the heavy lifting for SPISound out on the current CARTDEV - e.g. sending the three bytes to the spi for a note, playing a full tune
 * TODO Add words that do some of the heavy lifting for PicoSPINet out on the current CARTDEV e.g. native send and get char
-
-
-
 * TODO Enhance the DUMP word to provide direct memory editing like the tec monitor
 * TODO Add to autostart to conditionally load if hardware switches are set. Need hardware config switches and then a char following the * to select. Perhaps the cartdev number? In config select device maps to hardware
 * TODO Add block/id count for auto load to show where it is looking
-
 * TODO Could I use frame buffers for cli line storage which would mean they are available for use by code if needed? Would then free up some memory.
-
 * TODO Add stack and malloc guard vectors plus code to enable and disable then in config and cli
-
-
-
-
 * TODO ed word has a rouge address pushed to stack when editing a record
 * TODO ed word cant cope with lread. Do a check on READCONT and if true add a null to end of edit buffer
-
 * TODO Add op-amp circuit to SPISound and allow for selection at wire time
-
 * TODO Add selectable guard around SPIO to prevent accidental corruption of storage banks
 * TODO need words to report on hardware e.g. screen dims
-
 * TO TEST need word to report where cursor current at
-
 * TODO Add word to call fill_display with a char. accesss it via the symbol list???
 * TODO Add FILL word - ( addr n char -- ) fills address for n long with char
 * TODO Add ERASE word - ( addr n -- ) fills address for n long with zero  
 * TODO in ls handle empty dir
 * TODO Word to define lcd user character 0-3. Then word to output via emit etc
-
 * TODO Add to start up a list of what storage labels are seen
-
-
-
-
-
-* TODO Combine VAR and SCRATCH?
 * TODO Add word for setting node number to talk to???
-
 * TODO SPI Net send internet traffic and push results to message buffer. Does get URL but blows out on memory
 * TODO SPI Net get LAN status
-
 * TODO Future bug? stack imbalance on storage_read. Needs a pop of de if no record found. Have added code watch for further issues
-
-
 * TODO With the float code being so big need to do some opt via http://z80-heaven.wikidot.com/optimization
-
 * TODO read ext concat is the problem
 * TODO delete record
 * TODO ui to call config
@@ -187,9 +168,7 @@ Enhancements:
 * TODO ui join files ui
 * TODO Add a means to attach some code to a vector hook
 * TODO Add hook vectors. Can change  dbug checks to vector with return if disabled to save on push and asterisk checks. Add hook for stack checks to disable. Add hooks for some other points such as before and after words
-
 * TODO Add config feature to select which devices are on specific SPI addresses and have words for easier selection???
-
 * TODO Conslidate all prompts into a single file to allow for removing duplicates and may even localisation
 * TODO Add scroll down indicator to menu code
 * TODO Cant use special chars in quoted strings??? Why? Emit works for the char code.
@@ -197,7 +176,6 @@ Enhancements:
 * TODO Alt T is duplicated }. Free to reuse
 * TODO Alt H is duplicated |. Free to reuse
 * TODO Alt U, O, P, 5, 7, 8, 9, Enter are free
-* TODO Do a nice FORTH primer with the hardware. Screen shots and all...
 * TODO New case design - Have a new one, printed and need to refine for use with PicoNET
 * TODO Add to docs that looking up file name of id is just id BREAD 
 * TODO Create a disk UI in native asm for robustness and speed? Have some config routines for this now. Expand on them

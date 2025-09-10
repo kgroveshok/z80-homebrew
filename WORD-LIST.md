@@ -436,12 +436,20 @@ Also refer to the auto start list examples as these contain extra words created 
  > [!NOTE]
  > Compatible with PicoSPINet 
 ## String Words
+### CONST ( u -- u ) Change the type of var on TOS to a constant. i.e. if a string it won't be freed on consuption, | TODO
+### MOVE ( a1 a2 c -- ) Copy from address a1 to address a2 for the length of c | DONE
+### ZMOVE ( a1 a2 -- ) Copy from address a1 to address a2 until a1 hits zero term string | DONE
+ Ensure you have enough space!
+### TABLE ( s .. sx c -- a) For the number c of strings s on the stack. Generate a look up table array a | DONE
+ Takes a list of strings and creates a block of pointers to each string which can then be used
+ in any kind of lookup or iteration. 
+ Last item in the array will be a zero pointer for ease of iteration
 ### SPLIT ( s d -- s s...sn c ) Using delimter d, add strings found in s to stack pushing item count c | DONE
 ### PTR ( -- addr ) Low level push pointer to the value on TOS | DONE
  If a string will give the address of the string without dropping it. Handy for direct string access
  If a number can then use 2@ and 2! for direct value update without using stack words 
 ### STYPE ( u -- u type ) Push type of value on TOS  | DONE
- 's' string or 'i' integer
+ 's' string or 'i' integer or 'c' const
 ### UPPER ( s -- s ) Upper case string s  | DONE
 ### LOWER ( s -- s ) Lower case string s  | DONE
 ### TCASE ( s -- s ) Title case string s  | DONE
@@ -592,6 +600,9 @@ Also refer to the auto start list examples as these contain extra words created 
 ### FILEADDR (  -- u1  )  Pushes the address of the block accessed for the currently open file to stack | DONE
 ### FILEPAGE (  -- u1  )  Pushes the page id block accessed for the currenlty open file to stack | DONE
 ### READCONT (  -- u1  )  Pushes the READ continuation flag to stack | DONE
+### MOVE ( a1 a2 c -- ) Copy from address a1 to address a2 for the length of c | DONE
+### ZMOVE ( a1 a2 -- ) Copy from address a1 to address a2 until a1 hits zero term string | DONE
+### TABLE ( s .. sx c -- a) For the number c of strings s on the stack. Generate a look up table array a | DONE
 ### SPLIT ( s d -- s s...sn c ) Using delimter d, add strings found in s to stack pushing item count c | DONE
 ### PTR ( -- addr ) Low level push pointer to the value on TOS | DONE
 ### STYPE ( u -- u type ) Push type of value on TOS  | DONE
@@ -632,3 +643,4 @@ Also refer to the auto start list examples as these contain extra words created 
 
 
 ## String Words
+### CONST ( u -- u ) Change the type of var on TOS to a constant. i.e. if a string it won't be freed on consuption, | TODO

@@ -4,6 +4,7 @@
 DS_TYPE_STR: equ 1     ; string type
 DS_TYPE_INUM: equ 2     ; $ 16 bit unsigned int usually a hex address
 DS_TYPE_SNUM: equ 3     ; $ 16 bit signed int 
+DS_TYPE_CONST: equ 4     ; string type that won't be freed on a POP
 ;DS_TYPE_FNUM: equ 3      ; 24/32 bit floating point  do string conversion instead of a new type
 
 FORTH_PARSEV1: equ 0

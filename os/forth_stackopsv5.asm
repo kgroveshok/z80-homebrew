@@ -747,7 +747,7 @@ if FORTH_ENABLE_DSPPOPFREE
 	FORTH_DSP
 
 	ld a, (hl)
-	cp DS_TYPE_STR
+	cp DS_TYPE_STR             ; implies that DS_TYPE_CONST *WONT* be freed
 	jr nz, .skippopfree
 
 	FORTH_DSP_VALUEHL

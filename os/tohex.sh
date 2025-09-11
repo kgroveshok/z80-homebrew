@@ -6,6 +6,7 @@ for i in 0 1 2 ; do
 
 rm -fv a.bin
 
+#z88dk.z88dk-z80asm   debug_level$i.asm  $1.asm   -l  2> >(tee $1.lst)
 z80asm  -i debug_level$i.asm -l $1.asm   --label=$1.sym 2> >(tee $1.lst)
 
 if [[ $? -eq 0 ]] ; then

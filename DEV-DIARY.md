@@ -32,10 +32,11 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE Opt: ld a,0 to xor a (watch in case of flag change)
 * DONE Opt: cp 0 to or a
 * DONE UPTR word. add uuword dmark as an extra set when a uword is looked up to exec. Added to firmware. need display on break point screen and where to intercept in parser
+* DONE Make use of STORE_0_BANKRUN var and allow selection of which bank to auto run from at startup. Already being set. Setup CONFIG to set it
+* DONE BANK? to get the current bank id
 
-
-
-
+* TODO More optiz perhaps not do the stack checks every time? in forth_kernel, check_stats on first hl push do a count down test  
+* TODO CART? to get the current cart id
 
 * TODO Handle CONST on all DS_TYPE_STR. Can then use "hello" ptr const . to print a pointer as a string which destroying the original
 * TODO add a ztype which prints chars until zero term 

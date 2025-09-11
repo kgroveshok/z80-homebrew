@@ -13,7 +13,7 @@ config:
 ;	cp 1
 ;	call z, .savetostore
 
-	cp 1
+	dec a
 if STARTUP_V1
 	call z, .selautoload
 endif
@@ -21,18 +21,26 @@ endif
 if STARTUP_V2
 	call z, .enautoload
 endif
-	cp 2
+	;cp 2
+	dec a
 	call z, .disautoload
+if STARTUP_V2
+	dec a
+	call z, .selbank
+endif
 ;	cp 3
 ;	call z, .selbank
-	cp 3
+;	cp 3
+	dec a
 	call z, .debug_tog
-	cp 4
+;	cp 4
+	dec a
 	call z, .bpsgo
 ;	cp 5
 ;	call z, hardware_diags
 if STARTUP_V2
-	cp 5
+;	cp 5
+	dec a
 	call z, create_startup
 endif
 	jr config
@@ -41,6 +49,9 @@ endif
 ;	dw prom_c3
 	dw prom_c2
 	dw prom_c2a
+if STARTUP_V2
+	dw prom_bsel 
+endif
 ;	dw prom_c2b
 ;	dw prom_c4
 	dw prom_m4
@@ -200,14 +211,79 @@ endif
 
 .selbank:
 
+if STARTUP_V2
 ;	if STORAGE_SE
 ;	else
 
+	ld hl, prom_banks
+	call menu
+	cp 0
+	ret z
+	
+	; set the bank number from the result
+
+	
+		ld c, SPI_CE_HIGH
+		ld b, '0'    ; human readable bank number
+
+
+		; active low
+
+;		cp 0
+		or a
+		jr z, .bset
+		cp 1
+		jr nz, .b2
+		res 0, c
+		ld b, '1'    ; human readable bank number
+.b2:		cp 2
+		jr nz, .b3
+		res 1, c
+		ld b, '2'    ; human readable bank number
+.b3:		cp 3
+		jr nz, .b4
+		res 2, c
+		ld b, '3'    ; human readable bank number
+.b4:		cp 4
+		jr nz, .b5
+		res 3, c
+		ld b, '4'    ; human readable bank number
+.b5:		cp 5
+		jr nz, .bset
+		res 4, c
+		ld b, '5'    ; human readable bank number
+
+.bset:
+
+		ld a, c
+;		ld (spi_device),a
+		ld a, b
+;		ld (spi_device_id),a
+		push bc
+
+		; select bank 1 and load block 0 
+
+	ld a, $fe      ; bit 0 clear
+	ld (spi_device), a
+
+	call storage_get_block_0
+
+	pop bc
+	ld a,c
+	ld (store_page+STORE_0_BANKRUN), a
+	ld a,b
+	ld (store_page+STORE_0_BANKRUNN), a
+		ld hl, 0
+		ld de, store_page
+	call storage_write_block
+
+else
 	ld hl, prom_notav
 	ld de, prom_empty
 	call info_panel
 ;	endif
 	
+endif
 	ret
 
 if STORAGE_SE

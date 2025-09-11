@@ -206,6 +206,20 @@ if STORAGE_SE
 
 
 .SESEL:
+	CWHEAD .SESELS 82 "BANK?" 5 WORD_FLAG_CODE
+; | BANK? ( -- u ) Reports on the serial EEPROM Bank Device at bank address u1 1-5.  | DONE
+; | | Zero is disabled storage.
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "BN?"
+			CALLMONITOR
+		endif
+		ld a, (spi_device_id)
+		sub '0'
+		ld h, 0
+		ld l, a
+		call forth_push_numhl
+		NEXTW
+.SESELS:
 	CWHEAD .CARTDEV 82 "BANK" 4 WORD_FLAG_CODE
 ; | BANK ( u1 -- ) Select Serial EEPROM Bank Device at bank address u1 1-5 (disables CARTDEV).  | DONE
 ; | | Set to zero to disable storage.

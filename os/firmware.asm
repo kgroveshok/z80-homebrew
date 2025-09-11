@@ -84,6 +84,7 @@ STORE_0_AUTORUN: equ $20
 STORE_0_AUTOFILE: equ $21
 STORE_0_BANKRUN: equ $23
 STORE_0_FILERUN: equ $24
+STORE_0_BANKRUNN: equ $25   ; human readable bank id
 
 ; Block 0 offsets for settings
 

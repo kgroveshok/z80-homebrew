@@ -945,6 +945,8 @@ next_page_prompt:
 ; My forth kernel
 include "forth_kernel.asm"
 ;include "nascombasic.asm"
+;include "basicZ80.asm"
+
 
 
 ; find out where the code ends if loaded into RAM (for SC114)

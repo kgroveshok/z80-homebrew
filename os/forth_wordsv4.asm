@@ -92,11 +92,30 @@ endif
 
 .VARS:
 	CWHEAD .V0 99 "VAR" 3 WORD_FLAG_CODE
-;| VAR ( u1 -- )  Get the address of the variable referenced on TOS  | TO TEST
-;|
-;| The variable name should consist of a single letter. e.g. "a"
-;! If a full string is passed then only the first char is looked at
-;| Any other char could exceed bounds checks! 
+; | VAR ( u1 -- )  Get the address of the (word) variable referenced on TOS  | DONE
+; |
+; | | The variable name should consist of a single letter (a-z). e.g. "a"
+; | | 
+; | | e.g.
+; | |         #30 a var !
+; | |         a var @ .
+; | |  
+; | |     Displays the number 30
+; | |
+; | | Each variable pointer is a word so can use for any words that use that: 
+; | | 
+; | | e.g.
+; | | 
+; | |         #30 a var 2!
+; | |         a var 2@ .
+; | |  
+; | |     Displays the number 30
+; | | 
+; | | > [!NOTE] 
+; ! | > If a full string is passed then only the first char is looked at
+; | | > Any other char could exceed bounds checks! 
+; | | >
+; | | > Each variable location follows the previous. Watch you don't clobber any others.
 
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "VAR"

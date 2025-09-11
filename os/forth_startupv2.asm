@@ -166,6 +166,8 @@ forth_autoload:
 
 		ld a, (store_page+STORE_0_BANKRUN)
 		ld (spi_device), a
+		ld a, (store_page+STORE_0_BANKRUNN)
+		ld (spi_device_id), a
 
 
 	; generate a directory of bank 1 and search for flagged files

@@ -5,7 +5,7 @@ I love Forth. Used it off and on over the years as it is the easiet programming 
 
 I now have one in this bit of kit. I was inspired by the Jupiter Ace and with screen limitiations
 a version of BASIC would be too tedious and painful to use. Forth is best option. With it tied to
-the hardware I've (or will) added built-in keywords to take advantage of the hardware.
+the hardware I've added built-in keywords to take advantage of the hardware.
 
 At the moment it is interpreted but there is the possiblity I can add compiled words as each 
 keyword has a byte OP code. 
@@ -21,7 +21,7 @@ The data stack pointer (DSP) supports string and numbers on the same stack for o
 * $xxxx  - 16bit Hex int value
 * $xx    -  8bit Hex int value 
 * "xxx"  - String (250 char max)
-* #99999   - A decimal string 
+* #99999   - A 16bit decimal int  
 * %xxxxx  - 16bit binary value (todo)
 
 Note: If text appears to the parser that isnt above or a valid word in any form it will be pushed to the stack with the assumption that it is a string of some sort.
@@ -96,7 +96,7 @@ There are a few low level words if you want to write your own file system handle
 Alternativly using the high level file system words provide a more conveient means to access data and code (using CONFIG to enable auto run of stored code).
 
 
-Bank 1 would normally default. Using "$02 bank" for example will change to the second bank of storage. Initially each bank will need to be initialised with the 'format' word.
+Bank 1 would normally default (unless selected a different startup bank). Using "$02 bank" for example will change to the second bank of storage. Initially each bank will need to be initialised with the 'format' word.
 
 
 A default label will be assigned and it can be changed with the 'label' word: "MyCode" label
@@ -122,13 +122,14 @@ Autostart
 =========
 
 
-In bank $01, if a file begins with an asterisk the file will be auto loaded at start up. Use RENAME to switch files on and off.
-Or for blanket enable and disable use CONFIG word to toggle in the UI.
+If a file begins with an asterisk the file will be auto loaded at start up. Use RENAME to switch files on and off.
+Or for blanket enable and disable use CONFIG word to toggle in the UI. CONFIG will also provide a means to select which bank of files 
+will be used for startup; useful if a particular application exists in one bank and you don't need it to always load.
 
 > [!NOTE]
 > Usually files will contain a list of user word definitions, however it is possible to exec words 
-> as they are loaded using already loaded words, in this case be aware that if any code on the single line affects $01 BANK selection
-> ensure that $01 BANK occurs before end so that auto loading can continue as this is not done
+> as they are loaded using already loaded words, in this case be aware that if any code on the single line affects BANK selection
+> ensure that the origin BANK occurs (use BANK?) before end so that auto loading can continue as this is not done
 > automatically between each line load just in case that effect is needed.
 
 

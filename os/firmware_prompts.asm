@@ -40,6 +40,20 @@ prom_m4b:   db "Monitor",0
 
 if STARTUP_V2
 prom_c9: db "Create Startup Files",0
+prom_bsel: db "Start From Bank...",0
+prom_bsel1: db "Bank 1",0
+prom_bsel2: db "Bank 2",0
+prom_bsel3: db "Bank 3",0
+prom_bsel4: db "Bank 4",0
+prom_bsel5: db "Bank 5",0
+
+prom_banks:
+	dw prom_bsel1
+	dw prom_bsel2
+	dw prom_bsel3
+	dw prom_bsel4
+	dw prom_bsel5
+	dw 0
 endif
 
 prom_notav:    db "Feature not available",0

@@ -137,7 +137,16 @@ chk_stovr: equ chk_stund-stacksize -2; overflow check word
 ;key_rows: equ 5     ; TODO move out to mini and maxi + 1 null
 ;key_cols: equ 10    ; TODO move out to mini and maxi + 1 null
 
-keyscan_table_row1: equ chk_stovr -key_cols-1
+key_macroroot:  equ chk_stovr - 2       ; root ptr for start of keyboard macro strings
+key_macrolast:  equ key_macroroot - 2   ; last macro defined to aid linked list ptr
+;
+; Macro linked list format
+; key code single byte 
+; ptr to next or zero if last in the list
+; zero term string 
+
+;keyscan_table_row1: equ chk_stovr -key_cols-1
+keyscan_table_row1: equ key_macrolast -key_cols-1
 keyscan_table_row2: equ keyscan_table_row1-key_cols-1
 keyscan_table_row3: equ keyscan_table_row2-key_cols-1
 keyscan_table_row4: equ keyscan_table_row3-key_cols-1

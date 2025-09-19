@@ -33,6 +33,10 @@ key_col_bitmask:    db 1, 2, 4, 8
 
 key_init:
 
+	; init keyboard macro pointers
+	ld hl, 0
+	ld (key_macroroot), hl
+	ld (key_macrolast), hl
 ; SCMonAPI functions used
 
 ; Alphanumeric LCD functions used

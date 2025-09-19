@@ -478,7 +478,9 @@ create_startup:
 .utilwordef:
 	dw strncpy
 	dw type
+	dw ztype
 	dw tuck
+	dw nip
 	dw clrstack
 	dw longread
 	dw start1
@@ -539,6 +541,11 @@ create_startup:
     dw spi3
     dw spi4
     dw spi5
+    dw spib1
+    dw spib2
+    dw spib3
+    dw spib4
+    dw spib5
 ;    dw spi6
 ;    dw spi7
 

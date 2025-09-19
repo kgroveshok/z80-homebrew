@@ -139,6 +139,16 @@ endif
 
 	ret
 
+; look for any ldir blank calls and replace with
+; hl is the start address
+; b is the number of bytes
+; a is the char to fill
 
+
+filllen:
+	LD (HL),A      ;STORE BYTE
+	INC HL      ; BUMP POINTER
+	DJNZ   filllen      ;  CONTINUE IF B NOT 0
+	ret
 
 ; eof

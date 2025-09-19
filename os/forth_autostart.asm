@@ -52,6 +52,9 @@ startcmds:
 ;	dw longread
 	dw clrstack
 	dw type
+	dw ztype
+	dw nip
+	dw tuck
 ;	dw stest
 	dw strncpy
 	dw list
@@ -169,6 +172,17 @@ spi6:       db ": storestr spicel $12 spio spio count $00 do dup i + @ spio $01 
 spi7:       db ": getstorestr spicel $13 spio spio \" \" repeat spii dup concat $00 = not until spiceh ; ", 0
 
 
+; user word backup
+; ubie
+; ubiall
+
+spib1: db ": UBIALL $01 do cls ptr count type list cr concat count soctype 2drop loop ;",0
+spib2: db ": UBIE $01 do cls ptr count type waitk $79 = if list cr concat count soctype drop then 2drop loop ;", 0
+spib3: db ": SPISTRZ ptr count $00 do dup i + @ spio $01 pause loop ;",0
+spib4: db ": SOCCON spicel $22 spio spistrz ;",0
+spib5: db ": SOCTYPE spiceh spicel $00 do dup i + @ $20 spio spio loop ;",0
+
+
 ; NETCHAT (TODO)
 ; Program to allow two nodes to chat with eachother
 ;
@@ -196,6 +210,7 @@ clrstack:  db ": clrstk depth ?dup if $01 do drop loop then nop ; ", 0
 
 ; type ( addr count - )
 type:     db ": type $00 do dup i + @ emit loop ; ", 0
+ztype:     db ": ztype repeat dup @ emit #1 + dup @ #0 = not until ; ", 0
 
 ; some direct memory words
 ; strncpy ( len t f -- t )
@@ -208,6 +223,7 @@ start3b:         db ": ls dir cls drop dup $00 > if $01 do $08 $04 at . $01 $04 
 start3c:         db ": dirlist dir cls drop dup $00 > if $01 do \"/\" .> .> \"Ext:\" .> .> \"Id: \" .> .>  loop then nop ;",0
 
 tuck:         db ": tuck swap over ;", 0
+nip:         db ": nip swap drop ;", 0
 
 ; a handy word to list items on the stack
 

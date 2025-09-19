@@ -197,7 +197,11 @@ The firmware.asm file contains many debug switches. If they are all off the resu
 The make.sh will also generate three debug levels of the ROM. Level DL0 is with no debug or system guards in place. Could be a problem if you mess up code but it will run the fastest. DL1 has some debug code in place to help with tracing programs and has stack corruption guards in place. DL2 has the most debug code in place. Will run pretty slow but should be robust if you are testing lowlevel stuff.
 
 
+Utils
+-----
 
+nip ( w1 w2 - w2 )
+tuck ( x1 x2 -- x2 x1 x2 ) 
 
  
 

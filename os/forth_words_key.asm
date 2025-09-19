@@ -1,6 +1,31 @@
 
 ; | ## Keyboard Words
 
+.MACRO:
+
+	CWHEAD .KEY 42 "MACRO" 5 WORD_FLAG_CODE
+; | MACRO ( s u -- ) Maps a string s against a key code u for use in the editor functions (CLI/EDIT/ACCEPT)  | TODO
+
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "MAC"
+			CALLMONITOR
+		endif
+
+		; get key code
+		; calc string length
+		; malloc string size
+		; copy string
+		; patch keyboard scan
+
+		; maintain a linked list? 
+		; need a structure for root of key mappings
+		; hold last defined macro so that link can be made to the next one
+		; key_macroroot   is the first one
+		; key_macrolast is location of the last macro defined
+
+
+		NEXTW
+
 .KEY:
 	CWHEAD .KEYDB 42 "KEY" 3 WORD_FLAG_CODE
 ; | KEY ( -- u ) A non-blocking read of keypress | DONE

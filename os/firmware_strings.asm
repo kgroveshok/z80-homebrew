@@ -191,6 +191,11 @@ endif
 		or a
 		jp z, .inmain
 
+
+		; TODO handle macro
+
+
+
 		cp KEY_LEFT    ; cursor left
 		jp z, input_left
 	
@@ -247,6 +252,8 @@ endif
 ;		ret m
 ;		ld a, l
 		; if no special key then insert as a char
+
+
 
 		jp input_inschr
 

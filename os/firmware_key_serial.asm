@@ -1,6 +1,10 @@
 ; Serial keyboard interface for SC114
 
 key_init:
+	; init keyboard macro pointers
+	ld hl, 0
+	ld (key_macroroot), hl
+	ld (key_macrolast), hl
 	; no init as handled by the SCM bios
 	ret
 

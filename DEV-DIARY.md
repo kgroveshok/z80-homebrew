@@ -34,16 +34,28 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * DONE UPTR word. add uuword dmark as an extra set when a uword is looked up to exec. Added to firmware. need display on break point screen and where to intercept in parser
 * DONE Make use of STORE_0_BANKRUN var and allow selection of which bank to auto run from at startup. Already being set. Setup CONFIG to set it
 * DONE BANK? to get the current bank id
+* DONE add a ztype which prints chars until zero term. added to bank 2. Added to utils.
+* DONE NIP w1 w2 - w2 - : nip swap drop ;  added to utils
 
-* TODO More optiz perhaps not do the stack checks every time? in forth_kernel, check_stats on first hl push do a count down test  
-* TODO CART? to get the current cart id
 
-* TODO Handle CONST on all DS_TYPE_STR. Can then use "hello" ptr const . to print a pointer as a string which destroying the original
-* TODO add a ztype which prints chars until zero term 
+* TODO Double check parser. The find next tok call and then there is a comparison word check further down. Doing double the work?
+* TODO ld hl,(xxx) is 20 cycles, but push and pop are 11. Change the parser to use a fixed reg pair for important vars provide a macro to save and restore of environment on words. Could add to the single jp (hl) and NEXTW to restore. EXX is 4 cycles
 
+On one forht:
+egister BC contains FORTH's internal Program pointer.
+Register IX is used as the Return Stack pointer.
+Register IY contains the address of FORTH's NEXT code.
+Register SP is used as the Data Stack pointer.
+
+
+
+
+* TODO Add keyboard macros mapped to key code (mainly for f keys)
+* TODO Add a word that defines the macro record hotkey
+* TODO Add key codes to docs
+* TODO Add auto generation of keyboard mapping codes to docs
 
 * TODO -rot reverse rot   w1 w2 w3 – w3 w1 w2   
-* TODO NIP w1 w2 - w2
 * TODO 2nip       w1 w2 w3 w4 – w3 w4
 * TODO 2tuck       w1 w2 w3 w4 – w3 w4 w1 w2 w3 w4 
 * TODO 2rot       w1 w2 w3 w4 w5 w6 – w3 w4 w5 w6 w1 w2
@@ -71,7 +83,11 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 * TODO Note taker with menu list selection
 * TODO score trackers
 
+* TODO More optiz perhaps not do the stack checks every time? in forth_kernel, check_stats on first hl push do a count down test  
 
+* TODO CART? to get the current cart id
+
+* TODO Handle CONST on all DS_TYPE_STR. Can then use "hello" ptr const . to print a pointer as a string which destroying the original
 
 
 * TODO A save and restore word for device/cartdev. If needed could I use symbol reference instead?

@@ -120,6 +120,22 @@ Stress testing FORTH OS
 [https://youtu.be/hWfx7d5nqZw]
 
 
+A simple game of 'Simon Says'
+-----------------------------
+
+
+```
+: sgen #1 do #1 #5 rnd dup #48 + i scratch ! .> bl .> loop ;
+: isay #1 #0 scratch ! ; 
+: nsay #0 scratch dup 1+! @ ;
+: tsay #4 pause cls Your-go .- #10 #1 at accept ;
+: schk #1 scratch #0 #0 scratch @ substr swap drop compare ;
+: bsay "Your best was" #0 scratch @ #1 - num2str info ;
+: ssay isay repeat cls nsay sgen tsay schk #1 = until bsay ;
+```
+
+[https://www.youtube.com/watch?v=0pCNQlxzYs0]
+
 
 
 Parts

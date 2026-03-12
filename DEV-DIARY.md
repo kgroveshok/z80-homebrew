@@ -49,6 +49,8 @@ Register SP is used as the Data Stack pointer.
 
 
 
+* TODO Add support for 2-3 file handles
+* TODO Add support for bank numbers in file names
 
 * TODO Add keyboard macros mapped to key code (mainly for f keys)
 * TODO Add a word that defines the macro record hotkey

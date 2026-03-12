@@ -176,11 +176,11 @@ spi7:       db ": getstorestr spicel $13 spio spio \" \" repeat spii dup concat 
 ; ubie
 ; ubiall
 
-spib1: db ": UBIALL $01 do cls ptr count type list cr concat count soctype 2drop loop ;",0
-spib2: db ": UBIE $01 do cls ptr count type waitk $79 = if list cr concat count soctype drop then 2drop loop ;", 0
-spib3: db ": SPISTRZ ptr count $00 do dup i + @ spio $01 pause loop ;",0
-spib4: db ": SOCCON spicel $22 spio spistrz ;",0
-spib5: db ": SOCTYPE spiceh spicel $00 do dup i + @ $20 spio spio loop ;",0
+spib1: db ": ubieall $01 do cls ptr count type list cr concat count soctype 2drop loop ;",0
+spib2: db ": ubie $01 do cls ptr count type waitk $79 = if list cr concat count soctype drop then 2drop loop ;", 0
+spib3: db ": spistrz ptr count $00 do dup i + @ spio $01 pause loop ;",0
+spib4: db ": soccon spicel $22 spio spistrz ;",0
+spib5: db ": soctype spiceh spicel $00 do dup i + @ $20 spio spio loop ;",0
 
 
 ; NETCHAT (TODO)

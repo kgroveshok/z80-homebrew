@@ -161,6 +161,7 @@ ep_byte = bytearray(1)
 
 
 netdebug=0
+netdebug=100      # STRIP
 
 # late time storage arrays were synced to storage
 lastsync=0

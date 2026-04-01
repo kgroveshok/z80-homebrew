@@ -11,7 +11,8 @@
 ; | | the multiplexing of the PicoSPINet addon which might not be running fast enough for all of the nodes
 
 		ld hl, spi_clktime 
-		call forth_push_numhl
+;		call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 		NEXTW
 
@@ -20,7 +21,8 @@
 	CWHEAD .SYMBOL 99 "VA" 2 WORD_FLAG_CODE
 ; | VA ( -- u1 )   Pushes address of block of memory used for v1..5 | DONE
 		ld hl, cli_var_array
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 		NEXTW
 
@@ -153,7 +155,8 @@
 		ld hl, sym_table
 		call addatohl
 		call loadwordinhl
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 
 	       NEXTW

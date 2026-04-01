@@ -166,7 +166,8 @@
 
 	
 		ld hl, (scratch+1)    ; save the base for current string to push
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 	NEXTW
 
@@ -257,7 +258,8 @@
 		pop hl    ; get counter from bc which has been push
 		ld h, 0
 ;		ld l, c
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 
 	NEXTW
@@ -273,7 +275,8 @@
 			CALLMONITOR
 		endif
 		FORTH_DSP_VALUEHL
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 
 		NEXTW
@@ -687,7 +690,8 @@
 			DMARK "S2b"
 			CALLMONITOR
 		endif
-		call forth_push_numhl	
+		;call forth_push_numhl	
+		FORTH_PUSH_VALUEHL
 
 	
 	       NEXTW
@@ -884,7 +888,8 @@
 			DMARK "FNd"
 			CALLMONITOR
 		endif
-	call forth_push_numhl
+;	call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 	       NEXTW
 
@@ -910,7 +915,8 @@
 			CALLMONITOR
 		endif
 
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 
 
@@ -945,7 +951,8 @@
 			DMARK "AS2"
 			CALLMONITOR
 		endif
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 	       NEXTW
 

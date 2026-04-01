@@ -77,7 +77,9 @@ endif
 
 		; TODO push value back onto stack for another op etc
 
-		call forth_push_numhl
+		;call forth_push_numhl
+
+		FORTH_PUSH_VALUEHL
 		NEXTW
 .SOUT:
 	CWHEAD .SPIO 32 "OUT" 3 WORD_FLAG_CODE
@@ -199,7 +201,8 @@ if STORAGE_SE
 			DMARK "Si3"
 			CALLMONITOR
 		endif
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 		NEXTW
 
@@ -217,7 +220,8 @@ if STORAGE_SE
 		sub '0'
 		ld h, 0
 		ld l, a
-		call forth_push_numhl
+		FORTH_PUSH_VALUEHL
+		;call forth_push_numhl
 		NEXTW
 .SESELS:
 	CWHEAD .CARTDEV 82 "BANK" 4 WORD_FLAG_CODE

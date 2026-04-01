@@ -42,7 +42,8 @@
 		;call cin_wait
 		ld l, a
 		ld h, 0
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 		NEXTW
 .KEYDB:
 	CWHEAD .WAITK 42 "KEYDB" 5 WORD_FLAG_CODE
@@ -60,7 +61,9 @@
 		;call cin_wait
 		ld l, a
 		ld h, 0
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
+
 		NEXTW
 .WAITK:
 	CWHEAD .ACCEPT 43 "WAITK" 5 WORD_FLAG_CODE
@@ -72,7 +75,8 @@
 		call cin_wait
 		ld l, a
 		ld h, 0
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 		NEXTW
 .ACCEPT:
 	CWHEAD .EDIT 44 "ACCEPT" 6 WORD_FLAG_CODE

@@ -69,9 +69,11 @@ if DEBUG_FORTH_WORDS
 endif	
 		ld h, 0
 		ld l, c
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 		ld l, b 
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 
 	NEXTW
@@ -686,7 +688,8 @@ endif
 		ld h, 0
 		ld l, a
 
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 
 		NEXTW
@@ -787,7 +790,8 @@ endif
 			CALLMONITOR
 		endif
 
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 
 

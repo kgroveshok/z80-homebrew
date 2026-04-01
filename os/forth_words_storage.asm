@@ -97,7 +97,8 @@
 
 		ld l, a
 		ld h, 0
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 
 		pop af
@@ -168,7 +169,8 @@
 			CALLMONITOR
 		endif
 	ld hl, 255
-	call forth_push_numhl
+;	call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 	NEXTW
 
 
@@ -207,7 +209,8 @@
 	call ishlzero
 	jr nz, .brfound
 
-	call forth_push_numhl
+;	call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 	jr .brdone
 
 
@@ -372,7 +375,8 @@
 
 		FORTH_DSP_POP
 
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 		NEXTW
 ;
@@ -447,14 +451,16 @@
 		ld a, (store_page)
 		ld h, 0
 		ld l, a
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 		; push extent count to stack 
 	
 		ld a, (store_page+2)
 		ld h, 0
 		ld l, a
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 		; push file name
 
@@ -482,7 +488,8 @@
 
 		ld h, 0
 		ld l, c
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 		; push the bank label
 
@@ -720,7 +727,8 @@
 
 		ld h, 0
 		ld l, a
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 		NEXTW
 
@@ -736,7 +744,8 @@
 
 		call storage_freeblocks
 
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 	       NEXTW
 .SIZE:
@@ -755,7 +764,8 @@
 ;		pop hl
 		call storage_file_size
 
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
  
 
 	       NEXTW
@@ -803,7 +813,8 @@
 		FORTH_DSP_POP
 ;		pop hl
 		; push file id to stack
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 
 
@@ -951,7 +962,8 @@
 
 		ld l, a
 		ld h, 0
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 
 	       NEXTW
@@ -1099,7 +1111,8 @@
 
 ;		FORTH_iDSP_POP     ; for now just get rid of stream id
 		call .testeof
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 
 	       NEXTW
@@ -1195,7 +1208,8 @@
 ;	endif
 
 	ld hl, store_page
-	call forth_push_numhl
+;	call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 
 	       NEXTW
@@ -1215,7 +1229,8 @@
 		; run through each of the banks
 
 		ld hl, 1
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 		ld a, SPI_CE_HIGH
 		res SPI_CE0, a
 		ld (spi_device), a
@@ -1225,7 +1240,8 @@
 
 		
 		ld hl, 2
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 		ld a, SPI_CE_HIGH
 		res SPI_CE1, a
 		ld (spi_device), a
@@ -1235,7 +1251,8 @@
 
 		
 		ld hl, 3
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 		ld a, SPI_CE_HIGH
 		res SPI_CE2, a
 		ld (spi_device), a
@@ -1245,7 +1262,8 @@
 
 
 		ld hl, 4
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 		ld a, SPI_CE_HIGH
 		res SPI_CE3, a
 		ld (spi_device), a
@@ -1256,7 +1274,8 @@
 		
 
 		ld hl, 5
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 		ld a, SPI_CE_HIGH
 		res SPI_CE4, a
 		ld (spi_device), a
@@ -1268,7 +1287,8 @@
 		; push fixed count of storage devices (on board) for now
 
 		ld hl, 5
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 		; restore selected device 
 	
@@ -1285,7 +1305,8 @@
 		ld a, (store_filecache)
 		ld h, 0
 		ld l, a
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 		NEXTW
 .SCONST2:
 	CWHEAD .SCONST3 89 "FILEEXT" 7 WORD_FLAG_CODE
@@ -1295,7 +1316,8 @@
 		ld a, (store_openext)
 		ld h, 0
 		ld l, a
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 		NEXTW
 .SCONST3:
 	CWHEAD .SCONST4 89 "FILEMAX" 7 WORD_FLAG_CODE
@@ -1305,7 +1327,8 @@
 		ld a, (store_openmaxext)
 		ld h, 0
 		ld l, a
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 		NEXTW
 .SCONST4:
 	CWHEAD .SCONST5 89 "FILEADDR" 8 WORD_FLAG_CODE
@@ -1313,7 +1336,8 @@
 ; | | > [!NOTE]
 ; | | > Compatible with PicoSPINet 
 		ld hl, (store_openaddr)
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 		NEXTW
 .SCONST5:
 	CWHEAD .SCONST6 89 "FILEPAGE" 8 WORD_FLAG_CODE
@@ -1328,7 +1352,8 @@
 		call Div16
 		push bc
 		pop hl
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 		NEXTW
 .SCONST6:
 	CWHEAD .ENDSTORAGE 89 "READCONT" 8 WORD_FLAG_CODE
@@ -1340,7 +1365,8 @@
 		ld a, (store_readcont)
 		ld h, 0
 		ld l, a
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 		NEXTW
 .ENDSTORAGE:
 ; eof

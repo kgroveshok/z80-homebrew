@@ -21,7 +21,8 @@ CWHEAD .EXEC OPCODE_HEAP "HEAP" 4 WORD_FLAG_CODE
 
 	sbc hl, de 
 
-	call forth_push_numhl
+;	call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 
 	ld de, (free_list )     
@@ -29,7 +30,8 @@ CWHEAD .EXEC OPCODE_HEAP "HEAP" 4 WORD_FLAG_CODE
 
 	sbc hl, de
 
-	call forth_push_numhl
+;	call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 	
 
 	
@@ -336,7 +338,8 @@ if DEBUG_FORTH_WORDS
 	CALLMONITOR
 endif
 
-	call forth_push_numhl
+;	call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 	NEXTW
 .ZDUP:
 CWHEAD .DMRK OPCODE_ZDUP "?DUP" 4 WORD_FLAG_CODE
@@ -365,7 +368,8 @@ CWHEAD .DMRK OPCODE_ZDUP "?DUP" 4 WORD_FLAG_CODE
 	jr z, .dup2orig
 
 
-	call forth_push_numhl
+;	call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 
 ; TODO add floating point number detection
@@ -406,7 +410,8 @@ CWHEAD .RSHIFT OPCODE_ZDUP "LSHIFT" 6 WORD_FLAG_CODE
 	FORTH_DSP_POP
 
 	add hl, hl
-	call forth_push_numhl
+;	call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 	NEXTW
 .RSHIFT:
 CWHEAD .SWAP OPCODE_ZDUP "RSHIFT" 6 WORD_FLAG_CODE
@@ -419,7 +424,8 @@ CWHEAD .SWAP OPCODE_ZDUP "RSHIFT" 6 WORD_FLAG_CODE
 	FORTH_DSP_POP
 	srl h
 	rr l
-	call forth_push_numhl
+;	call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 	NEXTW
 .SWAP:
 CWHEAD .COLN OPCODE_SWAP "SWAP" 4 WORD_FLAG_CODE
@@ -820,16 +826,20 @@ CWHEAD .DROP2 OPCODE_DUP2 "2DUP" 4 WORD_FLAG_CODE
 ;		pop hl       ; 1
 	pop de       ; 2
 
-	call forth_push_numhl
+;	call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 	ex de, hl
-	call forth_push_numhl
+;	call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 	
 	ex de, hl
 
-	call forth_push_numhl
+;	call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 	ex de, hl
-	call forth_push_numhl
+;	call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 
 	NEXTW
@@ -894,7 +904,8 @@ CWHEAD .SWAP2 99 "PICK" 4 WORD_FLAG_CODE
 		DMARK "PKp"
 		CALLMONITOR
 	endif
-	call forth_push_numhl
+;	call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 	NEXTW
 .SWAP2:
@@ -959,7 +970,8 @@ CWHEAD .CAT OPCODE_AT "@" 1 WORD_FLAG_CODE
 
 	ld l, a
 	ld h, 0
-	call forth_push_numhl
+;	call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 	NEXTW
 .CAT:
@@ -1036,7 +1048,8 @@ CWHEAD .DEPTH OPCODE_SCALL "CALL" 4 WORD_FLAG_CODE
 
 	; TODO push value back onto stack for another op etc
 
-	call forth_push_numhl
+;	call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 	NEXTW
 .DEPTH:
 CWHEAD .OVER OPCODE_DEPTH "DEPTH" 5 WORD_FLAG_CODE
@@ -1064,7 +1077,8 @@ ld h,0
 ;srl h
 ;rr l
 
-	call forth_push_numhl
+;	call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 	NEXTW
 .OVER:
 CWHEAD .PAUSE 46 "OVER" 4 WORD_FLAG_CODE
@@ -1101,7 +1115,8 @@ CWHEAD .PAUSE 46 "OVER" 4 WORD_FLAG_CODE
 ;	inc hl
 ;	ld d, (hl)
 ;	ex de, hl
-	call forth_push_numhl
+;	call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 	NEXTW
 
 .ovstr:
@@ -1322,7 +1337,8 @@ if DEBUG_FORTH_WORDS
 	DMARK "UWc"
 	CALLMONITOR
 endif
-	call forth_push_numhl
+;	call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 
        NEXTW
@@ -1470,7 +1486,8 @@ if DEBUG_FORTH_MALLOC_GUARD
 	call z,malloc_error
 endif
 
-	call forth_push_numhl
+;	call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 	NEXTW
 
 .FREE:
@@ -1614,7 +1631,8 @@ pop hl
 		; save this location
 	
 .ulunotfound:
-	call forth_push_numhl
+;	call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 			
 	NEXTW
 .LIST:
@@ -2263,7 +2281,8 @@ pop hl
 		ld hl, os_var_array
 		call addatohl
 
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 	       NEXTW
 
@@ -2505,7 +2524,8 @@ pop hl
 
 		ex de, hl
 
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 	       NEXTW
 .BANG2:
@@ -2558,7 +2578,8 @@ pop hl
 		pop hl
 
 		inc hl
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 		
 		NEXTW
 .SBTOS:
@@ -2572,7 +2593,8 @@ pop hl
 		pop hl
 
 		dec hl
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 		
 		NEXTW
 .ADSTORE:

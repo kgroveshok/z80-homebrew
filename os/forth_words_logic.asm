@@ -27,7 +27,8 @@
 
 .notip:		ld h, 0	
 
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 		NEXTW
 
 .IS:
@@ -55,7 +56,8 @@
 		jr nz, .compnsame
 		ld l, 1	
 .compnsame:
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 		NEXTW
 .LZERO:
@@ -111,7 +113,8 @@
 		; push value back onto stack for another op etc
 
 .tz_done:
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 		NEXTW
 .LESS:
@@ -167,7 +170,8 @@
 			DMARK "LT1"
 			CALLMONITOR
 		endif
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 		NEXTW
 .GT:
@@ -223,7 +227,8 @@
 			DMARK "GT1"
 			CALLMONITOR
 		endif
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 		NEXTW
 .EQUAL:
@@ -293,7 +298,8 @@
 			DMARK "EQ1"
 			CALLMONITOR
 		endif
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 		NEXTW
 

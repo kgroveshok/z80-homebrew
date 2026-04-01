@@ -194,7 +194,7 @@
 013b			 
 013b ..			buildtime: db   "Build: " 
 0142					include "romtimestamp.asm" 
-0142 ..			db '2026-04-01 12:39' 
+0142 ..			db '2026-04-01 12:49' 
 # End of file romtimestamp.asm
 0152 00				   db 0 
 0153			 
@@ -12207,6 +12207,17 @@
 1d07			 
 1d07				endm 
 1d07			 
+1d07			 
+1d07			FORTH_PUSH_VALUEHL: macro 
+1d07			 
+1d07				if BASE_CPM=1 
+1d07					call forth_push_numhl 
+1d07				endif 
+1d07				if BASE_KEV=1 
+1d07					rst $20 
+1d07				endif 
+1d07				endm 
+1d07			 
 1d07			; load the tos value into hl 
 1d07			 
 1d07			 
@@ -13998,7 +14009,16 @@
 2052			 
 2052 ed 52			sbc hl, de  
 2054			 
-2054 cd 0b 1b			call forth_push_numhl 
+2054			;	call forth_push_numhl 
+2054					FORTH_PUSH_VALUEHL 
+2054				if BASE_CPM=1 
+2054 cd 0b 1b				call forth_push_numhl 
+2057				endif 
+2057				if BASE_KEV=1 
+2057					rst $20 
+2057				endif 
+2057				endm 
+# End of macro FORTH_PUSH_VALUEHL
 2057			 
 2057			 
 2057 ed 5b de 67		ld de, (free_list )      
@@ -14006,7 +14026,16 @@
 205e			 
 205e ed 52			sbc hl, de 
 2060			 
-2060 cd 0b 1b			call forth_push_numhl 
+2060			;	call forth_push_numhl 
+2060					FORTH_PUSH_VALUEHL 
+2060				if BASE_CPM=1 
+2060 cd 0b 1b				call forth_push_numhl 
+2063				endif 
+2063				if BASE_KEV=1 
+2063					rst $20 
+2063				endif 
+2063				endm 
+# End of macro FORTH_PUSH_VALUEHL
 2063				 
 2063			 
 2063				 
@@ -14406,7 +14435,16 @@
 # End of macro CALLMONITOR
 20dc			endif 
 20dc			 
-20dc cd 0b 1b			call forth_push_numhl 
+20dc			;	call forth_push_numhl 
+20dc					FORTH_PUSH_VALUEHL 
+20dc				if BASE_CPM=1 
+20dc cd 0b 1b				call forth_push_numhl 
+20df				endif 
+20df				if BASE_KEV=1 
+20df					rst $20 
+20df				endif 
+20df				endm 
+# End of macro FORTH_PUSH_VALUEHL
 20df				NEXTW 
 20df cd 68 ee			call parse_vector 
 20e2 c3 ee 1e			jp macro_next 
@@ -14473,7 +14511,16 @@
 2114 28 03			jr z, .dup2orig 
 2116			 
 2116			 
-2116 cd 0b 1b			call forth_push_numhl 
+2116			;	call forth_push_numhl 
+2116					FORTH_PUSH_VALUEHL 
+2116				if BASE_CPM=1 
+2116 cd 0b 1b				call forth_push_numhl 
+2119				endif 
+2119				if BASE_KEV=1 
+2119					rst $20 
+2119				endif 
+2119				endm 
+# End of macro FORTH_PUSH_VALUEHL
 2119			 
 2119			 
 2119			; TODO add floating point number detection 
@@ -14606,7 +14653,16 @@
 # End of macro FORTH_DSP_POP
 218c			 
 218c 29				add hl, hl 
-218d cd 0b 1b			call forth_push_numhl 
+218d			;	call forth_push_numhl 
+218d					FORTH_PUSH_VALUEHL 
+218d				if BASE_CPM=1 
+218d cd 0b 1b				call forth_push_numhl 
+2190				endif 
+2190				if BASE_KEV=1 
+2190					rst $20 
+2190				endif 
+2190				endm 
+# End of macro FORTH_PUSH_VALUEHL
 2190				NEXTW 
 2190 cd 68 ee			call parse_vector 
 2193 c3 ee 1e			jp macro_next 
@@ -14665,7 +14721,16 @@
 # End of macro FORTH_DSP_POP
 21c3 cb 3c			srl h 
 21c5 cb 1d			rr l 
-21c7 cd 0b 1b			call forth_push_numhl 
+21c7			;	call forth_push_numhl 
+21c7					FORTH_PUSH_VALUEHL 
+21c7				if BASE_CPM=1 
+21c7 cd 0b 1b				call forth_push_numhl 
+21ca				endif 
+21ca				if BASE_KEV=1 
+21ca					rst $20 
+21ca				endif 
+21ca				endm 
+# End of macro FORTH_PUSH_VALUEHL
 21ca				NEXTW 
 21ca cd 68 ee			call parse_vector 
 21cd c3 ee 1e			jp macro_next 
@@ -15449,16 +15514,52 @@
 2461			;		pop hl       ; 1 
 2461 d1				pop de       ; 2 
 2462			 
-2462 cd 0b 1b			call forth_push_numhl 
+2462			;	call forth_push_numhl 
+2462					FORTH_PUSH_VALUEHL 
+2462				if BASE_CPM=1 
+2462 cd 0b 1b				call forth_push_numhl 
+2465				endif 
+2465				if BASE_KEV=1 
+2465					rst $20 
+2465				endif 
+2465				endm 
+# End of macro FORTH_PUSH_VALUEHL
 2465 eb				ex de, hl 
-2466 cd 0b 1b			call forth_push_numhl 
+2466			;	call forth_push_numhl 
+2466					FORTH_PUSH_VALUEHL 
+2466				if BASE_CPM=1 
+2466 cd 0b 1b				call forth_push_numhl 
+2469				endif 
+2469				if BASE_KEV=1 
+2469					rst $20 
+2469				endif 
+2469				endm 
+# End of macro FORTH_PUSH_VALUEHL
 2469			 
 2469				 
 2469 eb				ex de, hl 
 246a			 
-246a cd 0b 1b			call forth_push_numhl 
+246a			;	call forth_push_numhl 
+246a					FORTH_PUSH_VALUEHL 
+246a				if BASE_CPM=1 
+246a cd 0b 1b				call forth_push_numhl 
+246d				endif 
+246d				if BASE_KEV=1 
+246d					rst $20 
+246d				endif 
+246d				endm 
+# End of macro FORTH_PUSH_VALUEHL
 246d eb				ex de, hl 
-246e cd 0b 1b			call forth_push_numhl 
+246e			;	call forth_push_numhl 
+246e					FORTH_PUSH_VALUEHL 
+246e				if BASE_CPM=1 
+246e cd 0b 1b				call forth_push_numhl 
+2471				endif 
+2471				if BASE_KEV=1 
+2471					rst $20 
+2471				endif 
+2471				endm 
+# End of macro FORTH_PUSH_VALUEHL
 2471			 
 2471			 
 2471				NEXTW 
@@ -15678,7 +15779,16 @@
 253d				endm  
 # End of macro CALLMONITOR
 253d				endif 
-253d cd 0b 1b			call forth_push_numhl 
+253d			;	call forth_push_numhl 
+253d					FORTH_PUSH_VALUEHL 
+253d				if BASE_CPM=1 
+253d cd 0b 1b				call forth_push_numhl 
+2540				endif 
+2540				if BASE_KEV=1 
+2540					rst $20 
+2540				endif 
+2540				endm 
+# End of macro FORTH_PUSH_VALUEHL
 2540			 
 2540				NEXTW 
 2540 cd 68 ee			call parse_vector 
@@ -15859,7 +15969,16 @@
 25f3			 
 25f3 6f				ld l, a 
 25f4 26 00			ld h, 0 
-25f6 cd 0b 1b			call forth_push_numhl 
+25f6			;	call forth_push_numhl 
+25f6					FORTH_PUSH_VALUEHL 
+25f6				if BASE_CPM=1 
+25f6 cd 0b 1b				call forth_push_numhl 
+25f9				endif 
+25f9				if BASE_KEV=1 
+25f9					rst $20 
+25f9				endif 
+25f9				endm 
+# End of macro FORTH_PUSH_VALUEHL
 25f9			 
 25f9				NEXTW 
 25f9 cd 68 ee			call parse_vector 
@@ -16104,7 +16223,16 @@
 26be			 
 26be				; TODO push value back onto stack for another op etc 
 26be			 
-26be cd 0b 1b			call forth_push_numhl 
+26be			;	call forth_push_numhl 
+26be					FORTH_PUSH_VALUEHL 
+26be				if BASE_CPM=1 
+26be cd 0b 1b				call forth_push_numhl 
+26c1				endif 
+26c1				if BASE_KEV=1 
+26c1					rst $20 
+26c1				endif 
+26c1				endm 
+# End of macro FORTH_PUSH_VALUEHL
 26c1				NEXTW 
 26c1 cd 68 ee			call parse_vector 
 26c4 c3 ee 1e			jp macro_next 
@@ -16162,7 +16290,16 @@
 26fe			;srl h 
 26fe			;rr l 
 26fe			 
-26fe cd 0b 1b			call forth_push_numhl 
+26fe			;	call forth_push_numhl 
+26fe					FORTH_PUSH_VALUEHL 
+26fe				if BASE_CPM=1 
+26fe cd 0b 1b				call forth_push_numhl 
+2701				endif 
+2701				if BASE_KEV=1 
+2701					rst $20 
+2701				endif 
+2701				endm 
+# End of macro FORTH_PUSH_VALUEHL
 2701				NEXTW 
 2701 cd 68 ee			call parse_vector 
 2704 c3 ee 1e			jp macro_next 
@@ -16234,7 +16371,16 @@
 273f			;	inc hl 
 273f			;	ld d, (hl) 
 273f			;	ex de, hl 
-273f cd 0b 1b			call forth_push_numhl 
+273f			;	call forth_push_numhl 
+273f					FORTH_PUSH_VALUEHL 
+273f				if BASE_CPM=1 
+273f cd 0b 1b				call forth_push_numhl 
+2742				endif 
+2742				if BASE_KEV=1 
+2742					rst $20 
+2742				endif 
+2742				endm 
+# End of macro FORTH_PUSH_VALUEHL
 2742				NEXTW 
 2742 cd 68 ee			call parse_vector 
 2745 c3 ee 1e			jp macro_next 
@@ -16765,7 +16911,16 @@
 2929				endm  
 # End of macro CALLMONITOR
 2929			endif 
-2929 cd 0b 1b			call forth_push_numhl 
+2929			;	call forth_push_numhl 
+2929					FORTH_PUSH_VALUEHL 
+2929				if BASE_CPM=1 
+2929 cd 0b 1b				call forth_push_numhl 
+292c				endif 
+292c				if BASE_KEV=1 
+292c					rst $20 
+292c				endif 
+292c				endm 
+# End of macro FORTH_PUSH_VALUEHL
 292c			 
 292c			 
 292c			       NEXTW 
@@ -17073,7 +17228,16 @@
 2a04 cc 88 54			call z,malloc_error 
 2a07			endif 
 2a07			 
-2a07 cd 0b 1b			call forth_push_numhl 
+2a07			;	call forth_push_numhl 
+2a07					FORTH_PUSH_VALUEHL 
+2a07				if BASE_CPM=1 
+2a07 cd 0b 1b				call forth_push_numhl 
+2a0a				endif 
+2a0a				if BASE_KEV=1 
+2a0a					rst $20 
+2a0a				endif 
+2a0a				endm 
+# End of macro FORTH_PUSH_VALUEHL
 2a0a				NEXTW 
 2a0a cd 68 ee			call parse_vector 
 2a0d c3 ee 1e			jp macro_next 
@@ -17429,7 +17593,16 @@
 2b41					; save this location 
 2b41				 
 2b41			.ulunotfound: 
-2b41 cd 0b 1b			call forth_push_numhl 
+2b41			;	call forth_push_numhl 
+2b41					FORTH_PUSH_VALUEHL 
+2b41				if BASE_CPM=1 
+2b41 cd 0b 1b				call forth_push_numhl 
+2b44				endif 
+2b44				if BASE_KEV=1 
+2b44					rst $20 
+2b44				endif 
+2b44				endm 
+# End of macro FORTH_PUSH_VALUEHL
 2b44						 
 2b44				NEXTW 
 2b44 cd 68 ee			call parse_vector 
@@ -18574,7 +18747,16 @@
 2e81 21 d9 e7				ld hl, os_var_array 
 2e84 cd 1a 0e				call addatohl 
 2e87			 
+2e87					;call forth_push_numhl 
+2e87					FORTH_PUSH_VALUEHL 
+2e87				if BASE_CPM=1 
 2e87 cd 0b 1b				call forth_push_numhl 
+2e8a				endif 
+2e8a				if BASE_KEV=1 
+2e8a					rst $20 
+2e8a				endif 
+2e8a				endm 
+# End of macro FORTH_PUSH_VALUEHL
 2e8a			 
 2e8a				       NEXTW 
 2e8a cd 68 ee			call parse_vector 
@@ -19300,7 +19482,16 @@
 30d0			 
 30d0 eb					ex de, hl 
 30d1			 
+30d1					;call forth_push_numhl 
+30d1					FORTH_PUSH_VALUEHL 
+30d1				if BASE_CPM=1 
 30d1 cd 0b 1b				call forth_push_numhl 
+30d4				endif 
+30d4				if BASE_KEV=1 
+30d4					rst $20 
+30d4				endif 
+30d4				endm 
+# End of macro FORTH_PUSH_VALUEHL
 30d4			 
 30d4				       NEXTW 
 30d4 cd 68 ee			call parse_vector 
@@ -19451,7 +19642,16 @@
 3137 e1					pop hl 
 3138			 
 3138 23					inc hl 
+3139					;call forth_push_numhl 
+3139					FORTH_PUSH_VALUEHL 
+3139				if BASE_CPM=1 
 3139 cd 0b 1b				call forth_push_numhl 
+313c				endif 
+313c				if BASE_KEV=1 
+313c					rst $20 
+313c				endif 
+313c				endm 
+# End of macro FORTH_PUSH_VALUEHL
 313c					 
 313c					NEXTW 
 313c cd 68 ee			call parse_vector 
@@ -19491,7 +19691,16 @@
 3150 e1					pop hl 
 3151			 
 3151 2b					dec hl 
+3152					;call forth_push_numhl 
+3152					FORTH_PUSH_VALUEHL 
+3152				if BASE_CPM=1 
 3152 cd 0b 1b				call forth_push_numhl 
+3155				endif 
+3155				if BASE_KEV=1 
+3155					rst $20 
+3155				endif 
+3155				endm 
+# End of macro FORTH_PUSH_VALUEHL
 3155					 
 3155					NEXTW 
 3155 cd 68 ee			call parse_vector 
@@ -20677,7 +20886,16 @@
 358a					endif 
 358a			 
 358a 2a d9 e5				ld hl,(os_current_i) 
+358d					;call forth_push_numhl 
+358d					FORTH_PUSH_VALUEHL 
+358d				if BASE_CPM=1 
 358d cd 0b 1b				call forth_push_numhl 
+3590				endif 
+3590				if BASE_KEV=1 
+3590					rst $20 
+3590				endif 
+3590				endm 
+# End of macro FORTH_PUSH_VALUEHL
 3590			 
 3590					NEXTW 
 3590 cd 68 ee			call parse_vector 
@@ -21311,7 +21529,16 @@
 37b3			 
 37b3 26 00		.notip:		ld h, 0	 
 37b5			 
+37b5					;call forth_push_numhl 
+37b5					FORTH_PUSH_VALUEHL 
+37b5				if BASE_CPM=1 
 37b5 cd 0b 1b				call forth_push_numhl 
+37b8				endif 
+37b8				if BASE_KEV=1 
+37b8					rst $20 
+37b8				endif 
+37b8				endm 
+# End of macro FORTH_PUSH_VALUEHL
 37b8					NEXTW 
 37b8 cd 68 ee			call parse_vector 
 37bb c3 ee 1e			jp macro_next 
@@ -21380,7 +21607,16 @@
 37f5 20 02				jr nz, .compnsame 
 37f7 2e 01				ld l, 1	 
 37f9			.compnsame: 
+37f9					;call forth_push_numhl 
+37f9					FORTH_PUSH_VALUEHL 
+37f9				if BASE_CPM=1 
 37f9 cd 0b 1b				call forth_push_numhl 
+37fc				endif 
+37fc				if BASE_KEV=1 
+37fc					rst $20 
+37fc				endif 
+37fc				endm 
+# End of macro FORTH_PUSH_VALUEHL
 37fc			 
 37fc					NEXTW 
 37fc cd 68 ee			call parse_vector 
@@ -21495,7 +21731,16 @@
 3850					; push value back onto stack for another op etc 
 3850			 
 3850			.tz_done: 
+3850					;call forth_push_numhl 
+3850					FORTH_PUSH_VALUEHL 
+3850				if BASE_CPM=1 
 3850 cd 0b 1b				call forth_push_numhl 
+3853				endif 
+3853				if BASE_KEV=1 
+3853					rst $20 
+3853				endif 
+3853				endm 
+# End of macro FORTH_PUSH_VALUEHL
 3853			 
 3853					NEXTW 
 3853 cd 68 ee			call parse_vector 
@@ -21636,7 +21881,16 @@
 38bc				endm  
 # End of macro CALLMONITOR
 38bc					endif 
+38bc					;call forth_push_numhl 
+38bc					FORTH_PUSH_VALUEHL 
+38bc				if BASE_CPM=1 
 38bc cd 0b 1b				call forth_push_numhl 
+38bf				endif 
+38bf				if BASE_KEV=1 
+38bf					rst $20 
+38bf				endif 
+38bf				endm 
+# End of macro FORTH_PUSH_VALUEHL
 38bf			 
 38bf					NEXTW 
 38bf cd 68 ee			call parse_vector 
@@ -21777,7 +22031,16 @@
 3928				endm  
 # End of macro CALLMONITOR
 3928					endif 
+3928					;call forth_push_numhl 
+3928					FORTH_PUSH_VALUEHL 
+3928				if BASE_CPM=1 
 3928 cd 0b 1b				call forth_push_numhl 
+392b				endif 
+392b				if BASE_KEV=1 
+392b					rst $20 
+392b				endif 
+392b				endm 
+# End of macro FORTH_PUSH_VALUEHL
 392b			 
 392b					NEXTW 
 392b cd 68 ee			call parse_vector 
@@ -21932,7 +22195,16 @@
 3996				endm  
 # End of macro CALLMONITOR
 3996					endif 
+3996					;call forth_push_numhl 
+3996					FORTH_PUSH_VALUEHL 
+3996				if BASE_CPM=1 
 3996 cd 0b 1b				call forth_push_numhl 
+3999				endif 
+3999				if BASE_KEV=1 
+3999					rst $20 
+3999				endif 
+3999				endm 
+# End of macro FORTH_PUSH_VALUEHL
 3999			 
 3999					NEXTW 
 3999 cd 68 ee			call parse_vector 
@@ -22143,7 +22415,16 @@
 39fa			;		pop hl 
 39fa			 
 39fa			.dot_done: 
+39fa					;call forth_push_numhl 
+39fa					FORTH_PUSH_VALUEHL 
+39fa				if BASE_CPM=1 
 39fa cd 0b 1b				call forth_push_numhl 
+39fd				endif 
+39fd				if BASE_KEV=1 
+39fd					rst $20 
+39fd				endif 
+39fd				endm 
+# End of macro FORTH_PUSH_VALUEHL
 39fd			 
 39fd					NEXTW 
 39fd cd 68 ee			call parse_vector 
@@ -22277,7 +22558,16 @@
 3a43			 
 3a43			;		pop hl 
 3a43			 
+3a43					;call forth_push_numhl 
+3a43					FORTH_PUSH_VALUEHL 
+3a43				if BASE_CPM=1 
 3a43 cd 0b 1b				call forth_push_numhl 
+3a46				endif 
+3a46				if BASE_KEV=1 
+3a46					rst $20 
+3a46				endif 
+3a46				endm 
+# End of macro FORTH_PUSH_VALUEHL
 3a46			.neg_done: 
 3a46			 
 3a46					NEXTW 
@@ -22414,13 +22704,31 @@
 3a91			 
 3a91 e1					pop hl    ; result 
 3a92			 
+3a92					;call forth_push_numhl 
+3a92					FORTH_PUSH_VALUEHL 
+3a92				if BASE_CPM=1 
 3a92 cd 0b 1b				call forth_push_numhl 
+3a95				endif 
+3a95				if BASE_KEV=1 
+3a95					rst $20 
+3a95				endif 
+3a95				endm 
+# End of macro FORTH_PUSH_VALUEHL
 3a95			 
 3a95 e1					pop hl    ; reminder 
 3a96			;		ld h,0 
 3a96			;		ld l,d 
 3a96			 
+3a96					;call forth_push_numhl 
+3a96					FORTH_PUSH_VALUEHL 
+3a96				if BASE_CPM=1 
 3a96 cd 0b 1b				call forth_push_numhl 
+3a99				endif 
+3a99				if BASE_KEV=1 
+3a99					rst $20 
+3a99				endif 
+3a99				endm 
+# End of macro FORTH_PUSH_VALUEHL
 3a99			.div_done: 
 3a99					NEXTW 
 3a99 cd 68 ee			call parse_vector 
@@ -22549,7 +22857,16 @@
 3ae1			 
 3ae1			;		pop hl 
 3ae1			 
+3ae1					;call forth_push_numhl 
+3ae1					FORTH_PUSH_VALUEHL 
+3ae1				if BASE_CPM=1 
 3ae1 cd 0b 1b				call forth_push_numhl 
+3ae4				endif 
+3ae4				if BASE_KEV=1 
+3ae4					rst $20 
+3ae4				endif 
+3ae4				endm 
+# End of macro FORTH_PUSH_VALUEHL
 3ae4			 
 3ae4			.mul_done: 
 3ae4					NEXTW 
@@ -22678,7 +22995,16 @@
 3b41				endm  
 # End of macro CALLMONITOR
 3b41					endif 
+3b41					;call forth_push_numhl 
+3b41					FORTH_PUSH_VALUEHL 
+3b41				if BASE_CPM=1 
 3b41 cd 0b 1b				call forth_push_numhl 
+3b44				endif 
+3b44				if BASE_KEV=1 
+3b44					rst $20 
+3b44				endif 
+3b44				endm 
+# End of macro FORTH_PUSH_VALUEHL
 3b44			 
 3b44				       NEXTW 
 3b44 cd 68 ee			call parse_vector 
@@ -22713,7 +23039,16 @@
 3b68				endm  
 # End of macro CALLMONITOR
 3b68					endif 
+3b68					;call forth_push_numhl 
+3b68					FORTH_PUSH_VALUEHL 
+3b68				if BASE_CPM=1 
 3b68 cd 0b 1b				call forth_push_numhl 
+3b6b				endif 
+3b6b				if BASE_KEV=1 
+3b6b					rst $20 
+3b6b				endif 
+3b6b				endm 
+# End of macro FORTH_PUSH_VALUEHL
 3b6b			 
 3b6b				       NEXTW 
 3b6b cd 68 ee			call parse_vector 
@@ -22837,7 +23172,16 @@
 3bc8				endm  
 # End of macro CALLMONITOR
 3bc8					endif 
+3bc8					;call forth_push_numhl 
+3bc8					FORTH_PUSH_VALUEHL 
+3bc8				if BASE_CPM=1 
 3bc8 cd 0b 1b				call forth_push_numhl 
+3bcb				endif 
+3bcb				if BASE_KEV=1 
+3bcb					rst $20 
+3bcb				endif 
+3bcb				endm 
+# End of macro FORTH_PUSH_VALUEHL
 3bcb			 
 3bcb				       NEXTW 
 3bcb cd 68 ee			call parse_vector 
@@ -22872,7 +23216,16 @@
 3bef				endm  
 # End of macro CALLMONITOR
 3bef					endif 
+3bef					;call forth_push_numhl 
+3bef					FORTH_PUSH_VALUEHL 
+3bef				if BASE_CPM=1 
 3bef cd 0b 1b				call forth_push_numhl 
+3bf2				endif 
+3bf2				if BASE_KEV=1 
+3bf2					rst $20 
+3bf2				endif 
+3bf2				endm 
+# End of macro FORTH_PUSH_VALUEHL
 3bf2				       NEXTW 
 3bf2 cd 68 ee			call parse_vector 
 3bf5 c3 ee 1e			jp macro_next 
@@ -22913,7 +23266,16 @@
 # End of macro CALLMONITOR
 3c1e					endif 
 3c1e cd 41 0d				call prng16  
+3c21					;call forth_push_numhl 
+3c21					FORTH_PUSH_VALUEHL 
+3c21				if BASE_CPM=1 
 3c21 cd 0b 1b				call forth_push_numhl 
+3c24				endif 
+3c24				if BASE_KEV=1 
+3c24					rst $20 
+3c24				endif 
+3c24				endm 
+# End of macro FORTH_PUSH_VALUEHL
 3c24				       NEXTW 
 3c24 cd 68 ee			call parse_vector 
 3c27 c3 ee 1e			jp macro_next 
@@ -22957,7 +23319,16 @@
 3c53 cd 5b 0d				call xrnd 
 3c56 6f					ld l,a	 
 3c57 26 00				ld h,0 
+3c59					;call forth_push_numhl 
+3c59					FORTH_PUSH_VALUEHL 
+3c59				if BASE_CPM=1 
 3c59 cd 0b 1b				call forth_push_numhl 
+3c5c				endif 
+3c5c				if BASE_KEV=1 
+3c5c					rst $20 
+3c5c				endif 
+3c5c				endm 
+# End of macro FORTH_PUSH_VALUEHL
 3c5c				       NEXTW 
 3c5c cd 68 ee			call parse_vector 
 3c5f c3 ee 1e			jp macro_next 
@@ -23222,7 +23593,16 @@
 3d62					endif 
 3d62			 
 3d62			 
+3d62					;call forth_push_numhl 
+3d62					FORTH_PUSH_VALUEHL 
+3d62				if BASE_CPM=1 
 3d62 cd 0b 1b				call forth_push_numhl 
+3d65				endif 
+3d65				if BASE_KEV=1 
+3d65					rst $20 
+3d65				endif 
+3d65				endm 
+# End of macro FORTH_PUSH_VALUEHL
 3d65				       NEXTW 
 3d65 cd 68 ee			call parse_vector 
 3d68 c3 ee 1e			jp macro_next 
@@ -23464,9 +23844,27 @@
 3e44			endif	 
 3e44 26 00				ld h, 0 
 3e46 69					ld l, c 
+3e47					;call forth_push_numhl 
+3e47					FORTH_PUSH_VALUEHL 
+3e47				if BASE_CPM=1 
 3e47 cd 0b 1b				call forth_push_numhl 
+3e4a				endif 
+3e4a				if BASE_KEV=1 
+3e4a					rst $20 
+3e4a				endif 
+3e4a				endm 
+# End of macro FORTH_PUSH_VALUEHL
 3e4a 68					ld l, b  
+3e4b					;call forth_push_numhl 
+3e4b					FORTH_PUSH_VALUEHL 
+3e4b				if BASE_CPM=1 
 3e4b cd 0b 1b				call forth_push_numhl 
+3e4e				endif 
+3e4e				if BASE_KEV=1 
+3e4e					rst $20 
+3e4e				endif 
+3e4e				endm 
+# End of macro FORTH_PUSH_VALUEHL
 3e4e			 
 3e4e			 
 3e4e				NEXTW 
@@ -25025,7 +25423,16 @@
 4455 26 00				ld h, 0 
 4457 6f					ld l, a 
 4458			 
+4458					;call forth_push_numhl 
+4458					FORTH_PUSH_VALUEHL 
+4458				if BASE_CPM=1 
 4458 cd 0b 1b				call forth_push_numhl 
+445b				endif 
+445b				if BASE_KEV=1 
+445b					rst $20 
+445b				endif 
+445b				endm 
+# End of macro FORTH_PUSH_VALUEHL
 445b			 
 445b			 
 445b					NEXTW 
@@ -25274,7 +25681,16 @@
 # End of macro CALLMONITOR
 451d					endif 
 451d			 
+451d					;call forth_push_numhl 
+451d					FORTH_PUSH_VALUEHL 
+451d				if BASE_CPM=1 
 451d cd 0b 1b				call forth_push_numhl 
+4520				endif 
+4520				if BASE_KEV=1 
+4520					rst $20 
+4520				endif 
+4520				endm 
+# End of macro FORTH_PUSH_VALUEHL
 4520			 
 4520			 
 4520			 
@@ -25610,7 +26026,16 @@
 45e4			 
 45e4				 
 45e4 2a b5 e2				ld hl, (scratch+1)    ; save the base for current string to push 
+45e7					;call forth_push_numhl 
+45e7					FORTH_PUSH_VALUEHL 
+45e7				if BASE_CPM=1 
 45e7 cd 0b 1b				call forth_push_numhl 
+45ea				endif 
+45ea				if BASE_KEV=1 
+45ea					rst $20 
+45ea				endif 
+45ea				endm 
+# End of macro FORTH_PUSH_VALUEHL
 45ea			 
 45ea				NEXTW 
 45ea cd 68 ee			call parse_vector 
@@ -25855,7 +26280,16 @@
 46db e1					pop hl    ; get counter from bc which has been push 
 46dc 26 00				ld h, 0 
 46de			;		ld l, c 
+46de					;call forth_push_numhl 
+46de					FORTH_PUSH_VALUEHL 
+46de				if BASE_CPM=1 
 46de cd 0b 1b				call forth_push_numhl 
+46e1				endif 
+46e1				if BASE_KEV=1 
+46e1					rst $20 
+46e1				endif 
+46e1				endm 
+# End of macro FORTH_PUSH_VALUEHL
 46e1			 
 46e1			 
 46e1				NEXTW 
@@ -25909,7 +26343,16 @@
 470e				endif 
 470e				endm 
 # End of macro FORTH_DSP_VALUEHL
+470e					;call forth_push_numhl 
+470e					FORTH_PUSH_VALUEHL 
+470e				if BASE_CPM=1 
 470e cd 0b 1b				call forth_push_numhl 
+4711				endif 
+4711				if BASE_KEV=1 
+4711					rst $20 
+4711				endif 
+4711				endm 
+# End of macro FORTH_PUSH_VALUEHL
 4711			 
 4711			 
 4711					NEXTW 
@@ -26993,7 +27436,16 @@
 4b10				endm  
 # End of macro CALLMONITOR
 4b10					endif 
-4b10 cd 0b 1b				call forth_push_numhl	 
+4b10					;call forth_push_numhl	 
+4b10					FORTH_PUSH_VALUEHL 
+4b10				if BASE_CPM=1 
+4b10 cd 0b 1b				call forth_push_numhl 
+4b13				endif 
+4b13				if BASE_KEV=1 
+4b13					rst $20 
+4b13				endif 
+4b13				endm 
+# End of macro FORTH_PUSH_VALUEHL
 4b13			 
 4b13				 
 4b13				       NEXTW 
@@ -27532,7 +27984,16 @@
 4d1b				endm  
 # End of macro CALLMONITOR
 4d1b					endif 
-4d1b cd 0b 1b			call forth_push_numhl 
+4d1b			;	call forth_push_numhl 
+4d1b					FORTH_PUSH_VALUEHL 
+4d1b				if BASE_CPM=1 
+4d1b cd 0b 1b				call forth_push_numhl 
+4d1e				endif 
+4d1e				if BASE_KEV=1 
+4d1e					rst $20 
+4d1e				endif 
+4d1e				endm 
+# End of macro FORTH_PUSH_VALUEHL
 4d1e			 
 4d1e				       NEXTW 
 4d1e cd 68 ee			call parse_vector 
@@ -27631,7 +28092,16 @@
 # End of macro CALLMONITOR
 4d88					endif 
 4d88			 
+4d88					;call forth_push_numhl 
+4d88					FORTH_PUSH_VALUEHL 
+4d88				if BASE_CPM=1 
 4d88 cd 0b 1b				call forth_push_numhl 
+4d8b				endif 
+4d8b				if BASE_KEV=1 
+4d8b					rst $20 
+4d8b				endif 
+4d8b				endm 
+# End of macro FORTH_PUSH_VALUEHL
 4d8b			 
 4d8b			 
 4d8b			 
@@ -27747,7 +28217,16 @@
 4df9				endm  
 # End of macro CALLMONITOR
 4df9					endif 
+4df9					;call forth_push_numhl 
+4df9					FORTH_PUSH_VALUEHL 
+4df9				if BASE_CPM=1 
 4df9 cd 0b 1b				call forth_push_numhl 
+4dfc				endif 
+4dfc				if BASE_KEV=1 
+4dfc					rst $20 
+4dfc				endif 
+4dfc				endm 
+# End of macro FORTH_PUSH_VALUEHL
 4dfc			 
 4dfc				       NEXTW 
 4dfc cd 68 ee			call parse_vector 
@@ -27934,7 +28413,16 @@
 4e94					;call cin_wait 
 4e94 6f					ld l, a 
 4e95 26 00				ld h, 0 
+4e97					;call forth_push_numhl 
+4e97					FORTH_PUSH_VALUEHL 
+4e97				if BASE_CPM=1 
 4e97 cd 0b 1b				call forth_push_numhl 
+4e9a				endif 
+4e9a				if BASE_KEV=1 
+4e9a					rst $20 
+4e9a				endif 
+4e9a				endm 
+# End of macro FORTH_PUSH_VALUEHL
 4e9a					NEXTW 
 4e9a cd 68 ee			call parse_vector 
 4e9d c3 ee 1e			jp macro_next 
@@ -27982,7 +28470,17 @@
 4ec9					;call cin_wait 
 4ec9 6f					ld l, a 
 4eca 26 00				ld h, 0 
+4ecc					;call forth_push_numhl 
+4ecc					FORTH_PUSH_VALUEHL 
+4ecc				if BASE_CPM=1 
 4ecc cd 0b 1b				call forth_push_numhl 
+4ecf				endif 
+4ecf				if BASE_KEV=1 
+4ecf					rst $20 
+4ecf				endif 
+4ecf				endm 
+# End of macro FORTH_PUSH_VALUEHL
+4ecf			 
 4ecf					NEXTW 
 4ecf cd 68 ee			call parse_vector 
 4ed2 c3 ee 1e			jp macro_next 
@@ -28024,7 +28522,16 @@
 4efb cd b3 67				call cin_wait 
 4efe 6f					ld l, a 
 4eff 26 00				ld h, 0 
+4f01					;call forth_push_numhl 
+4f01					FORTH_PUSH_VALUEHL 
+4f01				if BASE_CPM=1 
 4f01 cd 0b 1b				call forth_push_numhl 
+4f04				endif 
+4f04				if BASE_KEV=1 
+4f04					rst $20 
+4f04				endif 
+4f04				endm 
+# End of macro FORTH_PUSH_VALUEHL
 4f04					NEXTW 
 4f04 cd 68 ee			call parse_vector 
 4f07 c3 ee 1e			jp macro_next 
@@ -28389,7 +28896,16 @@
 5080			; | | the multiplexing of the PicoSPINet addon which might not be running fast enough for all of the nodes 
 5080			 
 5080 21 57 ea				ld hl, spi_clktime  
+5083			;		call forth_push_numhl 
+5083					FORTH_PUSH_VALUEHL 
+5083				if BASE_CPM=1 
 5083 cd 0b 1b				call forth_push_numhl 
+5086				endif 
+5086				if BASE_KEV=1 
+5086					rst $20 
+5086				endif 
+5086				endm 
+# End of macro FORTH_PUSH_VALUEHL
 5086			 
 5086					NEXTW 
 5086 cd 68 ee			call parse_vector 
@@ -28408,7 +28924,16 @@
 # End of macro CWHEAD
 5093			; | VA ( -- u1 )   Pushes address of block of memory used for v1..5 | DONE 
 5093 21 1b ea				ld hl, cli_var_array 
+5096					;call forth_push_numhl 
+5096					FORTH_PUSH_VALUEHL 
+5096				if BASE_CPM=1 
 5096 cd 0b 1b				call forth_push_numhl 
+5099				endif 
+5099				if BASE_KEV=1 
+5099					rst $20 
+5099				endif 
+5099				endm 
+# End of macro FORTH_PUSH_VALUEHL
 5099			 
 5099					NEXTW 
 5099 cd 68 ee			call parse_vector 
@@ -28627,7 +29152,16 @@
 5108 21 1a 51				ld hl, sym_table 
 510b cd 1a 0e				call addatohl 
 510e cd 74 1e				call loadwordinhl 
+5111					;call forth_push_numhl 
+5111					FORTH_PUSH_VALUEHL 
+5111				if BASE_CPM=1 
 5111 cd 0b 1b				call forth_push_numhl 
+5114				endif 
+5114				if BASE_KEV=1 
+5114					rst $20 
+5114				endif 
+5114				endm 
+# End of macro FORTH_PUSH_VALUEHL
 5114			 
 5114			 
 5114				       NEXTW 
@@ -28862,7 +29396,17 @@
 51dd			 
 51dd					; TODO push value back onto stack for another op etc 
 51dd			 
+51dd					;call forth_push_numhl 
+51dd			 
+51dd					FORTH_PUSH_VALUEHL 
+51dd				if BASE_CPM=1 
 51dd cd 0b 1b				call forth_push_numhl 
+51e0				endif 
+51e0				if BASE_KEV=1 
+51e0					rst $20 
+51e0				endif 
+51e0				endm 
+# End of macro FORTH_PUSH_VALUEHL
 51e0					NEXTW 
 51e0 cd 68 ee			call parse_vector 
 51e3 c3 ee 1e			jp macro_next 
@@ -29070,7 +29614,8 @@
 523c						DMARK "Si3" 
 523c						CALLMONITOR 
 523c					endif 
-523c					call forth_push_numhl 
+523c					;call forth_push_numhl 
+523c					FORTH_PUSH_VALUEHL 
 523c			 
 523c					NEXTW 
 523c			 
@@ -29088,7 +29633,8 @@
 523c					sub '0' 
 523c					ld h, 0 
 523c					ld l, a 
-523c					call forth_push_numhl 
+523c					FORTH_PUSH_VALUEHL 
+523c					;call forth_push_numhl 
 523c					NEXTW 
 523c			.SESELS: 
 523c				CWHEAD .CARTDEV 82 "BANK" 4 WORD_FLAG_CODE 

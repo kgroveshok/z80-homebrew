@@ -611,6 +611,17 @@ FORTH_DSP_TYPE:   macro
 
 	endm
 
+
+FORTH_PUSH_VALUEHL: macro
+
+	if BASE_CPM=1
+		call forth_push_numhl
+	endif
+	if BASE_KEV=1
+		rst $20
+	endif
+	endm
+
 ; load the tos value into hl
 
 

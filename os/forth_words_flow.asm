@@ -310,7 +310,8 @@ endif
 		endif
 
 		ld hl,(os_current_i)
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 		NEXTW
 .DLOOP:

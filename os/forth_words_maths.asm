@@ -109,7 +109,8 @@
 ;		pop hl
 
 .dot_done:
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 		NEXTW
 .NEG:
@@ -174,7 +175,8 @@
 
 ;		pop hl
 
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 .neg_done:
 
 		NEXTW
@@ -242,13 +244,15 @@
 
 		pop hl    ; result
 
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 		pop hl    ; reminder
 ;		ld h,0
 ;		ld l,d
 
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 .div_done:
 		NEXTW
 .MUL:
@@ -308,7 +312,8 @@
 
 ;		pop hl
 
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 .mul_done:
 		NEXTW
@@ -355,7 +360,8 @@
 			DMARK "MIN"
 			CALLMONITOR
 		endif
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 	       NEXTW
 
@@ -366,7 +372,8 @@
 			DMARK "MI1"
 			CALLMONITOR
 		endif
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 	       NEXTW
 .MAX:
@@ -408,7 +415,8 @@
 			DMARK "MAX"
 			CALLMONITOR
 		endif
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 
 	       NEXTW
 
@@ -419,7 +427,8 @@
 			DMARK "MA1"
 			CALLMONITOR
 		endif
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 	       NEXTW
 
 .RND16:
@@ -430,7 +439,8 @@
 			CALLMONITOR
 		endif
 		call prng16 
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 	       NEXTW
 .RND8:
 	CWHEAD .RND 76 "RND8" 4 WORD_FLAG_CODE
@@ -444,7 +454,8 @@
 		call xrnd
 		ld l,a	
 		ld h,0
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 	       NEXTW
 .RND:
 	CWHEAD .ENDMATHS 76 "RND" 3 WORD_FLAG_CODE
@@ -527,7 +538,8 @@
 		endif
 
 
-		call forth_push_numhl
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
 	       NEXTW
 
 .ENDMATHS:

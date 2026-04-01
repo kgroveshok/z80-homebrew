@@ -194,7 +194,7 @@
 013b			 
 013b ..			buildtime: db   "Build: " 
 0142					include "romtimestamp.asm" 
-0142 ..			db '2026-04-01 12:32' 
+0142 ..			db '2026-04-01 12:36' 
 # End of file romtimestamp.asm
 0152 00				   db 0 
 0153			 
@@ -12184,7 +12184,12 @@
 1d07			; whatever the current top os stack points to, we are now done with it so return memory to malloc 
 1d07			 
 1d07			FORTH_DSP_POP: macro 
+1d07				if BASE_CPM=1 
 1d07				call macro_forth_dsp_pop 
+1d07				endif 
+1d07				if BASE_KEV=1 
+1d07					rst $10 
+1d07				endif 
 1d07				endm 
 1d07			 
 1d07			 
@@ -14504,7 +14509,12 @@
 2156			 
 2156			 
 2156				FORTH_DSP_POP 
+2156				if BASE_CPM=1 
 2156 cd bf 1d			call macro_forth_dsp_pop 
+2159				endif 
+2159				if BASE_KEV=1 
+2159					rst $10 
+2159				endif 
 2159				endm 
 # End of macro FORTH_DSP_POP
 2159				NEXTW 
@@ -14550,7 +14560,12 @@
 2189				endm 
 # End of macro FORTH_DSP_VALUEHL
 2189				FORTH_DSP_POP 
+2189				if BASE_CPM=1 
 2189 cd bf 1d			call macro_forth_dsp_pop 
+218c				endif 
+218c				if BASE_KEV=1 
+218c					rst $10 
+218c				endif 
 218c				endm 
 # End of macro FORTH_DSP_POP
 218c			 
@@ -14599,7 +14614,12 @@
 21c0				endm 
 # End of macro FORTH_DSP_VALUEHL
 21c0				FORTH_DSP_POP 
+21c0				if BASE_CPM=1 
 21c0 cd bf 1d			call macro_forth_dsp_pop 
+21c3				endif 
+21c3				if BASE_KEV=1 
+21c3					rst $10 
+21c3				endif 
 21c3				endm 
 # End of macro FORTH_DSP_POP
 21c3 cb 3c			srl h 
@@ -15295,7 +15315,12 @@
 # End of macro CALLMONITOR
 2426				endif 
 2426				FORTH_DSP_POP 
+2426				if BASE_CPM=1 
 2426 cd bf 1d			call macro_forth_dsp_pop 
+2429				endif 
+2429				if BASE_KEV=1 
+2429					rst $10 
+2429				endif 
 2429				endm 
 # End of macro FORTH_DSP_POP
 2429				NEXTW 
@@ -15345,7 +15370,12 @@
 2457 e5				push hl      ; 2 
 2458			 
 2458				FORTH_DSP_POP 
+2458				if BASE_CPM=1 
 2458 cd bf 1d			call macro_forth_dsp_pop 
+245b				endif 
+245b				if BASE_KEV=1 
+245b					rst $10 
+245b				endif 
 245b				endm 
 # End of macro FORTH_DSP_POP
 245b				 
@@ -15356,7 +15386,12 @@
 245e			;		push hl      ; 1 
 245e			 
 245e				FORTH_DSP_POP 
+245e				if BASE_CPM=1 
 245e cd bf 1d			call macro_forth_dsp_pop 
+2461				endif 
+2461				if BASE_KEV=1 
+2461					rst $10 
+2461				endif 
 2461				endm 
 # End of macro FORTH_DSP_POP
 2461			 
@@ -15414,11 +15449,21 @@
 # End of macro CALLMONITOR
 249d				endif 
 249d				FORTH_DSP_POP 
+249d				if BASE_CPM=1 
 249d cd bf 1d			call macro_forth_dsp_pop 
+24a0				endif 
+24a0				if BASE_KEV=1 
+24a0					rst $10 
+24a0				endif 
 24a0				endm 
 # End of macro FORTH_DSP_POP
 24a0				FORTH_DSP_POP 
+24a0				if BASE_CPM=1 
 24a0 cd bf 1d			call macro_forth_dsp_pop 
+24a3				endif 
+24a3				if BASE_KEV=1 
+24a3					rst $10 
+24a3				endif 
 24a3				endm 
 # End of macro FORTH_DSP_POP
 24a3				NEXTW 
@@ -15468,7 +15513,12 @@
 # End of macro FORTH_DSP_VALUEHL
 24d1				 
 24d1				FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+24d1				if BASE_CPM=1 
 24d1 cd bf 1d			call macro_forth_dsp_pop 
+24d4				endif 
+24d4				if BASE_KEV=1 
+24d4					rst $10 
+24d4				endif 
 24d4				endm 
 # End of macro FORTH_DSP_POP
 24d4			 
@@ -15733,7 +15783,12 @@
 25ef			;		push hl 
 25ef			 
 25ef				FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+25ef				if BASE_CPM=1 
 25ef cd bf 1d			call macro_forth_dsp_pop 
+25f2				endif 
+25f2				if BASE_KEV=1 
+25f2					rst $10 
+25f2				endif 
 25f2				endm 
 # End of macro FORTH_DSP_POP
 25f2			 
@@ -15832,7 +15887,12 @@
 2650 e5				push hl 
 2651			 
 2651				FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+2651				if BASE_CPM=1 
 2651 cd bf 1d			call macro_forth_dsp_pop 
+2654				endif 
+2654				if BASE_KEV=1 
+2654					rst $10 
+2654				endif 
 2654				endm 
 # End of macro FORTH_DSP_POP
 2654			 
@@ -15846,7 +15906,12 @@
 2658			 
 2658			 
 2658				FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+2658				if BASE_CPM=1 
 2658 cd bf 1d			call macro_forth_dsp_pop 
+265b				endif 
+265b				if BASE_KEV=1 
+265b					rst $10 
+265b				endif 
 265b				endm 
 # End of macro FORTH_DSP_POP
 265b			 
@@ -15945,7 +16010,12 @@
 26b8				; destroy value TOS 
 26b8			 
 26b8				FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+26b8				if BASE_CPM=1 
 26b8 cd bf 1d			call macro_forth_dsp_pop 
+26bb				endif 
+26bb				if BASE_KEV=1 
+26bb					rst $10 
+26bb				endif 
 26bb				endm 
 # End of macro FORTH_DSP_POP
 26bb			 
@@ -16174,7 +16244,12 @@
 # End of macro FORTH_DSP_VALUEHL
 2782			;		push hl    ; n2 
 2782				FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+2782				if BASE_CPM=1 
 2782 cd bf 1d			call macro_forth_dsp_pop 
+2785				endif 
+2785				if BASE_KEV=1 
+2785					rst $10 
+2785				endif 
 2785				endm 
 # End of macro FORTH_DSP_POP
 2785			;		pop hl 
@@ -16225,7 +16300,12 @@
 # End of macro FORTH_DSP_VALUEHL
 27b8			;		push hl    ; n2 
 27b8				FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+27b8				if BASE_CPM=1 
 27b8 cd bf 1d			call macro_forth_dsp_pop 
+27bb				endif 
+27bb				if BASE_KEV=1 
+27bb					rst $10 
+27bb				endif 
 27bb				endm 
 # End of macro FORTH_DSP_POP
 27bb			;		pop hl 
@@ -16660,7 +16740,12 @@
 2958				; destroy value TOS 
 2958			 
 2958				FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+2958				if BASE_CPM=1 
 2958 cd bf 1d			call macro_forth_dsp_pop 
+295b				endif 
+295b				if BASE_KEV=1 
+295b					rst $10 
+295b				endif 
 295b				endm 
 # End of macro FORTH_DSP_POP
 295b			 
@@ -16870,7 +16955,12 @@
 29f9				; destroy value TOS 
 29f9			 
 29f9				FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+29f9				if BASE_CPM=1 
 29f9 cd bf 1d			call macro_forth_dsp_pop 
+29fc				endif 
+29fc				if BASE_KEV=1 
+29fc					rst $10 
+29fc				endif 
 29fc				endm 
 # End of macro FORTH_DSP_POP
 29fc			 
@@ -16939,7 +17029,12 @@
 2a38				; destroy value TOS 
 2a38			 
 2a38				FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+2a38				if BASE_CPM=1 
 2a38 cd bf 1d			call macro_forth_dsp_pop 
+2a3b				endif 
+2a3b				if BASE_KEV=1 
+2a3b					rst $10 
+2a3b				endif 
 2a3b				endm 
 # End of macro FORTH_DSP_POP
 2a3b			 
@@ -16992,7 +17087,12 @@
 2a6c			 
 2a6c e5				push hl 
 2a6d				FORTH_DSP_POP 
+2a6d				if BASE_CPM=1 
 2a6d cd bf 1d			call macro_forth_dsp_pop 
+2a70				endif 
+2a70				if BASE_KEV=1 
+2a70					rst $10 
+2a70				endif 
 2a70				endm 
 # End of macro FORTH_DSP_POP
 2a70 c1				pop bc 
@@ -17272,7 +17372,12 @@
 2b72			 
 2b72 e5				push hl 
 2b73				FORTH_DSP_POP 
+2b73				if BASE_CPM=1 
 2b73 cd bf 1d			call macro_forth_dsp_pop 
+2b76				endif 
+2b76				if BASE_KEV=1 
+2b76					rst $10 
+2b76				endif 
 2b76				endm 
 # End of macro FORTH_DSP_POP
 2b76 c1				pop bc 
@@ -18141,7 +18246,12 @@
 2dbe			 
 2dbe					 
 2dbe					FORTH_DSP_POP 
+2dbe				if BASE_CPM=1 
 2dbe cd bf 1d			call macro_forth_dsp_pop 
+2dc1				endif 
+2dc1				if BASE_KEV=1 
+2dc1					rst $10 
+2dc1				endif 
 2dc1				endm 
 # End of macro FORTH_DSP_POP
 2dc1			;		ld hl, .luno 
@@ -18330,7 +18440,12 @@
 # End of macro FORTH_DSP_VALUEHL
 2e7d				 
 2e7d					FORTH_DSP_POP 
+2e7d				if BASE_CPM=1 
 2e7d cd bf 1d			call macro_forth_dsp_pop 
+2e80				endif 
+2e80				if BASE_KEV=1 
+2e80					rst $10 
+2e80				endif 
 2e80				endm 
 # End of macro FORTH_DSP_POP
 2e80			 
@@ -18388,7 +18503,12 @@
 2eb6 e5					push hl   ; save address 
 2eb7			 
 2eb7					FORTH_DSP_POP 
+2eb7				if BASE_CPM=1 
 2eb7 cd bf 1d			call macro_forth_dsp_pop 
+2eba				endif 
+2eba				if BASE_KEV=1 
+2eba					rst $10 
+2eba				endif 
 2eba				endm 
 # End of macro FORTH_DSP_POP
 2eba			 
@@ -18399,7 +18519,12 @@
 2ebd			 
 2ebd e5					push hl 
 2ebe					FORTH_DSP_POP 
+2ebe				if BASE_CPM=1 
 2ebe cd bf 1d			call macro_forth_dsp_pop 
+2ec1				endif 
+2ec1				if BASE_KEV=1 
+2ec1					rst $10 
+2ec1				endif 
 2ec1				endm 
 # End of macro FORTH_DSP_POP
 2ec1 e1					pop hl 
@@ -18489,7 +18614,12 @@
 2f0f e5					push hl   ; save address 
 2f10			 
 2f10					FORTH_DSP_POP 
+2f10				if BASE_CPM=1 
 2f10 cd bf 1d			call macro_forth_dsp_pop 
+2f13				endif 
+2f13				if BASE_KEV=1 
+2f13					rst $10 
+2f13				endif 
 2f13				endm 
 # End of macro FORTH_DSP_POP
 2f13			 
@@ -18535,7 +18665,12 @@
 2f37			 
 2f37			 
 2f37					FORTH_DSP_POP 
+2f37				if BASE_CPM=1 
 2f37 cd bf 1d			call macro_forth_dsp_pop 
+2f3a				endif 
+2f3a				if BASE_KEV=1 
+2f3a					rst $10 
+2f3a				endif 
 2f3a				endm 
 # End of macro FORTH_DSP_POP
 2f3a			 
@@ -18621,7 +18756,12 @@
 2f87					endif 
 2f87			 
 2f87					FORTH_DSP_POP 
+2f87				if BASE_CPM=1 
 2f87 cd bf 1d			call macro_forth_dsp_pop 
+2f8a				endif 
+2f8a				if BASE_KEV=1 
+2f8a					rst $10 
+2f8a				endif 
 2f8a				endm 
 # End of macro FORTH_DSP_POP
 2f8a			 
@@ -18726,7 +18866,12 @@
 2fe7			 
 2fe7			 
 2fe7					FORTH_DSP_POP 
+2fe7				if BASE_CPM=1 
 2fe7 cd bf 1d			call macro_forth_dsp_pop 
+2fea				endif 
+2fea				if BASE_KEV=1 
+2fea					rst $10 
+2fea				endif 
 2fea				endm 
 # End of macro FORTH_DSP_POP
 2fea			 
@@ -18814,7 +18959,12 @@
 3037					endif 
 3037			 
 3037					FORTH_DSP_POP 
+3037				if BASE_CPM=1 
 3037 cd bf 1d			call macro_forth_dsp_pop 
+303a				endif 
+303a				if BASE_KEV=1 
+303a					rst $10 
+303a				endif 
 303a				endm 
 # End of macro FORTH_DSP_POP
 303a			 
@@ -18919,7 +19069,12 @@
 3099			 
 3099			 
 3099					FORTH_DSP_POP 
+3099				if BASE_CPM=1 
 3099 cd bf 1d			call macro_forth_dsp_pop 
+309c				endif 
+309c				if BASE_KEV=1 
+309c					rst $10 
+309c				endif 
 309c				endm 
 # End of macro FORTH_DSP_POP
 309c			 
@@ -18972,7 +19127,12 @@
 30c8 e5					push hl   ; save address 
 30c9			 
 30c9					FORTH_DSP_POP 
+30c9				if BASE_CPM=1 
 30c9 cd bf 1d			call macro_forth_dsp_pop 
+30cc				endif 
+30cc				if BASE_KEV=1 
+30cc					rst $10 
+30cc				endif 
 30cc				endm 
 # End of macro FORTH_DSP_POP
 30cc			 
@@ -19034,7 +19194,12 @@
 3101			 
 3101			 
 3101					FORTH_DSP_POP 
+3101				if BASE_CPM=1 
 3101 cd bf 1d			call macro_forth_dsp_pop 
+3104				endif 
+3104				if BASE_KEV=1 
+3104					rst $10 
+3104				endif 
 3104				endm 
 # End of macro FORTH_DSP_POP
 3104			 
@@ -19045,7 +19210,12 @@
 # End of macro FORTH_DSP_VALUEHL
 3107			 
 3107					FORTH_DSP_POP 
+3107				if BASE_CPM=1 
 3107 cd bf 1d			call macro_forth_dsp_pop 
+310a				endif 
+310a				if BASE_KEV=1 
+310a					rst $10 
+310a				endif 
 310a				endm 
 # End of macro FORTH_DSP_POP
 310a			 
@@ -19099,7 +19269,12 @@
 3133 e5					push hl 
 3134			 
 3134					FORTH_DSP_POP 
+3134				if BASE_CPM=1 
 3134 cd bf 1d			call macro_forth_dsp_pop 
+3137				endif 
+3137				if BASE_KEV=1 
+3137					rst $10 
+3137				endif 
 3137				endm 
 # End of macro FORTH_DSP_POP
 3137 e1					pop hl 
@@ -19129,7 +19304,12 @@
 314c e5					push hl 
 314d			 
 314d					FORTH_DSP_POP 
+314d				if BASE_CPM=1 
 314d cd bf 1d			call macro_forth_dsp_pop 
+3150				endif 
+3150				if BASE_KEV=1 
+3150					rst $10 
+3150				endif 
 3150				endm 
 # End of macro FORTH_DSP_POP
 3150 e1					pop hl 
@@ -19159,7 +19339,12 @@
 3166 e5					push hl 
 3167			 
 3167					FORTH_DSP_POP 
+3167				if BASE_CPM=1 
 3167 cd bf 1d			call macro_forth_dsp_pop 
+316a				endif 
+316a				if BASE_KEV=1 
+316a					rst $10 
+316a				endif 
 316a				endm 
 # End of macro FORTH_DSP_POP
 316a e1					pop hl 
@@ -19190,7 +19375,12 @@
 3180 e5					push hl 
 3181			 
 3181					FORTH_DSP_POP 
+3181				if BASE_CPM=1 
 3181 cd bf 1d			call macro_forth_dsp_pop 
+3184				endif 
+3184				if BASE_KEV=1 
+3184					rst $10 
+3184				endif 
 3184				endm 
 # End of macro FORTH_DSP_POP
 3184 e1					pop hl 
@@ -19228,7 +19418,12 @@
 31a0 e5					push hl 
 31a1			 
 31a1					FORTH_DSP_POP 
+31a1				if BASE_CPM=1 
 31a1 cd bf 1d			call macro_forth_dsp_pop 
+31a4				endif 
+31a4				if BASE_KEV=1 
+31a4					rst $10 
+31a4				endif 
 31a4				endm 
 # End of macro FORTH_DSP_POP
 31a4 e1					pop hl 
@@ -19259,7 +19454,12 @@
 31ba e5					push hl 
 31bb			 
 31bb					FORTH_DSP_POP 
+31bb				if BASE_CPM=1 
 31bb cd bf 1d			call macro_forth_dsp_pop 
+31be				endif 
+31be				if BASE_KEV=1 
+31be					rst $10 
+31be				endif 
 31be				endm 
 # End of macro FORTH_DSP_POP
 31be e1					pop hl 
@@ -19334,7 +19534,12 @@
 31f5			 
 31f5			;	push hl 
 31f5				FORTH_DSP_POP 
+31f5				if BASE_CPM=1 
 31f5 cd bf 1d			call macro_forth_dsp_pop 
+31f8				endif 
+31f8				if BASE_KEV=1 
+31f8					rst $10 
+31f8				endif 
 31f8				endm 
 # End of macro FORTH_DSP_POP
 31f8			;	pop hl 
@@ -19731,7 +19936,12 @@
 # End of macro CALLMONITOR
 33a4					endif 
 33a4					FORTH_DSP_POP 
+33a4				if BASE_CPM=1 
 33a4 cd bf 1d			call macro_forth_dsp_pop 
+33a7				endif 
+33a7				if BASE_KEV=1 
+33a7					rst $10 
+33a7				endif 
 33a7				endm 
 # End of macro FORTH_DSP_POP
 33a7			 
@@ -19791,7 +20001,12 @@
 # End of macro CALLMONITOR
 33e2					endif 
 33e2					FORTH_DSP_POP 
+33e2				if BASE_CPM=1 
 33e2 cd bf 1d			call macro_forth_dsp_pop 
+33e5				endif 
+33e5				if BASE_KEV=1 
+33e5					rst $10 
+33e5				endif 
 33e5				endm 
 # End of macro FORTH_DSP_POP
 33e5			 
@@ -20655,7 +20870,12 @@
 36fc			 
 36fc			;	push hl 
 36fc				FORTH_DSP_POP 
+36fc				if BASE_CPM=1 
 36fc cd bf 1d			call macro_forth_dsp_pop 
+36ff				endif 
+36ff				if BASE_KEV=1 
+36ff					rst $10 
+36ff				endif 
 36ff				endm 
 # End of macro FORTH_DSP_POP
 36ff			 
@@ -20851,7 +21071,12 @@
 # End of macro FORTH_DSP_VALUEHL
 37a5			;		push hl 
 37a5					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+37a5				if BASE_CPM=1 
 37a5 cd bf 1d			call macro_forth_dsp_pop 
+37a8				endif 
+37a8				if BASE_KEV=1 
+37a8					rst $10 
+37a8				endif 
 37a8				endm 
 # End of macro FORTH_DSP_POP
 37a8			;		pop hl 
@@ -21010,7 +21235,12 @@
 383d					; destroy value TOS 
 383d			 
 383d					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+383d				if BASE_CPM=1 
 383d cd bf 1d			call macro_forth_dsp_pop 
+3840				endif 
+3840				if BASE_KEV=1 
+3840					rst $10 
+3840				endif 
 3840				endm 
 # End of macro FORTH_DSP_POP
 3840			 
@@ -21101,7 +21331,12 @@
 3887					; destroy value TOS 
 3887			 
 3887					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+3887				if BASE_CPM=1 
 3887 cd bf 1d			call macro_forth_dsp_pop 
+388a				endif 
+388a				if BASE_KEV=1 
+388a					rst $10 
+388a				endif 
 388a				endm 
 # End of macro FORTH_DSP_POP
 388a			 
@@ -21114,7 +21349,12 @@
 388d e5					push hl    ; u1 
 388e			 
 388e					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+388e				if BASE_CPM=1 
 388e cd bf 1d			call macro_forth_dsp_pop 
+3891				endif 
+3891				if BASE_KEV=1 
+3891					rst $10 
+3891				endif 
 3891				endm 
 # End of macro FORTH_DSP_POP
 3891			 
@@ -21222,7 +21462,12 @@
 38f3					; destroy value TOS 
 38f3			 
 38f3					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+38f3				if BASE_CPM=1 
 38f3 cd bf 1d			call macro_forth_dsp_pop 
+38f6				endif 
+38f6				if BASE_KEV=1 
+38f6					rst $10 
+38f6				endif 
 38f6				endm 
 # End of macro FORTH_DSP_POP
 38f6			 
@@ -21235,7 +21480,12 @@
 38f9 e5					push hl    ; u1 
 38fa			 
 38fa					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+38fa				if BASE_CPM=1 
 38fa cd bf 1d			call macro_forth_dsp_pop 
+38fd				endif 
+38fd				if BASE_KEV=1 
+38fd					rst $10 
+38fd				endif 
 38fd				endm 
 # End of macro FORTH_DSP_POP
 38fd			 
@@ -21343,7 +21593,12 @@
 395f					; destroy value TOS 
 395f			 
 395f					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+395f				if BASE_CPM=1 
 395f cd bf 1d			call macro_forth_dsp_pop 
+3962				endif 
+3962				if BASE_KEV=1 
+3962					rst $10 
+3962				endif 
 3962				endm 
 # End of macro FORTH_DSP_POP
 3962			 
@@ -21358,7 +21613,12 @@
 3965 e5					push hl 
 3966			 
 3966					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+3966				if BASE_CPM=1 
 3966 cd bf 1d			call macro_forth_dsp_pop 
+3969				endif 
+3969				if BASE_KEV=1 
+3969					rst $10 
+3969				endif 
 3969				endm 
 # End of macro FORTH_DSP_POP
 3969			 
@@ -21566,7 +21826,12 @@
 39ef					; destroy value TOS 
 39ef			 
 39ef					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+39ef				if BASE_CPM=1 
 39ef cd bf 1d			call macro_forth_dsp_pop 
+39f2				endif 
+39f2				if BASE_KEV=1 
+39f2					rst $10 
+39f2				endif 
 39f2				endm 
 # End of macro FORTH_DSP_POP
 39f2			 
@@ -21593,7 +21858,12 @@
 39f7					; destroy value TOS 
 39f7			 
 39f7					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+39f7				if BASE_CPM=1 
 39f7 cd bf 1d			call macro_forth_dsp_pop 
+39fa				endif 
+39fa				if BASE_KEV=1 
+39fa					rst $10 
+39fa				endif 
 39fa				endm 
 # End of macro FORTH_DSP_POP
 39fa			 
@@ -21680,7 +21950,12 @@
 3a37					; destroy value TOS 
 3a37			 
 3a37					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+3a37				if BASE_CPM=1 
 3a37 cd bf 1d			call macro_forth_dsp_pop 
+3a3a				endif 
+3a3a				if BASE_KEV=1 
+3a3a					rst $10 
+3a3a				endif 
 3a3a				endm 
 # End of macro FORTH_DSP_POP
 3a3a			 
@@ -21708,7 +21983,12 @@
 3a40					; destroy value TOS 
 3a40			 
 3a40					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+3a40				if BASE_CPM=1 
 3a40 cd bf 1d			call macro_forth_dsp_pop 
+3a43				endif 
+3a43				if BASE_KEV=1 
+3a43					rst $10 
+3a43				endif 
 3a43				endm 
 # End of macro FORTH_DSP_POP
 3a43			 
@@ -21788,7 +22068,12 @@
 3a80					; destroy value TOS 
 3a80			 
 3a80					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+3a80				if BASE_CPM=1 
 3a80 cd bf 1d			call macro_forth_dsp_pop 
+3a83				endif 
+3a83				if BASE_KEV=1 
+3a83					rst $10 
+3a83				endif 
 3a83				endm 
 # End of macro FORTH_DSP_POP
 3a83			 
@@ -21825,7 +22110,12 @@
 3a8e					endif 
 3a8e			 
 3a8e					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+3a8e				if BASE_CPM=1 
 3a8e cd bf 1d			call macro_forth_dsp_pop 
+3a91				endif 
+3a91				if BASE_KEV=1 
+3a91					rst $10 
+3a91				endif 
 3a91				endm 
 # End of macro FORTH_DSP_POP
 3a91			 
@@ -21911,7 +22201,12 @@
 3ad3					; destroy value TOS 
 3ad3			 
 3ad3					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+3ad3				if BASE_CPM=1 
 3ad3 cd bf 1d			call macro_forth_dsp_pop 
+3ad6				endif 
+3ad6				if BASE_KEV=1 
+3ad6					rst $10 
+3ad6				endif 
 3ad6				endm 
 # End of macro FORTH_DSP_POP
 3ad6			 
@@ -21940,7 +22235,12 @@
 3ade					; destroy value TOS 
 3ade			 
 3ade					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+3ade				if BASE_CPM=1 
 3ade cd bf 1d			call macro_forth_dsp_pop 
+3ae1				endif 
+3ae1				if BASE_KEV=1 
+3ae1					rst $10 
+3ae1				endif 
 3ae1				endm 
 # End of macro FORTH_DSP_POP
 3ae1			 
@@ -22005,7 +22305,12 @@
 3b12					; destroy value TOS 
 3b12			 
 3b12					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+3b12				if BASE_CPM=1 
 3b12 cd bf 1d			call macro_forth_dsp_pop 
+3b15				endif 
+3b15				if BASE_KEV=1 
+3b15					rst $10 
+3b15				endif 
 3b15				endm 
 # End of macro FORTH_DSP_POP
 3b15			 
@@ -22021,7 +22326,12 @@
 3b19					; destroy value TOS 
 3b19			 
 3b19					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+3b19				if BASE_CPM=1 
 3b19 cd bf 1d			call macro_forth_dsp_pop 
+3b1c				endif 
+3b1c				if BASE_KEV=1 
+3b1c					rst $10 
+3b1c				endif 
 3b1c				endm 
 # End of macro FORTH_DSP_POP
 3b1c			 
@@ -22144,7 +22454,12 @@
 3b99					; destroy value TOS 
 3b99			 
 3b99					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+3b99				if BASE_CPM=1 
 3b99 cd bf 1d			call macro_forth_dsp_pop 
+3b9c				endif 
+3b9c				if BASE_KEV=1 
+3b9c					rst $10 
+3b9c				endif 
 3b9c				endm 
 # End of macro FORTH_DSP_POP
 3b9c			 
@@ -22160,7 +22475,12 @@
 3ba0					; destroy value TOS 
 3ba0			 
 3ba0					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+3ba0				if BASE_CPM=1 
 3ba0 cd bf 1d			call macro_forth_dsp_pop 
+3ba3				endif 
+3ba3				if BASE_KEV=1 
+3ba3					rst $10 
+3ba3				endif 
 3ba3				endm 
 # End of macro FORTH_DSP_POP
 3ba3			 
@@ -22389,7 +22709,12 @@
 # End of macro CALLMONITOR
 3ca8					endif 
 3ca8					FORTH_DSP_POP 
+3ca8				if BASE_CPM=1 
 3ca8 cd bf 1d			call macro_forth_dsp_pop 
+3cab				endif 
+3cab				if BASE_KEV=1 
+3cab					rst $10 
+3cab				endif 
 3cab				endm 
 # End of macro FORTH_DSP_POP
 3cab			 
@@ -22425,7 +22750,12 @@
 3cca 22 a2 eb				ld (LFSRSeed+2), hl 
 3ccd			 
 3ccd					FORTH_DSP_POP 
+3ccd				if BASE_CPM=1 
 3ccd cd bf 1d			call macro_forth_dsp_pop 
+3cd0				endif 
+3cd0				if BASE_KEV=1 
+3cd0					rst $10 
+3cd0				endif 
 3cd0				endm 
 # End of macro FORTH_DSP_POP
 3cd0			 
@@ -22663,7 +22993,12 @@
 # End of macro FORTH_DSP_VALUEHL
 3dc6			 
 3dc6					FORTH_DSP_POP 
+3dc6				if BASE_CPM=1 
 3dc6 cd bf 1d			call macro_forth_dsp_pop 
+3dc9				endif 
+3dc9				if BASE_KEV=1 
+3dc9					rst $10 
+3dc9				endif 
 3dc9				endm 
 # End of macro FORTH_DSP_POP
 3dc9			 
@@ -22675,7 +23010,12 @@
 # End of macro FORTH_DSP_VALUEHL
 3dcd			 
 3dcd					FORTH_DSP_POP 
+3dcd				if BASE_CPM=1 
 3dcd cd bf 1d			call macro_forth_dsp_pop 
+3dd0				endif 
+3dd0				if BASE_KEV=1 
+3dd0					rst $10 
+3dd0				endif 
 3dd0				endm 
 # End of macro FORTH_DSP_POP
 3dd0			 
@@ -22854,7 +23194,12 @@
 3e99 22 bf eb		.fbset:		ld (display_fb_active), hl 
 3e9c			 
 3e9c					FORTH_DSP_POP 
+3e9c				if BASE_CPM=1 
 3e9c cd bf 1d			call macro_forth_dsp_pop 
+3e9f				endif 
+3e9f				if BASE_KEV=1 
+3e9f					rst $10 
+3e9f				endif 
 3e9f				endm 
 # End of macro FORTH_DSP_POP
 3e9f			 
@@ -22932,7 +23277,12 @@
 3eef			 
 3eef			 
 3eef					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+3eef				if BASE_CPM=1 
 3eef cd bf 1d			call macro_forth_dsp_pop 
+3ef2				endif 
+3ef2				if BASE_KEV=1 
+3ef2					rst $10 
+3ef2				endif 
 3ef2				endm 
 # End of macro FORTH_DSP_POP
 3ef2			  
@@ -23456,7 +23806,12 @@
 4112			endif	 
 4112			 
 4112					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+4112				if BASE_CPM=1 
 4112 cd bf 1d			call macro_forth_dsp_pop 
+4115				endif 
+4115				if BASE_KEV=1 
+4115					rst $10 
+4115				endif 
 4115				endm 
 # End of macro FORTH_DSP_POP
 4115			 
@@ -23623,7 +23978,12 @@
 41c3					; destroy value TOS 
 41c3			 
 41c3					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+41c3				if BASE_CPM=1 
 41c3 cd bf 1d			call macro_forth_dsp_pop 
+41c6				endif 
+41c6				if BASE_KEV=1 
+41c6					rst $10 
+41c6				endif 
 41c6				endm 
 # End of macro FORTH_DSP_POP
 41c6			 
@@ -23737,7 +24097,12 @@
 4245 6f					ld l,a 
 4246 26 00				ld h,0 
 4248					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+4248				if BASE_CPM=1 
 4248 cd bf 1d			call macro_forth_dsp_pop 
+424b				endif 
+424b				if BASE_KEV=1 
+424b					rst $10 
+424b				endif 
 424b				endm 
 # End of macro FORTH_DSP_POP
 424b					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
@@ -23749,7 +24114,12 @@
 424f 85					add l		; add col offset 
 4250 32 51 ea				ld (f_cursor_ptr), a 
 4253					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+4253				if BASE_CPM=1 
 4253 cd bf 1d			call macro_forth_dsp_pop 
+4256				endif 
+4256				if BASE_KEV=1 
+4256					rst $10 
+4256				endif 
 4256				endm 
 # End of macro FORTH_DSP_POP
 4256			 
@@ -23966,7 +24336,12 @@
 434a					endif 
 434a			 
 434a					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+434a				if BASE_CPM=1 
 434a cd bf 1d			call macro_forth_dsp_pop 
+434d				endif 
+434d				if BASE_KEV=1 
+434d					rst $10 
+434d				endif 
 434d				endm 
 # End of macro FORTH_DSP_POP
 434d e1					pop hl 
@@ -24240,7 +24615,12 @@
 4443 6f					ld l,a 
 4444 26 00				ld h,0 
 4446					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+4446				if BASE_CPM=1 
 4446 cd bf 1d			call macro_forth_dsp_pop 
+4449				endif 
+4449				if BASE_KEV=1 
+4449					rst $10 
+4449				endif 
 4449				endm 
 # End of macro FORTH_DSP_POP
 4449					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
@@ -24294,7 +24674,12 @@
 446d					; destroy value TOS 
 446d			 
 446d					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+446d				if BASE_CPM=1 
 446d cd bf 1d			call macro_forth_dsp_pop 
+4470				endif 
+4470				if BASE_KEV=1 
+4470					rst $10 
+4470				endif 
 4470				endm 
 # End of macro FORTH_DSP_POP
 4470			 
@@ -24355,7 +24740,12 @@
 44a3 05					dec b 
 44a4			 
 44a4					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+44a4				if BASE_CPM=1 
 44a4 cd bf 1d			call macro_forth_dsp_pop 
+44a7				endif 
+44a7				if BASE_KEV=1 
+44a7					rst $10 
+44a7				endif 
 44a7				endm 
 # End of macro FORTH_DSP_POP
 44a7			 
@@ -24407,7 +24797,12 @@
 44ce eb					ex de, hl 
 44cf			 
 44cf					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+44cf				if BASE_CPM=1 
 44cf cd bf 1d			call macro_forth_dsp_pop 
+44d2				endif 
+44d2				if BASE_KEV=1 
+44d2					rst $10 
+44d2				endif 
 44d2				endm 
 # End of macro FORTH_DSP_POP
 44d2			 
@@ -24542,7 +24937,12 @@
 4547 e5					push hl    ; push count 
 4548			 
 4548					FORTH_DSP_POP 
+4548				if BASE_CPM=1 
 4548 cd bf 1d			call macro_forth_dsp_pop 
+454b				endif 
+454b				if BASE_KEV=1 
+454b					rst $10 
+454b				endif 
 454b				endm 
 # End of macro FORTH_DSP_POP
 454b			 
@@ -24553,7 +24953,12 @@
 454e e5					push hl    ; dest 
 454f			 
 454f					FORTH_DSP_POP 
+454f				if BASE_CPM=1 
 454f cd bf 1d			call macro_forth_dsp_pop 
+4552				endif 
+4552				if BASE_KEV=1 
+4552					rst $10 
+4552				endif 
 4552				endm 
 # End of macro FORTH_DSP_POP
 4552			 
@@ -24563,7 +24968,12 @@
 # End of macro FORTH_DSP_VALUEHL
 4555			 
 4555					FORTH_DSP_POP 
+4555				if BASE_CPM=1 
 4555 cd bf 1d			call macro_forth_dsp_pop 
+4558				endif 
+4558				if BASE_KEV=1 
+4558					rst $10 
+4558				endif 
 4558				endm 
 # End of macro FORTH_DSP_POP
 4558			 
@@ -24597,7 +25007,12 @@
 456f e5					push hl    ; dest 
 4570			 
 4570					FORTH_DSP_POP 
+4570				if BASE_CPM=1 
 4570 cd bf 1d			call macro_forth_dsp_pop 
+4573				endif 
+4573				if BASE_KEV=1 
+4573					rst $10 
+4573				endif 
 4573				endm 
 # End of macro FORTH_DSP_POP
 4573			 
@@ -24607,7 +25022,12 @@
 # End of macro FORTH_DSP_VALUEHL
 4576			 
 4576					FORTH_DSP_POP 
+4576				if BASE_CPM=1 
 4576 cd bf 1d			call macro_forth_dsp_pop 
+4579				endif 
+4579				if BASE_KEV=1 
+4579					rst $10 
+4579				endif 
 4579				endm 
 # End of macro FORTH_DSP_POP
 4579			 
@@ -24652,7 +25072,12 @@
 # End of macro FORTH_DSP_VALUEHL
 4598			 
 4598					FORTH_DSP_POP 
+4598				if BASE_CPM=1 
 4598 cd bf 1d			call macro_forth_dsp_pop 
+459b				endif 
+459b				if BASE_KEV=1 
+459b					rst $10 
+459b				endif 
 459b				endm 
 # End of macro FORTH_DSP_POP
 459b			 
@@ -24732,7 +25157,12 @@
 45d3 22 b7 e2				ld (scratch+3), hl    ; save the base for current string to push 
 45d6			 
 45d6					FORTH_DSP_POP 
+45d6				if BASE_CPM=1 
 45d6 cd bf 1d			call macro_forth_dsp_pop 
+45d9				endif 
+45d9				if BASE_KEV=1 
+45d9					rst $10 
+45d9				endif 
 45d9				endm 
 # End of macro FORTH_DSP_POP
 45d9			 
@@ -24799,7 +25229,12 @@
 # End of macro FORTH_DSP_VALUEHL
 4619			 
 4619					FORTH_DSP_POP 
+4619				if BASE_CPM=1 
 4619 cd bf 1d			call macro_forth_dsp_pop 
+461c				endif 
+461c				if BASE_KEV=1 
+461c					rst $10 
+461c				endif 
 461c				endm 
 # End of macro FORTH_DSP_POP
 461c					 
@@ -25594,7 +26029,12 @@
 494f e5					push hl      ; string length 
 4950			 
 4950					FORTH_DSP_POP 
+4950				if BASE_CPM=1 
 4950 cd bf 1d			call macro_forth_dsp_pop 
+4953				endif 
+4953				if BASE_KEV=1 
+4953					rst $10 
+4953				endif 
 4953				endm 
 # End of macro FORTH_DSP_POP
 4953			 
@@ -25606,7 +26046,12 @@
 4956 e5					push hl     ; start char 
 4957			 
 4957					FORTH_DSP_POP 
+4957				if BASE_CPM=1 
 4957 cd bf 1d			call macro_forth_dsp_pop 
+495a				endif 
+495a				if BASE_KEV=1 
+495a					rst $10 
+495a				endif 
 495a				endm 
 # End of macro FORTH_DSP_POP
 495a			 
@@ -25710,7 +26155,12 @@
 49ad e5					push hl      ; string length 
 49ae			 
 49ae					FORTH_DSP_POP 
+49ae				if BASE_CPM=1 
 49ae cd bf 1d			call macro_forth_dsp_pop 
+49b1				endif 
+49b1				if BASE_KEV=1 
+49b1					rst $10 
+49b1				endif 
 49b1				endm 
 # End of macro FORTH_DSP_POP
 49b1			 
@@ -25777,7 +26227,12 @@
 49f2 e5					push hl      ; string length 
 49f3			 
 49f3					FORTH_DSP_POP 
+49f3				if BASE_CPM=1 
 49f3 cd bf 1d			call macro_forth_dsp_pop 
+49f6				endif 
+49f6				if BASE_KEV=1 
+49f6					rst $10 
+49f6				endif 
 49f6				endm 
 # End of macro FORTH_DSP_POP
 49f6			 
@@ -26013,7 +26468,12 @@
 4af1					endif 
 4af1			;		push hl 
 4af1					FORTH_DSP_POP 
+4af1				if BASE_CPM=1 
 4af1 cd bf 1d			call macro_forth_dsp_pop 
+4af4				endif 
+4af4				if BASE_KEV=1 
+4af4					rst $10 
+4af4				endif 
 4af4				endm 
 # End of macro FORTH_DSP_POP
 4af4			;		pop hl 
@@ -26122,7 +26582,12 @@
 # End of macro CALLMONITOR
 4b60					endif 
 4b60					FORTH_DSP_POP 
+4b60				if BASE_CPM=1 
 4b60 cd bf 1d			call macro_forth_dsp_pop 
+4b63				endif 
+4b63				if BASE_KEV=1 
+4b63					rst $10 
+4b63				endif 
 4b63				endm 
 # End of macro FORTH_DSP_POP
 4b63			 
@@ -26237,7 +26702,12 @@
 4bd8 e5					push hl   ; s2 
 4bd9			 
 4bd9					FORTH_DSP_POP 
+4bd9				if BASE_CPM=1 
 4bd9 cd bf 1d			call macro_forth_dsp_pop 
+4bdc				endif 
+4bdc				if BASE_KEV=1 
+4bdc					rst $10 
+4bdc				endif 
 4bdc				endm 
 # End of macro FORTH_DSP_POP
 4bdc			 
@@ -26249,7 +26719,12 @@
 4bdf e5					push hl   ; s1 
 4be0			 
 4be0					FORTH_DSP_POP 
+4be0				if BASE_CPM=1 
 4be0 cd bf 1d			call macro_forth_dsp_pop 
+4be3				endif 
+4be3				if BASE_KEV=1 
+4be3					rst $10 
+4be3				endif 
 4be3				endm 
 # End of macro FORTH_DSP_POP
 4be3					 
@@ -26447,7 +26922,12 @@
 4cab					endif 
 4cab			 
 4cab					FORTH_DSP_POP 
+4cab				if BASE_CPM=1 
 4cab cd bf 1d			call macro_forth_dsp_pop 
+4cae				endif 
+4cae				if BASE_KEV=1 
+4cae					rst $10 
+4cae				endif 
 4cae				endm 
 # End of macro FORTH_DSP_POP
 4cae			 
@@ -26707,7 +27187,12 @@
 4db8 e5					push hl 
 4db9			 
 4db9					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+4db9				if BASE_CPM=1 
 4db9 cd bf 1d			call macro_forth_dsp_pop 
+4dbc				endif 
+4dbc				if BASE_KEV=1 
+4dbc					rst $10 
+4dbc				endif 
 4dbc				endm 
 # End of macro FORTH_DSP_POP
 4dbc			 
@@ -26813,7 +27298,12 @@
 # End of macro FORTH_DSP_VALUEHL
 4e29			 
 4e29					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+4e29				if BASE_CPM=1 
 4e29 cd bf 1d			call macro_forth_dsp_pop 
+4e2c				endif 
+4e2c				if BASE_KEV=1 
+4e2c					rst $10 
+4e2c				endif 
 4e2c				endm 
 # End of macro FORTH_DSP_POP
 4e2c			 
@@ -27307,7 +27797,12 @@
 5038 e5					push hl 
 5039 e5					push hl 
 503a					FORTH_DSP_POP 
+503a				if BASE_CPM=1 
 503a cd bf 1d			call macro_forth_dsp_pop 
+503d				endif 
+503d				if BASE_KEV=1 
+503d					rst $10 
+503d				endif 
 503d				endm 
 # End of macro FORTH_DSP_POP
 503d e1					pop hl 
@@ -27575,7 +28070,12 @@
 50e6					 
 50e6 f5					push af	 
 50e7					FORTH_DSP_POP 
+50e7				if BASE_CPM=1 
 50e7 cd bf 1d			call macro_forth_dsp_pop 
+50ea				endif 
+50ea				if BASE_KEV=1 
+50ea					rst $10 
+50ea				endif 
 50ea				endm 
 # End of macro FORTH_DSP_POP
 50ea f1					pop af 
@@ -27817,7 +28317,12 @@
 51d5					; destroy value TOS 
 51d5			 
 51d5					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+51d5				if BASE_CPM=1 
 51d5 cd bf 1d			call macro_forth_dsp_pop 
+51d8				endif 
+51d8				if BASE_KEV=1 
+51d8					rst $10 
+51d8				endif 
 51d8				endm 
 # End of macro FORTH_DSP_POP
 51d8			 
@@ -27888,7 +28393,12 @@
 520e					; destroy value TOS 
 520e			 
 520e					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+520e				if BASE_CPM=1 
 520e cd bf 1d			call macro_forth_dsp_pop 
+5211				endif 
+5211				if BASE_KEV=1 
+5211					rst $10 
+5211				endif 
 5211				endm 
 # End of macro FORTH_DSP_POP
 5211			 
@@ -27904,7 +28414,12 @@
 5214					; destroy value TOS 
 5214			 
 5214					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+5214				if BASE_CPM=1 
 5214 cd bf 1d			call macro_forth_dsp_pop 
+5217				endif 
+5217				if BASE_KEV=1 
+5217					rst $10 
+5217				endif 
 5217				endm 
 # End of macro FORTH_DSP_POP
 5217			 
@@ -28304,7 +28819,12 @@
 5280					 
 5280 f5					push af	 
 5281					FORTH_DSP_POP 
+5281				if BASE_CPM=1 
 5281 cd bf 1d			call macro_forth_dsp_pop 
+5284				endif 
+5284				if BASE_KEV=1 
+5284					rst $10 
+5284				endif 
 5284				endm 
 # End of macro FORTH_DSP_POP
 5284 f1					pop af 
@@ -28425,7 +28945,12 @@
 5302					; destroy value TOS 
 5302			 
 5302					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+5302				if BASE_CPM=1 
 5302 cd bf 1d			call macro_forth_dsp_pop 
+5305				endif 
+5305				if BASE_KEV=1 
+5305					rst $10 
+5305				endif 
 5305				endm 
 # End of macro FORTH_DSP_POP
 5305			 
@@ -28475,7 +29000,12 @@
 5331					; destroy value TOS 
 5331			 
 5331					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+5331				if BASE_CPM=1 
 5331 cd bf 1d			call macro_forth_dsp_pop 
+5334				endif 
+5334				if BASE_KEV=1 
+5334					rst $10 
+5334				endif 
 5334				endm 
 # End of macro FORTH_DSP_POP
 5334				       NEXTW 
@@ -28523,7 +29053,12 @@
 5360					; destroy value TOS 
 5360			 
 5360					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+5360				if BASE_CPM=1 
 5360 cd bf 1d			call macro_forth_dsp_pop 
+5363				endif 
+5363				if BASE_KEV=1 
+5363					rst $10 
+5363				endif 
 5363				endm 
 # End of macro FORTH_DSP_POP
 5363				       NEXTW 
@@ -28571,7 +29106,12 @@
 538f					; destroy value TOS 
 538f			 
 538f					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+538f				if BASE_CPM=1 
 538f cd bf 1d			call macro_forth_dsp_pop 
+5392				endif 
+5392				if BASE_KEV=1 
+5392					rst $10 
+5392				endif 
 5392				endm 
 # End of macro FORTH_DSP_POP
 5392				       NEXTW 

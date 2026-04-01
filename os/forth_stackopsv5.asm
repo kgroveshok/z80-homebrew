@@ -588,7 +588,12 @@ macro_forth_dsp_value_m1:
 ; whatever the current top os stack points to, we are now done with it so return memory to malloc
 
 FORTH_DSP_POP: macro
+	if BASE_CPM=1
 	call macro_forth_dsp_pop
+	endif
+	if BASE_KEV=1
+		rst $10
+	endif
 	endm
 
 

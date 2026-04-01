@@ -33,6 +33,8 @@ Device_D: equ 0c0h             ; Keyboard and LCD
 ;	include "debug_level2.asm"
 ;endif
 
+; version 0 uses poked vals but version 1 uses a direct pointer
+DEMARK_VERSION: equ 1
 
 CALLMONITOR: macro
 ;	call break_point_state
@@ -199,7 +201,13 @@ debug_vector:  equ nmi_vector - 3   ; vector to the debug handler
 parse_vector:  equ debug_vector - 3 ; vector to the parser vector
 
 debug_umark: equ parse_vector - 6  ; current user mark
-debug_mark: equ debug_umark - 4    ; internal word debug points
+
+if DEMARK_VERSION = 1
+debug_mark: equ debug_umark - 2    ; internal word debug points - pointer to the string to print
+endif
+if DEMARK_VERSION = 0
+debug_mark: equ debug_umark - 4    ; internal word debug points - poke a four char string with zero term
+endif
 
 ; input_str vars
 input_ptr:  equ debug_mark - 2    ; ptr to the current cursor position of string currently being edited  on entry starting 
@@ -479,7 +487,6 @@ KEY_F12: equ 27
 ; Macro to make adding debug marks easier
 
 
-DEMARK_VERSION: equ 1
 
 DMARK: macro str
 
@@ -503,6 +510,14 @@ DMARK: macro str
 
 	jr .pastdmark
 .dmark: db str
+
+	if DEMARK_VERSION = 1
+		; add a terminator as this is printed direct
+		; other version stuffs into a buffer
+		db 0
+	endif
+
+; skip string
 
 	if DEMARK_VERSION = 1
 .pastdmark: pop hl

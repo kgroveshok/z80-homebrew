@@ -615,7 +615,13 @@ FORTH_DSP_TYPE:   macro
 
 
 FORTH_DSP_VALUEHL:  macro
+
+	if BASE_CPM=1
 	call macro_dsp_valuehl
+	endif
+	if BASE_KEV=1
+		rst $18
+	endif
 	endm
 
 

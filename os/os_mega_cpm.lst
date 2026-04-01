@@ -194,7 +194,7 @@
 013b			 
 013b ..			buildtime: db   "Build: " 
 0142					include "romtimestamp.asm" 
-0142 ..			db '2026-04-01 12:36' 
+0142 ..			db '2026-04-01 12:39' 
 # End of file romtimestamp.asm
 0152 00				   db 0 
 0153			 
@@ -12211,7 +12211,13 @@
 1d07			 
 1d07			 
 1d07			FORTH_DSP_VALUEHL:  macro 
+1d07			 
+1d07				if BASE_CPM=1 
 1d07				call macro_dsp_valuehl 
+1d07				endif 
+1d07				if BASE_KEV=1 
+1d07					rst $18 
+1d07				endif 
 1d07				endm 
 1d07			 
 1d07			 
@@ -12460,7 +12466,12 @@
 1df5 20 22			jr nz, .skippopfree 
 1df7			 
 1df7				FORTH_DSP_VALUEHL 
+1df7				if BASE_CPM=1 
 1df7 cd 07 1d			call macro_dsp_valuehl 
+1dfa				endif 
+1dfa				if BASE_KEV=1 
+1dfa					rst $18 
+1dfa				endif 
 1dfa				endm 
 # End of macro FORTH_DSP_VALUEHL
 1dfa			;	nop 
@@ -14312,7 +14323,12 @@
 2095				; push another string 
 2095			 
 2095				FORTH_DSP_VALUEHL     		 
+2095				if BASE_CPM=1 
 2095 cd 07 1d			call macro_dsp_valuehl 
+2098				endif 
+2098				if BASE_KEV=1 
+2098					rst $18 
+2098				endif 
 2098				endm 
 # End of macro FORTH_DSP_VALUEHL
 2098			 
@@ -14354,7 +14370,12 @@
 20bd			 
 20bd			 
 20bd				FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+20bd				if BASE_CPM=1 
 20bd cd 07 1d			call macro_dsp_valuehl 
+20c0				endif 
+20c0				if BASE_KEV=1 
+20c0					rst $18 
+20c0				endif 
 20c0				endm 
 # End of macro FORTH_DSP_VALUEHL
 20c0			 
@@ -14428,7 +14449,12 @@
 # End of macro CALLMONITOR
 210a				endif 
 210a				FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+210a				if BASE_CPM=1 
 210a cd 07 1d			call macro_dsp_valuehl 
+210d				endif 
+210d				if BASE_KEV=1 
+210d					rst $18 
+210d				endif 
 210d				endm 
 # End of macro FORTH_DSP_VALUEHL
 210d			 
@@ -14494,7 +14520,12 @@
 # End of macro CALLMONITOR
 2145				endif 
 2145				FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+2145				if BASE_CPM=1 
 2145 cd 07 1d			call macro_dsp_valuehl 
+2148				endif 
+2148				if BASE_KEV=1 
+2148					rst $18 
+2148				endif 
 2148				endm 
 # End of macro FORTH_DSP_VALUEHL
 2148			 
@@ -14556,7 +14587,12 @@
 # End of macro CALLMONITOR
 2186				endif 
 2186				FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+2186				if BASE_CPM=1 
 2186 cd 07 1d			call macro_dsp_valuehl 
+2189				endif 
+2189				if BASE_KEV=1 
+2189					rst $18 
+2189				endif 
 2189				endm 
 # End of macro FORTH_DSP_VALUEHL
 2189				FORTH_DSP_POP 
@@ -14610,7 +14646,12 @@
 # End of macro CALLMONITOR
 21bd				endif 
 21bd				FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+21bd				if BASE_CPM=1 
 21bd cd 07 1d			call macro_dsp_valuehl 
+21c0				endif 
+21c0				if BASE_KEV=1 
+21c0					rst $18 
+21c0				endif 
 21c0				endm 
 # End of macro FORTH_DSP_VALUEHL
 21c0				FORTH_DSP_POP 
@@ -15364,7 +15405,12 @@
 # End of macro CALLMONITOR
 2454				endif 
 2454				FORTH_DSP_VALUEHL 
+2454				if BASE_CPM=1 
 2454 cd 07 1d			call macro_dsp_valuehl 
+2457				endif 
+2457				if BASE_KEV=1 
+2457					rst $18 
+2457				endif 
 2457				endm 
 # End of macro FORTH_DSP_VALUEHL
 2457 e5				push hl      ; 2 
@@ -15380,7 +15426,12 @@
 # End of macro FORTH_DSP_POP
 245b				 
 245b				FORTH_DSP_VALUEHL 
+245b				if BASE_CPM=1 
 245b cd 07 1d			call macro_dsp_valuehl 
+245e				endif 
+245e				if BASE_KEV=1 
+245e					rst $18 
+245e				endif 
 245e				endm 
 # End of macro FORTH_DSP_VALUEHL
 245e			;		push hl      ; 1 
@@ -15508,7 +15559,12 @@
 24ce				endif 
 24ce			 
 24ce				FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+24ce				if BASE_CPM=1 
 24ce cd 07 1d			call macro_dsp_valuehl 
+24d1				endif 
+24d1				if BASE_KEV=1 
+24d1					rst $18 
+24d1				endif 
 24d1				endm 
 # End of macro FORTH_DSP_VALUEHL
 24d1				 
@@ -15776,7 +15832,12 @@
 25ec				endif 
 25ec			.getbyteat:	 
 25ec				FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+25ec				if BASE_CPM=1 
 25ec cd 07 1d			call macro_dsp_valuehl 
+25ef				endif 
+25ef				if BASE_KEV=1 
+25ef					rst $18 
+25ef				endif 
 25ef				endm 
 # End of macro FORTH_DSP_VALUEHL
 25ef				 
@@ -15880,7 +15941,12 @@
 264d			 
 264d			.storebyteat:		 
 264d				FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+264d				if BASE_CPM=1 
 264d cd 07 1d			call macro_dsp_valuehl 
+2650				endif 
+2650				if BASE_KEV=1 
+2650					rst $18 
+2650				endif 
 2650				endm 
 # End of macro FORTH_DSP_VALUEHL
 2650				 
@@ -15899,7 +15965,12 @@
 2654				; get byte to poke 
 2654			 
 2654				FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+2654				if BASE_CPM=1 
 2654 cd 07 1d			call macro_dsp_valuehl 
+2657				endif 
+2657				if BASE_KEV=1 
+2657					rst $18 
+2657				endif 
 2657				endm 
 # End of macro FORTH_DSP_VALUEHL
 2657 e5				push hl 
@@ -16001,7 +16072,12 @@
 26b5				endif 
 26b5			 
 26b5				FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+26b5				if BASE_CPM=1 
 26b5 cd 07 1d			call macro_dsp_valuehl 
+26b8				endif 
+26b8				if BASE_KEV=1 
+26b8					rst $18 
+26b8				endif 
 26b8				endm 
 # End of macro FORTH_DSP_VALUEHL
 26b8			 
@@ -16239,7 +16315,12 @@
 # End of macro CALLMONITOR
 277f				endif 
 277f				FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+277f				if BASE_CPM=1 
 277f cd 07 1d			call macro_dsp_valuehl 
+2782				endif 
+2782				if BASE_KEV=1 
+2782					rst $18 
+2782				endif 
 2782				endm 
 # End of macro FORTH_DSP_VALUEHL
 2782			;		push hl    ; n2 
@@ -16295,7 +16376,12 @@
 # End of macro CALLMONITOR
 27b5				endif 
 27b5				FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+27b5				if BASE_CPM=1 
 27b5 cd 07 1d			call macro_dsp_valuehl 
+27b8				endif 
+27b8				if BASE_KEV=1 
+27b8					rst $18 
+27b8				endif 
 27b8				endm 
 # End of macro FORTH_DSP_VALUEHL
 27b8			;		push hl    ; n2 
@@ -16731,7 +16817,12 @@
 2955				endif 
 2955			 
 2955				FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+2955				if BASE_CPM=1 
 2955 cd 07 1d			call macro_dsp_valuehl 
+2958				endif 
+2958				if BASE_KEV=1 
+2958					rst $18 
+2958				endif 
 2958				endm 
 # End of macro FORTH_DSP_VALUEHL
 2958			 
@@ -16946,7 +17037,12 @@
 29f6				endif 
 29f6			.mallocc: 
 29f6				FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+29f6				if BASE_CPM=1 
 29f6 cd 07 1d			call macro_dsp_valuehl 
+29f9				endif 
+29f9				if BASE_KEV=1 
+29f9					rst $18 
+29f9				endif 
 29f9				endm 
 # End of macro FORTH_DSP_VALUEHL
 29f9			 
@@ -17020,7 +17116,12 @@
 2a35				; get address 
 2a35			 
 2a35				FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+2a35				if BASE_CPM=1 
 2a35 cd 07 1d			call macro_dsp_valuehl 
+2a38				endif 
+2a38				if BASE_KEV=1 
+2a38					rst $18 
+2a38				endif 
 2a38				endm 
 # End of macro FORTH_DSP_VALUEHL
 2a38			 
@@ -17081,7 +17182,12 @@
 # End of macro CALLMONITOR
 2a69				endif 
 2a69				FORTH_DSP_VALUEHL 
+2a69				if BASE_CPM=1 
 2a69 cd 07 1d			call macro_dsp_valuehl 
+2a6c				endif 
+2a6c				if BASE_KEV=1 
+2a6c					rst $18 
+2a6c				endif 
 2a6c				endm 
 # End of macro FORTH_DSP_VALUEHL
 2a6c			 
@@ -17366,7 +17472,12 @@
 2b6f			endif 
 2b6f			 
 2b6f				FORTH_DSP_VALUEHL 
+2b6f				if BASE_CPM=1 
 2b6f cd 07 1d			call macro_dsp_valuehl 
+2b72				endif 
+2b72				if BASE_KEV=1 
+2b72					rst $18 
+2b72				endif 
 2b72				endm 
 # End of macro FORTH_DSP_VALUEHL
 2b72			 
@@ -18075,7 +18186,12 @@
 2d73					; Get ptr to the word we need to look up 
 2d73			 
 2d73					FORTH_DSP_VALUEHL 
+2d73				if BASE_CPM=1 
 2d73 cd 07 1d			call macro_dsp_valuehl 
+2d76				endif 
+2d76				if BASE_KEV=1 
+2d76					rst $18 
+2d76				endif 
 2d76				endm 
 # End of macro FORTH_DSP_VALUEHL
 2d76					;v5 FORTH_DSP_VALUE 
@@ -18435,7 +18551,12 @@
 2e7a					endif 
 2e7a			 
 2e7a					FORTH_DSP_VALUEHL 
+2e7a				if BASE_CPM=1 
 2e7a cd 07 1d			call macro_dsp_valuehl 
+2e7d				endif 
+2e7d				if BASE_KEV=1 
+2e7d					rst $18 
+2e7d				endif 
 2e7d				endm 
 # End of macro FORTH_DSP_VALUEHL
 2e7d				 
@@ -18496,7 +18617,12 @@
 2eb3					endif 
 2eb3			 
 2eb3					FORTH_DSP_VALUEHL 
+2eb3				if BASE_CPM=1 
 2eb3 cd 07 1d			call macro_dsp_valuehl 
+2eb6				endif 
+2eb6				if BASE_KEV=1 
+2eb6					rst $18 
+2eb6				endif 
 2eb6				endm 
 # End of macro FORTH_DSP_VALUEHL
 2eb6			 
@@ -18513,7 +18639,12 @@
 # End of macro FORTH_DSP_POP
 2eba			 
 2eba					FORTH_DSP_VALUEHL 
+2eba				if BASE_CPM=1 
 2eba cd 07 1d			call macro_dsp_valuehl 
+2ebd				endif 
+2ebd				if BASE_KEV=1 
+2ebd					rst $18 
+2ebd				endif 
 2ebd				endm 
 # End of macro FORTH_DSP_VALUEHL
 2ebd			 
@@ -18607,7 +18738,12 @@
 2f0c					endif 
 2f0c			 
 2f0c					FORTH_DSP_VALUEHL 
+2f0c				if BASE_CPM=1 
 2f0c cd 07 1d			call macro_dsp_valuehl 
+2f0f				endif 
+2f0f				if BASE_KEV=1 
+2f0f					rst $18 
+2f0f				endif 
 2f0f				endm 
 # End of macro FORTH_DSP_VALUEHL
 2f0f			 
@@ -18624,7 +18760,12 @@
 # End of macro FORTH_DSP_POP
 2f13			 
 2f13					FORTH_DSP_VALUEHL 
+2f13				if BASE_CPM=1 
 2f13 cd 07 1d			call macro_dsp_valuehl 
+2f16				endif 
+2f16				if BASE_KEV=1 
+2f16					rst $18 
+2f16				endif 
 2f16				endm 
 # End of macro FORTH_DSP_VALUEHL
 2f16			 
@@ -18718,7 +18859,12 @@
 2f64					; Address 
 2f64			 
 2f64					FORTH_DSP_VALUEHL 
+2f64				if BASE_CPM=1 
 2f64 cd 07 1d			call macro_dsp_valuehl 
+2f67				endif 
+2f67				if BASE_KEV=1 
+2f67					rst $18 
+2f67				endif 
 2f67				endm 
 # End of macro FORTH_DSP_VALUEHL
 2f67			 
@@ -18921,7 +19067,12 @@
 3014					; Address 
 3014			 
 3014					FORTH_DSP_VALUEHL 
+3014				if BASE_CPM=1 
 3014 cd 07 1d			call macro_dsp_valuehl 
+3017				endif 
+3017				if BASE_KEV=1 
+3017					rst $18 
+3017				endif 
 3017				endm 
 # End of macro FORTH_DSP_VALUEHL
 3017			 
@@ -19120,7 +19271,12 @@
 30c5					endif 
 30c5			 
 30c5					FORTH_DSP_VALUEHL 
+30c5				if BASE_CPM=1 
 30c5 cd 07 1d			call macro_dsp_valuehl 
+30c8				endif 
+30c8				if BASE_KEV=1 
+30c8					rst $18 
+30c8				endif 
 30c8				endm 
 # End of macro FORTH_DSP_VALUEHL
 30c8			 
@@ -19186,7 +19342,12 @@
 30fd					endif 
 30fd			 
 30fd					FORTH_DSP_VALUEHL 
+30fd				if BASE_CPM=1 
 30fd cd 07 1d			call macro_dsp_valuehl 
+3100				endif 
+3100				if BASE_KEV=1 
+3100					rst $18 
+3100				endif 
 3100				endm 
 # End of macro FORTH_DSP_VALUEHL
 3100			 
@@ -19205,7 +19366,12 @@
 3104			 
 3104					 
 3104					FORTH_DSP_VALUEHL 
+3104				if BASE_CPM=1 
 3104 cd 07 1d			call macro_dsp_valuehl 
+3107				endif 
+3107				if BASE_KEV=1 
+3107					rst $18 
+3107				endif 
 3107				endm 
 # End of macro FORTH_DSP_VALUEHL
 3107			 
@@ -19263,7 +19429,12 @@
 3130			; | 1+ ( u -- u )  Increment value on TOS | DONE 
 3130			 
 3130					FORTH_DSP_VALUEHL 
+3130				if BASE_CPM=1 
 3130 cd 07 1d			call macro_dsp_valuehl 
+3133				endif 
+3133				if BASE_KEV=1 
+3133					rst $18 
+3133				endif 
 3133				endm 
 # End of macro FORTH_DSP_VALUEHL
 3133 e5					push hl 
@@ -19298,7 +19469,12 @@
 3149			; | 1- ( u -- u )  Decrement value on TOS | DONE 
 3149			 
 3149					FORTH_DSP_VALUEHL 
+3149				if BASE_CPM=1 
 3149 cd 07 1d			call macro_dsp_valuehl 
+314c				endif 
+314c				if BASE_KEV=1 
+314c					rst $18 
+314c				endif 
 314c				endm 
 # End of macro FORTH_DSP_VALUEHL
 314c e5					push hl 
@@ -19333,7 +19509,12 @@
 3163			; | 1+! ( addr -- )  Increment byte at address addr | DONE 
 3163			 
 3163					FORTH_DSP_VALUEHL 
+3163				if BASE_CPM=1 
 3163 cd 07 1d			call macro_dsp_valuehl 
+3166				endif 
+3166				if BASE_KEV=1 
+3166					rst $18 
+3166				endif 
 3166				endm 
 # End of macro FORTH_DSP_VALUEHL
 3166 e5					push hl 
@@ -19369,7 +19550,12 @@
 317d			; | 1+2! ( addr -- )  Increment word at address addr | DONE 
 317d			 
 317d					FORTH_DSP_VALUEHL 
+317d				if BASE_CPM=1 
 317d cd 07 1d			call macro_dsp_valuehl 
+3180				endif 
+3180				if BASE_KEV=1 
+3180					rst $18 
+3180				endif 
 3180				endm 
 # End of macro FORTH_DSP_VALUEHL
 3180 e5					push hl 
@@ -19412,7 +19598,12 @@
 319d			; | 1-! ( addr -- )  Decrement byte at address addr | DONE 
 319d			 
 319d					FORTH_DSP_VALUEHL 
+319d				if BASE_CPM=1 
 319d cd 07 1d			call macro_dsp_valuehl 
+31a0				endif 
+31a0				if BASE_KEV=1 
+31a0					rst $18 
+31a0				endif 
 31a0				endm 
 # End of macro FORTH_DSP_VALUEHL
 31a0 e5					push hl 
@@ -19448,7 +19639,12 @@
 31b7			; | 1-2! ( addr -- )  Decrement word at address addr | DONE 
 31b7			 
 31b7					FORTH_DSP_VALUEHL 
+31b7				if BASE_CPM=1 
 31b7 cd 07 1d			call macro_dsp_valuehl 
+31ba				endif 
+31ba				if BASE_KEV=1 
+31ba					rst $18 
+31ba				endif 
 31ba				endm 
 # End of macro FORTH_DSP_VALUEHL
 31ba e5					push hl 
@@ -19528,7 +19724,12 @@
 31f2			; eval TOS 
 31f2			 
 31f2				FORTH_DSP_VALUEHL 
+31f2				if BASE_CPM=1 
 31f2 cd 07 1d			call macro_dsp_valuehl 
+31f5				endif 
+31f5				if BASE_KEV=1 
+31f5					rst $18 
+31f5				endif 
 31f5				endm 
 # End of macro FORTH_DSP_VALUEHL
 31f5			 
@@ -19906,7 +20107,12 @@
 3384			 
 3384			 
 3384					FORTH_DSP_VALUEHL 
+3384				if BASE_CPM=1 
 3384 cd 07 1d			call macro_dsp_valuehl 
+3387				endif 
+3387				if BASE_KEV=1 
+3387					rst $18 
+3387				endif 
 3387				endm 
 # End of macro FORTH_DSP_VALUEHL
 3387 e5					push hl		 ; hl now has starting counter which needs to be tos 
@@ -19971,7 +20177,12 @@
 33c3					endif 
 33c3			 
 33c3					FORTH_DSP_VALUEHL 
+33c3				if BASE_CPM=1 
 33c3 cd 07 1d			call macro_dsp_valuehl 
+33c6				endif 
+33c6				if BASE_KEV=1 
+33c6					rst $18 
+33c6				endif 
 33c6				endm 
 # End of macro FORTH_DSP_VALUEHL
 33c6			;		push hl		 ; hl now has starting limit counter 
@@ -20839,7 +21050,12 @@
 36dd				; if new tos (loop limit) is not same as hl, inc hl, push hl to tos, pop rsp and set pc to it 
 36dd			 
 36dd				FORTH_DSP_VALUEHL 
+36dd				if BASE_CPM=1 
 36dd cd 07 1d			call macro_dsp_valuehl 
+36e0				endif 
+36e0				if BASE_KEV=1 
+36e0					rst $18 
+36e0				endif 
 36e0				endm 
 # End of macro FORTH_DSP_VALUEHL
 36e0			 
@@ -21066,7 +21282,12 @@
 37a2				endm 
 # End of macro NEXTW
 37a2			.noti:          FORTH_DSP_VALUEHL 
+37a2				if BASE_CPM=1 
 37a2 cd 07 1d			call macro_dsp_valuehl 
+37a5				endif 
+37a5				if BASE_KEV=1 
+37a5					rst $18 
+37a5				endif 
 37a5				endm 
 # End of macro FORTH_DSP_VALUEHL
 37a5			;		push hl 
@@ -21132,7 +21353,12 @@
 37e6					endif 
 37e6			 
 37e6					FORTH_DSP_VALUEHL 
+37e6				if BASE_CPM=1 
 37e6 cd 07 1d			call macro_dsp_valuehl 
+37e9				endif 
+37e9				if BASE_KEV=1 
+37e9					rst $18 
+37e9				endif 
 37e9				endm 
 # End of macro FORTH_DSP_VALUEHL
 37e9			 
@@ -21226,7 +21452,12 @@
 383a			 
 383a			.tz_inum: 
 383a					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+383a				if BASE_CPM=1 
 383a cd 07 1d			call macro_dsp_valuehl 
+383d				endif 
+383d				if BASE_KEV=1 
+383d					rst $18 
+383d				endif 
 383d				endm 
 # End of macro FORTH_DSP_VALUEHL
 383d			 
@@ -21322,7 +21553,12 @@
 3883			 
 3883			.less_inum: 
 3883					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+3883				if BASE_CPM=1 
 3883 cd 07 1d			call macro_dsp_valuehl 
+3886				endif 
+3886				if BASE_KEV=1 
+3886					rst $18 
+3886				endif 
 3886				endm 
 # End of macro FORTH_DSP_VALUEHL
 3886			 
@@ -21342,7 +21578,12 @@
 388a			 
 388a			 
 388a					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+388a				if BASE_CPM=1 
 388a cd 07 1d			call macro_dsp_valuehl 
+388d				endif 
+388d				if BASE_KEV=1 
+388d					rst $18 
+388d				endif 
 388d				endm 
 # End of macro FORTH_DSP_VALUEHL
 388d			 
@@ -21453,7 +21694,12 @@
 38ef			 
 38ef			.gt_inum: 
 38ef					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+38ef				if BASE_CPM=1 
 38ef cd 07 1d			call macro_dsp_valuehl 
+38f2				endif 
+38f2				if BASE_KEV=1 
+38f2					rst $18 
+38f2				endif 
 38f2				endm 
 # End of macro FORTH_DSP_VALUEHL
 38f2			 
@@ -21473,7 +21719,12 @@
 38f6			 
 38f6			 
 38f6					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+38f6				if BASE_CPM=1 
 38f6 cd 07 1d			call macro_dsp_valuehl 
+38f9				endif 
+38f9				if BASE_KEV=1 
+38f9					rst $18 
+38f9				endif 
 38f9				endm 
 # End of macro FORTH_DSP_VALUEHL
 38f9			 
@@ -21584,7 +21835,12 @@
 395b			 
 395b			.eq_inum: 
 395b					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+395b				if BASE_CPM=1 
 395b cd 07 1d			call macro_dsp_valuehl 
+395e				endif 
+395e				if BASE_KEV=1 
+395e					rst $18 
+395e				endif 
 395e				endm 
 # End of macro FORTH_DSP_VALUEHL
 395e			 
@@ -21604,7 +21860,12 @@
 3962			 
 3962			 
 3962					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+3962				if BASE_CPM=1 
 3962 cd 07 1d			call macro_dsp_valuehl 
+3965				endif 
+3965				if BASE_KEV=1 
+3965					rst $18 
+3965				endif 
 3965				endm 
 # End of macro FORTH_DSP_VALUEHL
 3965			 
@@ -21815,7 +22076,12 @@
 39eb					endif 
 39eb			 
 39eb					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+39eb				if BASE_CPM=1 
 39eb cd 07 1d			call macro_dsp_valuehl 
+39ee				endif 
+39ee				if BASE_KEV=1 
+39ee					rst $18 
+39ee				endif 
 39ee				endm 
 # End of macro FORTH_DSP_VALUEHL
 39ee			 
@@ -21837,7 +22103,12 @@
 39f2			 
 39f2			 
 39f2					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+39f2				if BASE_CPM=1 
 39f2 cd 07 1d			call macro_dsp_valuehl 
+39f5				endif 
+39f5				if BASE_KEV=1 
+39f5					rst $18 
+39f5				endif 
 39f5				endm 
 # End of macro FORTH_DSP_VALUEHL
 39f5			 
@@ -21941,7 +22212,12 @@
 3a33			 
 3a33			.neg_inum: 
 3a33					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+3a33				if BASE_CPM=1 
 3a33 cd 07 1d			call macro_dsp_valuehl 
+3a36				endif 
+3a36				if BASE_KEV=1 
+3a36					rst $18 
+3a36				endif 
 3a36				endm 
 # End of macro FORTH_DSP_VALUEHL
 3a36			 
@@ -21961,7 +22237,12 @@
 3a3a			 
 3a3a			 
 3a3a					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+3a3a				if BASE_CPM=1 
 3a3a cd 07 1d			call macro_dsp_valuehl 
+3a3d				endif 
+3a3d				if BASE_KEV=1 
+3a3d					rst $18 
+3a3d				endif 
 3a3d				endm 
 # End of macro FORTH_DSP_VALUEHL
 3a3d			 
@@ -22059,7 +22340,12 @@
 3a7c			.div_inum: 
 3a7c			 
 3a7c					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+3a7c				if BASE_CPM=1 
 3a7c cd 07 1d			call macro_dsp_valuehl 
+3a7f				endif 
+3a7f				if BASE_KEV=1 
+3a7f					rst $18 
+3a7f				endif 
 3a7f				endm 
 # End of macro FORTH_DSP_VALUEHL
 3a7f			 
@@ -22079,7 +22365,12 @@
 3a83			 
 3a83			 
 3a83					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+3a83				if BASE_CPM=1 
 3a83 cd 07 1d			call macro_dsp_valuehl 
+3a86				endif 
+3a86				if BASE_KEV=1 
+3a86					rst $18 
+3a86				endif 
 3a86				endm 
 # End of macro FORTH_DSP_VALUEHL
 3a86			 
@@ -22192,7 +22483,12 @@
 3acf			.mul_inum:	 
 3acf			 
 3acf					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+3acf				if BASE_CPM=1 
 3acf cd 07 1d			call macro_dsp_valuehl 
+3ad2				endif 
+3ad2				if BASE_KEV=1 
+3ad2					rst $18 
+3ad2				endif 
 3ad2				endm 
 # End of macro FORTH_DSP_VALUEHL
 3ad2			 
@@ -22212,7 +22508,12 @@
 3ad6			 
 3ad6			 
 3ad6					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+3ad6				if BASE_CPM=1 
 3ad6 cd 07 1d			call macro_dsp_valuehl 
+3ad9				endif 
+3ad9				if BASE_KEV=1 
+3ad9					rst $18 
+3ad9				endif 
 3ad9				endm 
 # End of macro FORTH_DSP_VALUEHL
 3ad9			 
@@ -22296,7 +22597,12 @@
 3b0e					; get u2 
 3b0e			 
 3b0e					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+3b0e				if BASE_CPM=1 
 3b0e cd 07 1d			call macro_dsp_valuehl 
+3b11				endif 
+3b11				if BASE_KEV=1 
+3b11					rst $18 
+3b11				endif 
 3b11				endm 
 # End of macro FORTH_DSP_VALUEHL
 3b11			 
@@ -22317,7 +22623,12 @@
 3b15					; get u1 
 3b15			 
 3b15					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+3b15				if BASE_CPM=1 
 3b15 cd 07 1d			call macro_dsp_valuehl 
+3b18				endif 
+3b18				if BASE_KEV=1 
+3b18					rst $18 
+3b18				endif 
 3b18				endm 
 # End of macro FORTH_DSP_VALUEHL
 3b18			 
@@ -22445,7 +22756,12 @@
 3b95					; get u2 
 3b95			 
 3b95					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+3b95				if BASE_CPM=1 
 3b95 cd 07 1d			call macro_dsp_valuehl 
+3b98				endif 
+3b98				if BASE_KEV=1 
+3b98					rst $18 
+3b98				endif 
 3b98				endm 
 # End of macro FORTH_DSP_VALUEHL
 3b98			 
@@ -22466,7 +22782,12 @@
 3b9c					; get u1 
 3b9c			 
 3b9c					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+3b9c				if BASE_CPM=1 
 3b9c cd 07 1d			call macro_dsp_valuehl 
+3b9f				endif 
+3b9f				if BASE_KEV=1 
+3b9f					rst $18 
+3b9f				endif 
 3b9f				endm 
 # End of macro FORTH_DSP_VALUEHL
 3b9f			 
@@ -22678,7 +22999,12 @@
 3c86					endif 
 3c86					 
 3c86					FORTH_DSP_VALUEHL    ; upper range 
+3c86				if BASE_CPM=1 
 3c86 cd 07 1d			call macro_dsp_valuehl 
+3c89				endif 
+3c89				if BASE_KEV=1 
+3c89					rst $18 
+3c89				endif 
 3c89				endm 
 # End of macro FORTH_DSP_VALUEHL
 3c89			 
@@ -22719,7 +23045,12 @@
 # End of macro FORTH_DSP_POP
 3cab			 
 3cab					FORTH_DSP_VALUEHL    ; low range 
+3cab				if BASE_CPM=1 
 3cab cd 07 1d			call macro_dsp_valuehl 
+3cae				endif 
+3cae				if BASE_KEV=1 
+3cae					rst $18 
+3cae				endif 
 3cae				endm 
 # End of macro FORTH_DSP_VALUEHL
 3cae			 
@@ -22988,7 +23319,12 @@
 # End of macro CWHEAD
 3dc3			; | INFO ( u1 u2 -- )  Use the top two strings on stack to fill in an info window over two lines. Causes a wait for key press to continue. | DONE 
 3dc3					FORTH_DSP_VALUEHL 
+3dc3				if BASE_CPM=1 
 3dc3 cd 07 1d			call macro_dsp_valuehl 
+3dc6				endif 
+3dc6				if BASE_KEV=1 
+3dc6					rst $18 
+3dc6				endif 
 3dc6				endm 
 # End of macro FORTH_DSP_VALUEHL
 3dc6			 
@@ -23005,7 +23341,12 @@
 3dc9 e5					push hl 
 3dca			 
 3dca					FORTH_DSP_VALUEHL 
+3dca				if BASE_CPM=1 
 3dca cd 07 1d			call macro_dsp_valuehl 
+3dcd				endif 
+3dcd				if BASE_KEV=1 
+3dcd					rst $18 
+3dcd				endif 
 3dcd				endm 
 # End of macro FORTH_DSP_VALUEHL
 3dcd			 
@@ -23172,7 +23513,12 @@
 3e77					endif 
 3e77			 
 3e77					FORTH_DSP_VALUEHL 
+3e77				if BASE_CPM=1 
 3e77 cd 07 1d			call macro_dsp_valuehl 
+3e7a				endif 
+3e7a				if BASE_KEV=1 
+3e7a					rst $18 
+3e7a				endif 
 3e7a				endm 
 # End of macro FORTH_DSP_VALUEHL
 3e7a			 
@@ -23247,7 +23593,12 @@
 3eca					endif 
 3eca			 
 3eca					FORTH_DSP_VALUEHL 
+3eca				if BASE_CPM=1 
 3eca cd 07 1d			call macro_dsp_valuehl 
+3ecd				endif 
+3ecd				if BASE_KEV=1 
+3ecd					rst $18 
+3ecd				endif 
 3ecd				endm 
 # End of macro FORTH_DSP_VALUEHL
 3ecd			 
@@ -23967,7 +24318,12 @@
 41bd					; get address 
 41bd			 
 41bd					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+41bd				if BASE_CPM=1 
 41bd cd 07 1d			call macro_dsp_valuehl 
+41c0				endif 
+41c0				if BASE_KEV=1 
+41c0					rst $18 
+41c0				endif 
 41c0				endm 
 # End of macro FORTH_DSP_VALUEHL
 41c0				 
@@ -24073,7 +24429,12 @@
 # End of macro CALLMONITOR
 4226					endif 
 4226					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+4226				if BASE_CPM=1 
 4226 cd 07 1d			call macro_dsp_valuehl 
+4229				endif 
+4229				if BASE_KEV=1 
+4229					rst $18 
+4229				endif 
 4229				endm 
 # End of macro FORTH_DSP_VALUEHL
 4229			 
@@ -24106,7 +24467,12 @@
 424b				endm 
 # End of macro FORTH_DSP_POP
 424b					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+424b				if BASE_CPM=1 
 424b cd 07 1d			call macro_dsp_valuehl 
+424e				endif 
+424e				if BASE_KEV=1 
+424e					rst $18 
+424e				endif 
 424e				endm 
 # End of macro FORTH_DSP_VALUEHL
 424e					; TODO save cursor col 
@@ -24305,7 +24671,12 @@
 432a			 
 432a			 
 432a					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+432a				if BASE_CPM=1 
 432a cd 07 1d			call macro_dsp_valuehl 
+432d				endif 
+432d				if BASE_KEV=1 
+432d					rst $18 
+432d				endif 
 432d				endm 
 # End of macro FORTH_DSP_VALUEHL
 432d			 
@@ -24592,7 +24963,12 @@
 4424			 
 4424			 
 4424					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+4424				if BASE_CPM=1 
 4424 cd 07 1d			call macro_dsp_valuehl 
+4427				endif 
+4427				if BASE_KEV=1 
+4427					rst $18 
+4427				endif 
 4427				endm 
 # End of macro FORTH_DSP_VALUEHL
 4427			 
@@ -24624,7 +25000,12 @@
 4449				endm 
 # End of macro FORTH_DSP_POP
 4449					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+4449				if BASE_CPM=1 
 4449 cd 07 1d			call macro_dsp_valuehl 
+444c				endif 
+444c				if BASE_KEV=1 
+444c					rst $18 
+444c				endif 
 444c				endm 
 # End of macro FORTH_DSP_VALUEHL
 444c					; TODO save cursor col 
@@ -24665,7 +25046,12 @@
 446a			; | | If off, use DRAW to refresh. Default is on. $0003 will enable direct screen writes (TODO)  
 446a			 
 446a					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+446a				if BASE_CPM=1 
 446a cd 07 1d			call macro_dsp_valuehl 
+446d				endif 
+446d				if BASE_KEV=1 
+446d					rst $18 
+446d				endif 
 446d				endm 
 # End of macro FORTH_DSP_VALUEHL
 446d			 
@@ -24707,7 +25093,12 @@
 4483			; 
 4483				 
 4483					FORTH_DSP_VALUEHL 
+4483				if BASE_CPM=1 
 4483 cd 07 1d			call macro_dsp_valuehl 
+4486				endif 
+4486				if BASE_KEV=1 
+4486					rst $18 
+4486				endif 
 4486				endm 
 # End of macro FORTH_DSP_VALUEHL
 4486				 
@@ -24761,7 +25152,12 @@
 44aa			.mbuild: 
 44aa			 
 44aa					FORTH_DSP_VALUEHL 
+44aa				if BASE_CPM=1 
 44aa cd 07 1d			call macro_dsp_valuehl 
+44ad				endif 
+44ad				if BASE_KEV=1 
+44ad					rst $18 
+44ad				endif 
 44ad				endm 
 # End of macro FORTH_DSP_VALUEHL
 44ad			 
@@ -24931,7 +25327,12 @@
 4544			; | MOVE ( a1 a2 c -- ) Copy from address a1 to address a2 for the length of c | DONE 
 4544			 
 4544					FORTH_DSP_VALUEHL 
+4544				if BASE_CPM=1 
 4544 cd 07 1d			call macro_dsp_valuehl 
+4547				endif 
+4547				if BASE_KEV=1 
+4547					rst $18 
+4547				endif 
 4547				endm 
 # End of macro FORTH_DSP_VALUEHL
 4547 e5					push hl    ; push count 
@@ -24947,7 +25348,12 @@
 # End of macro FORTH_DSP_POP
 454b			 
 454b					FORTH_DSP_VALUEHL 
+454b				if BASE_CPM=1 
 454b cd 07 1d			call macro_dsp_valuehl 
+454e				endif 
+454e				if BASE_KEV=1 
+454e					rst $18 
+454e				endif 
 454e				endm 
 # End of macro FORTH_DSP_VALUEHL
 454e e5					push hl    ; dest 
@@ -24963,7 +25369,12 @@
 # End of macro FORTH_DSP_POP
 4552			 
 4552					FORTH_DSP_VALUEHL 
+4552				if BASE_CPM=1 
 4552 cd 07 1d			call macro_dsp_valuehl 
+4555				endif 
+4555				if BASE_KEV=1 
+4555					rst $18 
+4555				endif 
 4555				endm 
 # End of macro FORTH_DSP_VALUEHL
 4555			 
@@ -25001,7 +25412,12 @@
 456c			 
 456c			 
 456c					FORTH_DSP_VALUEHL 
+456c				if BASE_CPM=1 
 456c cd 07 1d			call macro_dsp_valuehl 
+456f				endif 
+456f				if BASE_KEV=1 
+456f					rst $18 
+456f				endif 
 456f				endm 
 # End of macro FORTH_DSP_VALUEHL
 456f e5					push hl    ; dest 
@@ -25017,7 +25433,12 @@
 # End of macro FORTH_DSP_POP
 4573			 
 4573					FORTH_DSP_VALUEHL 
+4573				if BASE_CPM=1 
 4573 cd 07 1d			call macro_dsp_valuehl 
+4576				endif 
+4576				if BASE_KEV=1 
+4576					rst $18 
+4576				endif 
 4576				endm 
 # End of macro FORTH_DSP_VALUEHL
 4576			 
@@ -25067,7 +25488,12 @@
 4595				; get the count of strings 
 4595			 
 4595					FORTH_DSP_VALUEHL 
+4595				if BASE_CPM=1 
 4595 cd 07 1d			call macro_dsp_valuehl 
+4598				endif 
+4598				if BASE_KEV=1 
+4598					rst $18 
+4598				endif 
 4598				endm 
 # End of macro FORTH_DSP_VALUEHL
 4598			 
@@ -25116,7 +25542,12 @@
 45b7				;     get string pointer 
 45b7			 
 45b7					FORTH_DSP_VALUEHL 
+45b7				if BASE_CPM=1 
 45b7 cd 07 1d			call macro_dsp_valuehl 
+45ba				endif 
+45ba				if BASE_KEV=1 
+45ba					rst $18 
+45ba				endif 
 45ba				endm 
 # End of macro FORTH_DSP_VALUEHL
 45ba			 
@@ -25224,7 +25655,12 @@
 4616			 
 4616					; get delim 
 4616					FORTH_DSP_VALUEHL 
+4616				if BASE_CPM=1 
 4616 cd 07 1d			call macro_dsp_valuehl 
+4619				endif 
+4619				if BASE_KEV=1 
+4619					rst $18 
+4619				endif 
 4619				endm 
 # End of macro FORTH_DSP_VALUEHL
 4619			 
@@ -25270,7 +25706,12 @@
 463c					endif 
 463c					; get pointer to string to chop up 
 463c					FORTH_DSP_VALUEHL 
+463c				if BASE_CPM=1 
 463c cd 07 1d			call macro_dsp_valuehl 
+463f				endif 
+463f				if BASE_KEV=1 
+463f					rst $18 
+463f				endif 
 463f				endm 
 # End of macro FORTH_DSP_VALUEHL
 463f			 
@@ -25460,7 +25901,12 @@
 # End of macro CALLMONITOR
 470b					endif 
 470b					FORTH_DSP_VALUEHL 
+470b				if BASE_CPM=1 
 470b cd 07 1d			call macro_dsp_valuehl 
+470e				endif 
+470e				if BASE_KEV=1 
+470e					rst $18 
+470e				endif 
 470e				endm 
 # End of macro FORTH_DSP_VALUEHL
 470e cd 0b 1b				call forth_push_numhl 
@@ -25594,7 +26040,12 @@
 479d			; TODO check is string type 
 479d			 
 479d					FORTH_DSP_VALUEHL 
+479d				if BASE_CPM=1 
 479d cd 07 1d			call macro_dsp_valuehl 
+47a0				endif 
+47a0				if BASE_KEV=1 
+47a0					rst $18 
+47a0				endif 
 47a0				endm 
 # End of macro FORTH_DSP_VALUEHL
 47a0			; get pointer to string in hl 
@@ -25665,7 +26116,12 @@
 47da			; TODO check is string type 
 47da			 
 47da					FORTH_DSP_VALUEHL 
+47da				if BASE_CPM=1 
 47da cd 07 1d			call macro_dsp_valuehl 
+47dd				endif 
+47dd				if BASE_KEV=1 
+47dd					rst $18 
+47dd				endif 
 47dd				endm 
 # End of macro FORTH_DSP_VALUEHL
 47dd			; get pointer to string in hl 
@@ -25734,7 +26190,12 @@
 4817			; TODO check is string type 
 4817			 
 4817					FORTH_DSP_VALUEHL 
+4817				if BASE_CPM=1 
 4817 cd 07 1d			call macro_dsp_valuehl 
+481a				endif 
+481a				if BASE_KEV=1 
+481a					rst $18 
+481a				endif 
 481a				endm 
 # End of macro FORTH_DSP_VALUEHL
 481a			; get pointer to string in hl 
@@ -26022,7 +26483,12 @@
 494c					endif 
 494c			; TODO check string type 
 494c					FORTH_DSP_VALUEHL 
+494c				if BASE_CPM=1 
 494c cd 07 1d			call macro_dsp_valuehl 
+494f				endif 
+494f				if BASE_KEV=1 
+494f					rst $18 
+494f				endif 
 494f				endm 
 # End of macro FORTH_DSP_VALUEHL
 494f			 
@@ -26039,7 +26505,12 @@
 # End of macro FORTH_DSP_POP
 4953			 
 4953					FORTH_DSP_VALUEHL 
+4953				if BASE_CPM=1 
 4953 cd 07 1d			call macro_dsp_valuehl 
+4956				endif 
+4956				if BASE_KEV=1 
+4956					rst $18 
+4956				endif 
 4956				endm 
 # End of macro FORTH_DSP_VALUEHL
 4956			 
@@ -26148,7 +26619,12 @@
 49aa					 
 49aa			; TODO check string type 
 49aa					FORTH_DSP_VALUEHL 
+49aa				if BASE_CPM=1 
 49aa cd 07 1d			call macro_dsp_valuehl 
+49ad				endif 
+49ad				if BASE_KEV=1 
+49ad					rst $18 
+49ad				endif 
 49ad				endm 
 # End of macro FORTH_DSP_VALUEHL
 49ad			 
@@ -26165,7 +26641,12 @@
 # End of macro FORTH_DSP_POP
 49b1			 
 49b1					FORTH_DSP_VALUEHL 
+49b1				if BASE_CPM=1 
 49b1 cd 07 1d			call macro_dsp_valuehl 
+49b4				endif 
+49b4				if BASE_KEV=1 
+49b4					rst $18 
+49b4				endif 
 49b4				endm 
 # End of macro FORTH_DSP_VALUEHL
 49b4			 
@@ -26220,7 +26701,12 @@
 49ef			 
 49ef			; TODO check string type 
 49ef					FORTH_DSP_VALUEHL 
+49ef				if BASE_CPM=1 
 49ef cd 07 1d			call macro_dsp_valuehl 
+49f2				endif 
+49f2				if BASE_KEV=1 
+49f2					rst $18 
+49f2				endif 
 49f2				endm 
 # End of macro FORTH_DSP_VALUEHL
 49f2			 
@@ -26237,7 +26723,12 @@
 # End of macro FORTH_DSP_POP
 49f6			 
 49f6					FORTH_DSP_VALUEHL 
+49f6				if BASE_CPM=1 
 49f6 cd 07 1d			call macro_dsp_valuehl 
+49f9				endif 
+49f9				if BASE_KEV=1 
+49f9					rst $18 
+49f9				endif 
 49f9				endm 
 # End of macro FORTH_DSP_VALUEHL
 49f9			 
@@ -26553,7 +27044,12 @@
 4b41					endif 
 4b41			 
 4b41					FORTH_DSP_VALUEHL 
+4b41				if BASE_CPM=1 
 4b41 cd 07 1d			call macro_dsp_valuehl 
+4b44				endif 
+4b44				if BASE_KEV=1 
+4b44					rst $18 
+4b44				endif 
 4b44				endm 
 # End of macro FORTH_DSP_VALUEHL
 4b44			 
@@ -27293,7 +27789,12 @@
 # End of macro CALLMONITOR
 4e26					endif 
 4e26					FORTH_DSP_VALUEHL 
+4e26				if BASE_CPM=1 
 4e26 cd 07 1d			call macro_dsp_valuehl 
+4e29				endif 
+4e29				if BASE_KEV=1 
+4e29					rst $18 
+4e29				endif 
 4e29				endm 
 # End of macro FORTH_DSP_VALUEHL
 4e29			 
@@ -27642,7 +28143,12 @@
 4f8f			 
 4f8f					;FORTH_DSP 
 4f8f					FORTH_DSP_VALUEHL 
+4f8f				if BASE_CPM=1 
 4f8f cd 07 1d			call macro_dsp_valuehl 
+4f92				endif 
+4f92				if BASE_KEV=1 
+4f92					rst $18 
+4f92				endif 
 4f92				endm 
 # End of macro FORTH_DSP_VALUEHL
 4f92			;		inc hl    ; TODO do type check 
@@ -27788,7 +28294,12 @@
 5035			 
 5035					;FORTH_DSP 
 5035					FORTH_DSP_VALUEHL 
+5035				if BASE_CPM=1 
 5035 cd 07 1d			call macro_dsp_valuehl 
+5038				endif 
+5038				if BASE_KEV=1 
+5038					rst $18 
+5038				endif 
 5038				endm 
 # End of macro FORTH_DSP_VALUEHL
 5038			;		inc hl    ; TODO do type check 
@@ -28036,7 +28547,12 @@
 50c6					endif 
 50c6			 
 50c6					FORTH_DSP_VALUEHL 
+50c6				if BASE_CPM=1 
 50c6 cd 07 1d			call macro_dsp_valuehl 
+50c9				endif 
+50c9				if BASE_KEV=1 
+50c9					rst $18 
+50c9				endif 
 50c9				endm 
 # End of macro FORTH_DSP_VALUEHL
 50c9			 
@@ -28308,7 +28824,12 @@
 # End of macro CALLMONITOR
 51d1					endif 
 51d1					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+51d1				if BASE_CPM=1 
 51d1 cd 07 1d			call macro_dsp_valuehl 
+51d4				endif 
+51d4				if BASE_KEV=1 
+51d4					rst $18 
+51d4				endif 
 51d4				endm 
 # End of macro FORTH_DSP_VALUEHL
 51d4			 
@@ -28384,7 +28905,12 @@
 520a					; get port 
 520a			 
 520a					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+520a				if BASE_CPM=1 
 520a cd 07 1d			call macro_dsp_valuehl 
+520d				endif 
+520d				if BASE_KEV=1 
+520d					rst $18 
+520d				endif 
 520d				endm 
 # End of macro FORTH_DSP_VALUEHL
 520d			 
@@ -28405,7 +28931,12 @@
 5211					; get byte to send 
 5211			 
 5211					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+5211				if BASE_CPM=1 
 5211 cd 07 1d			call macro_dsp_valuehl 
+5214				endif 
+5214				if BASE_KEV=1 
+5214					rst $18 
+5214				endif 
 5214				endm 
 # End of macro FORTH_DSP_VALUEHL
 5214			 
@@ -28785,7 +29316,12 @@
 5260					endif 
 5260			 
 5260					FORTH_DSP_VALUEHL 
+5260				if BASE_CPM=1 
 5260 cd 07 1d			call macro_dsp_valuehl 
+5263				endif 
+5263				if BASE_KEV=1 
+5263					rst $18 
+5263				endif 
 5263				endm 
 # End of macro FORTH_DSP_VALUEHL
 5263			 
@@ -28931,7 +29467,12 @@
 52f8			;| V0! ( u1 -- )  Store value to v0  | DONE 
 52f8			 
 52f8					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+52f8				if BASE_CPM=1 
 52f8 cd 07 1d			call macro_dsp_valuehl 
+52fb				endif 
+52fb				if BASE_KEV=1 
+52fb					rst $18 
+52fb				endif 
 52fb				endm 
 # End of macro FORTH_DSP_VALUEHL
 52fb			 
@@ -28986,7 +29527,12 @@
 # End of macro CWHEAD
 5327			;| V1! ( u1 -- )  Store value to v1 | DONE 
 5327					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+5327				if BASE_CPM=1 
 5327 cd 07 1d			call macro_dsp_valuehl 
+532a				endif 
+532a				if BASE_KEV=1 
+532a					rst $18 
+532a				endif 
 532a				endm 
 # End of macro FORTH_DSP_VALUEHL
 532a			 
@@ -29039,7 +29585,12 @@
 # End of macro CWHEAD
 5356			;| V2! ( u1 -- )  Store value to v2 | DONE 
 5356					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+5356				if BASE_CPM=1 
 5356 cd 07 1d			call macro_dsp_valuehl 
+5359				endif 
+5359				if BASE_KEV=1 
+5359					rst $18 
+5359				endif 
 5359				endm 
 # End of macro FORTH_DSP_VALUEHL
 5359			 
@@ -29092,7 +29643,12 @@
 # End of macro CWHEAD
 5385			;| V3! ( u1 -- )  Store value to v3 | DONE 
 5385					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+5385				if BASE_CPM=1 
 5385 cd 07 1d			call macro_dsp_valuehl 
+5388				endif 
+5388				if BASE_KEV=1 
+5388					rst $18 
+5388				endif 
 5388				endm 
 # End of macro FORTH_DSP_VALUEHL
 5388			 

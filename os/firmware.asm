@@ -478,17 +478,39 @@ KEY_F12: equ 27
 
 ; Macro to make adding debug marks easier
 
+
+DEMARK_VERSION: equ 1
+
 DMARK: macro str
-	push af
-	ld a, (.dmark)
-	ld (debug_mark),a
-	ld a, (.dmark+1)
-	ld (debug_mark+1),a
-	ld a, (.dmark+2)
-	ld (debug_mark+2),a
+
+	if DEMARK_VERSION = 1
+		push hl
+		ld hl, .dmark
+		ld (debug_mark), hl
+	endif
+
+
+	if DEMARK_VERSION = 0
+		push af
+		ld a, (.dmark)
+		ld (debug_mark),a
+		ld a, (.dmark+1)
+		ld (debug_mark+1),a
+		ld a, (.dmark+2)
+		ld (debug_mark+2),a
+
+	endif
+
 	jr .pastdmark
 .dmark: db str
+
+	if DEMARK_VERSION = 1
+.pastdmark: pop hl
+	endif
+
+	if DEMARK_VERSION = 0
 .pastdmark: pop af
+	endif
 
 endm
 

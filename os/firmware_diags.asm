@@ -1013,7 +1013,14 @@ display_ptr_state:
 	; display debug step
 
 
+;	ld de, debug_mark
+if DEMARK_VERSION = 1
+	ld de, (debug_mark)
+endif
+
+if DEMARK_VERSION = 0
 	ld de, debug_mark
+endif
 	ld a, display_row_1+display_cols-2
 	call str_at_display
 
@@ -1285,7 +1292,14 @@ display_reg_state:
 	; display debug step
 
 
+;	ld de, debug_mark
+if DEMARK_VERSION = 1
+	ld de, (debug_mark)
+endif
+
+if DEMARK_VERSION = 0
 	ld de, debug_mark
+endif
 	ld a, display_row_1+display_cols-3
 	call str_at_display
 

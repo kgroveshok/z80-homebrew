@@ -264,7 +264,14 @@ malloc_error:
 ;	ld de,os_word_scratch
 	call str_at_display
 	ld a, display_row_1+17
+if DEMARK_VERSION = 1
+	ld de, (debug_mark)
+endif
+
+if DEMARK_VERSION = 0
 	ld de, debug_mark
+endif
+
 	call str_at_display
 	call update_display
 	;call break_point_state
@@ -315,7 +322,14 @@ pop hl
 	ld a, display_row_1
 
 		call str_at_display
+;	ld de, debug_mark
+if DEMARK_VERSION = 1
+	ld de, (debug_mark)
+endif
+
+if DEMARK_VERSION = 0
 	ld de, debug_mark
+endif
 	ld a, display_row_1+17
 
 		call str_at_display
@@ -517,7 +531,14 @@ check_stacks:
 		   ld de, .stackfault
 		ld a, display_row_1
 		call str_at_display
-		    ld de, debug_mark
+if DEMARK_VERSION = 1
+	ld de, (debug_mark)
+endif
+
+if DEMARK_VERSION = 0
+	ld de, debug_mark
+endif
+;		    ld de, debug_mark
 		ld a, display_row_1+17
 		call str_at_display
 		call update_display
@@ -573,7 +594,14 @@ type_faultn: 	push de
 		   ld de, .typefaultn
 		ld a, display_row_1
 		call str_at_display
-		    ld de, debug_mark
+;		    ld de, debug_mark
+if DEMARK_VERSION = 1
+	ld de, (debug_mark)
+endif
+
+if DEMARK_VERSION = 0
+	ld de, debug_mark
+endif
 		ld a, display_row_1+17
 		call str_at_display
 		call update_display
@@ -603,7 +631,14 @@ type_faults: 	push de
 		   ld de, .typefaults
 		ld a, display_row_1
 		call str_at_display
-		    ld de, debug_mark
+;		    ld de, debug_mark
+if DEMARK_VERSION = 1
+	ld de, (debug_mark)
+endif
+
+if DEMARK_VERSION = 0
+	ld de, debug_mark
+endif
 		ld a, display_row_1+17
 		call str_at_display
 		call update_display
@@ -632,7 +667,14 @@ type_faults: 	push de
 		pop de
 		ld a, display_row_1
 		call str_at_display
-		    ld de, debug_mark
+;		    ld de, debug_mark
+if DEMARK_VERSION = 1
+	ld de, (debug_mark)
+endif
+
+if DEMARK_VERSION = 0
+	ld de, debug_mark
+endif
 		ld a, display_row_1+17
 		call str_at_display
 		call update_display

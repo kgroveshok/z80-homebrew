@@ -21,12 +21,64 @@ if BASE_CPM = 1
 	org 100h
 endif
 	jp coldstart     ; rst 0 - cold boot
+      
+debuglevel: db   "DL",DEBUG_LEVEL, 0
+        ;nop
+        ;nop
+        ;nop
+        ;nop
+        nop
+; rst $8
+        jp debug_vector        
+        nop
+        nop
+        nop
+        nop
+        nop
+; rst $10
+        jp macro_forth_dsp_pop
+        nop
+        nop
+        nop
+        nop
+        nop
+; rst $18
+        jp macro_dsp_valuehl
+        nop
+        nop
+        nop
+        nop
+        nop
+; rst $20
+        jp forth_push_numhl
+        nop
+        nop
+        nop
+        nop
+        nop
+; rst $28
+        jp 0
+        nop
+        nop
+        nop
+        nop
+        nop
+; rst $30
+        jp str_at_display
+        nop
+        nop
+        nop
+        nop
+        nop
+; rst $38
+        jp update_display
+
+
 
 
 buildtime: db   "Build: "
 		include "romtimestamp.asm"
 	   db 0
-debuglevel: db   "DL",DEBUG_LEVEL, 0
 
 
 

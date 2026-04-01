@@ -37,7 +37,12 @@ Device_D: equ 0c0h             ; Keyboard and LCD
 CALLMONITOR: macro
 ;	call break_point_state
 ; now use the break point debug vector
-	call debug_vector
+	if BASE_CPM=1
+		call debug_vector
+	endif
+	if BASE_KEV=1
+		rst 8
+	endif
 	endm
 
 MALLOC_1: equ 1        ; from dk88 

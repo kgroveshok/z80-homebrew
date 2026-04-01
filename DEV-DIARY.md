@@ -2,41 +2,12 @@
 Z80 Home Brew Micro-computer Project - Dev Diary
 ------------------------------------------------
 
-3rd Sep 2025
+1st Apr 2026
 ------------
 
-* DONE KEY word waits for key release. To make it compatible use a non debounce version and add a KEYDB which does key bounce checks
-* DONE Looking at the parser there are a few opts I could make, such as the constant saving of pointers. Why?
-* DONE  a split word could be useful that pushes each bit to stack
-* DONE Add .R to right align a number. Need to fix NUM2STR to get it to work. NUM2STR zero pads string by default
-* DONE Fix NUM2STR. 
-* DONE Fixed generate Hello World file
-* DONE Fix 2SWAP for type flag
-* DONE Fix 2SWAP
-* DONE LSHIFT and RSHIFT for bit shifting
-* DONE PICK word to pick a value at a given value on stack and move to TOS. Some code in place. Needs fixing as not quite right
-* DONE Fix IS 
-* DONE IS string compare should be renamed to COMPARE
-* DONE Added DMARK for user code tracing useful for DL0 rom
-* DONE Fix LEFT
-* DONE Fix RIGHT
-* DONE UPTR word to get a user word code ptr
-* DONE generate word list md for the NOTE keywords is adding double spacing and breaking it. 
-* DONE New Uptr word to point to start of exec code of uword. Handy for writing forth hook code. Locate the c3 byte as it does work with a call..
-* DONE Added parse_vector to NEXTW 
-* DONE tidy up config menu - hellow world not working plus diags etc
-* DONE MOVE,CMOVE words  ( a1 a2 c --- ) from a1 to a2 for length c
-* DONE TABLE word like MENU that will take a bunch of string on the stack, allocate the memory for all of them creating a table of pointers to each string and returns a pointer to that pointer table
-* DONE CONST word. How to have a string a constant so that printing it does not free it?   What about a CONST word that changes the string type to not being freed?
-* DONE Opt: ld (hl),a to ld (hl),<lit>
-* DONE Opt: ld a,0 to xor a (watch in case of flag change)
-* DONE Opt: cp 0 to or a
-* DONE UPTR word. add uuword dmark as an extra set when a uword is looked up to exec. Added to firmware. need display on break point screen and where to intercept in parser
-* DONE Make use of STORE_0_BANKRUN var and allow selection of which bank to auto run from at startup. Already being set. Setup CONFIG to set it
-* DONE BANK? to get the current bank id
-* DONE add a ztype which prints chars until zero term. added to bank 2. Added to utils.
-* DONE NIP w1 w2 - w2 - : nip swap drop ;  added to utils
 
+* DONE Moved a number of frequent calls to RST instead (saved 1.5k off the bin size of DL2)
+* DONE Reduced the size of the DMARK strings. Saved 5.5k off the bin size!
 
 * TODO Double check parser. The find next tok call and then there is a comparison word check further down. Doing double the work?
 * TODO ld hl,(xxx) is 20 cycles, but push and pop are 11. Change the parser to use a fixed reg pair for important vars provide a macro to save and restore of environment on words. Could add to the single jp (hl) and NEXTW to restore. EXX is 4 cycles
@@ -112,6 +83,42 @@ Bug list:
 * TODO BUG If : word is in caps it wont work. This could be connected with caps on LIST which only works if given as lcase.
 * TODO BUG Uword can't have a numeric in the word name???? Odd...
 * TODO Stop menu scrolling past last item
+
+
+3rd Sep 2025
+------------
+
+* DONE KEY word waits for key release. To make it compatible use a non debounce version and add a KEYDB which does key bounce checks
+* DONE Looking at the parser there are a few opts I could make, such as the constant saving of pointers. Why?
+* DONE  a split word could be useful that pushes each bit to stack
+* DONE Add .R to right align a number. Need to fix NUM2STR to get it to work. NUM2STR zero pads string by default
+* DONE Fix NUM2STR. 
+* DONE Fixed generate Hello World file
+* DONE Fix 2SWAP for type flag
+* DONE Fix 2SWAP
+* DONE LSHIFT and RSHIFT for bit shifting
+* DONE PICK word to pick a value at a given value on stack and move to TOS. Some code in place. Needs fixing as not quite right
+* DONE Fix IS 
+* DONE IS string compare should be renamed to COMPARE
+* DONE Added DMARK for user code tracing useful for DL0 rom
+* DONE Fix LEFT
+* DONE Fix RIGHT
+* DONE UPTR word to get a user word code ptr
+* DONE generate word list md for the NOTE keywords is adding double spacing and breaking it. 
+* DONE New Uptr word to point to start of exec code of uword. Handy for writing forth hook code. Locate the c3 byte as it does work with a call..
+* DONE Added parse_vector to NEXTW 
+* DONE tidy up config menu - hellow world not working plus diags etc
+* DONE MOVE,CMOVE words  ( a1 a2 c --- ) from a1 to a2 for length c
+* DONE TABLE word like MENU that will take a bunch of string on the stack, allocate the memory for all of them creating a table of pointers to each string and returns a pointer to that pointer table
+* DONE CONST word. How to have a string a constant so that printing it does not free it?   What about a CONST word that changes the string type to not being freed?
+* DONE Opt: ld (hl),a to ld (hl),<lit>
+* DONE Opt: ld a,0 to xor a (watch in case of flag change)
+* DONE Opt: cp 0 to or a
+* DONE UPTR word. add uuword dmark as an extra set when a uword is looked up to exec. Added to firmware. need display on break point screen and where to intercept in parser
+* DONE Make use of STORE_0_BANKRUN var and allow selection of which bank to auto run from at startup. Already being set. Setup CONFIG to set it
+* DONE BANK? to get the current bank id
+* DONE add a ztype which prints chars until zero term. added to bank 2. Added to utils.
+* DONE NIP w1 w2 - w2 - : nip swap drop ;  added to utils
 
 
 

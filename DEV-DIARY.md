@@ -2,12 +2,53 @@
 Z80 Home Brew Micro-computer Project - Dev Diary
 ------------------------------------------------
 
-1st Apr 2026
-------------
+
+Todo List/Enhancements:
+-----------------------
 
 
-* DONE Moved a number of frequent calls to RST instead (saved 1.5k off the bin size of DL2)
-* DONE Reduced the size of the DMARK strings. Saved 5.5k off the bin size!
+* TODO Need a single SPI CLK handshake for completness - SPICLK
+* TODO Need a RROT and LROT bitwise byte rotate like the Z80 RRC and RLC op codes
+
+
+* TODO Add a call that takes a block of mem with reg pairs that are loaded before the call and return the values 
+* TODO Add ? after file name to prompt for optional load/skip during autoload
+* TODO Need to fix numbers and/or punc in uwords
+* TODO Add garbage colleciton/gaurd checks as a vector that can be enabled and disabled via CONFIG
+* TODO  .f word to output formatted. ie x "9999" .f four dec
+* TODO .h word to output as hex value
+* TODO cr wird does not advance to next row
+* TODO more symbols which can be used for calls to interal functions 
+* TODO add new call word ehich takes de and hl parameters off the stack
+* TODO  a box word for drawing boxes
+* TODO Add signed number type can then finish the <> words
+* TODO CONFIG option to add a program break key 
+
+* Compiler:
+*    For the TOKEN flag on the CWHEAD macro, only allow use of direct code if the flag allows it. This will prevent some tokens from being issued
+*      direct such as THEN which is a search of the string. Maybe other tokens will need this.
+*    For : def: tokenise string
+*               Locate tok and obtain pointer to start of exec code
+*                 Save jp code flag
+*                 Save pointer
+*               If token not found then assume push. Save section. Skip section
+*              
+*    For runtime:   Parser obtain start of token
+*                   If at start of token is jp code flag then assume following word pointer to code
+*                      Get pointer
+*                      Forward cli pointer to after code pointer
+*                      Jump to code pointer
+*                   If jp code flag not set then push through raw text parser
+*               
+* TODO Actually forget using op code, there is already a flag to define if the word exists as binary form on the CHEAD WORD_FLAG_CODE. What is being used for uwords? yes WORD_SYS_UWORD is used for detecting if sysdict or udict. No, that SYS flag is used in op code. WORD_FLAG_CODE isnt coded for a memory space. Only opcode, so back to that idea
+* TODO to make compile easier to work with only apply to colon word defs and not immediate 
+* TODO a better means of compling is not to use op codes but as in trad forth and create a pointer to the direct code block to exec and by pass the token scanning. Would need a flag before the pointer to indicate that what comes next is a pointer and not something to throw at the parser. This would work for system and uword exec. Dont forget to make sure the next token pointers are kept up to date. Perhaps if the item is known to be a string or number it can short circut the parser. We know the symbols that work for this. 
+* TODO Change op code to be flags: a. this word is in binary form and cant list it.... should be able to compile all words as even single char would be quicker with a jump
+* TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs. FORGET and LIST use a scanner. Combine with main parser and have one for keyword and another for byte code
+* TODO for the compiler. At runtime Have the parser detect if the first char to scan for has top bit set. if so then the rest of the byte is compiled keyword and use fast lookup instead. Does limit to top 127 keywords
+* TODO When compiling a uword. Parse tokens and replace with matched high bit words.
+* TODO prefix a uword block with a flag to say if the uword contains compiled tokens (useful for LIST)
+* TODO have a CONFIG flag to enable and disable auto compilation of uwords 
 
 * TODO Double check parser. The find next tok call and then there is a comparison word check further down. Doing double the work?
 * TODO ld hl,(xxx) is 20 cycles, but push and pop are 11. Change the parser to use a fixed reg pair for important vars provide a macro to save and restore of environment on words. Could add to the single jp (hl) and NEXTW to restore. EXX is 4 cycles
@@ -76,83 +117,11 @@ Register SP is used as the Data Stack pointer.
 * TODO add more to config menu
 
 
-
-
 Bug list:
 
 * TODO BUG If : word is in caps it wont work. This could be connected with caps on LIST which only works if given as lcase.
 * TODO BUG Uword can't have a numeric in the word name???? Odd...
 * TODO Stop menu scrolling past last item
-
-
-3rd Sep 2025
-------------
-
-* DONE KEY word waits for key release. To make it compatible use a non debounce version and add a KEYDB which does key bounce checks
-* DONE Looking at the parser there are a few opts I could make, such as the constant saving of pointers. Why?
-* DONE  a split word could be useful that pushes each bit to stack
-* DONE Add .R to right align a number. Need to fix NUM2STR to get it to work. NUM2STR zero pads string by default
-* DONE Fix NUM2STR. 
-* DONE Fixed generate Hello World file
-* DONE Fix 2SWAP for type flag
-* DONE Fix 2SWAP
-* DONE LSHIFT and RSHIFT for bit shifting
-* DONE PICK word to pick a value at a given value on stack and move to TOS. Some code in place. Needs fixing as not quite right
-* DONE Fix IS 
-* DONE IS string compare should be renamed to COMPARE
-* DONE Added DMARK for user code tracing useful for DL0 rom
-* DONE Fix LEFT
-* DONE Fix RIGHT
-* DONE UPTR word to get a user word code ptr
-* DONE generate word list md for the NOTE keywords is adding double spacing and breaking it. 
-* DONE New Uptr word to point to start of exec code of uword. Handy for writing forth hook code. Locate the c3 byte as it does work with a call..
-* DONE Added parse_vector to NEXTW 
-* DONE tidy up config menu - hellow world not working plus diags etc
-* DONE MOVE,CMOVE words  ( a1 a2 c --- ) from a1 to a2 for length c
-* DONE TABLE word like MENU that will take a bunch of string on the stack, allocate the memory for all of them creating a table of pointers to each string and returns a pointer to that pointer table
-* DONE CONST word. How to have a string a constant so that printing it does not free it?   What about a CONST word that changes the string type to not being freed?
-* DONE Opt: ld (hl),a to ld (hl),<lit>
-* DONE Opt: ld a,0 to xor a (watch in case of flag change)
-* DONE Opt: cp 0 to or a
-* DONE UPTR word. add uuword dmark as an extra set when a uword is looked up to exec. Added to firmware. need display on break point screen and where to intercept in parser
-* DONE Make use of STORE_0_BANKRUN var and allow selection of which bank to auto run from at startup. Already being set. Setup CONFIG to set it
-* DONE BANK? to get the current bank id
-* DONE add a ztype which prints chars until zero term. added to bank 2. Added to utils.
-* DONE NIP w1 w2 - w2 - : nip swap drop ;  added to utils
-
-
-
-
-
-
-Enhancements:
-
-
-* Compiler:
-*    For the TOKEN flag on the CWHEAD macro, only allow use of direct code if the flag allows it. This will prevent some tokens from being issued
-*      direct such as THEN which is a search of the string. Maybe other tokens will need this.
-*    For : def: tokenise string
-*               Locate tok and obtain pointer to start of exec code
-*                 Save jp code flag
-*                 Save pointer
-*               If token not found then assume push. Save section. Skip section
-*              
-*    For runtime:   Parser obtain start of token
-*                   If at start of token is jp code flag then assume following word pointer to code
-*                      Get pointer
-*                      Forward cli pointer to after code pointer
-*                      Jump to code pointer
-*                   If jp code flag not set then push through raw text parser
-*               
-* TODO Actually forget using op code, there is already a flag to define if the word exists as binary form on the CHEAD WORD_FLAG_CODE. What is being used for uwords? yes WORD_SYS_UWORD is used for detecting if sysdict or udict. No, that SYS flag is used in op code. WORD_FLAG_CODE isnt coded for a memory space. Only opcode, so back to that idea
-* TODO to make compile easier to work with only apply to colon word defs and not immediate 
-* TODO a better means of compling is not to use op codes but as in trad forth and create a pointer to the direct code block to exec and by pass the token scanning. Would need a flag before the pointer to indicate that what comes next is a pointer and not something to throw at the parser. This would work for system and uword exec. Dont forget to make sure the next token pointers are kept up to date. Perhaps if the item is known to be a string or number it can short circut the parser. We know the symbols that work for this. 
-* TODO Change op code to be flags: a. this word is in binary form and cant list it.... should be able to compile all words as even single char would be quicker with a jump
-* TODO Due to bad performance of the parser (???) need to look at compiler... Added some OP code stubs. FORGET and LIST use a scanner. Combine with main parser and have one for keyword and another for byte code
-* TODO for the compiler. At runtime Have the parser detect if the first char to scan for has top bit set. if so then the rest of the byte is compiled keyword and use fast lookup instead. Does limit to top 127 keywords
-* TODO When compiling a uword. Parse tokens and replace with matched high bit words.
-* TODO prefix a uword block with a flag to say if the uword contains compiled tokens (useful for LIST)
-* TODO have a CONFIG flag to enable and disable auto compilation of uwords 
 
 
 * TODO Using the vector hook though means only jumps. Need a wrapper around use to preserve current concontext and then restore it after
@@ -225,6 +194,77 @@ Enhancements:
 * TODO Produce BOM for all of the hardware projects to go with documentation
 
 * TODO Add a simple assembler feature like BBC Basic
+
+
+
+
+
+Done Items
+----------
+
+
+
+21st Apr 2026
+-------------
+
+* DONE Fixed UPTR word so it can be used by CALL to exec uwords
+* DONE Added to utils R uword for repeated string ( str ct --- str )
+* DONE Added to utils EXEC uword to exec uwords dynamically
+* DONE Added to utils SCANWORD uword to show key press codes which helps in working out F keys for example
+* DONE Added bitwise AND and OR to logic words
+
+
+* TEST Need a single bit SPI out set high or low - SPIBO - Written and to test
+* TEST Need a single bit SPI in read high or low - SPIBI - Written and to test
+ 
+
+1st Apr 2026
+------------
+
+
+* DONE Moved a number of frequent calls to RST instead (saved 1.5k off the bin size of DL2)
+* DONE Reduced the size of the DMARK strings. Saved 5.5k off the bin size!
+
+
+3rd Sep 2025
+------------
+
+* DONE KEY word waits for key release. To make it compatible use a non debounce version and add a KEYDB which does key bounce checks
+* DONE Looking at the parser there are a few opts I could make, such as the constant saving of pointers. Why?
+* DONE  a split word could be useful that pushes each bit to stack
+* DONE Add .R to right align a number. Need to fix NUM2STR to get it to work. NUM2STR zero pads string by default
+* DONE Fix NUM2STR. 
+* DONE Fixed generate Hello World file
+* DONE Fix 2SWAP for type flag
+* DONE Fix 2SWAP
+* DONE LSHIFT and RSHIFT for bit shifting
+* DONE PICK word to pick a value at a given value on stack and move to TOS. Some code in place. Needs fixing as not quite right
+* DONE Fix IS 
+* DONE IS string compare should be renamed to COMPARE
+* DONE Added DMARK for user code tracing useful for DL0 rom
+* DONE Fix LEFT
+* DONE Fix RIGHT
+* DONE UPTR word to get a user word code ptr
+* DONE generate word list md for the NOTE keywords is adding double spacing and breaking it. 
+* DONE New Uptr word to point to start of exec code of uword. Handy for writing forth hook code. Locate the c3 byte as it does work with a call..
+* DONE Added parse_vector to NEXTW 
+* DONE tidy up config menu - hellow world not working plus diags etc
+* DONE MOVE,CMOVE words  ( a1 a2 c --- ) from a1 to a2 for length c
+* DONE TABLE word like MENU that will take a bunch of string on the stack, allocate the memory for all of them creating a table of pointers to each string and returns a pointer to that pointer table
+* DONE CONST word. How to have a string a constant so that printing it does not free it?   What about a CONST word that changes the string type to not being freed?
+* DONE Opt: ld (hl),a to ld (hl),<lit>
+* DONE Opt: ld a,0 to xor a (watch in case of flag change)
+* DONE Opt: cp 0 to or a
+* DONE UPTR word. add uuword dmark as an extra set when a uword is looked up to exec. Added to firmware. need display on break point screen and where to intercept in parser
+* DONE Make use of STORE_0_BANKRUN var and allow selection of which bank to auto run from at startup. Already being set. Setup CONFIG to set it
+* DONE BANK? to get the current bank id
+* DONE add a ztype which prints chars until zero term. added to bank 2. Added to utils.
+* DONE NIP w1 w2 - w2 - : nip swap drop ;  added to utils
+
+
+
+
+
 
 31st August 2025
 ----------------

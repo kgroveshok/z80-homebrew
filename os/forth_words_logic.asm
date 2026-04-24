@@ -1,6 +1,60 @@
 
 ; | ## Logic Words
 
+.AND:
+	CWHEAD .OR 25 "AND" 3 WORD_FLAG_CODE
+; | AND ( u1 u2  -- u3 ) u3 is logical AND of u1 with u2 | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "AND"
+			CALLMONITOR
+		endif
+	        FORTH_DSP_VALUEHL
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+		push hl
+	        FORTH_DSP_VALUEHL
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+		pop de   ; u2, hl = u1
+                ld a, e
+                and l
+		ld l, a
+		ld h, 0
+		FORTH_PUSH_VALUEHL
+		NEXTW
+
+;# testing
+;# 0 0 and = 0
+;# 0 1 and =0
+;# 1 0 and = 0
+;# 1 1 and = 1
+
+
+.OR:
+	CWHEAD .NOT 25 "OR" 2 WORD_FLAG_CODE
+; | OR ( u1 u2  -- u3 ) u3 is logical OR of u1 with u2 | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "ORA"
+			CALLMONITOR
+		endif
+	        FORTH_DSP_VALUEHL
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+		push hl
+	        FORTH_DSP_VALUEHL
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+		pop de   ; u2, hl = u1
+                ld a, e
+                or l
+		ld l, a
+		ld h, 0
+		FORTH_PUSH_VALUEHL
+		NEXTW
+
+;# testing
+;# 0 0 or = 0
+;# 0 1 or = 1
+;# 1 0 or = 1
+;# 1 1 or = 1
+
+
 .NOT:
 	CWHEAD .IS 25 "NOT" 3 WORD_FLAG_CODE
 ; | NOT ( u  -- u ) Inverse true/false on stack | DONE

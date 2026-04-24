@@ -135,11 +135,75 @@ if STORAGE_SE
     NEXTW
 
 .SPICEH:
-	CWHEAD .SPIOb 61 "SPICEH" 6 WORD_FLAG_CODE
+	CWHEAD .SPIBOb 61 "SPICEH" 6 WORD_FLAG_CODE
 ; | SPICEH ( -- ) Set SPI CE high for the currently selected device |  DONE
 
 		call spi_ce_high
     NEXTW
+
+.SPIBOb:
+
+	CWHEAD .SPIBI 61 "SPIBO" 5 WORD_FLAG_CODE
+; | SPIBO ( u1 -- ) Set or clear the SPI output pin   |  TO TEST
+
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "SPo"
+			CALLMONITOR
+		endif
+		; get port
+
+
+		; get byte to send
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+
+;		push hl    ; u1 
+
+		; destroy value TOS
+
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		; one value on hl get other one back
+
+;		pop hl   ; u2 - addr
+
+		; TODO Send SPI byte
+
+;		push hl
+;		call spi_ce_low
+;		pop hl
+		ld a, l
+		call spi_setclr_pin
+;		call spi_ce_high
+
+		NEXTW
+
+.SPIBI:
+	CWHEAD .SPIOb 62 "SPIBI" 6 WORD_FLAG_CODE
+; | SPIBI ( -- u1 ) Get if SPI input pin is high or low  | TO TEST
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "SPb"
+			CALLMONITOR
+		endif
+
+		; TODO Get SPI byte
+
+		call spi_rd_pin
+
+		if DEBUG_FORTH_WORDS
+			DMARK "Si2"
+			CALLMONITOR
+		endif
+		ld h, 0
+		ld l, a
+		if DEBUG_FORTH_WORDS
+			DMARK "Si3"
+			CALLMONITOR
+		endif
+		;call forth_push_numhl
+		FORTH_PUSH_VALUEHL
+
+		NEXTW
 
 
 .SPIOb:

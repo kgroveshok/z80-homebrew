@@ -350,8 +350,10 @@ create_startup:
 	cp 6
 	call z, .genkeyword
 	cp 7
-	call z, .gensoundword
+	call z, .gentapeword
 	cp 8
+	call z, .gensoundword
+	cp 9
 	call z, .genhwword
 	jr create_startup
 
@@ -396,6 +398,12 @@ create_startup:
 .genkeyword:
 	ld hl, crs_s6
 	ld de, .keyworddef
+	call .genfile
+	ret
+
+.gentapeword:
+	ld hl, crs_s7
+	ld de, .tapeworddef
 	call .genfile
 	ret
 
@@ -483,8 +491,12 @@ create_startup:
 	dw nip
 	dw clrstack
 	dw longread
+	dw scancode
 	dw start1
 	dw start2
+	dw repstr1
+	dw repstr2
+	dw execuword
 ; duplicated
 ;	dw start3b
 ;	dw start3c
@@ -553,6 +565,19 @@ create_startup:
 ;    dw spi9
 ;    dw spi10
     dw 0
+.tapeworddef:
+	dw tape1
+	dw tape2a
+	dw tape2
+	dw tape3
+	dw tape4
+	dw tape5
+	dw tape6
+	dw tape7a
+	dw tape7b
+	dw tape7
+	dw tape8
+	dw 0
 
 .keyworddef:
 
@@ -586,6 +611,7 @@ create_startup:
 	dw crs_s4
 	dw crs_s5
 	dw crs_s6
+	dw crs_s7
 	dw crs_sound
 	dw crs_hw
 	dw 0

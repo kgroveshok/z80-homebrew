@@ -69,6 +69,45 @@ se_stable_spi:
 	endif
 	ret
 
+; Get spi input pin
+
+spi_rd_pin:
+	; save byte to send for bit mask shift out
+;        ld c,a
+;	ld a,(spi_portbyte)
+	 
+	; clear so bit 
+;	res SPI_DI, a
+;	rl c
+;	; if bit 7 is set then carry is set
+;	jr nc, .ssbc2
+;	set SPI_DI,a
+;.ssbc2:  ; output bit to ensure it is stable
+	ld c, 0
+	in a, (storage_adata)
+	bit SPI_DO, a
+	jr z, .r1
+	ld c, 1	
+.r1:
+	ld a, c
+	ret
+; Set/clr spi output pin
+
+spi_setclr_pin:
+	; save byte to send for bit mask shift out
+        ld c,a
+	ld a,(spi_portbyte)
+	 
+	; clear so bit 
+	res SPI_DI, a
+	rl c
+	; if bit 7 is set then carry is set
+	jr nc, .ssbc2
+	set SPI_DI,a
+.ssbc2:  ; output bit to ensure it is stable
+	out (storage_adata),a
+	ret
+
 ; byte to send in a
 
 spi_send_byte:

@@ -200,6 +200,12 @@ spi8:		db ": netchatp $00 $00 at accept ;", 0
 spi9: 		db ": netchatr repeat spigetchr dup dup $00 = not if emit then $00 = not until $02 pause ; ",0
 spi10:		db ": netchat v0! repeat netchatp count dup $00 > if spitype $01 pause then cls $00 $03 at \">\" . netchatr true until nop ; ", 0
 
+scancode: 	db ": scancode repeat key dup cls chr .> bl ,> .  until ; ",0
+
+repstr1:	db "( str ct --- long string ) ",0
+repstr2:	db ": r over swap #1 do over concat loop ; ",0
+
+execuword: 	db ": exec ( cmd --- ) uptr call ; ",0
 
 ; Long read of currently open file
 longread:   db ": lread read repeat readcont if read concat then readcont until nop ; ", 0
@@ -409,7 +415,30 @@ keyhome:       db ": keyhome $0e ;",0
 keyend:       db ": keyend $0f ;",0
 keybs:       db ": keybs $08 ;",0
 
+; Test tape support
+
+
   
+tape1: db ": setto ( gap low high --- ) v0! v1! v2! ; ", 0
+tape2a: db ": tosc #0 do #0 spibo nop #1 spibo nop loop ; ",0 
+;tape2a: db ": tosc #0 do spicel spiceh nop loop ; ",0 
+;tape2a: db ": tosc #0 do spicel nop spiceh nop loop ; ",0 
+;tape2: db ": th spiceh v0@ pause spicel tg ; ",0
+;tape3: db ": tl spiceh v1@ pause spicel tg ; ",0
+tape2: db ": th v0@ tosc tg ; ",0
+tape3: db ": tl v1@ tosc tg ; ",0
+tape4: db ": tg v2@ #0 do nop loop ; ",0
+;tape4: db ": tg spicel v2@ #0 do nop loop ; ",0
+tape5: db ": tohead tg tg tg th tl th tl th tl tg tg tg ; ",0
+tape6: db ": toinit  tohead ; ",0
+tape7a: db ": thc dup if th then ; ", 0
+tape7b: db ": tlc not if tl then ; ", 0
+; TODO bit checksum
+; TODO To test. Round the wrong way. Change mask and shift or add RROT etc 
+tape7: db ": tob ( byte --- ) #8 #1 do dup #128 and thc tlc lshift loop drop ; ",0
+;tape7: db ": tob ( byte --- ) #8 #1 do dup #1 and thc tlc rshift loop drop ; ",0
+
+tape8: db ": to ( str --- ) cls tohead ptr count #0 do dup i + @ dup emit tob tg tg tg tg loop ; ",0
 
 
 

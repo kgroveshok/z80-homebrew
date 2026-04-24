@@ -83,6 +83,7 @@ Expansions/Addons
 
    For more details look at the Addons README
 
+* Tape support - Currently in progress
 
 
 Progress

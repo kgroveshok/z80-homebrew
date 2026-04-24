@@ -1624,10 +1624,12 @@ pop hl
 	endif
 
 	; skip zero term and other uword defs to position right at the exec code
-	ld b, 4
-	add a,b
 
-	call addatohl
+; commented out as need the call to exec
+	;ld b, 4
+	;add a,b
+
+;	call addatohl
 		; save this location
 	
 .ulunotfound:

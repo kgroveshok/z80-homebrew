@@ -25,6 +25,7 @@ crs_s3: db "*Demo-Games", 0
 crs_s4: db "*Utils", 0
 crs_s5: db "*SPI-Util", 0
 crs_s6: db "*Key-Constants", 0
+crs_s7: db "*Tape-Support", 0
 crs_sound: db "*Sound-Util", 0
 crs_hw: db "*Hello-World",0
 

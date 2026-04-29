@@ -18,38 +18,109 @@
 ;endif
 
 
-USE_GPIO: equ 0
+if TAPE_SUPPORT
 
-if USE_GPIO
-.GP1:
-	CWHEAD .GP2 31 "IOIN" 4 WORD_FLAG_CODE
-;  IOIN ( u1 -- u )    Perform a GPIO read of pin u1 and push result  
-		NEXTW
 .GP2:
-	CWHEAD .GP3 31 "IOOUT" 5 WORD_FLAG_CODE
-;  IOOUT ( u1 u2 --  )    Perform a GPIO write of pin u1 with pin set to 0 or 1 in u2  
+
+	CWHEAD .GPI 31 "SETTAPE" 7 WORD_FLAG_CODE
+; | SETTAPE ( port gap high low -- )   Set parameters for tape support | DONE
+; | | port - Device address port; default is Device A on 00h
+; | | gap - Gap period counter; default is 150
+; | | high - High bit period counter; default is 70
+; | | low - Low bit period counter; default is 20
+
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "TSE"
+			CALLMONITOR
+		endif
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+		ld (tape_tm_low), hl
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+		ld (tape_tm_high), hl
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+		ld (tape_tm_gap), hl
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+		ld a, l
+		ld (tape_port), a
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+		NEXTW
+
+
+.GPI:
+	CWHEAD .GPS 31 "SAVES" 5 WORD_FLAG_CODE
+; | SAVES ( s1 ... sn c n -- )    Save a count of c strings using file name of n to tape | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "SAS"
+			CALLMONITOR
+		endif
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+		push hl    ; file name
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+		push hl    ; count
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+		  ; top string
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		pop bc    ; count
+		pop de    ; file name
+
+; TODO handle more than one string
+		call tape_save
+				
+		NEXTW
+
+
+.GPS:
+	CWHEAD .TLOAD 31 "SAVE" 7 WORD_FLAG_CODE
+; | SAVE ( n -- )    Save all uuser words to tape with given name n | TO DO
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "SAV"
+			CALLMONITOR
+		endif
 
 		NEXTW
 
-.GP3:
-	CWHEAD .GP4 31 "IOBYTE" 5 WORD_FLAG_CODE
-;  IOBYTE ( u1 --  )    Perform a GPIO write of byte u1  
+.TLOAD:
+	CWHEAD .TCAL 31 "LOAD" 4 WORD_FLAG_CODE
+; | LOAD ( n -- )    Load file n from tape and exec | TO DO
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "LOD"
+			CALLMONITOR
+		endif
 
 		NEXTW
 
-.GP4:
-	CWHEAD .SIN 31 "IOSET" 5 WORD_FLAG_CODE
-;  IOSET ( u1 --  )    Setup GPIO pins for I/O direction. Bit is set for write else read pin  
+.TCAL:
+	CWHEAD .TAPEEND 31 "TAPECAL" 7 WORD_FLAG_CODE
+; | TAPECAL (  -- )    Listen to a tape header and report on bit detection pulses | TO DO
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "TCA"
+			CALLMONITOR
+		endif
+
+		call tape_calibration
 
 		NEXTW
-.SIN:
 
 
+.TAPEEND:
 endif
 
 
 	CWHEAD .SOUT 31 "IN" 2 WORD_FLAG_CODE
-; | IN ( u1 -- u )    Perform Z80 IN with u1 being the port number. Push result to TOS | TO TEST
+; | IN ( u1 -- u )    Perform Z80 IN with u1 being the port number. Push result to TOS | DONE
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "IN."
 			CALLMONITOR
@@ -142,71 +213,6 @@ if STORAGE_SE
     NEXTW
 
 .SPIBOb:
-
-	CWHEAD .SPIBI 61 "SPIBO" 5 WORD_FLAG_CODE
-; | SPIBO ( u1 -- ) Set or clear the SPI output pin   |  TO TEST
-
-		if DEBUG_FORTH_WORDS_KEY
-			DMARK "SPo"
-			CALLMONITOR
-		endif
-		; get port
-
-
-		; get byte to send
-
-		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
-
-;		push hl    ; u1 
-
-		; destroy value TOS
-
-		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
-
-		; one value on hl get other one back
-
-;		pop hl   ; u2 - addr
-
-		; TODO Send SPI byte
-
-;		push hl
-;		call spi_ce_low
-;		pop hl
-		ld a, l
-		call spi_setclr_pin
-;		call spi_ce_high
-
-		NEXTW
-
-.SPIBI:
-	CWHEAD .SPIOb 62 "SPIBI" 6 WORD_FLAG_CODE
-; | SPIBI ( -- u1 ) Get if SPI input pin is high or low  | TO TEST
-		if DEBUG_FORTH_WORDS_KEY
-			DMARK "SPb"
-			CALLMONITOR
-		endif
-
-		; TODO Get SPI byte
-
-		call spi_rd_pin
-
-		if DEBUG_FORTH_WORDS
-			DMARK "Si2"
-			CALLMONITOR
-		endif
-		ld h, 0
-		ld l, a
-		if DEBUG_FORTH_WORDS
-			DMARK "Si3"
-			CALLMONITOR
-		endif
-		;call forth_push_numhl
-		FORTH_PUSH_VALUEHL
-
-		NEXTW
-
-
-.SPIOb:
 
 	CWHEAD .SPII 61 "SPIO" 4 WORD_FLAG_CODE
 ; | SPIO ( u1 -- ) Send byte u1 to SPI  |  DONE

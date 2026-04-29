@@ -101,8 +101,10 @@ Also refer to the auto start list examples as these contain extra words created 
  dw forth_push_numhl
  dw forth_push_str
  dw parse_vector
+ dw tape_port
  ```
 ## Core Words
+### NEW ( -- ) Clears all user words and stack | DONE
 ### HEAP ( -- u1 u2 )   Pushes u1 the current number of bytes in the heap and u2 the remaining bytes - Only present if using my MALLOC | DONE
  u1 - Current number of bytes in the heap
  u2 - Remaining bytes left on the heap
@@ -209,7 +211,7 @@ Also refer to the auto start list examples as these contain extra words created 
 ### ALLOT ( u -- u ) Allocate u bytes of memory space and push the pointer TOS  | DONE
 ### MALLOC ( u -- u ) Allocate u bytes of memory space and push the pointer TOS  | DONE
 ### FREE ( u --  ) Free memory block from malloc given u address  | DONE
-### UPTR ( s -- u ) Push the address of the exec code for the quoted used word s  | TODO
+### UPTR ( s -- u ) Push the address of the exec code for the quoted used word s  | DONE
 ### LIST ( uword -- u )    List the code to the word that is quoted (so as not to exec) on TOS | DONE
  The quoted word must be in upper case.
 ### FORGET ( uword -- )    Forget the uword on TOS | DONE
@@ -245,12 +247,19 @@ Also refer to the auto start list examples as these contain extra words created 
 ### 1-! ( addr -- )  Decrement byte at address addr | DONE
 ### 1-2! ( addr -- )  Decrement word at address addr | DONE
 ## Device Words
-### IN ( u1 -- u )    Perform Z80 IN with u1 being the port number. Push result to TOS | TO TEST
+### SETTAPE ( port gap high low -- )   Set parameters for tape support | DONE
+ port - Device address port; default is Device A on 00h
+ gap - Gap period counter; default is 150
+ high - High bit period counter; default is 70
+ low - Low bit period counter; default is 20
+### SAVES ( s1 ... sn c n -- )    Save a count of c strings using file name of n to tape | DONE
+### SAVE ( n -- )    Save all uuser words to tape with given name n | TO DO
+### LOAD ( n -- )    Load file n from tape and exec | TO DO
+### TAPECAL (  -- )    Listen to a tape header and report on bit detection pulses | TO DO
+### IN ( u1 -- u )    Perform Z80 IN with u1 being the port number. Push result to TOS | DONE
 ### OUT ( u1 u2 -- ) Perform Z80 OUT to port u2 sending byte u1 | DONE
 ### SPICEL ( -- ) Set SPI CE low for the currently selected device |  DONE
 ### SPICEH ( -- ) Set SPI CE high for the currently selected device |  DONE
-### SPIBO ( u1 -- ) Set or clear the SPI output pin   |  TO TEST
-### SPIBI ( -- u1 ) Get if SPI input pin is high or low  | TO TEST
 ### SPIO ( u1 -- ) Send byte u1 to SPI  |  DONE
 ### SPII ( -- u1 ) Get a byte from SPI  | DONE
 ### BANK? ( -- u ) Reports on the serial EEPROM Bank Device at bank address u1 1-5.  | DONE

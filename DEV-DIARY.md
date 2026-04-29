@@ -6,14 +6,15 @@ Z80 Home Brew Micro-computer Project - Dev Diary
 Todo List/Enhancements:
 -----------------------
 
+* TODO Move Tape support Forth code into firmware
 
-* TODO Need a single SPI CLK handshake for completness - SPICLK
 * TODO Need a RROT and LROT bitwise byte rotate like the Z80 RRC and RLC op codes
 
 
 * TODO Add a call that takes a block of mem with reg pairs that are loaded before the call and return the values 
 * TODO Add ? after file name to prompt for optional load/skip during autoload
 * TODO Need to fix numbers and/or punc in uwords
+* TODO  once fixed words add uword with prefix of star that is searched for by the run command that allows menu generated to start that word
 * TODO Add garbage colleciton/gaurd checks as a vector that can be enabled and disabled via CONFIG
 * TODO  .f word to output formatted. ie x "9999" .f four dec
 * TODO .h word to output as hex value
@@ -202,7 +203,10 @@ Bug list:
 Done Items
 ----------
 
+29th Apr 2026
+-------------
 
+* DONE Need a word NEW to clear all uwords which can be used before LOAD
 
 21st Apr 2026
 -------------
@@ -213,10 +217,6 @@ Done Items
 * DONE Added to utils SCANWORD uword to show key press codes which helps in working out F keys for example
 * DONE Added bitwise AND and OR to logic words
 
-
-* TEST Need a single bit SPI out set high or low - SPIBO - Written and to test
-* TEST Need a single bit SPI in read high or low - SPIBI - Written and to test
- 
 
 1st Apr 2026
 ------------

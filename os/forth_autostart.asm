@@ -420,14 +420,16 @@ keybs:       db ": keybs $08 ;",0
 
   
 tape1: db ": setto ( gap low high --- ) v0! v1! v2! ; ", 0
-tape2a: db ": tosc #0 do #0 spibo nop #1 spibo nop loop ; ",0 
+tape2a: db ": tosc #0 do #170 spio loop ; ",0 
+;tape2a: db ": tosc #0 do #0 spio #170 spio loop ; ",0 
+;tape2a: db ": tosc #0 do #0 spio #255 spio loop ; ",0 
 ;tape2a: db ": tosc #0 do spicel spiceh nop loop ; ",0 
 ;tape2a: db ": tosc #0 do spicel nop spiceh nop loop ; ",0 
 ;tape2: db ": th spiceh v0@ pause spicel tg ; ",0
 ;tape3: db ": tl spiceh v1@ pause spicel tg ; ",0
 tape2: db ": th v0@ tosc tg ; ",0
 tape3: db ": tl v1@ tosc tg ; ",0
-tape4: db ": tg v2@ #0 do nop loop ; ",0
+tape4: db ": tg #0 spio v2@ #0 do nop loop ; ",0
 ;tape4: db ": tg spicel v2@ #0 do nop loop ; ",0
 tape5: db ": tohead tg tg tg th tl th tl th tl tg tg tg ; ",0
 tape6: db ": toinit  tohead ; ",0

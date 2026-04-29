@@ -42,6 +42,7 @@ Current Specification/Feature Set
 * Exposed RC2014 connector
 * Digital video out (TODO)
 * Built-in address decoder for four devices (2 used above)
+* Tape support in progress on Device A by default and can be plugged into the bus. Long term on board.
 * Sound chip via SPI
 * External cart support via PIO 2 Port B. Adding support for:
    - Real time clock SPI (TODO)
@@ -72,6 +73,7 @@ Expansions/Addons
 
    For more details look at the Addons README
 
+- Tape support on Device A (WIP)
 
 
 ![](stage4.0/Gerber_PCB_z80-system-3-sbc.zip)

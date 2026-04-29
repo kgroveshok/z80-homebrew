@@ -3,6 +3,23 @@
 
 ;if MALLOC_4
 
+
+
+.NEW:
+CWHEAD .HEAP OPCODE_HEAP "NEW" 3 WORD_FLAG_CODE
+; | NEW ( -- ) Clears all user words and stack | DONE
+	
+	if MALLOC_4
+		call  heap_init
+	endif
+	; reset uword pointers
+	ld hl, baseram
+	ld (os_last_new_uword), hl
+	call user_word_eol
+	; clear stack
+	call forth_warmstart
+	NEXTW
+
 .HEAP:
 CWHEAD .EXEC OPCODE_HEAP "HEAP" 4 WORD_FLAG_CODE
 ; | HEAP ( -- u1 u2 )   Pushes u1 the current number of bytes in the heap and u2 the remaining bytes - Only present if using my MALLOC | DONE
@@ -1514,7 +1531,7 @@ endif
 	NEXTW
 .UPTR:
 CWHEAD .LIST 67 "UPTR" 4 WORD_FLAG_CODE
-; | UPTR ( s -- u ) Push the address of the exec code for the quoted used word s  | TODO
+; | UPTR ( s -- u ) Push the address of the exec code for the quoted used word s  | DONE
 	if DEBUG_FORTH_WORDS_KEY
 		DMARK "UPT"
 		CALLMONITOR

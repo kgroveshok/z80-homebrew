@@ -5,6 +5,7 @@ BASE_SC114: equ 0
 BASE_KEV: equ 0
 BASE_CPM: equ 1
 
+TAPE_SUPPORT: equ 0
 ENABLE_BASIC: equ 0
 
 STARTUP_V1: equ 1

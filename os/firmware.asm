@@ -304,11 +304,19 @@ spi_portbyte: equ spi_cartdev2 - 1      ; holds bit mask to send to spi bus
 spi_device: equ spi_portbyte - 1    ; bit mask to send to porta (eeproms) devices
 spi_device_id: equ spi_device - 1    ; human readable bank number
 
+;;;;; Tape support params
+
+tape_port: equ spi_device_id - 1
+tape_sync: equ tape_port-10     ; counters used in detecting tape header
+tape_tm_gap: equ tape_sync - 2
+tape_tm_high: equ tape_tm_gap - 2
+tape_tm_low: equ tape_tm_high - 2
+
 ;;;;; forth cli params
 
 ; TODO use a different frame buffer for forth???
 
-f_cursor_ptr:  equ spi_device_id - 1  ; offset into frame buffer for any . or EMIT output
+f_cursor_ptr:  equ tape_tm_low - 1  ; offset into frame buffer for any . or EMIT output
 cli_buffer: equ f_cursor_ptr - 20     ; temp hold - maybe not needed
 cli_origtoken: equ cli_buffer - 2     ; pointer to the text of token for this word being checked
 cli_token: equ cli_origtoken - 2     ; pointer to the text of token for this word being checked
@@ -568,6 +576,9 @@ hardware_init:
 
 	call key_init
 	call storage_init
+	if TAPE_SUPPORT
+		call tape_init
+	endif
 
 	; setup malloc functions
 
@@ -711,6 +722,12 @@ include "firmware_display.asm"      ; frame buffer screen abstraction layer
 include "firmware_maths.asm"     ; any odd maths stuff   TODO removed until I fix up the rng code
 include "firmware_strings.asm"   ; string handling
 include "firmware_memory.asm"   ; malloc and free
+
+
+if TAPE_SUPPORT 
+	include "firmware_tape.asm"    ; Tape support on Device A by default
+endif
+
 
 ; device C
 ; Now handled by SPI

@@ -308,8 +308,9 @@ spi_device_id: equ spi_device - 1    ; human readable bank number
 
 tape_port: equ spi_device_id - 1
 tape_sync: equ tape_port-10     ; counters used in detecting tape header
-tape_tm_gap: equ tape_sync - 2
-tape_tm_high: equ tape_tm_gap - 2
+tape_tm_gap: equ tape_sync - 1
+tape_tm_freq: equ tape_tm_gap - 1
+tape_tm_high: equ tape_tm_freq - 2
 tape_tm_low: equ tape_tm_high - 2
 
 ;;;;; forth cli params

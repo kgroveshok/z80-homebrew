@@ -247,15 +247,17 @@ Also refer to the auto start list examples as these contain extra words created 
 ### 1-! ( addr -- )  Decrement byte at address addr | DONE
 ### 1-2! ( addr -- )  Decrement word at address addr | DONE
 ## Device Words
-### SETTAPE ( port gap high low -- )   Set parameters for tape support | DONE
+### SETTAPE ( port gap freq high low -- )   Set parameters for tape support | DONE
  port - Device address port; default is Device A on 00h
- gap - Gap period counter; default is 150
- high - High bit period counter; default is 70
- low - Low bit period counter; default is 20
+ gap - Gap period counter; default is 250
+ freq - Osc freq; default 0ms
+ high - High bit period counter; default is 150
+ low - Low bit period counter; default is 50
 ### SAVES ( s1 ... sn c n -- )    Save a count of c strings using file name of n to tape | DONE
 ### SAVE ( n -- )    Save all uuser words to tape with given name n | TO DO
 ### LOAD ( n -- )    Load file n from tape and exec | TO DO
 ### TAPECAL (  -- )    Listen to a tape header and report on bit detection pulses | TO DO
+### TAPETEST (  -- )    Record a repeating stripe pattern of 0 and 1 for testing record and playback via TAPECAL | TO DO
 ### IN ( u1 -- u )    Perform Z80 IN with u1 being the port number. Push result to TOS | DONE
 ### OUT ( u1 u2 -- ) Perform Z80 OUT to port u2 sending byte u1 | DONE
 ### SPICEL ( -- ) Set SPI CE low for the currently selected device |  DONE

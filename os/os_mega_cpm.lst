@@ -195,7 +195,7 @@
 013b			 
 013b ..			buildtime: db   "Build: " 
 0142					include "romtimestamp.asm" 
-0142 ..			db '2026-04-29 19:14' 
+0142 ..			db '2026-05-01 11:18' 
 # End of file romtimestamp.asm
 0152 00				   db 0 
 0153			 
@@ -578,8 +578,9 @@
 0153			  
 0153			tape_port: equ spi_device_id - 1  
 0153			tape_sync: equ tape_port-10     ; counters used in detecting tape header  
-0153			tape_tm_gap: equ tape_sync - 2  
-0153			tape_tm_high: equ tape_tm_gap - 2  
+0153			tape_tm_gap: equ tape_sync - 1  
+0153			tape_tm_freq: equ tape_tm_gap - 1  
+0153			tape_tm_high: equ tape_tm_freq - 2  
 0153			tape_tm_low: equ tape_tm_high - 2  
 0153			  
 0153			;;;;; forth cli params  
@@ -34616,11 +34617,12 @@
 43f6			.GP2: 
 43f6			 
 43f6				CWHEAD .GPI 31 "SETTAPE" 7 WORD_FLAG_CODE 
-43f6			; | SETTAPE ( port gap high low -- )   Set parameters for tape support | DONE 
+43f6			; | SETTAPE ( port gap freq high low -- )   Set parameters for tape support | DONE 
 43f6			; | | port - Device address port; default is Device A on 00h 
-43f6			; | | gap - Gap period counter; default is 150 
-43f6			; | | high - High bit period counter; default is 70 
-43f6			; | | low - Low bit period counter; default is 20 
+43f6			; | | gap - Gap period counter; default is 250 
+43f6			; | | freq - Osc freq; default 0ms 
+43f6			; | | high - High bit period counter; default is 150 
+43f6			; | | low - Low bit period counter; default is 50 
 43f6			 
 43f6					if DEBUG_FORTH_WORDS_KEY 
 43f6						DMARK "TSE" 
@@ -34636,7 +34638,13 @@
 43f6					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
 43f6			 
 43f6					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
-43f6					ld (tape_tm_gap), hl 
+43f6					ld a, l 
+43f6					ld (tape_tm_freq), a 
+43f6					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+43f6			 
+43f6					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+43f6					ld a, l 
+43f6					ld (tape_tm_gap), a 
 43f6					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
 43f6			 
 43f6					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
@@ -34696,7 +34704,7 @@
 43f6					NEXTW 
 43f6			 
 43f6			.TCAL: 
-43f6				CWHEAD .TAPEEND 31 "TAPECAL" 7 WORD_FLAG_CODE 
+43f6				CWHEAD .TTEST 31 "TAPECAL" 7 WORD_FLAG_CODE 
 43f6			; | TAPECAL (  -- )    Listen to a tape header and report on bit detection pulses | TO DO 
 43f6					if DEBUG_FORTH_WORDS_KEY 
 43f6						DMARK "TCA" 
@@ -34707,6 +34715,17 @@
 43f6			 
 43f6					NEXTW 
 43f6			 
+43f6			.TTEST: 
+43f6				CWHEAD .TAPEEND 31 "TAPETEST" 8 WORD_FLAG_CODE 
+43f6			; | TAPETEST (  -- )    Record a repeating stripe pattern of 0 and 1 for testing record and playback via TAPECAL | TO DO 
+43f6					if DEBUG_FORTH_WORDS_KEY 
+43f6						DMARK "TTS" 
+43f6						CALLMONITOR 
+43f6					endif 
+43f6			 
+43f6					call tape_test 
+43f6			 
+43f6					NEXTW 
 43f6			 
 43f6			.TAPEEND: 
 43f6			endif 

@@ -743,7 +743,8 @@ tape7b:	equ $572a
 tape8:	equ $5787
 tape_port:	equ $ea53
 tape_sync:	equ $ea49
-tape_tm_gap:	equ $ea47
+tape_tm_freq:	equ $ea47
+tape_tm_gap:	equ $ea48
 tape_tm_high:	equ $ea45
 tape_tm_low:	equ $ea43
 test10:	equ $50c4

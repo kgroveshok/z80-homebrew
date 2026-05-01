@@ -1,14 +1,23 @@
 ; Tape support
 
+DEBUG_TAPE: equ 1
+
+
 ; setup default tape params
 tape_init:    
 	ld a, Device_A
 	ld (tape_port), a
-	ld hl, 150
-	ld (tape_tm_gap), hl
-	ld hl, 70
+
+	ld a, 250
+	ld (tape_tm_gap), a
+
+	ld a, 1
+	ld (tape_tm_freq), a
+
+	ld hl, 50
 	ld (tape_tm_high), hl
-	ld hl, 20
+
+	ld hl, 10
 	ld (tape_tm_low), hl
 	ret
 
@@ -25,22 +34,37 @@ tape_osc:
 	; d = bus data
 	
 	out (c), d
-	ld a, 1
-	call aDelayInMS
-	
-	dec hl
-	ld a, l
-	add h
+	ld a, (tape_tm_freq)
 	cp 0
+	jr z, .fski
+;	ld a, 1
+	call aDelayInMS
+;	ld b, a
+;.flo:	bit 0,a
+;	bit 0,a
+;	bit 0,a
+;	djnz .flo
+	
+.fski:	
+	dec hl
+	call ishlzero
 	jr nz, tape_osc
 	
 	ret
 
 ; output a gap period
 tape_gap: 
-	ld hl, (tape_tm_gap)
-	ld a, l
+	ld a, (tape_tm_gap)
 	call aDelayInMS
+
+if DEBUG_TAPE
+	call delay1s 
+	call delay1s 
+	call delay1s 
+	call delay1s 
+	call delay1s 
+	call delay1s 
+endif
 	ret
 
 ; output a high period
@@ -70,6 +94,7 @@ tape_end:
 	ld a, 255
 	call tape_byte_out
 	call tape_gap
+
 	ld a, 255
 	call tape_byte_out
 	call tape_gap
@@ -222,66 +247,113 @@ tape_calibration:
 
 
 	; init sync fields
+;	ld hl, tape_sync
+;	ld a, 0
+;	ld (hl), a
+;	ld de, tape_sync+1
+;	ld bc, 10
+;	ldir
 
-	ld hl, tape_sync
-	ld a, 0
-	ld (hl), a
-	ld de, tape_sync+1
-	ld bc, 10
-	ldir
+	call clear_display
 
+.tc:
 	call tape_detect
 
-	ld d, 0
-	ld a, (tape_sync)
-	ld e, a
-        ld hl, scratch
-	call uitoa_16
+	push bc
+	call cin
+	pop bc
+	cp 0
+	ret nz
+	jr .tc
+
+	ret
+
+tape_test:
+	call tape_ready_rec
+
+	call clear_display
+
+.tt1:   
+	call active
 	ex de, hl
-	ld a, 0	
-	call  str_at_display
-	ld d, 0
-	ld a, (tape_sync+1)
-	ld e, a
-        ld hl, scratch
-	call uitoa_16
-	ex de,hl
-	ld a, 5
+	ld a, 0
 	call  str_at_display
 	call update_display
 
+	call tape_gap
+	call tape_high
+	
+	call active
+	ex de, hl
+	ld a, 0
+	call  str_at_display
+	call update_display
+	call tape_gap
+	call tape_high
+	
+	call active
+	ex de, hl
+	ld a, 0
+	call  str_at_display
+	call update_display
+	call tape_gap
+	call tape_high
+
+	call active
+	ex de, hl
+	ld a, 0
+	call  str_at_display
+	call update_display
+	call tape_gap
+	call tape_low
+
+	call active
+	ex de, hl
+	ld a, 0
+	call  str_at_display
+	call update_display
+	call tape_gap
+	call tape_low
+
+	call active
+	ex de, hl
+	ld a, 0
+	call  str_at_display
+	call update_display
+	call tape_gap
+	call tape_low
+
+	call cin
+	cp 0
+	jr z, .tt1
 	ret
 
 ; wait for rising edge and then count pulses until possible gap (ie no pulses detected for 5ms)
 
 tape_detect:
-	ld a, 0
-	ld hl, (tape_sync)     ; high pulse count
-	ld hl, (tape_sync+1)   ; low pulse count
-
-
-.td1:   in a,(0)
+	in a, (0)
+	cp b
+	jr z, .td4
+	ld b, a
+	push bc
 	; TODO add break out
-	cp 0
-	jr z, .td1
 
-	; rising edge start count
-;	ld de, 10000
-.td2:
-	ld hl, (tape_sync)
-		inc (hl)
-.td3: 
-	ld a, 1
-	call aDelayInMS
-; wait for next pulse
-	in a,(0)
-	cp 0
-	jr nz, .td4
-	ld hl, (tape_sync+1)
-	inc (hl)
-	ld a,(hl)
-	cp 5
-	jr .td2
+	; high pulse detected start count
+
+	; wait for next pulse
+
+	call active
+	ex de, hl
+	ld a, 0
+	call  str_at_display
+	call update_display
+	pop bc
+;	ld hl, tape_sync
+;	inc (hl)
+
+;	ld a, 1
+;	call aDelayInMS
+
 
 .td4:
 	 ; in gap

@@ -23,11 +23,12 @@ if TAPE_SUPPORT
 .GP2:
 
 	CWHEAD .GPI 31 "SETTAPE" 7 WORD_FLAG_CODE
-; | SETTAPE ( port gap high low -- )   Set parameters for tape support | DONE
+; | SETTAPE ( port gap freq high low -- )   Set parameters for tape support | DONE
 ; | | port - Device address port; default is Device A on 00h
-; | | gap - Gap period counter; default is 150
-; | | high - High bit period counter; default is 70
-; | | low - Low bit period counter; default is 20
+; | | gap - Gap period counter; default is 250
+; | | freq - Osc freq; default 0ms
+; | | high - High bit period counter; default is 150
+; | | low - Low bit period counter; default is 50
 
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "TSE"
@@ -43,7 +44,13 @@ if TAPE_SUPPORT
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
-		ld (tape_tm_gap), hl
+		ld a, l
+		ld (tape_tm_freq), a
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+		ld a, l
+		ld (tape_tm_gap), a
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
@@ -103,7 +110,7 @@ if TAPE_SUPPORT
 		NEXTW
 
 .TCAL:
-	CWHEAD .TAPEEND 31 "TAPECAL" 7 WORD_FLAG_CODE
+	CWHEAD .TTEST 31 "TAPECAL" 7 WORD_FLAG_CODE
 ; | TAPECAL (  -- )    Listen to a tape header and report on bit detection pulses | TO DO
 		if DEBUG_FORTH_WORDS_KEY
 			DMARK "TCA"
@@ -114,6 +121,17 @@ if TAPE_SUPPORT
 
 		NEXTW
 
+.TTEST:
+	CWHEAD .TAPEEND 31 "TAPETEST" 8 WORD_FLAG_CODE
+; | TAPETEST (  -- )    Record a repeating stripe pattern of 0 and 1 for testing record and playback via TAPECAL | TO DO
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "TTS"
+			CALLMONITOR
+		endif
+
+		call tape_test
+
+		NEXTW
 
 .TAPEEND:
 endif

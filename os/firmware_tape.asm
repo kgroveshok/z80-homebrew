@@ -173,6 +173,7 @@ tape_ready_rec:
 	call info_panel
 	ret
 
+tape_ready_play:
 tape_ready_load: 
 
 	ld hl, trr3
@@ -263,35 +264,31 @@ tape_save:
 ; Listen to the start of a tape header and calculate pulse lengths and confirm can read
 
 tape_calibration:
-		call tape_ready_load
-
 	; start a counter for 1s max length of header
 
 
-	; init sync fields
-;	ld hl, tape_sync
-;	ld a, 0
-;	ld (hl), a
-;	ld de, tape_sync+1
-;	ld bc, 10
-;	ldir
 
+	call tape_ready_load
 	call clear_display
 
+	call delay1s
+	call delay1s
+	call delay1s
+	call delay1s
+	call delay1s
+
+	; init sync fields
 	ld hl, 0
+	ld (tape_sync), hl
 .tc:
 
-	push hl
-	call active
-	ex de, hl
-	ld a, display_row_4
-	call  str_at_display
-	call update_display
+
 	call cin
 	cp 0
-	jr z, .tce
-	pop hl
+	jr nz, .tce
 
+	ld a, 1
+	call aDelayInMS
 
 	call tape_detect
 
@@ -299,23 +296,30 @@ tape_calibration:
 	jr z, .tc
 
 .tc1:
-	push hl
+	call active
+	ex de, hl
+	ld a, display_row_4
+	call  str_at_display
+;	call update_display
+
+	ld hl, (tape_sync)
 	inc hl
-	push hl
+	ld (tape_sync), hl
+
 	ex de, hl
 
 	ld hl, scratch
 	call uitoa_16
 	ex de, hl
 	ld a, display_row_4+4
+
 	call  str_at_display
 	call update_display
-	pop hl
+
 	jr .tc
 
 
 .tce:
-	call tape_ready_stop
 	ret
 
 
@@ -325,8 +329,10 @@ tape_calibration:
 tape_test:
 	call tape_ready_rec
 
+
 	call clear_display
 
+	
 .tt1:   
 	call active
 	ex de, hl
@@ -363,24 +369,29 @@ tape_test:
 ; wait for rising edge and then count pulses until possible gap (ie no pulses detected for 5ms)
 
 tape_detect:
-	ld b, 255
+;	ld b, 255
 ; initial sample
-	in a, (0)
-	ld c, a
 
-.td2:
+;	ld a, (tape_sync+3)
+;	ld c, a
+;.td2:
 	in a, (0)
-	cp c
-	jr nz, .td3
-	djnz .td2
-
-; no change detected
-	ld a, 0
+	and 1
+;	cp c
+;	jr nz, .td3
+;	djnz .td2
+;
+;	ld (tape_sync+3), a
+;; no change detected
+;	ld a, 0
 	ret
 
 ; change detected
-.td3:   ld a, 1
-	ret
+;.td3:   
+;	
+;	ld (tape_sync+3), a
+;	ld a, 1
+;	ret
 
 
 ; eof

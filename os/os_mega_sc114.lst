@@ -191,7 +191,7 @@
 803b			 
 803b ..			buildtime: db   "Build: " 
 8042					include "romtimestamp.asm" 
-8042 ..			db '2026-05-04 08:38' 
+8042 ..			db '2026-05-04 08:43' 
 # End of file romtimestamp.asm
 8052 00				   db 0 
 8053			 
@@ -10029,12 +10029,16 @@
 9169			 
 9169			.tc1: 
 9169 cd d3 87			call scroll_up 
+916c			 
+916c				; draw stats line 
+916c			 
 916c cd 68 87			call active 
 916f eb				ex de, hl 
 9170 3e 78			ld a, display_row_4 
 9172 cd 22 88			call  str_at_display 
-9175			;	call update_display 
-9175			; TODO add a scroll up if enter is pressed - only useful if a counter from last detection is included 
+9175			 
+9175				; inc pulse counter 
+9175			 
 9175 2a 42 ea			ld hl, (tape_sync) 
 9178 23				inc hl 
 9179 22 42 ea			ld (tape_sync), hl 
@@ -10056,9 +10060,7 @@
 9190 cd 41 8d			call uitoa_16 
 9193 eb				ex de, hl 
 9194 3e 82			ld a, display_row_4+10 
-9196			 
 9196 cd 22 88			call  str_at_display 
-9199			 
 9199			 
 9199 cd 32 88			call update_display 
 919c			 

@@ -191,7 +191,7 @@
 003b			 
 003b ..			buildtime: db   "Build: " 
 0042					include "romtimestamp.asm" 
-0042 ..			db '2026-05-04 08:38' 
+0042 ..			db '2026-05-04 08:43' 
 # End of file romtimestamp.asm
 0052 00				   db 0 
 0053			 
@@ -10900,12 +10900,16 @@
 148e			 
 148e			.tc1: 
 148e cd f2 0a			call scroll_up 
+1491			 
+1491				; draw stats line 
+1491			 
 1491 cd 87 0a			call active 
 1494 eb				ex de, hl 
 1495 3e 78			ld a, display_row_4 
 1497 cd 41 0b			call  str_at_display 
-149a			;	call update_display 
-149a			; TODO add a scroll up if enter is pressed - only useful if a counter from last detection is included 
+149a			 
+149a				; inc pulse counter 
+149a			 
 149a 2a 7d f9			ld hl, (tape_sync) 
 149d 23				inc hl 
 149e 22 7d f9			ld (tape_sync), hl 
@@ -10927,9 +10931,7 @@
 14b5 cd 66 10			call uitoa_16 
 14b8 eb				ex de, hl 
 14b9 3e 82			ld a, display_row_4+10 
-14bb			 
 14bb cd 41 0b			call  str_at_display 
-14be			 
 14be			 
 14be cd 51 0b			call update_display 
 14c1			 

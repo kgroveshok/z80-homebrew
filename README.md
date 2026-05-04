@@ -43,6 +43,7 @@ Current Specification/Feature Set
 * Digital video out (TODO)
 * Built-in address decoder for four devices (2 used above)
 * Tape support in progress on Device A by default and can be plugged into the bus. Long term on board.
+* On board sound support (TODO on device B)
 * Sound chip via SPI
 * External cart support via PIO 2 Port B. Adding support for:
    - Real time clock SPI (TODO)

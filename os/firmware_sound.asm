@@ -6,8 +6,6 @@ SOUND_DEVICE_AY: equ 0
 
 SOUND_DEVICE: equ Device_A
 
-
-
 if SOUND_DEVICE_AY
 	include "firmware_sound_ay38910.asm"
 else
@@ -28,6 +26,7 @@ endif
 
 ;note:    
 ;	ret
+
 
 
 

@@ -17,6 +17,32 @@
 ;.AFTERSOUND:
 ;endif
 
+if BASE_KEV
+.BUZZ:
+
+	CWHEAD .BUZZE 31 "BUZZ" 4 WORD_FLAG_CODE
+; | BUZZ ( dur freq -- )   Sound buzzer for duration dur with osc freq of freq ms | DONE
+
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "BUZ"
+			CALLMONITOR
+		endif
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+		push hl
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		pop bc
+		ld b, c
+		call sound_buzzer
+
+		NEXTW
+.BUZZE:
+endif
+
 
 if TAPE_SUPPORT
 

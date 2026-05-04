@@ -195,7 +195,7 @@
 013b			 
 013b ..			buildtime: db   "Build: " 
 0142					include "romtimestamp.asm" 
-0142 ..			db '2026-05-04 09:05' 
+0142 ..			db '2026-05-04 18:16' 
 # End of file romtimestamp.asm
 0152 00				   db 0 
 0153			 
@@ -9730,6 +9730,9 @@
 1143			; eof 
 # End of file firmware_memory.asm
 1143			  
+1143			if BASE_KEV  
+1143			include "firmware_buzz.asm"     ; a simple buzzer sounder  
+1143			endif  
 1143			  
 1143			if TAPE_SUPPORT   
 1143				include "firmware_tape.asm"    ; Tape support on Device A by default  
@@ -34611,6 +34614,32 @@
 43f6			;		NEXTW 
 43f6			;.AFTERSOUND: 
 43f6			;endif 
+43f6			 
+43f6			if BASE_KEV 
+43f6			.BUZZ: 
+43f6			 
+43f6				CWHEAD .BUZZE 31 "BUZZ" 4 WORD_FLAG_CODE 
+43f6			; | BUZZ ( dur freq -- )   Sound buzzer for duration dur with osc freq of freq ms | DONE 
+43f6			 
+43f6					if DEBUG_FORTH_WORDS_KEY 
+43f6						DMARK "BUZ" 
+43f6						CALLMONITOR 
+43f6					endif 
+43f6			 
+43f6					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+43f6					push hl 
+43f6					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+43f6			 
+43f6					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+43f6					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+43f6			 
+43f6					pop bc 
+43f6					ld b, c 
+43f6					call sound_buzzer 
+43f6			 
+43f6					NEXTW 
+43f6			.BUZZE: 
+43f6			endif 
 43f6			 
 43f6			 
 43f6			if TAPE_SUPPORT 

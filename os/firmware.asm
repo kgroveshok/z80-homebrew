@@ -725,6 +725,9 @@ include "firmware_maths.asm"     ; any odd maths stuff   TODO removed until I fi
 include "firmware_strings.asm"   ; string handling
 include "firmware_memory.asm"   ; malloc and free
 
+if BASE_KEV
+include "firmware_buzz.asm"     ; a simple buzzer sounder
+endif
 
 if TAPE_SUPPORT 
 	include "firmware_tape.asm"    ; Tape support on Device A by default

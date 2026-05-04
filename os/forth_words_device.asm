@@ -23,10 +23,11 @@ if TAPE_SUPPORT
 .GP2:
 
 	CWHEAD .GPI 31 "SETTAPE" 7 WORD_FLAG_CODE
-; | SETTAPE ( port gap freq high low -- )   Set parameters for tape support | DONE
+; | SETTAPE ( port gap hpulse lpulse high low -- )   Set parameters for tape support | DONE
 ; | | port - Device address port; default is Device A on 00h
 ; | | gap - Gap period counter; default is 250
-; | | freq - Osc freq; default 0ms
+; | | hpulse - Count of pulses for 1; default is 6
+; | | lpulse - Count of pulses for 0; default is 2
 ; | | high - High bit period counter; default is 150
 ; | | low - Low bit period counter; default is 50
 
@@ -45,7 +46,12 @@ if TAPE_SUPPORT
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 		ld a, l
-		ld (tape_tm_freq), a
+		ld (tape_pulse_low), a
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+		ld a, l
+		ld (tape_pulse_high), a
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol

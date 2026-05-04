@@ -6,8 +6,6 @@
 ; pulse marks  of stream
 ; proportial
 
-DEBUG_TAPE: equ 1
-
 
 ; setup default tape params
 tape_init:    
@@ -17,13 +15,16 @@ tape_init:
 	ld a, 250
 	ld (tape_tm_gap), a
 
-	ld a, 200
-	ld (tape_tm_freq), a
+	ld a, 6
+	ld (tape_pulse_high), a
+
+	ld a, 2
+	ld (tape_pulse_low), a
 
 	ld hl, 50
 	ld (tape_tm_high), hl
 
-	ld hl, 10
+	ld hl, 50
 	ld (tape_tm_low), hl
 	ret
 
@@ -39,25 +40,7 @@ tape_osc:
 	; c = port number
 	; d = bus data
 	
-;	ld a, (tape_tm_freq)
-;	ld b, a
-;.to:
 	out (c), d
-	
-;	cp 0
-;	jr z, .fski
-;	ld a, 1
-;	call aDelayInMS
-
-	; do a brief pause
-;	push bc
-;.flo:	
-;    and     255  	; 7
-;    dec     bc      	; 6
-;    ld      a,c     	; 4
-;    or      b     	; 4
-;	djnz .flo
-;	pop bc
 
 	dec hl
 	call ishlzero
@@ -69,15 +52,13 @@ tape_osc:
 tape_gap: 
 	ld a, (tape_tm_gap)
 	call aDelayInMS
+	ret
 
-if DEBUG_TAPE
-	call delay1s 
-	call delay1s 
-	call delay1s 
-	call delay1s 
-	call delay1s 
-	call delay1s 
-endif
+tape_byte_gap:
+	call tape_gap
+	call tape_gap
+	call tape_gap
+	call tape_gap
 	ret
 
 ; output a high period
@@ -86,8 +67,12 @@ tape_high:
 	ld a, (tape_port)
 	ld c, a
 	ld d, 255
-	ld hl, (tape_tm_high)
+	ld a, (tape_pulse_high)
+	ld b, a
+.th:	ld hl, (tape_tm_high)
 	call tape_osc
+	call tape_gap
+	djnz .th
 	 ret
 
 ; output a low period
@@ -97,8 +82,12 @@ tape_low:
 	ld a, (tape_port)
 	ld c, a
 	ld d, 255
-	ld hl, (tape_tm_low)
+	ld a, (tape_pulse_low)
+	ld b, a
+.tl:	ld hl, (tape_tm_low)
 	call tape_osc
+	call tape_gap
+	djnz .tl
 	 ret
 
 ; end of save marker
@@ -106,14 +95,14 @@ tape_low:
 tape_end:
 	ld a, 255
 	call tape_byte_out
-	call tape_gap
+	call tape_byte_gap
 
 	ld a, 255
 	call tape_byte_out
-	call tape_gap
+	call tape_byte_gap
 	ld a, 255
 	call tape_byte_out
-	call tape_gap
+	call tape_byte_gap
 	 ret
 
 ; output an encoded byte
@@ -135,7 +124,7 @@ tape_byte_out:
 	pop bc
 	sla c
 	djnz .tbo
-
+	call tape_byte_gap
 
 	 ret
 
@@ -148,8 +137,8 @@ tape_strz_out:
 	push hl
 	call tape_byte_out
 
-	call tape_gap
-	call tape_gap
+;	call tape_gap
+;	call tape_gap
 
 	call active
 	ex de, hl
@@ -202,6 +191,8 @@ trr6: db "Stop tape.", 0
 ; hl - string to output
 ; de - file name
 
+; TODO Add save progress
+
 tape_save: 
 
 	push hl
@@ -217,42 +208,47 @@ tape_save:
 	call  str_at_display
 	call update_display
 
+; TODO Notify tape header
+
 	; tape pulse training header
 
 	call tape_high
-	call tape_gap
+	call tape_byte_gap
 	call tape_low
-	call tape_gap
+	call tape_byte_gap
 
 	call tape_high
-	call tape_gap
+	call tape_byte_gap
 	call tape_low
-	call tape_gap
+	call tape_byte_gap
 
 	call tape_high
-	call tape_gap
+	call tape_byte_gap
 	call tape_low
-	call tape_gap
+	call tape_byte_gap
+
+; TODO Notify name save
 
 	; start of name
 
-	call tape_gap
-	call tape_gap
-	call tape_gap
+	call tape_byte_gap
+	call tape_byte_gap
 
 	; TODO output file name
 
 	pop hl   ; file name
 	call tape_strz_out
 
-	call tape_gap
-	call tape_gap
-	call tape_gap
-	call tape_gap
+	call tape_byte_gap
+	call tape_byte_gap
+
+; TODO show progress of number of bytes to save vs byte number
 
 	pop hl ; string to output
 	call tape_strz_out
+; TODO have a save silient with no progress and one with progress
 
+; TODO notify tape end marker
 	call tape_end
 	call tape_ready_stop
 	call clear_display
@@ -280,6 +276,7 @@ tape_calibration:
 	; init sync fields
 	ld hl, 0
 	ld (tape_sync), hl
+	ld (tape_sync+2), hl
 .tc:
 
 
@@ -290,17 +287,26 @@ tape_calibration:
 	ld a, 1
 	call aDelayInMS
 
+	ld hl, (tape_sync+2)
+	inc hl
+	ld (tape_sync+2), hl
+
 	call tape_detect
 
 	cp 0
 	jr z, .tc
 
 .tc1:
+	call scroll_up
+
+	; draw stats line
+
 	call active
 	ex de, hl
 	ld a, display_row_4
 	call  str_at_display
-;	call update_display
+
+	; inc pulse counter
 
 	ld hl, (tape_sync)
 	inc hl
@@ -314,12 +320,28 @@ tape_calibration:
 	ld a, display_row_4+4
 
 	call  str_at_display
+
+	; period counter
+
+	ld de, (tape_sync+2)
+
+	ld hl, scratch
+	call uitoa_16
+	ex de, hl
+	ld a, display_row_4+10
+	call  str_at_display
+
 	call update_display
 
+	; reset period counter
+	ld hl, 0
+	ld (tape_sync+2), hl
 	jr .tc
 
 
 .tce:
+	call tape_ready_stop
+	call clear_display
 	ret
 
 
@@ -345,25 +367,29 @@ tape_test:
 	call update_display
 
 	call tape_high
-	call tape_gap
+	call delay1s
+	call delay1s
 	
 
 	call active
 	ex de, hl
 	ld a, 0
 	call  str_at_display
+
 	ld a, 2
 	ld de, .tlow
 	call  str_at_display
 	call update_display
 
 	call tape_low
-	call tape_gap
+	call delay1s
+	call delay1s
 
 	call cin
 	cp 0
 	jr z, .tt1
 	call tape_ready_stop
+	call clear_display
 	ret
 
 ; wait for rising edge and then count pulses until possible gap (ie no pulses detected for 5ms)

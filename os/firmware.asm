@@ -306,18 +306,19 @@ spi_device_id: equ spi_device - 1    ; human readable bank number
 
 ;;;;; Tape support params
 
-tape_port: equ spi_device_id - 1
-tape_sync: equ tape_port-10     ; counters used in detecting tape header
-tape_tm_gap: equ tape_sync - 1
-tape_tm_freq: equ tape_tm_gap - 1
-tape_tm_high: equ tape_tm_freq - 2
-tape_tm_low: equ tape_tm_high - 2
+tape_port: equ spi_device_id - 1     ; device number
+tape_pulse_high: equ tape_port - 1       ; how many pulses mean 1
+tape_pulse_low: equ tape_pulse_high - 1    ; how many pulses mean 0
+tape_tm_gap: equ tape_pulse_low - 1      ; inter bit gap in ms
+tape_tm_high: equ tape_tm_gap - 2      ; cycles for a high pulse
+tape_tm_low: equ tape_tm_high - 2     ; cycles for a low pulse
+tape_sync: equ tape_tm_low-10     ; counters used in detecting tape header
 
 ;;;;; forth cli params
 
 ; TODO use a different frame buffer for forth???
 
-f_cursor_ptr:  equ tape_tm_low - 1  ; offset into frame buffer for any . or EMIT output
+f_cursor_ptr:  equ tape_sync - 1  ; offset into frame buffer for any . or EMIT output
 cli_buffer: equ f_cursor_ptr - 20     ; temp hold - maybe not needed
 cli_origtoken: equ cli_buffer - 2     ; pointer to the text of token for this word being checked
 cli_token: equ cli_origtoken - 2     ; pointer to the text of token for this word being checked

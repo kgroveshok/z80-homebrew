@@ -2,20 +2,24 @@
 
 ; | ## Device Words
 
-;if SOUND_ENABLE
-;.NOTE:
-;	CWHEAD .AFTERSOUND 31 "NOTE" 4 WORD_FLAG_CODE
-;; NOTE ( ud uf --  )  Plays a note of frequency uf for the duration of ud millseconds  TODO
-;		if DEBUG_FORTH_WORDS_KEY
-;			DMARK "NTE"
-;			CALLMONITOR
-;		endif
-;
-;	
-;
-;		NEXTW
-;.AFTERSOUND:
-;endif
+if SOUND_ENABLE
+.NOTE:
+	CWHEAD .NOTEEND 31 "NB" 2 WORD_FLAG_CODE
+; | NB ( u --  )  Sends a note byte to sound card  TODO
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "NBE"
+			CALLMONITOR
+		endif
+
+		
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+		call note_byte	
+
+		NEXTW
+.NOTEEND:
+endif
 
 if BASE_KEV
 .BUZZ:
@@ -49,8 +53,9 @@ if TAPE_SUPPORT
 .GP2:
 
 	CWHEAD .GPI 31 "SETTAPE" 7 WORD_FLAG_CODE
-; | SETTAPE ( port gap hpulse lpulse high low -- )   Set parameters for tape support | DONE
+; | SETTAPE ( port gap samples hpulse lpulse high low -- )   Set parameters for tape support | DONE
 ; | | port - Device address port; default is Device A on 00h
+; | | samples - How many sample cycles to count pulses
 ; | | gap - Gap period counter; default is 250
 ; | | hpulse - Count of pulses for 1; default is 6
 ; | | lpulse - Count of pulses for 0; default is 2
@@ -78,6 +83,11 @@ if TAPE_SUPPORT
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 		ld a, l
 		ld (tape_pulse_high), a
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+		ld (tape_samples), hl
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol

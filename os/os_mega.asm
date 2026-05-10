@@ -25,7 +25,8 @@ CPU_CLOCK_10MHZ: equ  0
 STORAGE_SE: equ 1
  
 ; now handled by SPI support
-SOUND_ENABLE: equ 0   
+; testing onboard instead now
+SOUND_ENABLE: equ 1
 
 ; Number of bytes available in heap   TODO make all of user ram
 baseram: equ 08000h

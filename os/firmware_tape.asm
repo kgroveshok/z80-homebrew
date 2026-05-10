@@ -15,6 +15,9 @@ tape_init:
 	ld a, 250
 	ld (tape_tm_gap), a
 
+	ld hl, 8000
+	ld (tape_samples), hl
+
 	ld a, 6
 	ld (tape_pulse_high), a
 
@@ -71,7 +74,6 @@ tape_high:
 	ld b, a
 .th:	ld hl, (tape_tm_high)
 	call tape_osc
-	call tape_gap
 	djnz .th
 	 ret
 
@@ -84,9 +86,10 @@ tape_low:
 	ld d, 255
 	ld a, (tape_pulse_low)
 	ld b, a
-.tl:	ld hl, (tape_tm_low)
+.tl:	ld hl, (tape_tm_high)
+; keep the same pulse size and instead use count of pulse rather than length of pulse
+;	ld hl, (tape_tm_low)
 	call tape_osc
-	call tape_gap
 	djnz .tl
 	 ret
 
@@ -175,6 +178,7 @@ tape_ready_stop:
 	ld hl, trr6
 	ld de, trr2
 	call info_panel
+	call clear_display
 	ret
 
 trr1: db "Start recorder...",0
@@ -182,7 +186,8 @@ trr3: db "Start playback...",0
 trr2: db "Press any key when ready.",0
 trr4: db "Tape operation in progesss...", 0
 trr6: db "Stop tape.", 0
-
+ttrc1: db "(q/t)",0
+ttrc2: db "(q/t/up/down)",0
 
 ; Tape Input
 
@@ -251,18 +256,17 @@ tape_save:
 ; TODO notify tape end marker
 	call tape_end
 	call tape_ready_stop
-	call clear_display
 	ret
 
 
 ; TODO on load need to do a clear of all words?
 
-; Listen to the start of a tape header and calculate pulse lengths and confirm can read
+; Listen to a tape and show pulse detections
 
 tape_calibration:
-	; start a counter for 1s max length of header
 
 
+	
 
 	call tape_ready_load
 	call clear_display
@@ -277,15 +281,14 @@ tape_calibration:
 	ld hl, 0
 	ld (tape_sync), hl
 	ld (tape_sync+2), hl
+
+	; default calibration display of period counts between pulse detections
 .tc:
 
 
-	call cin
-	cp 0
-	jr nz, .tce
 
-	ld a, 1
-	call aDelayInMS
+;	ld a, 1
+;	call aDelayInMS
 
 	ld hl, (tape_sync+2)
 	inc hl
@@ -331,18 +334,75 @@ tape_calibration:
 	ld a, display_row_4+10
 	call  str_at_display
 
+
+	; key options
+
+	ld a, display_row_1+30
+	ld de, ttrc1
+	call  str_at_display
 	call update_display
 
 	; reset period counter
 	ld hl, 0
 	ld (tape_sync+2), hl
+
+	call cin
+	cp 'q'
+	jr z, .tce
+	cp 't'
+	jp z, .tct
+
 	jr .tc
 
 
 .tce:
 	call tape_ready_stop
-	call clear_display
 	ret
+
+
+; calibration timed counter
+
+.tct:
+
+	; active display until puse detected
+	; when pulse detected
+	;     init a pulse counter
+	;     start count down to period expiry
+        ;     inc pulse counter on each detection
+        ;     at end of period expiry end
+        ; display pulses counted in period
+        ; allow to change period count
+
+	; display pulses counted
+	; display current period count
+
+	; key options
+
+	ld a, display_row_1+30
+	ld de, ttrc2
+	call  str_at_display
+	call update_display
+
+	call cin
+	cp 'q'
+	jr z, .tce
+	cp 't'
+	jp z, .tc
+	cp KEY_UP
+	jr z, .tcu
+	cp KEY_DOWN
+	jr z, .tcd
+
+	jr .tct
+
+; inc period counter by 10
+.tcu:
+	jr .tct
+
+; dec period counter by 10
+.tcd:	
+	jr .tct
+
 
 
 .thigh: db "High",0
@@ -351,9 +411,12 @@ tape_calibration:
 tape_test:
 	call tape_ready_rec
 
-
 	call clear_display
 
+	call delay1s
+	call delay1s
+	call delay1s
+	call delay1s
 	
 .tt1:   
 	call active
@@ -389,7 +452,6 @@ tape_test:
 	cp 0
 	jr z, .tt1
 	call tape_ready_stop
-	call clear_display
 	ret
 
 ; wait for rising edge and then count pulses until possible gap (ie no pulses detected for 5ms)

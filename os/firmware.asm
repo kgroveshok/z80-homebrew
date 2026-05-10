@@ -309,7 +309,8 @@ spi_device_id: equ spi_device - 1    ; human readable bank number
 tape_port: equ spi_device_id - 1     ; device number
 tape_pulse_high: equ tape_port - 1       ; how many pulses mean 1
 tape_pulse_low: equ tape_pulse_high - 1    ; how many pulses mean 0
-tape_tm_gap: equ tape_pulse_low - 1      ; inter bit gap in ms
+tape_samples: equ tape_pulse_low - 2   ; how many sample cycles are needed to count the pulses
+tape_tm_gap: equ tape_samples - 1      ; inter bit gap in ms
 tape_tm_high: equ tape_tm_gap - 2      ; cycles for a high pulse
 tape_tm_low: equ tape_tm_high - 2     ; cycles for a low pulse
 tape_sync: equ tape_tm_low-10     ; counters used in detecting tape header
@@ -736,9 +737,9 @@ endif
 
 ; device C
 ; Now handled by SPI
-;if SOUND_ENABLE
-;	include "firmware_sound.asm"
-;endif
+if SOUND_ENABLE
+	include "firmware_sound.asm"
+endif
 
 include "firmware_diags.asm"
 

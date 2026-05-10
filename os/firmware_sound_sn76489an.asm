@@ -68,16 +68,23 @@ sound_init:
 
 ;  frequ = clock / ( 2 x reg valu x 32 ) 
 
-note: 
-	
+note:
 
 	ret
+
+note_byte: 
+	ld c, SOUND_DEVICE
+	ld a, l
+	out (c), a	
+
+	ret
+
 
 note_send_byte:
 	; byte in a
 
 	; we high
-	out (Device_B), a
+	out (SOUND_DEVICE), a
 ;	ld a, 1
 ;	call aDelayInMS
 	nop 
@@ -85,7 +92,7 @@ note_send_byte:
 	nop 
 	nop 
 	; we low
-	out (Device_B), a
+	out (SOUND_DEVICE), a
 ;	ld a, 1
 ;	call aDelayInMS
 	nop 
@@ -93,7 +100,7 @@ note_send_byte:
 	nop 
 	nop 
 	; we high
-	out (Device_B), a
+	out (SOUND_DEVICE), a
 ;	ld a, 1
 ;	call aDelayInMS
 	nop 
@@ -112,6 +119,19 @@ note_send_byte:
 ;  SendByte(0xff);
 ;}
 
+note_silence:
+	ld c, SOUND_DEVICE
+	ld a, 0x9f
+	out (c), a
 
+	ld a, 0xbf
+	out (c), a
+
+	ld a, 0xdf
+	out (c), a
+
+	ld a, 0xff
+	out (c), a
+	ret
 ; eof
 

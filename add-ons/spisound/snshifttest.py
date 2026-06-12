@@ -214,6 +214,12 @@ cePin.low()
 #outbyte(SOUND_DATA + SOUND_CH0 + SOUND_TONE + 0b0101)
 #sleep(.5)
 
+while True:
+    for a in range(0,255):
+        print(a)
+        outbyte(a)
+        sleep(0.1)
+
 while False:
     outbyte(128)
     sleep(5)
@@ -280,7 +286,7 @@ offAllChannels()
 
 outbyte(0x94)
 
-while True:
+while False:
     
     print("lllllllllllllll")
     outbyte(0x83)

@@ -196,7 +196,7 @@
 013b			 
 013b ..			buildtime: db   "Build: " 
 0142					include "romtimestamp.asm" 
-0142 ..			db '2026-06-12 10:03' 
+0142 ..			db '2026-06-12 13:44' 
 # End of file romtimestamp.asm
 0152 00				   db 0 
 0153			 
@@ -34639,6 +34639,7 @@
 440c					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
 440c					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
 440c			 
+440c					ld a, l 
 440c					call note_byte	 
 440c			 
 440c					NEXTW 

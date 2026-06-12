@@ -15,6 +15,7 @@ if SOUND_ENABLE
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
+		ld a, l
 		call note_byte	
 
 		NEXTW

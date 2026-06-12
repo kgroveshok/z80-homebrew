@@ -49,7 +49,63 @@ SOUND_VOL: equ 10000B
 SOUND_TONE: equ 0B
 
 
-sound_init:
+sound_init: ret
+
+
+sound_bit_data: equ 0
+sound_bit_clk: equ 1
+sound_bit_latch: equ 2
+sound_bit_sound: equ 3
+
+
+; shift out a byte to the sound chip
+
+; A contains byte to send
+
+note_byte:
+
+	ld c, 	SOUND_DEVICE
+	ld b, 8   ; 8 bits to shift
+
+.nb1:	ld d, 0    ; our work byte to send to the device with flags
+
+	; set data bit state
+
+	bit 7, a
+	; high bit is set
+	jr z, .nb2
+	set sound_bit_data, d
+
+	; set latches state high
+.nb2:	set sound_bit_clk, d
+	set sound_bit_latch, d
+	out (c), d
+	
+	; clock the bit out
+	res sound_bit_clk, d
+	out (c), d
+	set sound_bit_clk, d
+	out (c), d
+
+	; shift a left one bit and repeat
+	rla
+
+	djnz .nb1
+
+	; latch
+	set sound_bit_latch, d
+	out (c), d
+	res sound_bit_latch, d
+	out (c), d
+	set sound_bit_latch, d
+	out (c), d
+		
+
+	; set 
+	ret
+
+
+oldsound_init:
 	ld a, SOUND_DATA | SOUND_CH0 | SOUND_VOL | 1111B
 	call note_send_byte
 	ld a, SOUND_DATA | SOUND_CH0 | SOUND_TONE | 0111B
@@ -72,15 +128,15 @@ note:
 
 	ret
 
-note_byte: 
+oldnote_byte: 
 	ld c, SOUND_DEVICE
 	ld a, l
 	out (c), a	
 
 	ret
 
-
-note_send_byte:
+note_send_byte: ret
+oldnote_send_byte:
 	; byte in a
 
 	; we high
@@ -119,7 +175,7 @@ note_send_byte:
 ;  SendByte(0xff);
 ;}
 
-note_silence:
+oldnote_silence:
 	ld c, SOUND_DEVICE
 	ld a, 0x9f
 	out (c), a

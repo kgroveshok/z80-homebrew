@@ -192,7 +192,7 @@
 803b			 
 803b ..			buildtime: db   "Build: " 
 8042					include "romtimestamp.asm" 
-8042 ..			db '2026-06-12 10:03' 
+8042 ..			db '2026-06-12 13:44' 
 # End of file romtimestamp.asm
 8052 00				   db 0 
 8053			 
@@ -35121,6 +35121,7 @@ bea3
 bea3					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
 bea3					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
 bea3			 
+bea3					ld a, l 
 bea3					call note_byte	 
 bea3			 
 bea3					NEXTW 

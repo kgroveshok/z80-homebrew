@@ -92,9 +92,9 @@ def shiftout(byte):
     
      
     latchPin.low()
-    sleep(0.01)
+   # sleep(0.01)
     
-    #for i in range(0,8):
+#    for i in range(0,8):
     for i in range(8,-1,-1):
 
         # Write the new value to the shift register
@@ -108,17 +108,22 @@ def shiftout(byte):
         else:
           dataPin.low()
           #print("pin "+str(i)+" low")
-        sleep(0.01)
+        #sleep(0.01)
         clockPin.high()
-        sleep(0.01)
+        #sleep(0.01)
+        
+       # latchPin.low()
+       # sleep(1)
+       # latchPin.high()
     
-    print("latch")
+    #print("latch high")
     latchPin.high()
-    sleep(0.01)
-    soundPin.low()
-    sleep(0.01)
-    soundPin.high()
-    sleep(0.01)
+    soundTog()
+    #sleep(0.01)
+    #soundPin.low()
+    #sleep(0.01)
+    #soundPin.high()
+    #sleep(0.01)
     
     
 
@@ -130,6 +135,7 @@ D4=Pin(12, mode=Pin.OUT)
 D5=Pin(13, mode=Pin.OUT)
 D6=Pin(14, mode=Pin.OUT)
 D7=Pin(15, mode=Pin.OUT)
+
 
 
 
@@ -146,19 +152,21 @@ def writebyte(b):
     D7(b&128)
 
 def soundTog():
-
-    soundPin.low()
-    sleep(0.01)
+    #print("sound high")
     soundPin.high()
-    sleep(0.01)
+    #sleep(0.1)
+    #print("sound low")
     soundPin.low()
-    sleep(0.01)
+    sleep(0.1)
+    soundPin.high()
+    #print("sound high")
+    #sleep(0.1)
 
 def outbyte(b):
-    cePin.low()
+#    cePin.low()
     shiftout(b)
-    writebyte(b)
-    cePin.high()
+    #writebyte(b)
+#    cePin.high()
     
 
 def offAllChannels():
@@ -183,10 +191,10 @@ def offAllChannels():
 SOUND_LATCH=0b10000000
 SOUND_DATA= 0
 SOUND_CH0= 0    
-SOUND_CH1= 0b0100000
-SOUND_CH2=0b1000000   
-SOUND_CH3= 0b1100000    
-SOUND_VOL= 0b10000
+SOUND_CH1=  0b00100000
+SOUND_CH2=  0b01000000   
+SOUND_CH3=  0b01100000    
+SOUND_VOL=  0b00010000
 SOUND_TONE= 0
 
 
@@ -195,70 +203,186 @@ cePin.low()
 
 #sound.high()
 
-outbyte(0x74)
-outbyte(0x12)
-outbyte(0x90)
+#outbyte(0x74)
+#outbyte(0x12)
+#outbyte(0x90)
 
-outbyte( SOUND_DATA + SOUND_CH0 + SOUND_VOL + 0b1111)
-sleep(.25	)
-outbyte( SOUND_DATA + SOUND_CH0 + SOUND_TONE + 0b0111)
-sleep(.25)
-outbyte(SOUND_DATA + SOUND_CH0 + SOUND_TONE + 0b0101)
-sleep(.5)
+#outbyte( SOUND_DATA + SOUND_CH0 + SOUND_VOL + 0b1111)
+#sleep(.25	)
+#outbyte( SOUND_DATA + SOUND_CH0 + SOUND_TONE + 0b0111)
+#sleep(.25)
+#outbyte(SOUND_DATA + SOUND_CH0 + SOUND_TONE + 0b0101)
+#sleep(.5)
 
-#sleep(5)
-#shiftout(128)
-#sleep(5)
-#shiftout(1)
-#sleep(5)
+while False:
+    outbyte(128)
+    sleep(5)
+    outbyte(0)
+    sleep(5)
+    outbyte(1)
+    sleep(5)
+    outbyte(2)
+    sleep(5)
+    outbyte(4)
+    sleep(5)
+    outbyte(8)
+    sleep(5)
+    outbyte(16)
+    sleep(5)
+    outbyte(32)
+    sleep(5)
+    outbyte(64)
+    sleep(5)
+    outbyte(128)
+    sleep(5)
+while False:
+    for i in range(128,128+16):
+        outbyte(i)
+        sleep(0.25)
 
+offAllChannels()
+#print("vol")
+#outbyte(0x90)
+    
+while False:
+    print("vol")
+    outbyte(0x90)
+
+    print("n1")
+    outbyte(0x80)
+    sleep(1)
+    print("vol")
+    outbyte(0x90)
+
+    print("n2")
+    outbyte(0x86)
+    sleep(1)
+    print("vol")
+    outbyte(0x90)
+
+    print("n3")
+    outbyte(0x8e)
+    
+    sleep(1)
+        #offAllChannels()
+        #sleep(0.25)
+    
+    
+    
+#outbyte( SOUND_DATA + SOUND_CH0 + SOUND_VOL + 0b1111)#
+
+#outbyte( SOUND_LATCH + SOUND_CH0 + 0b1111)
+#outbyte( 0b111111)
+#sleep(1)
+#outbyte( SOUND_LATCH + SOUND_CH0 + 0b1111)
+#outbyte( 0b001111)
+offAllChannels()
+
+outbyte(0x94)
 
 while True:
+    
+    print("lllllllllllllll")
+    outbyte(0x83)
+    outbyte(0x12)
+
+
+    sleep(0.25)
+    print("ffffffffffffffffff")
+    #offAllChannels()
+    #outbyte(0x90)
+    outbyte(0x82)
+    outbyte(0x16)
+    sleep(0.25)
+    print("aaaaaaaaaaaaaaaaa")
+    outbyte(0x83)
+    outbyte(0x09)
+
+    sleep(0.25)
+    #offAllChannels()
+
+#print("vol")
+#outbyte(3)
+#print("nt1")
+#outbyte(0x8d)
+#outbyte(0xda)
+#sleep(2)
+#offAllChannels()
+#sleep(2)
+#print("nt2")
+#outbyte(3)
+#outbyte(0x8d)
+#outbyte(0xc0)
+#sleep(2)
+#offAllChannels()
+
+while False:
 
         #  // Change the Tone Period for Channel A every 500ms
 
 
-        outbyte(223)
+        #outbyte(223)
         #write_register(1, 1)
 
         #delay(500);
           
-        outbyte(170)
+        #outbyte(170)
         #write_register(1, 1)
 
-        sleep(.1)
+        #sleep(.1)
         #delay(500);
           
-        outbyte(123)
+        #outbyte(123)
         #write_register(1, 1)
 
-        sleep(.1)
+        #sleep(.1)
         #delay(500);
           
-        outbyte(102)
+        #outbyte(102)
         #write_register(1, 1)
-        sleep(.1)
+        #sleep(.1)
         #delay(500);
           
-        outbyte(63)
-        #write_register(1, 1)
-
-        sleep(.1)
-        #delay(500);
-          
-        outbyte(28)
+        #outbyte(63)
         #write_register(1, 1)
 
-        sleep(.1)
+        #sleep(.1)
         #delay(500);
           
-        outbyte(253)
+        #outbyte(28)
+        ##write_register(1, 1)
+
+        #sleep(.1)
+        #delay(500);
+          
+        #outbyte(253)
         #write_register(1, 0)
 
-        sleep(.1)
+        #sleep(.1)
         #delay(500);
-
-
+        print("off")
+        #offAllChannels()
+        print("off")
+        sleep(1)
+        print("h1")
+        outbyte( SOUND_LATCH + SOUND_CH0 + SOUND_VOL + 0b1111)
+        #sleep(.25)
+        #outbyte( SOUND_LATCH + SOUND_CH0 + SOUND_TONE + 0b0111)
+                #outbyte( SOUND_DATA + SOUND_CH0 + SOUND_TONE + 0b0111)
+        sleep(1)
+        print("h1a")
+        outbyte( SOUND_DATA + SOUND_CH0 + SOUND_TONE + 0b0111)
+        #outbyte(5)
+        #outbyte(SOUND_LATCH + SOUND_CH0 + SOUND_TONE + 0b0101)
+        #outbyte(SOUND_DATA + SOUND_CH0 + SOUND_TONE + 0b0101)
+        sleep(1)
+        print("h2")
+        #outbyte(SOUND_LATCH + SOUND_CH0 + SOUND_TONE + 0b0001)
+        #sleep(1)
+        outbyte( SOUND_DATA + SOUND_CH0 + SOUND_TONE + 0b0011)
+        #outbyte(0)
+        #outbyte(SOUND_DATA + SOUND_CH0 + SOUND_TONE + 0b1001)
+        sleep(1)
 
 
 while False:

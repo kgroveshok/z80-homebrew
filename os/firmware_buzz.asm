@@ -1,4 +1,7 @@
-; A simple buzzer for sound
+; A simple buzzer/flashing LED for sound
+
+; TODO Changing to use the single old vid pin left on the keyboard PIO to toggle on and off
+; Set bit on or off whch is picked up in the keyboard handler 
 
 DEVICE_BUZZ: equ Device_A
 
@@ -23,6 +26,10 @@ sound_buzzer:
 	ret z
 	jr sound_buzzer
 	
+
+led_on: ret
+led_off: ret
+
 
 ; eof
 	

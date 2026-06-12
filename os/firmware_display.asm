@@ -274,6 +274,22 @@ str_at_display:    ld hl,(display_fb_active)
             RET  Z              ;Yes, so finished
 		ld (hl),a
 	inc hl
+
+		; detect if about to print past the bottom right char
+	push hl
+	push de
+	ld de, display_row_4+display_cols
+	call cmp16
+	jr nz, .skipscroll
+	call scroll_up
+	pop de
+	pop hl ;; get rid and replace with hl moving to start of bottom row
+	ld hl, display_row_4
+	push hl
+	push de
+.skipscroll: pop de
+		pop hl
+
             INC  DE             ;Point to next character
             JR   .sad1     ;Repeat
 		ret

@@ -181,6 +181,8 @@ hardware_config: equ key_face_held - 10
 ;     0000 0000  no card inserted
 ;     0000 0001  storage card inserted
 ;     0000 0010  spi sd card active
+;     0000 0100  LED is on, 0 if off
+;     1000 0000  NMI has been activated
 
 ;     
 ; low byte:
@@ -582,6 +584,9 @@ hardware_init:
 	if TAPE_SUPPORT
 		call tape_init
 	endif
+	if DART_SUPPORT
+		call dart_init
+	endif
 
 	; setup malloc functions
 
@@ -727,13 +732,16 @@ include "firmware_strings.asm"   ; string handling
 include "firmware_memory.asm"   ; malloc and free
 
 if BASE_KEV
-include "firmware_buzz.asm"     ; a simple buzzer sounder
+include "firmware_buzz.asm"     ; a simple buzzer sounder or LED 
 endif
 
 if TAPE_SUPPORT 
 	include "firmware_tape.asm"    ; Tape support on Device A by default
 endif
 
+if DART_SUPPORT 
+	include "firmware_dart.asm"    ; Support for DART/SIO
+endif
 
 ; device C
 ; Now handled by SPI

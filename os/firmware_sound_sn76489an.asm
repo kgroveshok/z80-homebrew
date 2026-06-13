@@ -52,56 +52,17 @@ SOUND_TONE: equ 0B
 sound_init: ret
 
 
-sound_bit_data: equ 0
-sound_bit_clk: equ 1
-sound_bit_latch: equ 2
-sound_bit_sound: equ 3
-
-
 ; shift out a byte to the sound chip
 
+; see 595 for the shift bit flags
+
+; sound is complete when the shift reg is latched
+;sound_bit_d2: equ 3
+
 ; A contains byte to send
-
 note_byte:
-
-	ld c, 	SOUND_DEVICE
-	ld b, 8   ; 8 bits to shift
-
-.nb1:	ld d, 0    ; our work byte to send to the device with flags
-
-	; set data bit state
-
-	bit 7, a
-	; high bit is set
-	jr z, .nb2
-	set sound_bit_data, d
-
-	; set latches state high
-.nb2:	set sound_bit_clk, d
-	set sound_bit_latch, d
-	out (c), d
-	
-	; clock the bit out
-	res sound_bit_clk, d
-	out (c), d
-	set sound_bit_clk, d
-	out (c), d
-
-	; shift a left one bit and repeat
-	rla
-
-	djnz .nb1
-
-	; latch
-	set sound_bit_latch, d
-	out (c), d
-	res sound_bit_latch, d
-	out (c), d
-	set sound_bit_latch, d
-	out (c), d
-		
-
-	; set 
+	ld c, SOUND_DEVICE
+	call shift_byte
 	ret
 
 

@@ -753,5 +753,6 @@ include "firmware_diags.asm"
 
 include "firmware_prompts.asm"
 
+include "firmware_595shiftreg.asm"
 ; eof
 

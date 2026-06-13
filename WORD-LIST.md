@@ -247,8 +247,9 @@ Also refer to the auto start list examples as these contain extra words created 
 ### 1-! ( addr -- )  Decrement byte at address addr | DONE
 ### 1-2! ( addr -- )  Decrement word at address addr | DONE
 ## Device Words
+### SR ( u p --  )  Send byte u to shift reg on port p | DONE
+### LED ( u --  )  Set case LED on or off | DONE
 ### NB ( u --  )  Sends a note byte to sound card  TODO
-### BUZZ ( dur freq -- )   Sound buzzer for duration dur with osc freq of freq ms | DONE
 ### SETTAPE ( port gap samples hpulse lpulse high low -- )   Set parameters for tape support | DONE
  port - Device address port; default is Device A on 00h
  samples - How many sample cycles to count pulses

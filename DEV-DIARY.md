@@ -44,7 +44,7 @@ Hardware/PCB Design Enhancements:
 
 * TODO Set up led on last vid pin. add to keyboard firmware a check for config bit set to enable disable. See firmware_buzz.asm + lcd 4x40. Coded and working with a test led. Need circuit added to schem. Pin is VIDDO
 
-* DONE Added support for 595 shift reg on any port.
+* DONE Added support for 595 shift reg on any port via SR word
 * DONE Add op-amp circuit to SPISound and allow for selection at wire time. Moving SPISound to on board via direct bus use
 * DONE Add dart. Not doing. With a CTC will take up too much space. Better use if going to use the ESP.
 * DONE Pico to handle display to have two way return of data. Switching to a ESP Mini for extra features

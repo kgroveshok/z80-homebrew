@@ -40,7 +40,6 @@ Current Specification/Feature Set
 * PIO 2: Port B - Exposed 8 bit bus and SPI bus. Used for more storage (512k/1024k), SPI devices or digital I/o
 * Auto startup scripts/demos built into ROM and/or created on storage.
 * Exposed RC2014 connector
-* Digital video out (TODO)
 * Built-in address decoder for four devices (2 used above)
 * Tape support in progress on Device A by default and can be plugged into the bus. Long term on board.
 * On board sound support (TODO on device B)

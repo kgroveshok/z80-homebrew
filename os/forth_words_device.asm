@@ -2,6 +2,31 @@
 
 ; | ## Device Words
 
+
+if BASE_KEV
+.LED:    
+	CWHEAD .LEDEND 31 "LED" 3 WORD_FLAG_CODE
+; | LED ( u --  )  Set case LED on or off | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "LED"
+			CALLMONITOR
+		endif
+		
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+		
+		ld a, (hardware_word+1)
+		ld c, a
+
+		ld a, l
+		call set_led 
+		
+
+
+
+		NEXTW
+.LEDEND:
+endif
 if SOUND_ENABLE
 .NOTE:
 	CWHEAD .NOTEEND 31 "NB" 2 WORD_FLAG_CODE

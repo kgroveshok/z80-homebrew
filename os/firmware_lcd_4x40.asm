@@ -50,6 +50,7 @@ kLCDPrt:    EQU kDataReg       ;LCD port is the PIO port A data reg
 kLCDBitRS:  EQU 2              ;Port bit for LCD RS signal
 kLCDBitE:   EQU 3              ;Port bit for LCD E signal           
 kLCDBitE2:   EQU 0              ;Port bit for LCD E2 signal            VIDOUT
+kLCDBitLED:   EQU 1              ;Port bit for LCD E2 signal            VIDIN
 ; TODO Decide which E is being set
 kLCDWidth:  EQU display_cols             ;Width in characters
 
@@ -372,6 +373,21 @@ fLCD_Init:  LD   A, 40
             RET
 ; ok to here
 
+; decide on setting bit for LED on or off
+; Set correct bit in A
+IsLED: push hl
+	ld hl, hardware_word+1
+	bit 2, (hl)    ; led bit
+	jr nz, .isled1
+	res kLCDBitLED, a
+	jr .isleddone
+.isled1: set kLCDBitLED, a
+.isleddone:  	
+	pop hl
+
+	ret
+
+
 ; Write instruction to LCD
 ;   On entry: A = Instruction byte to be written
 ;   On exit:  AF BC DE HL IX IY I AF' BC' DE' HL' preserved
@@ -395,6 +411,7 @@ Wr4bits:
 		jr nz, .wea2	
 		pop af
 	    AND  0xF0           ;Mask so we only have D4 to D7
+		call IsLED
             OUT  (kLCDPrt), A   ;Output with E=Low and RS=Low
             SET  kLCDBitE, A	    ; TODO decide which E is being set
             res  kLCDBitE2, A	    ; TODO decide which E is being set
@@ -404,6 +421,7 @@ Wr4bits:
             RET
 .wea2:		pop af
 	    AND  0xF0           ;Mask so we only have D4 to D7
+		call IsLED
             OUT  (kLCDPrt), A   ;Output with E=Low and RS=Low
             SET  kLCDBitE2, A	    ; TODO decide which E is being set
             res  kLCDBitE, A	    ; TODO decide which E is being set
@@ -437,6 +455,7 @@ Wr4bitsa:
 		jr nz, .we2	
 		pop af
 	    AND  0xF0           ;Mask so we only have D4 to D7
+		call IsLED
             SET  kLCDBitRS, A
             OUT  (kLCDPrt), A   ;Output with E=Low and RS=High
             SET  kLCDBitE, A      ; TODO Decide which E is being set
@@ -449,6 +468,7 @@ Wr4bitsa:
             RET
 .we2:		pop af
 	    AND  0xF0           ;Mask so we only have D4 to D7
+		call IsLED
             SET  kLCDBitRS, A
             OUT  (kLCDPrt), A   ;Output with E=Low and RS=High
             SET  kLCDBitE2, A      ; TODO Decide which E is being set

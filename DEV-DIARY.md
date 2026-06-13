@@ -26,7 +26,6 @@ Hardware/PCB Design Enhancements:
 
 * TODO Add rj45 socket to pcb with wireout for spi to picospinet node
 * TODO Add onboard WiFi via esp32 spi 1. with spi 0 for lan. code 0 can be used to detect if powered on by a switch to save bat. 
-* TODO Set up led on last vid pin. add to keyboard firmware a check for config bit set to enable disable. See firmware_buzz.asm
 * TODO Can i add 32k ram bank switch to cover the rom?
 * TODO Add nmi button with rst vector to address 0x66 - some code stubs in main.asm. add some words to check and restart nmi flag
 * TODO Move Tape support Forth code into firmware
@@ -39,6 +38,8 @@ Hardware/PCB Design Enhancements:
 * TODO Change circuit so that the storage cart is actually on port a and provides a full 5 chip pack. Then move sound to port b
 * TODO Change the spi cart to a row of spi slots so i can then insert the rtc or sd card on its own
 * TODO Include exposure of the shift reg latached data bus to multiple pin headers for other devices/uses.
+
+* TODO Set up led on last vid pin. add to keyboard firmware a check for config bit set to enable disable. See firmware_buzz.asm + lcd 4x40. Coded and working with a test led. Need circuit added to schem
 
 * DONE Added support for 595 shift reg on any port.
 * DONE Add op-amp circuit to SPISound and allow for selection at wire time. Moving SPISound to on board via direct bus use

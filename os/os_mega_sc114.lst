@@ -192,7 +192,7 @@
 803b			 
 803b ..			buildtime: db   "Build: " 
 8042					include "romtimestamp.asm" 
-8042 ..			db '2026-06-13 12:45' 
+8042 ..			db '2026-06-13 13:15' 
 # End of file romtimestamp.asm
 8052 00				   db 0 
 8053			 
@@ -35159,6 +35159,31 @@ bebf			; Device related words
 bebf			 
 bebf			; | ## Device Words 
 bebf			 
+bebf			 
+bebf			if BASE_KEV 
+bebf			.LED:     
+bebf				CWHEAD .LEDEND 31 "LED" 3 WORD_FLAG_CODE 
+bebf			; | LED ( u --  )  Set case LED on or off | DONE 
+bebf					if DEBUG_FORTH_WORDS_KEY 
+bebf						DMARK "LED" 
+bebf						CALLMONITOR 
+bebf					endif 
+bebf					 
+bebf					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+bebf					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+bebf					 
+bebf					ld a, (hardware_word+1) 
+bebf					ld c, a 
+bebf			 
+bebf					ld a, l 
+bebf					call set_led  
+bebf					 
+bebf			 
+bebf			 
+bebf			 
+bebf					NEXTW 
+bebf			.LEDEND: 
+bebf			endif 
 bebf			if SOUND_ENABLE 
 bebf			.NOTE: 
 bebf				CWHEAD .NOTEEND 31 "NB" 2 WORD_FLAG_CODE 

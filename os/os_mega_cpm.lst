@@ -196,7 +196,7 @@
 013b			 
 013b ..			buildtime: db   "Build: " 
 0142					include "romtimestamp.asm" 
-0142 ..			db '2026-06-13 12:45' 
+0142 ..			db '2026-06-13 13:15' 
 # End of file romtimestamp.asm
 0152 00				   db 0 
 0153			 
@@ -34677,6 +34677,31 @@
 4428			 
 4428			; | ## Device Words 
 4428			 
+4428			 
+4428			if BASE_KEV 
+4428			.LED:     
+4428				CWHEAD .LEDEND 31 "LED" 3 WORD_FLAG_CODE 
+4428			; | LED ( u --  )  Set case LED on or off | DONE 
+4428					if DEBUG_FORTH_WORDS_KEY 
+4428						DMARK "LED" 
+4428						CALLMONITOR 
+4428					endif 
+4428					 
+4428					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+4428					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+4428					 
+4428					ld a, (hardware_word+1) 
+4428					ld c, a 
+4428			 
+4428					ld a, l 
+4428					call set_led  
+4428					 
+4428			 
+4428			 
+4428			 
+4428					NEXTW 
+4428			.LEDEND: 
+4428			endif 
 4428			if SOUND_ENABLE 
 4428			.NOTE: 
 4428				CWHEAD .NOTEEND 31 "NB" 2 WORD_FLAG_CODE 

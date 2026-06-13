@@ -251,7 +251,7 @@ offAllChannels()
 #outbyte(0x90)
     
     
-######## This code works with sound chip
+
 
 while False:
     print("vol")
@@ -288,7 +288,7 @@ while False:
 offAllChannels()
 
 outbyte(0x94)
-
+######## This code works with sound chip
 while False:
     
     print("lllllllllllllll")

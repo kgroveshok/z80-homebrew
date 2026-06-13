@@ -49,8 +49,8 @@
 kLCDPrt:    EQU kDataReg       ;LCD port is the PIO port A data reg
 kLCDBitRS:  EQU 2              ;Port bit for LCD RS signal
 kLCDBitE:   EQU 3              ;Port bit for LCD E signal           
-kLCDBitE2:   EQU 0              ;Port bit for LCD E2 signal            VIDOUT
-kLCDBitLED:   EQU 1              ;Port bit for LCD E2 signal            VIDIN
+kLCDBitE2:   EQU 0              ;Port bit for LCD E2 signal            VICLK
+kLCDBitLED:   EQU 1              ;Port bit for LCD E2 signal            VIDDO
 ; TODO Decide which E is being set
 kLCDWidth:  EQU display_cols             ;Width in characters
 

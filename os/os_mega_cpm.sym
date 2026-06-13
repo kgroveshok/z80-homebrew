@@ -301,7 +301,7 @@ addatohl:	equ $0bf4
 asc:	equ $15e1
 atohex:	equ $0e28
 atoui_16:	equ $0ee3
-baseram:	equ $5c32
+baseram:	equ $5c45
 bp_off:	equ $1271
 bp_on:	equ $1265
 break_point_state:	equ $1277
@@ -315,11 +315,12 @@ chk_stk_init:	equ $5810
 chk_stovr:	equ $ef00
 chk_stund:	equ $f002
 chk_word:	equ $e27e
-cin:	equ $5c19
-cin_wait:	equ $5c11
-cinndb:	equ $5c19
+cin:	equ $5c2c
+cin_wait:	equ $5c24
+cinndb:	equ $5c2c
 clear:	equ $181d
 clear_display:	equ $09b4
+clear_nmi:	equ $5b0c
 cli:	equ $157a
 cli_autodisplay:	equ $ea1d
 cli_buffer:	equ $ea2b
@@ -388,7 +389,7 @@ dumpcont:	equ $1787
 edit1:	equ $47e3
 edit2:	equ $4804
 edit3:	equ $4839
-endofcode:	equ $5c32
+endofcode:	equ $5c45
 endprg:	equ $1879
 endprog:	equ $15e5
 enter:	equ $1615
@@ -396,9 +397,9 @@ exec1:	equ $1cc2
 execnext:	equ $1d31
 execscratch:	equ $e3a1
 execuword:	equ $4d4d
-fLCD_Data:	equ $5b30
-fLCD_Pos:	equ $5b25
-fLCD_Str:	equ $5b1a
+fLCD_Data:	equ $5b43
+fLCD_Pos:	equ $5b38
+fLCD_Str:	equ $5b2d
 f_cursor_ptr:	equ $ea3f
 fault_dsp_under:	equ $593c
 fault_loop_under:	equ $5948
@@ -428,7 +429,7 @@ free_early_exit:	equ $1154
 free_find_higher_block:	equ $10b0
 free_find_higher_block_skip:	equ $10ca
 free_found_higher_block:	equ $10d2
-free_list:	equ $5c3c
+free_list:	equ $5c4f
 freeram:	equ $15d4
 game1:	equ $51f7
 game1a:	equ $5208
@@ -448,8 +449,8 @@ hardware_init:	equ $0153
 hardware_word:	equ $ee71
 heap_end:	equ $e27d
 heap_init:	equ $0f9c
-heap_size:	equ $863c
-heap_start:	equ $5c41
+heap_size:	equ $8629
+heap_start:	equ $5c54
 hexout:	equ $0df0
 hlfromstack1:	equ $1ba9
 hlfromstack2:	equ $1baf
@@ -508,7 +509,7 @@ key_fc:	equ $ee7f
 key_fd:	equ $ee7e
 key_held:	equ $ee87
 key_held_prev:	equ $ee86
-key_init:	equ $5c07
+key_init:	equ $5c1a
 key_macrolast:	equ $eefc
 key_macroroot:	equ $eefe
 key_repeat_ct:	equ $ee82
@@ -543,7 +544,7 @@ keyscan_table_row4:	equ $eed0
 keyscan_table_row5:	equ $eec5
 keytab:	equ $5620
 keyup:	equ $5536
-lcd_init:	equ $5b19
+lcd_init:	equ $5b2c
 list:	equ $4fc6
 loadhlptrtohl:	equ $18fc
 loadwordinhl:	equ $1bc7
@@ -577,7 +578,7 @@ next_page_prompt:	equ $187b
 nibble2val:	equ $0e6e
 nibble2val_1:	equ $0e74
 nip:	equ $4fb4
-nmi:	equ $5b0c
+nmi:	equ $5b17
 nmi_vector:	equ $ee6e
 os_cli_cmd:	equ $e5c9
 os_cur_ptr:	equ $e5c5
@@ -780,8 +781,8 @@ user_exec:	equ $45d8
 user_word_eol:	equ $1bce
 warmstart:	equ $1531
 warmstart_afterauto:	equ $1537
-write_display:	equ $5b56
-write_len_string:	equ $5bff
+write_display:	equ $5b69
+write_len_string:	equ $5c12
 xrandc:	equ $eb9e
 xrnd:	equ $0b35
 ztype:	equ $4e0d

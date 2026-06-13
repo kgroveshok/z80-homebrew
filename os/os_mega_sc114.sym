@@ -299,7 +299,7 @@ addatohl:	equ $8a50
 asc:	equ $96ed
 atohex:	equ $8c84
 atoui_16:	equ $8d3f
-baseram:	equ $d6ff
+baseram:	equ $d712
 bp_off:	equ $937d
 bp_on:	equ $9371
 break_point_state:	equ $9383
@@ -313,11 +313,12 @@ chk_stk_init:	equ $d335
 chk_stovr:	equ $ef00
 chk_stund:	equ $f002
 chk_word:	equ $e27e
-cin:	equ $d6f0
-cin_wait:	equ $d6ea
-cinndb:	equ $d6f0
+cin:	equ $d703
+cin_wait:	equ $d6fd
+cinndb:	equ $d703
 clear:	equ $9929
 clear_display:	equ $8810
+clear_nmi:	equ $d631
 cli:	equ $9686
 cli_autodisplay:	equ $ea1d
 cli_buffer:	equ $ea2b
@@ -386,7 +387,7 @@ dumpcont:	equ $9893
 edit1:	equ $c308
 edit2:	equ $c329
 edit3:	equ $c35e
-endofcode:	equ $d6ff
+endofcode:	equ $d712
 endprg:	equ $9985
 endprog:	equ $96f1
 enter:	equ $9721
@@ -394,9 +395,9 @@ exec1:	equ $9d9e
 execnext:	equ $9e0d
 execscratch:	equ $e3a1
 execuword:	equ $c872
-fLCD_Data:	equ $d64b
-fLCD_Pos:	equ $d645
-fLCD_Str:	equ $d63f
+fLCD_Data:	equ $d65e
+fLCD_Pos:	equ $d658
+fLCD_Str:	equ $d652
 f_cursor_ptr:	equ $ea3f
 fault_dsp_under:	equ $d461
 fault_loop_under:	equ $d46d
@@ -426,7 +427,7 @@ free_early_exit:	equ $8fb0
 free_find_higher_block:	equ $8f0c
 free_find_higher_block_skip:	equ $8f26
 free_found_higher_block:	equ $8f2e
-free_list:	equ $d709
+free_list:	equ $d71c
 freeram:	equ $96e0
 game1:	equ $cd1c
 game1a:	equ $cd2d
@@ -446,8 +447,8 @@ hardware_init:	equ $8053
 hardware_word:	equ $ee71
 heap_end:	equ $e27d
 heap_init:	equ $8df8
-heap_size:	equ $0b6f
-heap_start:	equ $d70e
+heap_size:	equ $0b5c
+heap_start:	equ $d721
 hexout:	equ $8c4c
 hlfromstack1:	equ $9c85
 hlfromstack2:	equ $9c8b
@@ -506,7 +507,7 @@ key_fc:	equ $ee7f
 key_fd:	equ $ee7e
 key_held:	equ $ee87
 key_held_prev:	equ $ee86
-key_init:	equ $d6e0
+key_init:	equ $d6f3
 key_macrolast:	equ $eefc
 key_macroroot:	equ $eefe
 key_repeat_ct:	equ $ee82
@@ -541,7 +542,7 @@ keyscan_table_row4:	equ $eed0
 keyscan_table_row5:	equ $eec5
 keytab:	equ $d145
 keyup:	equ $d05b
-lcd_init:	equ $d63e
+lcd_init:	equ $d651
 list:	equ $caeb
 loadhlptrtohl:	equ $9a05
 loadwordinhl:	equ $9ca3
@@ -575,7 +576,7 @@ next_page_prompt:	equ $9987
 nibble2val:	equ $8cca
 nibble2val_1:	equ $8cd0
 nip:	equ $cad9
-nmi:	equ $d631
+nmi:	equ $d63c
 nmi_vector:	equ $ee6e
 os_cli_cmd:	equ $e5c9
 os_cur_ptr:	equ $e5c5
@@ -802,8 +803,8 @@ user_exec:	equ $c103
 user_word_eol:	equ $9caa
 warmstart:	equ $963d
 warmstart_afterauto:	equ $9643
-write_display:	equ $d655
-write_len_string:	equ $d6d8
+write_display:	equ $d668
+write_len_string:	equ $d6eb
 xrandc:	equ $eb9e
 xrnd:	equ $8991
 ztype:	equ $c932

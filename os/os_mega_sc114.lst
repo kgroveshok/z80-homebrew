@@ -192,7 +192,7 @@
 803b			 
 803b ..			buildtime: db   "Build: " 
 8042					include "romtimestamp.asm" 
-8042 ..			db '2026-06-13 13:15' 
+8042 ..			db '2026-06-13 16:38' 
 # End of file romtimestamp.asm
 8052 00				   db 0 
 8053			 
@@ -1028,9 +1028,9 @@
 806b cd 10 88				call clear_display  
 806e			  
 806e			  
-806e cd 3e d6				call lcd_init		; lcd hardware first as some screen functions called during key_init e.g. cursor shapes  
+806e cd 51 d6				call lcd_init		; lcd hardware first as some screen functions called during key_init e.g. cursor shapes  
 8071			  
-8071 cd e0 d6			call key_init  
+8071 cd f3 d6			call key_init  
 8074 cd e4 80			call storage_init  
 8077				if TAPE_SUPPORT  
 8077 cd b5 8f				call tape_init  
@@ -4885,7 +4885,7 @@
 8848			update_display: 
 8848 e5				push hl 
 8849 2a c1 eb			ld hl, (display_fb_active) 
-884c cd 55 d6			call write_display 
+884c cd 68 d6			call write_display 
 884f e1				pop hl 
 8850 c9				ret 
 8851			 
@@ -5062,7 +5062,7 @@
 88c8			 
 88c8					; handle key 
 88c8			 
-88c8 cd ea d6				call cin_wait 
+88c8 cd fd d6				call cin_wait 
 88cb			 
 88cb fe 05				cp KEY_UP 
 88cd 28 2b				jr z, .mgoup 
@@ -5898,7 +5898,7 @@
 8af8			if BASE_CPM 
 8af8					call cin_wait 
 8af8			else 
-8af8 cd f0 d6				call cin    ; _wait 
+8af8 cd 03 d7				call cin    ; _wait 
 8afb			endif 
 8afb			;		cp 0 
 8afb b7					or a 
@@ -8254,16 +8254,16 @@
 8df8 e5			      push  HL 
 8df9			 
 8df9			      ; Initialise free list struct 
-8df9 21 0e d7		      ld    HL, heap_start 
-8dfc 22 09 d7		      ld    (free_list), HL 
+8df9 21 21 d7		      ld    HL, heap_start 
+8dfc 22 1c d7		      ld    (free_list), HL 
 8dff 21 00 00		      ld    HL, 0 
-8e02 22 0b d7		      ld    (free_list+2), HL 
+8e02 22 1e d7		      ld    (free_list+2), HL 
 8e05			 
 8e05			      ; Insert first free block at bottom of heap, consumes entire heap 
 8e05 21 79 e2		      ld    HL, heap_start+heap_size-4 
-8e08 22 0e d7		      ld    (heap_start), HL        ; Next block (end of free list) 
-8e0b 21 6b 0b		      ld    HL, heap_size-4 
-8e0e 22 10 d7		      ld    (heap_start+2), HL      ; Block size 
+8e08 22 21 d7		      ld    (heap_start), HL        ; Next block (end of free list) 
+8e0b 21 58 0b		      ld    HL, heap_size-4 
+8e0e 22 23 d7		      ld    (heap_start+2), HL      ; Block size 
 8e11			 
 8e11			      ; Insert end of free list block at top of heap - two null words will 
 8e11			      ; terminate the free list 
@@ -8396,7 +8396,7 @@
 8e35 44			      ld    B, H                    ; Move want to BC 
 8e36 4d			      ld    C, L 
 8e37			 
-8e37 21 09 d7		      ld    HL, free_list           ; Store prev_free ptr to stack 
+8e37 21 1c d7		      ld    HL, free_list           ; Store prev_free ptr to stack 
 8e3a dd 75 04		      ld    (IX+4), L 
 8e3d dd 74 05		      ld    (IX+5), H 
 8e40			 
@@ -8675,7 +8675,7 @@
 8f09			 
 8f09			      ; Loop through the free list to find the first block with an address 
 8f09			      ; higher than the block being freed 
-8f09 21 09 d7		      ld    HL, free_list 
+8f09 21 1c d7		      ld    HL, free_list 
 8f0c			 
 8f0c			free_find_higher_block: 
 8f0c 5e			      ld    E, (HL)                 ; Load next ptr from free block 
@@ -10103,7 +10103,7 @@
 91c2 21 00 00			ld hl, 0 
 91c5 22 42 ea			ld (tape_sync+2), hl 
 91c8			 
-91c8 cd f0 d6			call cin 
+91c8 cd 03 d7			call cin 
 91cb fe 71			cp 'q' 
 91cd 28 07			jr z, .tce 
 91cf fe 74			cp 't' 
@@ -10140,7 +10140,7 @@
 91df cd 22 88			call  str_at_display 
 91e2 cd 48 88			call update_display 
 91e5			 
-91e5 cd f0 d6			call cin 
+91e5 cd 03 d7			call cin 
 91e8 fe 71			cp 'q' 
 91ea 28 ea			jr z, .tce 
 91ec fe 74			cp 't' 
@@ -10205,7 +10205,7 @@
 924f cd 4f 87			call delay1s 
 9252 cd 4f 87			call delay1s 
 9255			 
-9255 cd f0 d6			call cin 
+9255 cd 03 d7			call cin 
 9258 fe 00			cp 0 
 925a 28 bf			jr z, .tt1 
 925c cd 81 90			call tape_ready_stop 
@@ -11544,7 +11544,7 @@
 9441 11 85 99		        ld de, endprg 
 9444 cd 22 88			call str_at_display 
 9447 cd 48 88			call update_display 
-944a cd ea d6			call cin_wait 
+944a cd fd d6			call cin_wait 
 944d			 
 944d c3 9f 93			jp .bps1 
 9450			 
@@ -11899,7 +11899,7 @@
 962a			 
 962a				; detect if any keys are held down to enable breakpoints at start up 
 962a			 
-962a cd f0 d6			call cin  
+962a cd 03 d7			call cin  
 962d fe 00			cp 0 
 962f 28 03			jr z, .nokeys 
 9631			 
@@ -12014,7 +12014,7 @@
 964b				;ld hl, heap_size 
 964b				;ld de, topusermem 
 964b				;ld de, heap_start 
-964b ed 5b 09 d7			ld de, (free_list )      
+964b ed 5b 1c d7			ld de, (free_list )      
 964f 21 7d e2				ld hl, heap_end 
 9652 ed 52			sbc hl, de 
 9654				;push hl 
@@ -12745,7 +12745,7 @@
 998d 11 85 99		        ld de, endprg 
 9990 cd 22 88			call str_at_display 
 9993 cd 48 88			call update_display 
-9996 cd ea d6			call cin_wait 
+9996 cd fd d6			call cin_wait 
 9999 c1				pop bc 
 999a f1				pop af 
 999b d1				pop de 
@@ -14430,7 +14430,7 @@
 9cff			 
 9cff				; set start of word list in start of ram - for use when creating user words 
 9cff			 
-9cff 21 ff d6			ld hl, baseram 
+9cff 21 12 d7			ld hl, baseram 
 9d02 22 9f e5			ld (os_last_new_uword), hl 
 9d05 cd aa 9c			call user_word_eol 
 9d08				 
@@ -14909,7 +14909,7 @@
 9db1			;       while at start of word: 
 9db1			; get start of dict (in user area first) 
 9db1			 
-9db1 21 ff d6		ld hl, baseram 
+9db1 21 12 d7		ld hl, baseram 
 9db4			;ld hl, sysdict 
 9db4 22 23 ea		ld (cli_nextword),hl                            ; here do we need to do this? 
 9db7			;           match word at pc 
@@ -15646,7 +15646,7 @@
 9e5e					call  heap_init 
 9e5e				endif 
 9e5e				; reset uword pointers 
-9e5e 21 ff d6			ld hl, baseram 
+9e5e 21 12 d7			ld hl, baseram 
 9e61 22 9f e5			ld (os_last_new_uword), hl 
 9e64 cd aa 9c			call user_word_eol 
 9e67				; clear stack 
@@ -15711,8 +15711,8 @@
 9e87				endm  
 # End of macro CALLMONITOR
 9e87				endif 
-9e87 2a 09 d7			ld hl, (free_list )      
-9e8a 11 0e d7			ld de, heap_start 
+9e87 2a 1c d7			ld hl, (free_list )      
+9e8a 11 21 d7			ld de, heap_start 
 9e8d			 
 9e8d ed 52			sbc hl, de  
 9e8f			 
@@ -15728,7 +15728,7 @@
 # End of macro FORTH_PUSH_VALUEHL
 9e8f			 
 9e8f			 
-9e8f ed 5b 09 d7		ld de, (free_list )      
+9e8f ed 5b 1c d7		ld de, (free_list )      
 9e93 21 7d e2			ld hl, heap_end 
 9e96			 
 9e96 ed 52			sbc hl, de 
@@ -19049,7 +19049,7 @@ a434				endif
 a434				endm  
 # End of macro CALLMONITOR
 a434			endif 
-a434 21 ff d6			ld hl, baseram 
+a434 21 12 d7			ld hl, baseram 
 a437				;ld hl, baseusermem 
 a437 01 00 00			ld bc, 0    ; start a counter 
 a43a			 
@@ -19805,7 +19805,7 @@ a564			;		push hl
 a564			;		ex de, hl    ; put into DE 
 a564			 
 a564			 
-a564 21 ff d6			ld hl, baseram 
+a564 21 12 d7			ld hl, baseram 
 a567				;ld hl, baseusermem 
 a567			 
 a567 e5			push hl   ; sacreifical push 
@@ -20220,7 +20220,7 @@ a601			;		push hl
 a601			;		ex de, hl    ; put into DE 
 a601			 
 a601			 
-a601 21 ff d6			ld hl, baseram 
+a601 21 12 d7			ld hl, baseram 
 a604				;ld hl, baseusermem 
 a604			 
 a604 e5			push hl   ; sacreifical push 
@@ -21104,7 +21104,7 @@ a740 c1					pop bc
 a741			;		ex de, hl    ; put into DE 
 a741			 
 a741			 
-a741 21 ff d6				ld hl, baseram 
+a741 21 12 d7				ld hl, baseram 
 a744					;ld hl, baseusermem 
 a744			 
 a744				; skip dict stub 
@@ -34092,7 +34092,7 @@ bc77				endm
 # End of macro CALLMONITOR
 bc77					endif 
 bc77			; TODO currently waits 
-bc77 cd f0 d6				call cinndb 
+bc77 cd 03 d7				call cinndb 
 bc7a					;call cin_wait 
 bc7a 6f					ld l, a 
 bc7b 26 00				ld h, 0 
@@ -34164,7 +34164,7 @@ bc9b				endm
 # End of macro CALLMONITOR
 bc9b					endif 
 bc9b			; TODO currently waits 
-bc9b cd f0 d6				call cin 
+bc9b cd 03 d7				call cin 
 bc9e					;call cin_wait 
 bc9e 6f					ld l, a 
 bc9f 26 00				ld h, 0 
@@ -34232,7 +34232,7 @@ bcbf				endif
 bcbf				endm  
 # End of macro CALLMONITOR
 bcbf					endif 
-bcbf cd ea d6				call cin_wait 
+bcbf cd fd d6				call cin_wait 
 bcc2 6f					ld l, a 
 bcc3 26 00				ld h, 0 
 bcc5					;call forth_push_numhl 
@@ -35136,9 +35136,9 @@ beab 63 ea		dw store_tmpid
 bead 5a ea		dw store_tmppageid 
 beaf 1c 8e		dw malloc 
 beb1 e6 8e		dw free 
-beb3 f0 d6		dw cin 
+beb3 03 d7		dw cin 
 beb5			; 70 
-beb5 ea d6		dw cin_wait 
+beb5 fd d6		dw cin_wait 
 beb7 0c 9a		dw forth_push_numhl 
 beb9 68 9a		dw forth_push_str 
 bebb 68 ee		dw parse_vector 
@@ -35161,6 +35161,30 @@ bebf			; | ## Device Words
 bebf			 
 bebf			 
 bebf			if BASE_KEV 
+bebf			.SR:     
+bebf				CWHEAD .SREND 31 "SR" 2 WORD_FLAG_CODE 
+bebf			; | SR ( u p --  )  Send byte u to shift reg on port p | DONE 
+bebf					if DEBUG_FORTH_WORDS_KEY 
+bebf						DMARK "SRA" 
+bebf						CALLMONITOR 
+bebf					endif 
+bebf					 
+bebf					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+bebf					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+bebf					 
+bebf					push hl 
+bebf			 
+bebf					FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol 
+bebf					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+bebf					 
+bebf					ld a, l 
+bebf					pop bc 
+bebf			 
+bebf				call shift_byte 
+bebf					 
+bebf				NEXTW 
+bebf			.SREND: 
+bebf			 
 bebf			.LED:     
 bebf				CWHEAD .LEDEND 31 "LED" 3 WORD_FLAG_CODE 
 bebf			; | LED ( u --  )  Set case LED on or off | DONE 
@@ -36962,7 +36986,7 @@ c1db
 c1db cd 22 88			call str_at_display 
 c1de cd 48 88			call update_display 
 c1e1				;call break_point_state 
-c1e1 cd ea d6			call cin_wait 
+c1e1 cd fd d6			call cin_wait 
 c1e4			 
 c1e4			;	ld a, ' ' 
 c1e4			;	ld (os_view_disable), a 
@@ -37906,7 +37930,7 @@ d5b2 11 85 99		        ld de, endprg
 d5b5 cd 22 88			call str_at_display 
 d5b8 cd 48 88			call update_display 
 d5bb cd 4f 87			call delay1s 
-d5be cd ea d6			call cin_wait 
+d5be cd fd d6			call cin_wait 
 d5c1						 
 d5c1 fe 2a			cp '*' 
 d5c3 28 5e			jr z, .startupend1 
@@ -38140,311 +38164,333 @@ d62b
 d62b			; jump to nmi vector 
 d62b			 
 d62b			init_nmi: 
+d62b			 
 d62b 3e c9			ld a, $c9   ; RET 
 d62d 32 6e ee			ld (nmi_vector), a 
+d630			if BASE_KEV 
+d630				ld hl, led_on 
+d630				ld (nmi_vector), hl 
+d630			endif 
 d630 c9				ret 
-d631			nmi: 
-d631 e5				push hl 
-d632 d5				push de 
-d633 c5				push bc 
-d634 f5				push af 
-d635 cd 6e ee			call nmi_vector 
-d638 f5				push af 
-d639 c5				push bc 
-d63a d5				push de 
-d63b e5				push hl 
-d63c ed 4d			reti 
-d63e			 
-d63e			 
-d63e			; eof 
-d63e			 
+d631			 
+d631			; Clear the hardware flag for nmi use 
+d631			 
+d631			clear_nmi: 
+d631 f5				push af 
+d632 3a 72 ee		        ld a, (hardware_word+1) 
+d635 cb bf			res 7,a 
+d637 32 72 ee		        ld (hardware_word+1),a 
+d63a f1				pop af 
+d63b c9				ret 
+d63c			 
+d63c			nmi: 
+d63c e5				push hl 
+d63d d5				push de 
+d63e c5				push bc 
+d63f f5				push af 
+d640				; set the hardware flag for nmi use 
+d640 3a 72 ee		        ld a, (hardware_word+1) 
+d643 cb ff			set 7,a 
+d645 32 72 ee		        ld (hardware_word+1),a 
+d648			 
+d648				; call user function 
+d648 cd 6e ee			call nmi_vector 
+d64b f5				push af 
+d64c c5				push bc 
+d64d d5				push de 
+d64e e5				push hl 
+d64f ed 45			retn 
+d651			 
+d651			 
+d651			; eof 
+d651			 
 # End of file main.asm
-d63e			;include "firmware_lcd_4x40.asm" 
-d63e			;;include "firmware_lcd_4x20.asm" 
-d63e			include "firmware_serial_display.asm" 
-d63e			 
-d63e			; Serial display interface for SC114 
-d63e			 
-d63e			 
-d63e			display_row_1: equ 0 
-d63e			display_row_2: equ display_row_1+display_cols 
-d63e			display_row_3: equ display_row_2 + display_cols 
-d63e			display_row_4: equ display_row_3 + display_cols 
-d63e			 
-d63e			kLCDWidth:  EQU display_cols             ;Width in characters 
-d63e			kLCD_Line1: EQU 0x00  
-d63e			kLCD_Line2: EQU kLCD_Line1+kLCDWidth 
-d63e			; E1 
-d63e			kLCD_Line3: EQU kLCD_Line2+kLCDWidth 
-d63e			kLCD_Line4: EQU kLCD_Line3+kLCDWidth  
-d63e			 
-d63e			lcd_init: 
-d63e				; no init as handled by the SCM bios 
-d63e c9				ret 
-d63f			 
-d63f			 
-d63f			; low level functions for direct screen writes 
-d63f			 
-d63f			; output char at pos? 
-d63f			fLCD_Str: 
-d63f			        ;out (SC114_SIO_1_OUT),a 
-d63f c5				push bc 
-d640 0e 02			ld c, $02 
-d642 f7				rst $30 
-d643 c1				pop bc 
-d644 c9				ret 
-d645			 
-d645			; position the cursor on the screen using A as realtive point in screen buffer (i.e. A=(x+(width/y))) 
-d645			fLCD_Pos: 
-d645				; use ASCII escape to position 
-d645			        ;out (SC114_SIO_1_OUT),a 
-d645 c5				push bc 
-d646 0e 02			ld c, $02 
-d648 f7				rst $30 
-d649 c1				pop bc 
-d64a			 
-d64a c9				ret 
-d64b			 
-d64b			; output char at pos 
-d64b			fLCD_Data: 
-d64b			      ;  out (SC114_SIO_1_OUT),a 
-d64b c5				push bc 
-d64c 0e 02			ld c, $02 
-d64e f7				rst $30 
-d64f c1				pop bc 
-d650			 
-d650 c9				ret 
+d651			;include "firmware_lcd_4x40.asm" 
+d651			;;include "firmware_lcd_4x20.asm" 
+d651			include "firmware_serial_display.asm" 
 d651			 
-d651			; ascii cls  
+d651			; Serial display interface for SC114 
 d651			 
-d651 1b 5b 48 00	.cls:   db 27, '[', 'H', 0 
-d655			 
-d655			; write the frame buffer given in hl to hardware  
-d655			write_display: 
-d655			 
-d655			API: equ 0 
-d655			 
-d655			if API 
-d655				push bc 
-d655				ld b, 4 
-d655			 
-d655			        ld (display_write_tmp), hl 	  
-d655			 
-d655				; clear and home cursor 
-d655			 
-d655				ld c, 6 
-d655				ld de, .cls 
-d655				rst $30 
-d655			 
-d655			 
-d655			.writeln: 
-d655			 
-d655				ld de, (display_write_tmp) 
-d655				ld c, 6 
-d655				rst $30 
-d655				ld c, 7 
-d655				rst $30 
-d655			 
-d655				ld hl, (display_write_tmp) 
-d655				ld de, display_cols 
-d655				add hl,de 
-d655				ld (display_write_tmp),hl 
-d655			 
-d655				djnz  .writeln 
-d655			 
-d655				pop bc 
-d655			 
-d655			 
-d655				ret 
-d655			endif 
-d655 e5				push hl 
-d656 c5				push bc 
-d657 d5				push de 
+d651			 
+d651			display_row_1: equ 0 
+d651			display_row_2: equ display_row_1+display_cols 
+d651			display_row_3: equ display_row_2 + display_cols 
+d651			display_row_4: equ display_row_3 + display_cols 
+d651			 
+d651			kLCDWidth:  EQU display_cols             ;Width in characters 
+d651			kLCD_Line1: EQU 0x00  
+d651			kLCD_Line2: EQU kLCD_Line1+kLCDWidth 
+d651			; E1 
+d651			kLCD_Line3: EQU kLCD_Line2+kLCDWidth 
+d651			kLCD_Line4: EQU kLCD_Line3+kLCDWidth  
+d651			 
+d651			lcd_init: 
+d651				; no init as handled by the SCM bios 
+d651 c9				ret 
+d652			 
+d652			 
+d652			; low level functions for direct screen writes 
+d652			 
+d652			; output char at pos? 
+d652			fLCD_Str: 
+d652			        ;out (SC114_SIO_1_OUT),a 
+d652 c5				push bc 
+d653 0e 02			ld c, $02 
+d655 f7				rst $30 
+d656 c1				pop bc 
+d657 c9				ret 
 d658			 
-d658			;	ld c, 2 
-d658			;	;ld de, .cls 
-d658			;	ld a, 27 
-d658			;	rst $30 
-d658			;	ld c, 2 
-d658			;	;ld de, .cls 
-d658			;	ld a, '[' 
-d658			;	rst $30 
-d658			; 
-d658			;	ld c, 2 
-d658			;	;ld de, .cls 
-d658			;	ld a, 'H' 
-d658			;	rst $30 
-d658			; 
-d658			 
-d658 0e 02			ld c, 2 
-d65a				;ld de, .cls 
-d65a 3e 1b			ld a, 27 
-d65c f7				rst $30 
+d658			; position the cursor on the screen using A as realtive point in screen buffer (i.e. A=(x+(width/y))) 
+d658			fLCD_Pos: 
+d658				; use ASCII escape to position 
+d658			        ;out (SC114_SIO_1_OUT),a 
+d658 c5				push bc 
+d659 0e 02			ld c, $02 
+d65b f7				rst $30 
+d65c c1				pop bc 
 d65d			 
-d65d			 
-d65d 0e 02			ld c, 2 
-d65f				;ld de, .cls 
-d65f 3e 5b			ld a, '[' 
+d65d c9				ret 
+d65e			 
+d65e			; output char at pos 
+d65e			fLCD_Data: 
+d65e			      ;  out (SC114_SIO_1_OUT),a 
+d65e c5				push bc 
+d65f 0e 02			ld c, $02 
 d661 f7				rst $30 
-d662 0e 02			ld c, 2 
-d664				;ld de, .cls 
-d664 3e 32			ld a, '2' 
-d666 f7				rst $30 
-d667 0e 02			ld c, 2 
-d669				;ld de, .cls 
-d669 3e 4a			ld a, 'J' 
-d66b f7				rst $30 
-d66c d1				pop de 
-d66d c1				pop bc 
-d66e e1				pop hl 
-d66f			 
-d66f			 
-d66f 22 be eb		        ld (display_write_tmp), hl 	  
-d672 3e 00			ld a, kLCD_Line1 
-d674			        ;    CALL fLCD_Pos       ;Position cursor to location in A 
-d674 06 28			ld b, display_cols 
-d676 ed 5b be eb		ld de, (display_write_tmp) 
-d67a cd d8 d6			call write_len_string 
-d67d				 
-d67d			 
-d67d e5			push hl 
-d67e d5			push de 
-d67f c5			push bc 
-d680 0e 07			ld c, 7 
-d682 f7				rst $30 
-d683 c1			pop bc 
-d684 d1			pop de 
-d685 e1			pop hl 
-d686			 
-d686				 
-d686 2a be eb			ld hl, (display_write_tmp) 
-d689 11 28 00			ld de, display_cols 
-d68c 19				add hl,de 
-d68d 22 be eb			ld (display_write_tmp),hl 
-d690			 
+d662 c1				pop bc 
+d663			 
+d663 c9				ret 
+d664			 
+d664			; ascii cls  
+d664			 
+d664 1b 5b 48 00	.cls:   db 27, '[', 'H', 0 
+d668			 
+d668			; write the frame buffer given in hl to hardware  
+d668			write_display: 
+d668			 
+d668			API: equ 0 
+d668			 
+d668			if API 
+d668				push bc 
+d668				ld b, 4 
+d668			 
+d668			        ld (display_write_tmp), hl 	  
+d668			 
+d668				; clear and home cursor 
+d668			 
+d668				ld c, 6 
+d668				ld de, .cls 
+d668				rst $30 
+d668			 
+d668			 
+d668			.writeln: 
+d668			 
+d668				ld de, (display_write_tmp) 
+d668				ld c, 6 
+d668				rst $30 
+d668				ld c, 7 
+d668				rst $30 
+d668			 
+d668				ld hl, (display_write_tmp) 
+d668				ld de, display_cols 
+d668				add hl,de 
+d668				ld (display_write_tmp),hl 
+d668			 
+d668				djnz  .writeln 
+d668			 
+d668				pop bc 
+d668			 
+d668			 
+d668				ret 
+d668			endif 
+d668 e5				push hl 
+d669 c5				push bc 
+d66a d5				push de 
+d66b			 
+d66b			;	ld c, 2 
+d66b			;	;ld de, .cls 
+d66b			;	ld a, 27 
+d66b			;	rst $30 
+d66b			;	ld c, 2 
+d66b			;	;ld de, .cls 
+d66b			;	ld a, '[' 
+d66b			;	rst $30 
+d66b			; 
+d66b			;	ld c, 2 
+d66b			;	;ld de, .cls 
+d66b			;	ld a, 'H' 
+d66b			;	rst $30 
+d66b			; 
+d66b			 
+d66b 0e 02			ld c, 2 
+d66d				;ld de, .cls 
+d66d 3e 1b			ld a, 27 
+d66f f7				rst $30 
+d670			 
+d670			 
+d670 0e 02			ld c, 2 
+d672				;ld de, .cls 
+d672 3e 5b			ld a, '[' 
+d674 f7				rst $30 
+d675 0e 02			ld c, 2 
+d677				;ld de, .cls 
+d677 3e 32			ld a, '2' 
+d679 f7				rst $30 
+d67a 0e 02			ld c, 2 
+d67c				;ld de, .cls 
+d67c 3e 4a			ld a, 'J' 
+d67e f7				rst $30 
+d67f d1				pop de 
+d680 c1				pop bc 
+d681 e1				pop hl 
+d682			 
+d682			 
+d682 22 be eb		        ld (display_write_tmp), hl 	  
+d685 3e 00			ld a, kLCD_Line1 
+d687			        ;    CALL fLCD_Pos       ;Position cursor to location in A 
+d687 06 28			ld b, display_cols 
+d689 ed 5b be eb		ld de, (display_write_tmp) 
+d68d cd eb d6			call write_len_string 
 d690				 
-d690 3e 28			ld a, kLCD_Line2 
-d692			        ;    CALL fLCD_Pos       ;Position cursor to location in A 
-d692 06 28			ld b, display_cols 
-d694 ed 5b be eb		ld de, (display_write_tmp) 
-d698 cd d8 d6			call write_len_string 
-d69b				 
-d69b 2a be eb			ld hl, (display_write_tmp) 
-d69e 11 28 00			ld de, display_cols 
-d6a1 19				add hl,de 
-d6a2 22 be eb			ld (display_write_tmp),hl 
-d6a5			 
-d6a5 e5			push hl 
-d6a6 d5			push de 
-d6a7 c5			push bc 
-d6a8 0e 07			ld c, 7 
-d6aa f7				rst $30 
-d6ab c1			pop bc 
-d6ac d1			pop de 
-d6ad e1			pop hl 
-d6ae			 
+d690			 
+d690 e5			push hl 
+d691 d5			push de 
+d692 c5			push bc 
+d693 0e 07			ld c, 7 
+d695 f7				rst $30 
+d696 c1			pop bc 
+d697 d1			pop de 
+d698 e1			pop hl 
+d699			 
+d699				 
+d699 2a be eb			ld hl, (display_write_tmp) 
+d69c 11 28 00			ld de, display_cols 
+d69f 19				add hl,de 
+d6a0 22 be eb			ld (display_write_tmp),hl 
+d6a3			 
+d6a3				 
+d6a3 3e 28			ld a, kLCD_Line2 
+d6a5			        ;    CALL fLCD_Pos       ;Position cursor to location in A 
+d6a5 06 28			ld b, display_cols 
+d6a7 ed 5b be eb		ld de, (display_write_tmp) 
+d6ab cd eb d6			call write_len_string 
 d6ae				 
-d6ae 3e 50			ld a, kLCD_Line3 
-d6b0			         ;   CALL fLCD_Pos       ;Position cursor to location in A 
-d6b0 06 28			ld b, display_cols 
-d6b2 ed 5b be eb		ld de, (display_write_tmp) 
-d6b6 cd d8 d6			call write_len_string 
-d6b9				 
-d6b9 2a be eb			ld hl, (display_write_tmp) 
-d6bc 11 28 00			ld de, display_cols 
-d6bf 19				add hl,de 
-d6c0 22 be eb			ld (display_write_tmp),hl 
-d6c3			 
-d6c3 e5			push hl 
-d6c4 d5			push de 
-d6c5 c5			push bc 
-d6c6 0e 07			ld c, 7 
-d6c8 f7				rst $30 
-d6c9 c1			pop bc 
-d6ca d1			pop de 
-d6cb e1			pop hl 
-d6cc			 
+d6ae 2a be eb			ld hl, (display_write_tmp) 
+d6b1 11 28 00			ld de, display_cols 
+d6b4 19				add hl,de 
+d6b5 22 be eb			ld (display_write_tmp),hl 
+d6b8			 
+d6b8 e5			push hl 
+d6b9 d5			push de 
+d6ba c5			push bc 
+d6bb 0e 07			ld c, 7 
+d6bd f7				rst $30 
+d6be c1			pop bc 
+d6bf d1			pop de 
+d6c0 e1			pop hl 
+d6c1			 
+d6c1				 
+d6c1 3e 50			ld a, kLCD_Line3 
+d6c3			         ;   CALL fLCD_Pos       ;Position cursor to location in A 
+d6c3 06 28			ld b, display_cols 
+d6c5 ed 5b be eb		ld de, (display_write_tmp) 
+d6c9 cd eb d6			call write_len_string 
 d6cc				 
-d6cc 3e 78			ld a, kLCD_Line4 
-d6ce			          ;  CALL fLCD_Pos       ;Position cursor to location in A 
-d6ce 06 28			ld b, display_cols 
-d6d0 ed 5b be eb		ld de, (display_write_tmp) 
-d6d4 cd d8 d6			call write_len_string 
-d6d7 c9					ret 
-d6d8			 
-d6d8			 
-d6d8				; write out a fixed length string given in b from de 
-d6d8			 
-d6d8 1a			write_len_string:   LD   A, (DE)        ;Get character from string 
-d6d9 cd 4b d6		            CALL fLCD_Data      ;Write character to display 
-d6dc 13				inc de 
-d6dd 10 f9			djnz write_len_string 
-d6df c9				ret 
-d6e0			 
-d6e0			 
-d6e0			; eof 
+d6cc 2a be eb			ld hl, (display_write_tmp) 
+d6cf 11 28 00			ld de, display_cols 
+d6d2 19				add hl,de 
+d6d3 22 be eb			ld (display_write_tmp),hl 
+d6d6			 
+d6d6 e5			push hl 
+d6d7 d5			push de 
+d6d8 c5			push bc 
+d6d9 0e 07			ld c, 7 
+d6db f7				rst $30 
+d6dc c1			pop bc 
+d6dd d1			pop de 
+d6de e1			pop hl 
+d6df			 
+d6df				 
+d6df 3e 78			ld a, kLCD_Line4 
+d6e1			          ;  CALL fLCD_Pos       ;Position cursor to location in A 
+d6e1 06 28			ld b, display_cols 
+d6e3 ed 5b be eb		ld de, (display_write_tmp) 
+d6e7 cd eb d6			call write_len_string 
+d6ea c9					ret 
+d6eb			 
+d6eb			 
+d6eb				; write out a fixed length string given in b from de 
+d6eb			 
+d6eb 1a			write_len_string:   LD   A, (DE)        ;Get character from string 
+d6ec cd 5e d6		            CALL fLCD_Data      ;Write character to display 
+d6ef 13				inc de 
+d6f0 10 f9			djnz write_len_string 
+d6f2 c9				ret 
+d6f3			 
+d6f3			 
+d6f3			; eof 
 # End of file firmware_serial_display.asm
-d6e0			;include "firmware_key_5x10.asm" 
-d6e0			;;include "firmware_key_4x10.asm" 
-d6e0			include "firmware_key_serial.asm" 
-d6e0			; Serial keyboard interface for SC114 
-d6e0			 
-d6e0			key_init: 
-d6e0				; init keyboard macro pointers 
-d6e0 21 00 00			ld hl, 0 
-d6e3 22 fe ee			ld (key_macroroot), hl 
-d6e6 22 fc ee			ld (key_macrolast), hl 
-d6e9				; no init as handled by the SCM bios 
-d6e9 c9				ret 
-d6ea			 
-d6ea			 
-d6ea			cin_wait: 
-d6ea			;	ld a, 0 
-d6ea			;	ret 
-d6ea			 
-d6ea				;in a,(SC114_SIO_1_IN) 
-d6ea			        ; Use SCM API to get from whatever console device we are using 
-d6ea c5				push bc 
-d6eb 0e 01			ld c, $01 
-d6ed f7				rst $30 
-d6ee c1				pop bc 
-d6ef c9				ret 
-d6f0			 
-d6f0			cinndb: 	 
-d6f0			cin: 
-d6f0			 
-d6f0			 
-d6f0 c5				push bc 
-d6f1			 
-d6f1				; any key waiting to process? 
-d6f1 0e 03			ld c, $03 
-d6f3 f7				rst $30 
-d6f4 28 05			jr z, .cin_skip 
-d6f6			 
-d6f6				; yep, get it 
-d6f6			 
-d6f6 0e 01			ld c, $01 
-d6f8 f7				rst $30 
-d6f9 c1				pop bc 
-d6fa c9				ret 
-d6fb			.cin_skip: 
-d6fb 3e 00			ld a, 0 
-d6fd c1				pop bc 
-d6fe c9				ret 
-d6ff			 
-d6ff			 
-d6ff			 
-d6ff			 
+d6f3			;include "firmware_key_5x10.asm" 
+d6f3			;;include "firmware_key_4x10.asm" 
+d6f3			include "firmware_key_serial.asm" 
+d6f3			; Serial keyboard interface for SC114 
+d6f3			 
+d6f3			key_init: 
+d6f3				; init keyboard macro pointers 
+d6f3 21 00 00			ld hl, 0 
+d6f6 22 fe ee			ld (key_macroroot), hl 
+d6f9 22 fc ee			ld (key_macrolast), hl 
+d6fc				; no init as handled by the SCM bios 
+d6fc c9				ret 
+d6fd			 
+d6fd			 
+d6fd			cin_wait: 
+d6fd			;	ld a, 0 
+d6fd			;	ret 
+d6fd			 
+d6fd				;in a,(SC114_SIO_1_IN) 
+d6fd			        ; Use SCM API to get from whatever console device we are using 
+d6fd c5				push bc 
+d6fe 0e 01			ld c, $01 
+d700 f7				rst $30 
+d701 c1				pop bc 
+d702 c9				ret 
+d703			 
+d703			cinndb: 	 
+d703			cin: 
+d703			 
+d703			 
+d703 c5				push bc 
+d704			 
+d704				; any key waiting to process? 
+d704 0e 03			ld c, $03 
+d706 f7				rst $30 
+d707 28 05			jr z, .cin_skip 
+d709			 
+d709				; yep, get it 
+d709			 
+d709 0e 01			ld c, $01 
+d70b f7				rst $30 
+d70c c1				pop bc 
+d70d c9				ret 
+d70e			.cin_skip: 
+d70e 3e 00			ld a, 0 
+d710 c1				pop bc 
+d711 c9				ret 
+d712			 
+d712			 
+d712			 
+d712			 
 # End of file firmware_key_serial.asm
-d6ff			endofcode:  
-d6ff			baseram:  
-d6ff 00				nop 
-d700			 
-d700			heap_start: equ baseram+15  ; Starting address of heap 
-d700			free_list:  equ baseram+10      ; Block struct for start of free list (MUST be 4 bytes) 
-d700			heap_size: equ  heap_end-heap_start      ; Number of bytes available in heap   TODO make all of user ram 
-d700			;VDU:  EQU     endofcode           ; BASIC Work space 
-d700			; eof 
-d700			 
+d712			endofcode:  
+d712			baseram:  
+d712 00				nop 
+d713			 
+d713			heap_start: equ baseram+15  ; Starting address of heap 
+d713			free_list:  equ baseram+10      ; Block struct for start of free list (MUST be 4 bytes) 
+d713			heap_size: equ  heap_end-heap_start      ; Number of bytes available in heap   TODO make all of user ram 
+d713			;VDU:  EQU     endofcode           ; BASIC Work space 
+d713			; eof 
+d713			 
 # End of file os_mega_sc114.asm
-d700
+d713

@@ -4,6 +4,30 @@
 
 
 if BASE_KEV
+.SR:    
+	CWHEAD .SREND 31 "SR" 2 WORD_FLAG_CODE
+; | SR ( u p --  )  Send byte u to shift reg on port p | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "SRA"
+			CALLMONITOR
+		endif
+		
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+		
+		push hl
+
+		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+		
+		ld a, l
+		pop bc
+
+	call shift_byte
+		
+	NEXTW
+.SREND:
+
 .LED:    
 	CWHEAD .LEDEND 31 "LED" 3 WORD_FLAG_CODE
 ; | LED ( u --  )  Set case LED on or off | DONE

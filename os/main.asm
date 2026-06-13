@@ -1009,20 +1009,42 @@ include "forth_kernel.asm"
 ; jump to nmi vector
 
 init_nmi:
+
 	ld a, $c9   ; RET
 	ld (nmi_vector), a
+if BASE_KEV
+	ld hl, led_on
+	ld (nmi_vector), hl
+endif
 	ret
+
+; Clear the hardware flag for nmi use
+
+clear_nmi:
+	push af
+        ld a, (hardware_word+1)
+	res 7,a
+        ld (hardware_word+1),a
+	pop af
+	ret
+
 nmi:
 	push hl
 	push de
 	push bc
 	push af
+	; set the hardware flag for nmi use
+        ld a, (hardware_word+1)
+	set 7,a
+        ld (hardware_word+1),a
+
+	; call user function
 	call nmi_vector
 	push af
 	push bc
 	push de
 	push hl
-	reti
+	retn
 
 
 ; eof

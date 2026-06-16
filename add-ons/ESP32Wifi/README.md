@@ -6,6 +6,17 @@ continues support for SPINet in case that is useful for wired networking once th
 
 As this device is a one to one connection for an IP network, that simplifies the range of features it needs to have.
 
+
+Programming can be one of three options on the ESP.
+1. Using C via the main SDK
+2. Arduino code
+3. ESPForth
+
+
+I will give ESPForth a go first. A bit of a learning curve but considering the OS is in Forth then why not have all of it in the same
+language? We will see. :-)
+
+
 zstr - a zero terminated string
 pool - a pool id byte
 count - a byte count

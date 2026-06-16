@@ -193,7 +193,7 @@
 003b			 
 003b ..			buildtime: db   "Build: " 
 0042					include "romtimestamp.asm" 
-0042 ..			db '2026-06-13 16:38' 
+0042 ..			db '2026-06-16 20:26' 
 # End of file romtimestamp.asm
 0052 00				   db 0 
 0053			 
@@ -12999,7 +12999,7 @@
 1bd9			 
 1bd9			; boot messages 
 1bd9			 
-1bd9 .. 00		prom_bootmsg:	db "z80-homebrew OS v1.7",0 
+1bd9 .. 00		prom_bootmsg:	db "z80-homebrew OS v4.5",0 
 1bee .. 00		prom_bootmsg1:	db "by Kevin Groves",0 
 1bfe			 
 1bfe			 

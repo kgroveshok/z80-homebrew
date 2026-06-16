@@ -24,26 +24,27 @@ Bug list:
 
 Hardware/PCB Design Enhancements:
 
-* TODO Create new double row header for 4x40 lcd and remap pins. Keep existing single row for other lcd type
-* TODO Reroute VIDCLK to E2 on LCD header
-* TODO Add power to keyboard edge pins
-* TODO Add rj45 socket to pcb with wireout for spi to picospinet node
-* TODO Add onboard WiFi via esp32 spi 1. with spi 0 for lan. code 0 can be used to detect if powered on by a switch to save bat. 
+
 * TODO Can i add 32k ram bank switch to cover the rom?
-* TODO Add nmi button with rst vector to address 0x66 - some code stubs in main.asm. add some words to check and restart nmi flag. Code added but not sure what the problem is. Just expose the pins and come back to it later.
-* TODO Move Tape support Forth code into firmware
-* TODO Add address decoding for the SN sound chip - shift working. Maybe add the wr signal to ce to disable read from shift latch
-* TODO Add more address decoding for device a to allow sound and tape plus more. Skip A0/A1 and start from A2
-* TODO Cut cf track and wire temp to spare device ce to test
-* TODO Move cf card interface to spare device addr
 * TODO Look at using 64k Serial EEPROMs to double storage. 128k page size so can keep the current page code, just change the PHY... var
 * TODO New case design - Have a new one, printed and need to refine for use with PicoNET
-* TODO Change circuit so that the storage cart is actually on port a and provides a full 5 chip pack. Then move sound to port b
-* TODO Change the spi cart to a row of spi slots so i can then insert the rtc or sd card on its own
-* TODO Include exposure of the shift reg latached data bus to multiple pin headers for other devices/uses.
+* TODO Move Tape support Forth code into firmware
+* TODO Code ESP32 device for networking etc
 
-* TODO Set up led on last vid pin. add to keyboard firmware a check for config bit set to enable disable. See firmware_buzz.asm + lcd 4x40. Coded and working with a test led. Need circuit added to schem. Pin is VIDDO
-
+* DONE Create new double row header for 4x40 lcd and remap pins. Keep existing single row for other lcd type
+* DONE Reroute VIDCLK to E2 on LCD header
+* DONE Add power to keyboard edge pins
+* DONE Add rj45 socket to pcb with wireout for spi to picospinet node
+* DONE Add onboard WiFi via esp32 spi 1. with spi 0 for lan. code 0 can be used to detect if powered on by a switch to save bat. 
+* DONE Add nmi button with rst vector to address 0x66 - some code stubs in main.asm. add some words to check and restart nmi flag. Code added but not sure what the problem is. Just expose the pins and come back to it later.
+* DONE Add address decoding for the SN sound chip - shift working. Maybe add the wr signal to ce to disable read from shift latch
+* DONE Add more address decoding for device a to allow sound and tape plus more. Skip A0/A1 and start from A2
+* DONE Cut cf track and wire temp to spare device ce to test
+* DONE Move cf card interface to spare device addr
+* DONE Change circuit so that the storage cart is actually on port a and provides a full 5 chip pack. Then move sound to port b
+* DONE Change the spi cart to a row of spi slots so i can then insert the rtc or sd card on its own
+* DONE Include exposure of the shift reg latached data bus to multiple pin headers for other devices/uses.
+* DONE Set up led on last vid pin. add to keyboard firmware a check for config bit set to enable disable. See firmware_buzz.asm + lcd 4x40. Coded and working with a test led. Need circuit added to schem. Pin is VIDDO
 * DONE Added support for 595 shift reg on any port via SR word
 * DONE Add op-amp circuit to SPISound and allow for selection at wire time. Moving SPISound to on board via direct bus use
 * DONE Add dart. Not doing. With a CTC will take up too much space. Better use if going to use the ESP.

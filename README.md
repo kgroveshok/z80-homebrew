@@ -24,6 +24,23 @@ with a load of great chips that tie closely together. Makes for an easier life.
 Update: That said, with the PDIP Z80 now out of production so so great... But not completely lost :-)
 
 
+Design Brief
+------------
+
+I thought I would add where I feel the design ideas have come from. First I love the Forth language
+therefore as I say above taking the idea of the language driving the OS like in the Jupiter Ace, also
+I love that case design, low profile, Sinclair like. Back in the day I had a ZX81 (which I still have)
+but I also always wanted a Sharp handheld, saw one at school and thought such a cool thing, hence the 
+completely self contained LCD display choice I went with. 
+
+And working in a computer shop around 1987/88 I got to see a lot of different home micros and loved the
+design of the Oric and MSX. I think my next 3D case I will print black and do orange/red keys.
+
+Of course with the new 4.5 design I'm adding some features to make things easier such as Wifi. Hopefully
+the tape interface will work though I've still got to finish writing the loading decoder. Saving was
+working in the prototype.
+
+
 Current Specification/Feature Set
 ---------------------------------
 
@@ -38,12 +55,14 @@ Current Specification/Feature Set
    - Uses own file system with max file size of 16k 
    - 5 banks of independant storage each with own bank label
 * PIO 2: Port B - Exposed 8 bit bus and SPI bus. Used for more storage (512k/1024k), SPI devices or digital I/o
+   - SPI0 - RJ45 socket configured for use with SPINet Add-on
+   - SPI1 - ESP32 S3 for use as Wifi/extra storage/external comms, etc
+* A 595 shift register bus array for any random junk you want to push such as a load of LED's or digital output on device G.
 * Auto startup scripts/demos built into ROM and/or created on storage.
 * Exposed RC2014 connector
 * Built-in address decoder for four devices (2 used above)
-* Tape support in progress on Device A by default and can be plugged into the bus. Long term on board.
-* On board sound support (TODO on device B)
-* Sound chip via SPI
+* Tape support in progress on Device F.
+* On board sound support on device B.
 * External cart support via PIO 2 Port B. Adding support for:
    - Real time clock SPI (TODO)
    - Extra storage via SD and/or Microchip serial EEPROMS  (TODO)
@@ -63,6 +82,7 @@ Current Specification/Feature Set
 Expansions/Addons
 -----------------
 
+* Not something I made, but an Adafruit Boost for on the go computing. Fits the case design on the right hand side. Should document that at some point.
 * PicoSPINet - A Pico device which provides 5/6 SPI network ports allowing intercoms between nodes and act as an internet gateway.
    - Provides NTP services
    - Internode communications
@@ -73,8 +93,6 @@ Expansions/Addons
 
    For more details look at the Addons README
 
-- Tape support on Device A (WIP)
-
 
 ![](stage4.0/Gerber_PCB_z80-system-3-sbc.zip)
 ![](stage4.0/Schematic_z80-system-4-sbc-2024-03-02.pdf)
@@ -84,8 +102,6 @@ Expansions/Addons
 * SPISound - Using a shift reg and the classic SN76489 sound chip we have four channel sound via SPI.
 
    For more details look at the Addons README
-
-* Tape support - Currently in progress
 
 
 Progress
@@ -121,6 +137,17 @@ Stress testing FORTH OS
 
 
 [https://youtu.be/hWfx7d5nqZw]
+
+Stage 4.5 in June 2026 now has tape, sound, shift reg bus, and an ESP 32 on board!
+
+![](Schematics/v4.5-1.png)
+![](Schematics/v4.5-2.png)
+![](Schematics/v4.5-3.png)
+![](Schematics/v4.5-4.png)
+
+![](Schematics/Schematic_z80-system-4.5-sbc_2026-06-16.png)
+
+Should fit in the existing case, but will redesign for a sleaker look.
 
 
 A simple game of 'Simon Says'

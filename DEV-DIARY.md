@@ -94,7 +94,7 @@ Langague Enhancements:
 
 Core Firmware Enhancements:
 
-* TODO Add stack checks and guardrails to be options on or off via hardware word bits 
+* TODO Add stack checks and guardrails to be options on or off via hardware word bits. have a selection of off, low, mid, high levels of checks if possible
 * TODO Move DMARK to hardware word bit check
 
 

@@ -84,7 +84,10 @@ UART:
 
 
 
+Chat:
 
+0x70 zstr1 zstr2               Send the text zstr2 to the chat socket at ip address zstr1 and store in chat buffer
+0x71                           Get next zstr from chat buffer
 
 
 

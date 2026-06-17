@@ -53,6 +53,10 @@ Hardware/PCB Design Enhancements:
 
 Langague Enhancements:
 
+
+* TODO Add MENUS which is like MENU but instead of the item number selected it is a pointer to the menu item text
+* TODO Add CHECKBOX which functions like MENU but also takes a block of memory used as a check box value. If the prefilled value is 0 then dont allow toggle.
+
 * TODO BETWEEN? word to check is tos is between a range. could just use a uword with lt and tg checks
 * TODO Add to MENU word returning not just the number selected but also the string
 * TODO Need a RROT and LROT bitwise byte rotate like the Z80 RRC and RLC op codes
@@ -89,6 +93,11 @@ Langague Enhancements:
 * TODO A word that will allow the loading of a file into memory with strings held in pointer array. Use with TABLE word.
 
 Core Firmware Enhancements:
+
+* TODO Add stack checks and guardrails to be options on or off via hardware word bits 
+* TODO Move DMARK to hardware word bit check
+
+
 
 * TODO Hardware config byte containing switches. There is a hardware_config and hardware_word symbols. Is it used? It is 10 bytes
 * TODO Add display if on bottom row and cr is pressed then auto scroll up - added code to the firmway str-to-display but did not not affect dot commands so need to look at how they are displaying
@@ -180,6 +189,37 @@ Documentation Changes:
 
 
 Major Firmware change for Forth compliation:
+
+
+New compiler ideas
+
+Add a uword which can set or unset compile on new uwords
+
+Prefix uword with header with if compiled or not
+
+In LIST check for the compiled flag and if seen then return the uword in comment brackets saying compiled and no source code
+
+To compile:
+
+Parse token.
+If found
+	Get jump address
+	In uword body add the jp instruction and add the address
+If not found then store as string
+Allow parser to get next token
+
+
+At runtime parser
+Get token pointer
+If byte is jp instruction then short circuit the parser search and exec
+If not jp then pass to string decoder
+
+
+Dont need the uword token number as i think a jump to the exec code will then move the pc to the next token via nextw????
+
+
+
+
 
 
 * Compiler:

@@ -14,7 +14,12 @@ Programming can be one of three options on the ESP.
 
 
 I will give ESPForth a go first. A bit of a learning curve but considering the OS is in Forth then why not have all of it in the same
-language? We will see. :-)
+language? We will see. :-) 
+
+As it happens, had issues with ESPForth and the ESP S3 Zero I'm using. Wouldn't conenct to Wifi with: wifi z" <ssid>" z" <pass>" login
+
+Would just hang. The Arduino IDE wifi SDK is working so will be using that instead as the code is easy to port between that and Forth. May revisit as some time.
+
 
 
 zstr - a zero terminated string
@@ -29,65 +34,75 @@ SPI Command Byte(s)            Action
 
 0x00-0x0F                      Reserved for future support of EEPROM storage protocol to allow for paged onboard direct file storage
 
-0x10                           Device active. Comand is sent, if the device is not powered up then zero will be returned. Any other
+0x03             STORAGE_READ 
+0x02             STORAGE_WRITE
+0x06              STORAGE_WREN
+
+0x10            ESPPOWERED               Device active. Comand is sent, if the device is not powered up then zero will be returned. Any other
                                value indicates the device is functioning
-0x11                           Future set paged current EEPROM bank to use above
-0x12                           Sleep. Send the ESP into a sleep/low power state and wait for a wake up on the SPI CE line.
+0x11             STORAGE_PAGE              Future set paged current EEPROM bank to use above
+0x12             SLEEP              Sleep. Send the ESP into a sleep/low power state and wait for a wake up on the SPI CE line.
+0x13             RESTART              Restart ESP
+0x14 byte             ESP_DEBUG            ESP Debug log level default 0
 
 Wifi:
 
-0x20  zstr                     Wifi SSID. Receive a zero terminated string for the SSID to connect to
-0x21  zstr                     Wifi Password. Receive a zero terminated string for the password to connect with.
-0x22  zstr                     Local IP. Set the local LAN IP address.
-0x23  zstr                     Set netmask.
-0x24  zstr                     Set gateway.
-0x25  zstr                     Set DNS.
-0x26                           Connect using above details
-0x27                           Close down wifi
+0x20  zstr           SETSSID          Wifi SSID for current profile. Receive a zero terminated string for the SSID to connect to
+0x21  zstr           SETPASS          Wifi Password for current profile. Receive a zero terminated string for the password to connect with.
+0x22                 GETIP          Get Local IP
+0x23  zstr           CREATE_PROF          Create wifi profile name
+0x24  zstr           SELECT_PROF          Select wifi profile name
+0x25                 LIST_PROF          List wifi profiles
+0x26                 WIFI_CONNEXT          Connect using above details
+0x27                 WIFI_DISCON          Close down wifi
+
 
 
 Internet:
 
-0x30  zstr                     Set current IP address/Socket for connections
-0x31                           Open the connection
-0x32                           Close the connection
-0x33  pool zstr                Send request to current connect. Content will be buffered to the pool id
-0x34  byte                     Send a single byte to the current connection
-0x35                           Get a single byte from the current connection
+0x30  zstr           SET_ITARG          Set current target IP address/Socket for connections
+0x31                 OPEN_ICON          Open the connection
+0x32                 CLOSE_ICON          Close the connection
+0x33  pool zstr      SEND_ICON          Send request to current connect. Content will be buffered to the pool id
+0x34  byte           PUTC_ICON          Send a single byte to the current connection
+0x35                 GETC_ICON          Get a single byte from the current connection
+0x36 zstr            CREATE_ICON        Set internet connection profile
+0x37 zstr            SELECT_ICON        Select the internet connection profile
+0x38                 LIST_ICON          List internet connection profiles
 
 
 Buffers:
 
-0x40  pool count               Get the next 'count' bytes from the given pool id, a zero count will get until zero term string encountered
-0x41  pool zstr                Add zstr to pool id buffer for later access
-0x42  pool                     Clear given pool id
+0x40  pool count     GET_POOL          Get the next 'count' bytes from the given pool id, a zero count will get until zero term string encountered
+0x41  pool zstr      PUT_POOL          Add zstr to pool id buffer for later access
+0x42  pool           CLR_POOL          Clear given pool id
 
 
 C like files:
 
-0x50  zstr                     Set current file name to use
-0x51                           Set file for read
-0x52                           Set file to write/append
-0x53  word                     Seek to position
-0x54  zstr                     Write string to file
-0x55  count                    Read from current position the number of bytes given. Zero until end of zero term string
-0x56                           Close file
-0x57                           Get file list
-0x58  zstr                     Delete file given
-0x59  zstr zstr                Rename file from to
+0x50  zstr          FILE_NAME           Set current file name to use
+0x51  byte            FILE_MODE           Set file mode
+0x52                           
+0x53  word            FILE_SEEK         Seek to position
+0x54  zstr            FILE_PUT         Write string to file
+0x55  count           FILE_GET         Read from current position the number of bytes given. Zero until end of zero term string
+0x56                  FILE_CLOSE         Close file
+0x57                  LIST_FILE         Get file list
+0x58  zstr            ERA_FILE         Delete file given
+0x59  zstr zstr       REN_FILE         Rename file from to
 
 
 UART:
 
-0x60 byte                      Send a byte on the UART
-0x61                           Get byte from the UART
+0x60 byte           PUTC           Send a byte on the UART
+0x61                GETC           Get byte from the UART
 
 
 
 Chat:
 
-0x70 zstr1 zstr2               Send the text zstr2 to the chat socket at ip address zstr1 and store in chat buffer
-0x71                           Get next zstr from chat buffer
+0x70 zstr1 zstr2    CHAT_PUT              Send the text zstr2 to the chat socket at ip address zstr1 and store in chat buffer
+0x71                CHAR_GET           Get next zstr from chat buffer
 
 
 

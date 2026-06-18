@@ -97,7 +97,7 @@ Core Firmware Enhancements:
 * TODO Add stack checks and guardrails to be options on or off via hardware word bits. have a selection of off, low, mid, high levels of checks if possible
 * TODO Move DMARK to hardware word bit check
 
-
+* TODO CONFIG option to redirect key/display to ESP for a larger setup
 
 * TODO Hardware config byte containing switches. There is a hardware_config and hardware_word symbols. Is it used? It is 10 bytes
 * TODO Add display if on bottom row and cr is pressed then auto scroll up - added code to the firmway str-to-display but did not not affect dot commands so need to look at how they are displaying

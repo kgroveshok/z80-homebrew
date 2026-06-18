@@ -1,0 +1,96 @@
+
+hex
+ 
+( ce 10 do 9 sck 8 di 7 )
+: spiinit 0a input pinmode 9 input pinmode 8 input pinmode 7 output pinmode ;
+: sck? 8 digitalread ;
+: do? 9 digitalread ;
+: di 7 pin ;
+: ce2? 10 digitalread ;
+: isclkhigh begin sck? until ;
+: isclklowin 0 begin drop do? sck? 0 = until ;
+: isclklowout begin sck? 0 = until ;
+: isce2en   begin ce2? 0 = until ;
+: bitin if 1 + then ;
+
+: rcvspibyte 0 8 1 do isclkhigh isclklowin bitin 1 lshift loop isclkhigh isclklowin bitin ;
+
+: rcvstrz ( begin rcvspibyte 0 = until) ;
+
+: monitor begin rcvspibyte emit 0 = until ;
+
+( sending out )
+
+: sndspibyte isclkhigh 8 1 do dup 80 and 80 = if high ." 1" else low ." 0" then di 1 lshift isclklowout isclkhigh loop ;
+
+( scan for spi command bytes )
+
+: nae ." EEPROM Bank feature not available yet!" ;
+: na ." Feature not available yet!" ;
+: nab ." Buffer feature not available yet!" ;
+		
+		
+: bufupdate  cr ." Add string to buffer pool" ;
+: bufget  cr ." Get string from buffer pool" ;
+: bufclear  cr ." Clear buffer pool" ;								
+
+
+      
+: syscmd case  	10 of na endof 		11 of na endof 		12 of na endof 		 		endcase  ;
+
+
+: sepcmd case 0 of nae endof   case 1 of nae endof      case 2 of nae endof endcase ;
+ 
+      case 3 of nae endof
+      case 4 of nae endof
+     case 5 of nae endof
+      case 6 of nae endof      
+      case 7 of nae endof      
+      case 8 of nae endof
+      case 9 of nae endof
+      case 0a of nae endof
+      case 0b of nae endof
+      case 0c of nae endof
+      case 0d of nae endof
+      case 0e of nae endof
+      case 0f of nae endof 
+      endcase 
+      ;
+
+: buffcmd 
+        case 
+	40 of bufget rcvspibyte ." Use buffer pool:" . nab endof
+	41 of bufupdate rcvspibyte ." Send back from buffer pool:" .  nab endof
+	42 of bufclear rcvspibyte ." Clear buffer pool:" .  nab endof 
+	endcase  
+	;
+                                               
+
+: cmdscan dup cr ." Command:" .  dup sepcmd  dup syscmd dup buffcmd ;
+
+\ : cmdscan dup cr ." Command:" . dup buffcmd ;    
+
+
+
+( : z80start spiinit begin page ." Waiting for CE2 low" isce2en  cr ." Line enabled. Get byte..." cr rcvspibyte dup ." Got byte:" . cr cmdscan 0 until ; )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

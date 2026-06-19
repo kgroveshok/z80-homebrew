@@ -6,10 +6,17 @@
 #include "FS.h"
 #include "SPIFFS.h"
 
-#define ESP_DEBUG 0x14
+#define SPI_ESP_CONFIG 0x14
 
-#define SPI_PUTC 0x60
-#define SPI_GETC 0x61
+// Buffers
+#define SPI_GET_POOL    0x40
+#define SPI_PUT_POOL    0x41
+#define SPI_CLR_POOL    0x42
+
+// UART
+
+#define SPI_PUTC    0x60
+#define SPI_GETC    0x61
 
 const char *ssid = "........";
 const char *password = "........";
@@ -22,7 +29,13 @@ int wifi_profile=0;
 int internet_profile=0;
 int pool_page=0;
 
+// System configuration switches
+
 int debug_level=1;
+int config_byte=0;
+int use_webserver=1;
+
+
 
 //char *wifi_profile="Default";
 
@@ -30,6 +43,7 @@ WebServer server(80);
 
 byte cmd=0;
 byte tmpbyte;
+String tmpString;
 
 int wifi_ready = 0 ;
 const int led = LED_BUILTIN;
@@ -115,7 +129,233 @@ void sndstrz( char *s) {
 }
 */
 
+// File support
 
+/* You only need to format SPIFFS the first time you run a
+   test or else use the SPIFFS plugin to create a partition
+   https://github.com/me-no-dev/arduino-esp32fs-plugin */
+
+#define FORMAT_SPIFFS_IF_FAILED true
+
+void listDir(fs::FS &fs, String dirname, uint8_t levels) {
+  Serial.printf("Listing directory: %s\r\n", dirname);
+
+  File root = fs.open(dirname);
+  if (!root) {
+    Serial.println("- failed to open directory");
+    return;
+  }
+  if (!root.isDirectory()) {
+    Serial.println(" - not a directory");
+    return;
+  }
+
+  File file = root.openNextFile();
+  while (file) {
+    if (file.isDirectory()) {
+      Serial.print("  DIR : ");
+      Serial.println(file.name());
+      if (levels) {
+        listDir(fs, file.path(), levels - 1);
+      }
+    } else {
+      Serial.print("  FILE: ");
+      Serial.print(file.name());
+      Serial.print("\tSIZE: ");
+      Serial.println(file.size());
+    }
+    file = root.openNextFile();
+  }
+}
+
+String readFile(fs::FS &fs, String path) {
+  String r="";
+
+  Serial.printf("Reading file: %s\r\n", path);
+
+  File file = fs.open(path);
+  if (!file || file.isDirectory()) {
+    Serial.println("- failed to open file for reading");
+    return "";
+  }
+
+  Serial.println("- read from file:");
+  while (file.available()) {
+    r=r+file.read();
+  }
+  file.close();
+  return r;
+}
+
+void writeFile(fs::FS &fs, String path, String message) {
+  Serial.printf("Writing file: %s\r\n", path);
+
+  File file = fs.open(path, FILE_WRITE);
+  if (!file) {
+    Serial.println("- failed to open file for writing");
+    return;
+  }
+  if (file.print(message)) {
+    Serial.println("- file written");
+  } else {
+    Serial.println("- write failed");
+  }
+  file.close();
+}
+
+void appendFile(fs::FS &fs, String path, String message) {
+  Serial.printf("Appending to file: %s\r\n", path);
+
+  File file = fs.open(path, FILE_APPEND);
+  if (!file) {
+    Serial.println("- failed to open file for appending");
+    return;
+  }
+  if (file.print(message)) {
+    Serial.println("- message appended");
+  } else {
+    Serial.println("- append failed");
+  }
+  file.close();
+}
+
+void renameFile(fs::FS &fs, String path1, String path2) {
+  Serial.printf("Renaming file %s to %s\r\n", path1, path2);
+  if (fs.rename(path1, path2)) {
+    Serial.println("- file renamed");
+  } else {
+    Serial.println("- rename failed");
+  }
+}
+
+void deleteFile(fs::FS &fs, String path) {
+  Serial.printf("Deleting file: %s\r\n", path);
+  if (fs.remove(path)) {
+    Serial.println("- file deleted");
+  } else {
+    Serial.println("- delete failed");
+  }
+}
+
+void testFileIO(fs::FS &fs, const char *path) {
+  Serial.printf("Testing file I/O with %s\r\n", path);
+
+  static uint8_t buf[512];
+  size_t len = 0;
+  File file = fs.open(path, FILE_WRITE);
+  if (!file) {
+    Serial.println("- failed to open file for writing");
+    return;
+  }
+
+  size_t i;
+  Serial.print("- writing");
+  uint32_t start = millis();
+  for (i = 0; i < 2048; i++) {
+    if ((i & 0x001F) == 0x001F) {
+      Serial.print(".");
+    }
+    file.write(buf, 512);
+  }
+  Serial.println("");
+  uint32_t end = millis() - start;
+  Serial.printf(" - %u bytes written in %" PRIu32 " ms\r\n", 2048 * 512, end);
+  file.close();
+
+  file = fs.open(path);
+  start = millis();
+  end = start;
+  i = 0;
+  if (file && !file.isDirectory()) {
+    len = file.size();
+    size_t flen = len;
+    start = millis();
+    Serial.print("- reading");
+    while (len) {
+      size_t toRead = len;
+      if (toRead > 512) {
+        toRead = 512;
+      }
+      file.read(buf, toRead);
+      if ((i++ & 0x001F) == 0x001F) {
+        Serial.print(".");
+      }
+      len -= toRead;
+    }
+    Serial.println("");
+    end = millis() - start;
+    Serial.printf("- %lu bytes read in %" PRIu32 " ms\r\n", (unsigned long)flen, end);
+    file.close();
+  } else {
+    Serial.println("- failed to open file for reading");
+  }
+}
+
+void LoadCfg() {
+  if( debug_level ) { Serial.println("Loading configuration..."); }
+  String r ;
+  r=readFile(SPIFFS, "/config.txt");
+  if( r == "" ) {
+    SaveCfg();
+  }
+
+  config_byte=r.toInt();
+
+// TODO set server config flags
+// TODO enable disable webserver on use_webserver
+
+  r=readFile(SPIFFS, "/cur_storage.txt");
+  if( r == "" ) {
+    SaveCurStorage();
+  }
+
+storage_page=r.toInt();
+
+  r=readFile(SPIFFS, "/cur_wprofile.txt");
+  if( r == "" ) {
+    SaveCurWProfile();
+  }
+
+int wifi_profile=r.toInt();
+
+  r=readFile(SPIFFS, "/cur_iprofile.txt");
+  if( r == "" ) {
+    SaveCurIProfile();
+  }
+
+int internet_profile=r.toInt();
+
+  r=readFile(SPIFFS, "/cur_pool.txt");
+  if( r == "" ) {
+    SaveCurPool();
+  }
+
+int pool_page=r.toInt();
+
+
+}
+void SaveCfg() {
+          writeFile(SPIFFS, "/config.txt",String(config_byte));
+}
+
+void SaveCurStorage() {
+        writeFile(SPIFFS, "/cur_storage.txt",String(storage_page));
+}
+
+void SaveCurWProfile(){
+          writeFile(SPIFFS, "/cur_wprofile.txt",String(wifi_profile));
+}
+
+void SaveCurIProfile(){
+          writeFile(SPIFFS, "/cur_iprofile.txt",String(internet_profile));
+}
+
+void SaveCurPool() {
+            writeFile(SPIFFS, "/cur_pool.txt",String(pool_page));
+}
+  
+
+// Webserver support
 
 void handleRoot() {
   digitalWrite(led, 1);
@@ -151,6 +391,32 @@ void setup(void) {
       pinMode(spi_sck_pin, INPUT);
       pinMode(spi_di_pin, OUTPUT);
     
+  if (!SPIFFS.begin(FORMAT_SPIFFS_IF_FAILED)) {
+    Serial.println("SPIFFS Mount Failed");
+    return;
+  }
+
+// Load persistent config 
+
+  readFile(SPIFFS, "/config.txt");
+
+//  listDir(SPIFFS, "/", 0);
+//  writeFile(SPIFFS, "/hello.txt", "Hello ");
+//  appendFile(SPIFFS, "/hello.txt", "World!\r\n");
+//  readFile(SPIFFS, "/hello.txt");
+//  renameFile(SPIFFS, "/hello.txt", "/foo.txt");
+//  readFile(SPIFFS, "/foo.txt");
+//  deleteFile(SPIFFS, "/foo.txt");
+//  testFileIO(SPIFFS, "/test.txt");
+//  deleteFile(SPIFFS, "/test.txt");
+
+
+
+
+
+
+
+
 
 
   if( wifi_ready ) {
@@ -180,9 +446,10 @@ void setup(void) {
   });
 
   server.onNotFound(handleNotFound);
-
+  if( use_webserver ) {
   server.begin();
   Serial.println("HTTP server started");
+  } else { Serial.println("HTTP server configured to not run. Skipped start up.");}
   } else { Serial.println("Wifi not configured. Skipping HTTP server startup"); }
 
 
@@ -192,7 +459,9 @@ void setup(void) {
 void loop(void) {
       
         if( wifi_ready ) {
+          if ( use_webserver ) {
   server.handleClient();
+          }
   } 
   //delay(2);  //allow the cpu to switch to other tasks
 
@@ -208,13 +477,33 @@ void loop(void) {
       switch (cmd) {
       case 0:
             break;
-      case ESP_DEBUG:
+      case SPI_ESP_CONFIG:
             if( debug_level) { Serial.println("SPI_DEBUG"); }
             tmpbyte=rcvspibyte();
             if( debug_level) { Serial.printf("\nDebug set to level: %d", tmpbyte); }
             debug_level=(int) tmpbyte;
             // TODO Save current level to file
             break;
+
+// Buffers
+      case SPI_GET_POOL :
+        if( debug_level) { Serial.printf("\nSend string from pool %d", pool_page); }
+        Serial.println(readFile(SPIFFS,"/"+String(pool_page)+"pool.txt"));
+        break;
+      case SPI_PUT_POOL:
+        // Get string to add to pool
+      
+        tmpString=String(rcvspibyte());
+      if( debug_level) { Serial.printf("\nGot string: %s", tmpString); }
+        if( debug_level) { Serial.printf("\nAppend to pool %d", pool_page); }
+        appendFile(SPIFFS,"/"+String(pool_page)+"pool.txt", tmpString);
+        break;
+      case SPI_CLR_POOL:
+        if( debug_level) { Serial.printf("\nClear pool %d", pool_page); }
+        deleteFile(SPIFFS,"/"+String(pool_page)+"pool.txt");
+        break;
+
+
       case SPI_PUTC:
             if( debug_level ) { Serial.println("SPI_PUTC"); }
             tmpbyte=rcvspibyte();
@@ -314,189 +603,10 @@ hex
 */
 
 
+String g;
 
 
 
-
-
-/* You only need to format SPIFFS the first time you run a
-   test or else use the SPIFFS plugin to create a partition
-   https://github.com/me-no-dev/arduino-esp32fs-plugin */
-   /*
-#define FORMAT_SPIFFS_IF_FAILED true
-
-void listDir(fs::FS &fs, const char *dirname, uint8_t levels) {
-  Serial.printf("Listing directory: %s\r\n", dirname);
-
-  File root = fs.open(dirname);
-  if (!root) {
-    Serial.println("- failed to open directory");
-    return;
-  }
-  if (!root.isDirectory()) {
-    Serial.println(" - not a directory");
-    return;
-  }
-
-  File file = root.openNextFile();
-  while (file) {
-    if (file.isDirectory()) {
-      Serial.print("  DIR : ");
-      Serial.println(file.name());
-      if (levels) {
-        listDir(fs, file.path(), levels - 1);
-      }
-    } else {
-      Serial.print("  FILE: ");
-      Serial.print(file.name());
-      Serial.print("\tSIZE: ");
-      Serial.println(file.size());
-    }
-    file = root.openNextFile();
-  }
-}
-
-void readFile(fs::FS &fs, const char *path) {
-  Serial.printf("Reading file: %s\r\n", path);
-
-  File file = fs.open(path);
-  if (!file || file.isDirectory()) {
-    Serial.println("- failed to open file for reading");
-    return;
-  }
-
-  Serial.println("- read from file:");
-  while (file.available()) {
-    Serial.write(file.read());
-  }
-  file.close();
-}
-
-void writeFile(fs::FS &fs, const char *path, const char *message) {
-  Serial.printf("Writing file: %s\r\n", path);
-
-  File file = fs.open(path, FILE_WRITE);
-  if (!file) {
-    Serial.println("- failed to open file for writing");
-    return;
-  }
-  if (file.print(message)) {
-    Serial.println("- file written");
-  } else {
-    Serial.println("- write failed");
-  }
-  file.close();
-}
-
-void appendFile(fs::FS &fs, const char *path, const char *message) {
-  Serial.printf("Appending to file: %s\r\n", path);
-
-  File file = fs.open(path, FILE_APPEND);
-  if (!file) {
-    Serial.println("- failed to open file for appending");
-    return;
-  }
-  if (file.print(message)) {
-    Serial.println("- message appended");
-  } else {
-    Serial.println("- append failed");
-  }
-  file.close();
-}
-
-void renameFile(fs::FS &fs, const char *path1, const char *path2) {
-  Serial.printf("Renaming file %s to %s\r\n", path1, path2);
-  if (fs.rename(path1, path2)) {
-    Serial.println("- file renamed");
-  } else {
-    Serial.println("- rename failed");
-  }
-}
-
-void deleteFile(fs::FS &fs, const char *path) {
-  Serial.printf("Deleting file: %s\r\n", path);
-  if (fs.remove(path)) {
-    Serial.println("- file deleted");
-  } else {
-    Serial.println("- delete failed");
-  }
-}
-
-void testFileIO(fs::FS &fs, const char *path) {
-  Serial.printf("Testing file I/O with %s\r\n", path);
-
-  static uint8_t buf[512];
-  size_t len = 0;
-  File file = fs.open(path, FILE_WRITE);
-  if (!file) {
-    Serial.println("- failed to open file for writing");
-    return;
-  }
-
-  size_t i;
-  Serial.print("- writing");
-  uint32_t start = millis();
-  for (i = 0; i < 2048; i++) {
-    if ((i & 0x001F) == 0x001F) {
-      Serial.print(".");
-    }
-    file.write(buf, 512);
-  }
-  Serial.println("");
-  uint32_t end = millis() - start;
-  Serial.printf(" - %u bytes written in %" PRIu32 " ms\r\n", 2048 * 512, end);
-  file.close();
-
-  file = fs.open(path);
-  start = millis();
-  end = start;
-  i = 0;
-  if (file && !file.isDirectory()) {
-    len = file.size();
-    size_t flen = len;
-    start = millis();
-    Serial.print("- reading");
-    while (len) {
-      size_t toRead = len;
-      if (toRead > 512) {
-        toRead = 512;
-      }
-      file.read(buf, toRead);
-      if ((i++ & 0x001F) == 0x001F) {
-        Serial.print(".");
-      }
-      len -= toRead;
-    }
-    Serial.println("");
-    end = millis() - start;
-    Serial.printf("- %lu bytes read in %" PRIu32 " ms\r\n", (unsigned long)flen, end);
-    file.close();
-  } else {
-    Serial.println("- failed to open file for reading");
-  }
-}
-
-void setup() {
-  Serial.begin(115200);
-  if (!SPIFFS.begin(FORMAT_SPIFFS_IF_FAILED)) {
-    Serial.println("SPIFFS Mount Failed");
-    return;
-  }
-
-  listDir(SPIFFS, "/", 0);
-  writeFile(SPIFFS, "/hello.txt", "Hello ");
-  appendFile(SPIFFS, "/hello.txt", "World!\r\n");
-  readFile(SPIFFS, "/hello.txt");
-  renameFile(SPIFFS, "/hello.txt", "/foo.txt");
-  readFile(SPIFFS, "/foo.txt");
-  deleteFile(SPIFFS, "/foo.txt");
-  testFileIO(SPIFFS, "/test.txt");
-  deleteFile(SPIFFS, "/test.txt");
-  Serial.println("Test complete");
-}
-
-void loop() {}
-*/
 
 
 

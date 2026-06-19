@@ -22,6 +22,12 @@ Would just hang. The Arduino IDE wifi SDK is working so will be using that inste
 
 
 
+* TODO Could add mailbox on web server
+* TODO Can I get esp to send email
+
+
+
+
 zstr - a zero terminated string
 pool - a pool id byte
 count - a byte count
@@ -38,12 +44,16 @@ SPI Command Byte(s)            Action
 0x02             STORAGE_WRITE
 0x06              STORAGE_WREN
 
+0x09             STORAGE_SYNC    Writes are cached in ram until the STORAGE_SYNC is used to flush to storage
+
 0x10            ESPPOWERED               Device active. Comand is sent, if the device is not powered up then zero will be returned. Any other
                                value indicates the device is functioning
 0x11             STORAGE_PAGE              Future set paged current EEPROM bank to use above
 0x12             SLEEP              Sleep. Send the ESP into a sleep/low power state and wait for a wake up on the SPI CE line.
 0x13             RESTART              Restart ESP
-0x14 byte             ESP_DEBUG            ESP Debug log level default 0
+0x14 byte             ESP_CONFIG            ESP Configuration bit mask: abcdefgg  
+                                                gg - Debug level
+                                                 f - Enable/Disable web server
 
 Wifi:
 

@@ -6,7 +6,19 @@
 #include "FS.h"
 #include "SPIFFS.h"
 
+#define SPI_ESP_POWERED 0x10
 #define SPI_ESP_CONFIG 0x14
+
+// wifi
+
+#define SPI_SET_SSID 0x20
+#define SPI_SET_PASS 0x21
+#define SPI_GET_IP 0x22
+#define SPI_CREATE_PROF 0x23
+#define SPI_SELECT_PROF 0x24
+#define SPI_LIST_PROF 0x25
+#define SPI_WIFI_CONNECT 0x26
+#define SPI_WIFI_DISCON 0x27
 
 // Buffers
 #define SPI_GET_POOL 0x40
@@ -19,8 +31,8 @@
 #define SPI_PUTC 0x60
 #define SPI_GETC 0x61
 
-const char *ssid = "........";
-const char *password = "........";
+String wifi_ssid = "";
+String wifi_password = "";
 const char *fna = "That feature is not available right now!";
 
 // Profile/Page ids
@@ -113,16 +125,16 @@ byte rcvspibyte() {
   return b;
 }
 
-String rcvspistrz () {
-  String s="";
+String rcvspistrz() {
+  String s = "";
   byte ar[255];
   byte c;
-  int si=0;
-  while( (c = rcvspibyte() ) != 0 ) { ar[si++]=c;}
-  ar[si]=0;
+  int si = 0;
+  while ((c = rcvspibyte()) != 0) { ar[si++] = c; }
+  ar[si] = 0;
 
-  return String((char *) ar);
-} 
+  return String((char *)ar);
+}
 
 //: monitor begin rcvspibyte emit 0 = until ;
 
@@ -142,12 +154,12 @@ void sndspibyte(byte b) {
 }
 
 
-void sndspistrz( String s) {
-      int i;
-      for( i = 0 ; i< s.length() ; i++) {
-            sndspibyte( s[i]);
-      }
-      sndspibyte(0);
+void sndspistrz(String s) {
+  int i;
+  for (i = 0; i < s.length(); i++) {
+    sndspibyte(s[i]);
+  }
+  sndspibyte(0);
 }
 
 
@@ -193,7 +205,7 @@ void listDir(fs::FS &fs, String dirname, uint8_t levels) {
 String readFile(fs::FS &fs, String path) {
   String r = "";
   byte ar[2];
-  ar[1]=0;
+  ar[1] = 0;
 
   Serial.printf("Reading file: %s\r\n", path);
 
@@ -205,7 +217,7 @@ String readFile(fs::FS &fs, String path) {
 
   Serial.println("- read from file:");
   while (file.available()) {
-    ar[0]=file.read();
+    ar[0] = file.read();
     r = r + String((char *)ar);
   }
   file.close();
@@ -319,6 +331,13 @@ void testFileIO(fs::FS &fs, const char *path) {
 void loadCfg() {
   if (debug_level) { Serial.println("Loading configuration..."); }
   String r;
+  r = readFile(SPIFFS, "/0wifi_ssid.txt");
+  wifi_ssid = r;
+  r = readFile(SPIFFS, "/0wifi_password.txt");
+  wifi_password = r;
+
+  if (wifi_ssid.length() > 0 and wifi_password.length() > 0) { wifi_ready = 1; }
+
   r = readFile(SPIFFS, "/config.txt");
   Serial.println(r);
   if (r.length() == 0) {
@@ -450,7 +469,7 @@ void setup(void) {
 
   if (wifi_ready) {
     WiFi.mode(WIFI_STA);
-    WiFi.begin(ssid, password);
+    WiFi.begin(wifi_ssid, wifi_password);
     Serial.println("");
 
     // Wait for connection
@@ -460,7 +479,7 @@ void setup(void) {
     }
     Serial.println("");
     Serial.print("Connected to ");
-    Serial.println(ssid);
+    Serial.println(wifi_ssid);
     Serial.print("IP address: ");
     Serial.println(WiFi.localIP());
 
@@ -501,66 +520,109 @@ void loop(void) {
 
   if (!isCE2()) {
     // Get a command byte
+    if (debug_level) { Serial.printf("\nReady for command byte..."); }
     cmd = rcvspibyte();
-    Serial.printf("\nCommand byte seen: %c", cmd);
-  }
-
-  // Command processing
-
-  switch (cmd) {
-    case 0:
-      break;
-    case SPI_ESP_CONFIG:
-      if (debug_level) { Serial.println("SPI_DEBUG"); }
-      tmpByte = rcvspibyte();
-      if (debug_level) { Serial.printf("\nDebug set to level: %d", tmpByte); }
-      debug_level = (int)tmpByte;
-      // TODO Save current level to file
-      break;
-
-      // Buffers
-    case SPI_GET_POOL:
-      if (debug_level) { Serial.printf("\nSend string from pool %d", pool_page); }
-      
-      tmpString=readFile(SPIFFS, "/" + String(pool_page) + "pool.txt");
-      if (debug_level) {Serial.println(tmpString);}
-      sndspistrz(tmpString);
-      
-
-      // TODO Consume pool?
-      break;
-    case SPI_PUT_POOL:
-      // Get string to add to pool
-
-      tmpString = String(rcvspistrz());
-      if (debug_level) { Serial.printf("\nGot string: %s", tmpString); }
-      if (debug_level) { Serial.printf("\nAppend to pool %d", pool_page); }
-      appendFile(SPIFFS, "/" + String(pool_page) + "pool.txt", tmpString);
-      break;
-    case SPI_SELECT_POOL:
-      tmpByte=rcvspibyte();
-      pool_page=(int)tmpByte;
-      SaveCurPool();
-    if (debug_level) { Serial.printf("\nSelect pool %d", pool_page); }
-      break;
-    case SPI_CLR_POOL:
-      if (debug_level) { Serial.printf("\nClear pool %d", pool_page); }
-      deleteFile(SPIFFS, "/" + String(pool_page) + "pool.txt");
-      break;
+    if (debug_level) { Serial.printf("\nCommand byte seen: %d", cmd); }
 
 
-    case SPI_PUTC:
-      if (debug_level) { Serial.println("SPI_PUTC"); }
-      tmpByte = rcvspibyte();
-      Serial.printf("%c", cmd);
-      break;
-    case SPI_GETC:
-      break;
-    default:
-      // statements
-      Serial.printf("\n%d: %s", cmd, fna);
+    // Command processing
 
+    switch (cmd) {
+      case 0:
+        break;
+      case SPI_ESP_POWERED:
+        sndspibyte(1);
       break;
+      case SPI_ESP_CONFIG:
+        if (debug_level) { Serial.println("SPI_DEBUG"); }
+        tmpByte = rcvspibyte();
+        if (debug_level) { Serial.printf("\nDebug set to level: %d", tmpByte); }
+        debug_level = (int)tmpByte;
+        // TODO Save current level to file
+        break;
+
+        // Wifi
+
+      case SPI_SET_SSID:
+
+        tmpString = String(rcvspistrz());
+        if (debug_level) { Serial.printf("\nSet SSID: %s", tmpString); }
+
+        writeFile(SPIFFS, "/" + String(wifi_profile) + "wifi_ssid.txt", tmpString);
+        break;
+      case SPI_SET_PASS:
+        tmpString = String(rcvspistrz());
+        if (debug_level) { Serial.printf("\nSet password: %s", tmpString); }
+
+        writeFile(SPIFFS, "/" + String(wifi_profile) + "wifi_password.txt", tmpString);
+        break;
+      case SPI_GET_IP:
+
+        if (debug_level) { Serial.printf("\nGet IP: %s", WiFi.localIP()); }
+
+
+        sndspistrz(String(WiFi.localIP()));
+
+        break;
+      case SPI_SELECT_PROF:
+        tmpByte = rcvspibyte();
+        wifi_profile = (int)tmpByte;
+        SaveCurWProfile();
+        break;
+        //        case SPI_LIST_PROF:
+        //
+        //        break;
+        //       case SPI_WIFI_CONNECT:
+        //
+        //        break;
+        //        case SPI_WIFI_DISCON:
+        //
+        //        break;
+
+        // Buffers
+      case SPI_GET_POOL:
+        if (debug_level) { Serial.printf("\nSend string from pool %d", pool_page); }
+
+        tmpString = readFile(SPIFFS, "/" + String(pool_page) + "pool.txt");
+        if (debug_level) { Serial.println(tmpString); }
+        sndspistrz(tmpString);
+
+
+        // TODO Consume pool?
+        break;
+      case SPI_PUT_POOL:
+        // Get string to add to pool
+
+        tmpString = String(rcvspistrz());
+        if (debug_level) { Serial.printf("\nGot string: %s", tmpString); }
+        if (debug_level) { Serial.printf("\nAppend to pool %d", pool_page); }
+        appendFile(SPIFFS, "/" + String(pool_page) + "pool.txt", tmpString);
+        break;
+      case SPI_SELECT_POOL:
+        tmpByte = rcvspibyte();
+        pool_page = (int)tmpByte;
+        SaveCurPool();
+        if (debug_level) { Serial.printf("\nSelect pool %d", pool_page); }
+        break;
+      case SPI_CLR_POOL:
+        if (debug_level) { Serial.printf("\nClear pool %d", pool_page); }
+        deleteFile(SPIFFS, "/" + String(pool_page) + "pool.txt");
+        break;
+
+
+      case SPI_PUTC:
+        if (debug_level) { Serial.println("SPI_PUTC"); }
+        tmpByte = rcvspibyte();
+        Serial.printf("%c", tmpByte);
+        break;
+        //   case SPI_GETC:
+        //     break;
+      default:
+        // statements
+        Serial.printf("\n%d: %s", cmd, fna);
+
+        break;
+    }
   }
 }
 
@@ -644,5 +706,3 @@ hex
 
 
 */
-
-

@@ -143,22 +143,25 @@ edit2: db ": ede storepage ptr $02 + cls dedit filepage bupd ; ", 0
 edit3: db ": ed dup v0! open $01 do i v0@ record cls . edc loop ; ",0
 ;edit3: db ": ed dup v0! open $01 do i v0@ record cls . i v1! edc loop ; ",0
 
-; SPI Net support words
+; SPI esp wifi support words
 
 ; v0! = node to send to
 ; ( str count - )
-spi1:       db ": spitype spiceh $00 do dup i + @ v0@ spicel $10 spio spio spio spiceh $01 pause loop ; ",0
+spi1:       db ": spitype spiceh $00 do dup i + @ spicel $60 spio spio spiceh loop ; ",0
 
-; spiputc ( char node - )
-spi2:       db ": spiputc spicel $10 spio spio ptr @ spio spiceh ; ",0
+; spiputc ( char - )
+spi2:       db ": spiputc spicel $60 spio ptr @ spio spiceh ; ",0
+; spipool ( u -- )
+spi2b:       db ": spipool spicel $42 spio spio spiceh ; ",0
 ; spiputc ( u node - )
-spi2b:       db ": spiputb spicel $10 spio spio spio spiceh ; ",0
+;spi2b:       db ": spiputb spicel $10 spio spio spio spiceh ; ",0
 
 ; spigetc ( - n )
-spi4:       db ": spigetc spicel $11 spio spii spiceh ; ", 0
+spi4:       db ": spigetc spicel $61 spio spiceh ; ", 0
 
 ; getnode ( - n )
-spi5:       db ": getnode spicel $18 spio spii nop spiceh ; ", 0
+spi5:       db ": spiaaa nop ; ", 0
+;spi5:       db ": getnode spicel $18 spio spii nop spiceh ; ", 0
 
 ; ( str node - ) 
 spi3:       db ": sendnode v0! count spiceh $00 do dup i + @ v0@ spicel $10 spio spio spio spiceh $01 pause loop ; ; ",0
@@ -176,11 +179,15 @@ spi7:       db ": getstorestr spicel $13 spio spio \" \" repeat spii dup concat 
 ; ubie
 ; ubiall
 
-spib1: db ": ubieall $01 do cls ptr count type list cr concat count soctype 2drop loop ;",0
-spib2: db ": ubie $01 do cls ptr count type waitk $79 = if list cr concat count soctype drop then 2drop loop ;", 0
-spib3: db ": spistrz ptr count $00 do dup i + @ spio $01 pause loop ;",0
-spib4: db ": soccon spicel $22 spio spistrz ;",0
-spib5: db ": soctype spiceh spicel $00 do dup i + @ $20 spio spio loop ;",0
+spib1: db ": uball $01 do cls ptr count type list cr concat spicel $41 spio spistrz spiceh 2drop loop ;",0
+spib2: db ": ub $01 do cls ptr count type waitk $79 = if list cr concat spicel $41 spio spistrz spiceh drop then 2drop loop ;", 0
+;spib2: db ": ubie $01 do cls ptr count type waitk $79 = if list cr concat count soctype drop then 2drop loop ;", 0
+spib3: db ": spistrz ptr count $00 do dup i + @ spio loop ;",0
+;spib3: db ": spistrz ptr count $00 do dup i + @ spio $01 pause loop ;",0
+spib4: db ": uballt $01 do cls ptr count type list cr concat count spitype 2drop loop ;",0
+;spib4: db ": soccon spicel $22 spio spistrz ;",0
+spib5: db ": soctype aa ;",0
+;spib5: db ": soctype spiceh spicel $00 do dup i + @ $20 spio spio loop ;",0
 
 
 ; NETCHAT (TODO)
@@ -196,9 +203,9 @@ spib5: db ": soctype spiceh spicel $00 do dup i + @ $20 spio spio loop ;",0
 ; TODO add paging of get request
 
 ; ( node - )
-spi8:		db ": netchatp $00 $00 at accept ;", 0
-spi9: 		db ": netchatr repeat spigetchr dup dup $00 = not if emit then $00 = not until $02 pause ; ",0
-spi10:		db ": netchat v0! repeat netchatp count dup $00 > if spitype $01 pause then cls $00 $03 at \">\" . netchatr true until nop ; ", 0
+;spi8:		db ": netchatp $00 $00 at accept ;", 0
+;spi9: 		db ": netchatr repeat spigetchr dup dup $00 = not if emit then $00 = not until $02 pause ; ",0
+;spi10:		db ": netchat v0! repeat netchatp count dup $00 > if spitype $01 pause then cls $00 $03 at \">\" . netchatr true until nop ; ", 0
 
 scancode: 	db ": scancode repeat key dup cls chr .> bl ,> .  until ; ",0
 

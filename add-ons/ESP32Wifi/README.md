@@ -46,7 +46,7 @@ SPI Command Byte(s)            Action
 
 0x09             STORAGE_SYNC    Writes are cached in ram until the STORAGE_SYNC is used to flush to storage
 
-0x10            ESPPOWERED               Device active. Comand is sent, if the device is not powered up then zero will be returned. Any other
+0x10            ESP_POWERED               Device active. Comand is sent, if the device is not powered up then zero will be returned. Any other
                                value indicates the device is functioning
 0x11             STORAGE_PAGE              Future set paged current EEPROM bank to use above
 0x12             SLEEP              Sleep. Send the ESP into a sleep/low power state and wait for a wake up on the SPI CE line.
@@ -57,13 +57,13 @@ SPI Command Byte(s)            Action
 
 Wifi:
 
-0x20  zstr           SETSSID          Wifi SSID for current profile. Receive a zero terminated string for the SSID to connect to
-0x21  zstr           SETPASS          Wifi Password for current profile. Receive a zero terminated string for the password to connect with.
-0x22                 GETIP          Get Local IP
-0x23  zstr           CREATE_PROF          Create wifi profile name
-0x24  zstr           SELECT_PROF          Select wifi profile name
+D 0x20  zstr           SET_SSID          Wifi SSID for current profile. Receive a zero terminated string for the SSID to connect to
+D 0x21  zstr           SET_PASS          Wifi Password for current profile. Receive a zero terminated string for the password to connect with.
+D 0x22                 GET_IP          Get Local IP
+0x23             
+0x24  byte          SELECT_PROF          Select wifi profile id
 0x25                 LIST_PROF          List wifi profiles
-0x26                 WIFI_CONNEXT          Connect using above details
+0x26                 WIFI_CONNECT          Connect using above details
 0x27                 WIFI_DISCON          Close down wifi
 
 
@@ -83,10 +83,10 @@ Internet:
 
 Buffers:
 
-0x40           GET_POOL          Get all of the pool contents  until zero term string encountered
-0x41  zstr           PUT_POOL          Add zstr to pool id buffer for later access
-0x42  byte           SELECT_POOL       set current pool id
-0x43               CLR_POOL          Clear current pool
+D 0x40           GET_POOL          Get all of the pool contents  until zero term string encountered
+D 0x41  zstr           PUT_POOL          Add zstr to pool id buffer for later access
+D 0x42  byte           SELECT_POOL       set current pool id
+D 0x43               CLR_POOL          Clear current pool
 0x44  count         CONSUME_POOL          Get the next 'count' bytes from the given pool id, a zero count will get until zero term string encountered
 
 
@@ -106,7 +106,7 @@ C like files:
 
 UART:
 
-0x60 byte           PUTC           Send a byte on the UART
+D 0x60 byte           PUTC           Send a byte on the UART
 0x61                GETC           Get byte from the UART
 
 

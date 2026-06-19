@@ -193,6 +193,8 @@ hardware_config: equ key_face_held - 10
 ;     0000 1000   40x4 lcd
 ;     0000 1100   spi/ext display
 ;     0001 0000   ide interface available
+;     0010 0000   esp putc on dot command
+;     0100 0000   esp full frame refresh on update_display
 
 hardware_word: equ hardware_config - 2
 

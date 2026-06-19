@@ -9,14 +9,15 @@
 #define SPI_ESP_CONFIG 0x14
 
 // Buffers
-#define SPI_GET_POOL    0x40
-#define SPI_PUT_POOL    0x41
-#define SPI_CLR_POOL    0x42
+#define SPI_GET_POOL 0x40
+#define SPI_PUT_POOL 0x41
+#define SPI_SELECT_POOL 0x42
+#define SPI_CLR_POOL 0x43
 
 // UART
 
-#define SPI_PUTC    0x60
-#define SPI_GETC    0x61
+#define SPI_PUTC 0x60
+#define SPI_GETC 0x61
 
 const char *ssid = "........";
 const char *password = "........";
@@ -24,16 +25,16 @@ const char *fna = "That feature is not available right now!";
 
 // Profile/Page ids
 
-int storage_page=0;
-int wifi_profile=0;
-int internet_profile=0;
-int pool_page=0;
+int storage_page = 0;
+int wifi_profile = 0;
+int internet_profile = 0;
+int pool_page = 0;
 
 // System configuration switches
 
-int debug_level=1;
-int config_byte=0;
-int use_webserver=1;
+int debug_level = 1;
+int config_byte = 1;
+int use_webserver = 1;
 
 
 
@@ -41,93 +42,114 @@ int use_webserver=1;
 
 WebServer server(80);
 
-byte cmd=0;
-byte tmpbyte;
+byte cmd = 0;
+byte tmpByte;
 String tmpString;
 
-int wifi_ready = 0 ;
+int wifi_ready = 0;
 const int led = LED_BUILTIN;
 
-const int spi_ce_pin=10;
-const int spi_do_pin=9;
-const int spi_sck_pin=8;
-const int spi_di_pin=7;
+const int spi_ce_pin = 10;
+const int spi_do_pin = 9;
+const int spi_sck_pin = 8;
+const int spi_di_pin = 7;
 
 // Signal helper functions
 
-inline int isCLK() { return digitalRead(spi_sck_pin); }
-inline int getDO() { return digitalRead(spi_do_pin); }
-inline void setDI(int b) { digitalWrite(spi_di_pin,b); }
-inline int isCE2() { return digitalRead(spi_ce_pin); }
-void fromCLKHigh() { //Serial.println("In isCLKHigh"); 
-while( isCLK()) {}; 
-//Serial.println("Done"); 
+inline int isCLK() {
+  return digitalRead(spi_sck_pin);
 }
-int fromCLKLowIn() { int d; 
-//Serial.println("In isCLKLowIn");
- while( !isCLK()) { d=getDO();} ; 
- //Serial.println("Done"); 
- return d; }
-void fromCLKLowOut() { 
-      //Serial.println("In isCLKLowOut"); 
-      while( !isCLK()) { } ;
-      //Serial.println("Done"); 
-      }
-void isCE2en() { while( isCE2() ) {} }
+inline int getDO() {
+  return digitalRead(spi_do_pin);
+}
+inline void setDI(int b) {
+  digitalWrite(spi_di_pin, b);
+}
+inline int isCE2() {
+  return digitalRead(spi_ce_pin);
+}
+void fromCLKHigh() {  //Serial.println("In isCLKHigh");
+  while (isCLK()) {};
+  //Serial.println("Done");
+}
+int fromCLKLowIn() {
+  int d;
+  //Serial.println("In isCLKLowIn");
+  while (!isCLK()) { d = getDO(); };
+  //Serial.println("Done");
+  return d;
+}
+void fromCLKLowOut() {
+  //Serial.println("In isCLKLowOut");
+  while (!isCLK()) {};
+  //Serial.println("Done");
+}
+void isCE2en() {
+  while (isCE2()) {}
+}
 
 
 //: bitin if 1 + then ;
 
 //: rcvspibyte 0 8 1 do isclkhigh isclklowin bitin 1 lshift loop isclkhigh isclklowin bitin ;
 byte rcvspibyte() {
-      byte b=0;
-      int d;
-      for( int i = 0 ; i < 7 ; i++) {
-            fromCLKHigh();
-            if( fromCLKLowIn() == 1 ) {
-                  b++;
-                  //Serial.printf("\n%d: 1 ", i);
-            } //else { Serial.printf("\n%d: 0 ", i);}
-            b=b << 1;
-      }
-      fromCLKHigh();
-      if( fromCLKLowIn() == 1 ) {
-                  b++;
-            //Serial.printf("\nE: 1 ");
-            } //else { Serial.printf("\nE: 0 ");}
+  byte b = 0;
+  int d;
+  for (int i = 0; i < 7; i++) {
+    fromCLKHigh();
+    if (fromCLKLowIn() == 1) {
+      b++;
+      //Serial.printf("\n%d: 1 ", i);
+    }  //else { Serial.printf("\n%d: 0 ", i);}
+    b = b << 1;
+  }
+  fromCLKHigh();
+  if (fromCLKLowIn() == 1) {
+    b++;
+    //Serial.printf("\nE: 1 ");
+  }  //else { Serial.printf("\nE: 0 ");}
 
-      //Serial.printf("\n");
-      return b;
+  //Serial.printf("\n");
+  return b;
 }
 
-//: rcvstrz ( begin rcvspibyte 0 = until) ;
+String rcvspistrz () {
+  String s="";
+  byte ar[255];
+  byte c;
+  int si=0;
+  while( (c = rcvspibyte() ) != 0 ) { ar[si++]=c;}
+  ar[si]=0;
+
+  return String((char *) ar);
+} 
 
 //: monitor begin rcvspibyte emit 0 = until ;
 
 //( sending out )
 
-void sndspibyte( byte b ) {
-      //Serial.printf("\nSend byte: %d", (int) b);
-      fromCLKHigh();
-      for( int i =0 ; i < 8 ; i++ ) {
-        //    Serial.printf("\n%d: %d", i, b & 128);
-            setDI( b & 128 ) ;
-            fromCLKLowOut();
-            b = b << 1;
-            fromCLKHigh();
-       }
-       //Serial.println("Done");
+void sndspibyte(byte b) {
+  //Serial.printf("\nSend byte: %d", (int) b);
+  fromCLKHigh();
+  for (int i = 0; i < 8; i++) {
+    //    Serial.printf("\n%d: %d", i, b & 128);
+    setDI(b & 128);
+    fromCLKLowOut();
+    b = b << 1;
+    fromCLKHigh();
+  }
+  //Serial.println("Done");
 }
 
-/*
-void sndstrz( char *s) {
+
+void sndspistrz( String s) {
       int i;
-      for( i = 0 ; i < len(s); i++) {
+      for( i = 0 ; i< s.length() ; i++) {
             sndspibyte( s[i]);
       }
       sndspibyte(0);
 }
-*/
+
 
 // File support
 
@@ -169,19 +191,22 @@ void listDir(fs::FS &fs, String dirname, uint8_t levels) {
 }
 
 String readFile(fs::FS &fs, String path) {
-  String r="";
+  String r = "";
+  byte ar[2];
+  ar[1]=0;
 
   Serial.printf("Reading file: %s\r\n", path);
 
   File file = fs.open(path);
   if (!file || file.isDirectory()) {
     Serial.println("- failed to open file for reading");
-    return "";
+    return String("");
   }
 
   Serial.println("- read from file:");
   while (file.available()) {
-    r=r+file.read();
+    ar[0]=file.read();
+    r = r + String((char *)ar);
   }
   file.close();
   return r;
@@ -291,69 +316,73 @@ void testFileIO(fs::FS &fs, const char *path) {
   }
 }
 
-void LoadCfg() {
-  if( debug_level ) { Serial.println("Loading configuration..."); }
-  String r ;
-  r=readFile(SPIFFS, "/config.txt");
-  if( r == "" ) {
+void loadCfg() {
+  if (debug_level) { Serial.println("Loading configuration..."); }
+  String r;
+  r = readFile(SPIFFS, "/config.txt");
+  Serial.println(r);
+  if (r.length() == 0) {
     SaveCfg();
   }
 
-  config_byte=r.toInt();
+  config_byte = r.toInt();
 
-// TODO set server config flags
-// TODO enable disable webserver on use_webserver
+  // TODO set server config flags
+  // TODO enable disable webserver on use_webserver
 
-  r=readFile(SPIFFS, "/cur_storage.txt");
-  if( r == "" ) {
+  r = readFile(SPIFFS, "/cur_storage.txt");
+  if (r.length() == 0) {
     SaveCurStorage();
   }
 
-storage_page=r.toInt();
+  storage_page = r.toInt();
 
-  r=readFile(SPIFFS, "/cur_wprofile.txt");
-  if( r == "" ) {
+  r = readFile(SPIFFS, "/cur_wprofile.txt");
+  if (r.length() == 0) {
     SaveCurWProfile();
   }
 
-int wifi_profile=r.toInt();
+  int wifi_profile = r.toInt();
 
-  r=readFile(SPIFFS, "/cur_iprofile.txt");
-  if( r == "" ) {
+  r = readFile(SPIFFS, "/cur_iprofile.txt");
+  if (r.length() == 0) {
     SaveCurIProfile();
   }
 
-int internet_profile=r.toInt();
+  int internet_profile = r.toInt();
 
-  r=readFile(SPIFFS, "/cur_pool.txt");
-  if( r == "" ) {
+  r = readFile(SPIFFS, "/cur_pool.txt");
+  if (r.length() == 0) {
     SaveCurPool();
   }
 
-int pool_page=r.toInt();
-
-
+  int pool_page = r.toInt();
 }
 void SaveCfg() {
-          writeFile(SPIFFS, "/config.txt",String(config_byte));
+  if (debug_level) { Serial.println("Saving config.txt..."); }
+  writeFile(SPIFFS, "/config.txt", String(config_byte));
 }
 
 void SaveCurStorage() {
-        writeFile(SPIFFS, "/cur_storage.txt",String(storage_page));
+  if (debug_level) { Serial.println("Saving cur_storage.txt..."); }
+  writeFile(SPIFFS, "/cur_storage.txt", String(storage_page));
 }
 
-void SaveCurWProfile(){
-          writeFile(SPIFFS, "/cur_wprofile.txt",String(wifi_profile));
+void SaveCurWProfile() {
+  if (debug_level) { Serial.println("Saving cur_wprofile..."); }
+  writeFile(SPIFFS, "/cur_wprofile.txt", String(wifi_profile));
 }
 
-void SaveCurIProfile(){
-          writeFile(SPIFFS, "/cur_iprofile.txt",String(internet_profile));
+void SaveCurIProfile() {
+  if (debug_level) { Serial.println("Saving cur_iprofile,txt..."); }
+  writeFile(SPIFFS, "/cur_iprofile.txt", String(internet_profile));
 }
 
 void SaveCurPool() {
-            writeFile(SPIFFS, "/cur_pool.txt",String(pool_page));
+  if (debug_level) { Serial.println("Saving cur_pool.txt..."); }
+  writeFile(SPIFFS, "/cur_pool.txt", String(pool_page));
 }
-  
+
 
 // Webserver support
 
@@ -381,36 +410,34 @@ void handleNotFound() {
 }
 
 void setup(void) {
-      pinMode(led, OUTPUT);
-      digitalWrite(led, 0);
-      Serial.begin(115200);
+  pinMode(led, OUTPUT);
+  digitalWrite(led, 0);
+  Serial.begin(115200);
 
-      // configure interface to z80 spi
-      pinMode(spi_ce_pin, INPUT);
-      pinMode(spi_do_pin, INPUT);
-      pinMode(spi_sck_pin, INPUT);
-      pinMode(spi_di_pin, OUTPUT);
-    
+  // configure interface to z80 spi
+  pinMode(spi_ce_pin, INPUT);
+  pinMode(spi_do_pin, INPUT);
+  pinMode(spi_sck_pin, INPUT);
+  pinMode(spi_di_pin, OUTPUT);
+
   if (!SPIFFS.begin(FORMAT_SPIFFS_IF_FAILED)) {
     Serial.println("SPIFFS Mount Failed");
     return;
   }
 
-// Load persistent config 
+  // Load persistent config
+  listDir(SPIFFS, "/", 0);
+  loadCfg();
 
-  readFile(SPIFFS, "/config.txt");
-
-//  listDir(SPIFFS, "/", 0);
-//  writeFile(SPIFFS, "/hello.txt", "Hello ");
-//  appendFile(SPIFFS, "/hello.txt", "World!\r\n");
-//  readFile(SPIFFS, "/hello.txt");
-//  renameFile(SPIFFS, "/hello.txt", "/foo.txt");
-//  readFile(SPIFFS, "/foo.txt");
-//  deleteFile(SPIFFS, "/foo.txt");
-//  testFileIO(SPIFFS, "/test.txt");
-//  deleteFile(SPIFFS, "/test.txt");
-
-
+  //  listDir(SPIFFS, "/", 0);
+  //  writeFile(SPIFFS, "/hello.txt", "Hello ");
+  //  appendFile(SPIFFS, "/hello.txt", "World!\r\n");
+  //  readFile(SPIFFS, "/hello.txt");
+  //  renameFile(SPIFFS, "/hello.txt", "/foo.txt");
+  //  readFile(SPIFFS, "/foo.txt");
+  //  deleteFile(SPIFFS, "/foo.txt");
+  //  testFileIO(SPIFFS, "/test.txt");
+  //  deleteFile(SPIFFS, "/test.txt");
 
 
 
@@ -419,106 +446,122 @@ void setup(void) {
 
 
 
-  if( wifi_ready ) {
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
-  Serial.println("");
 
-  // Wait for connection
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
+
+  if (wifi_ready) {
+    WiFi.mode(WIFI_STA);
+    WiFi.begin(ssid, password);
+    Serial.println("");
+
+    // Wait for connection
+    while (WiFi.status() != WL_CONNECTED) {
+      delay(500);
+      Serial.print(".");
+    }
+    Serial.println("");
+    Serial.print("Connected to ");
+    Serial.println(ssid);
+    Serial.print("IP address: ");
+    Serial.println(WiFi.localIP());
+
+    if (MDNS.begin("esp32")) {
+      Serial.println("MDNS responder started");
+    }
+
+    server.on("/", handleRoot);
+
+    server.on("/inline", []() {
+      server.send(200, "text/plain", "this works as well");
+    });
+
+    server.onNotFound(handleNotFound);
+    if (use_webserver) {
+      server.begin();
+      Serial.println("HTTP server started");
+    } else {
+      Serial.println("HTTP server configured to not run. Skipped start up.");
+    }
+  } else {
+    Serial.println("Wifi not configured. Skipping HTTP server startup");
   }
-  Serial.println("");
-  Serial.print("Connected to ");
-  Serial.println(ssid);
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
-
-  if (MDNS.begin("esp32")) {
-    Serial.println("MDNS responder started");
-  }
-
-  server.on("/", handleRoot);
-
-  server.on("/inline", []() {
-    server.send(200, "text/plain", "this works as well");
-  });
-
-  server.onNotFound(handleNotFound);
-  if( use_webserver ) {
-  server.begin();
-  Serial.println("HTTP server started");
-  } else { Serial.println("HTTP server configured to not run. Skipped start up.");}
-  } else { Serial.println("Wifi not configured. Skipping HTTP server startup"); }
 
 
-  Serial.println("Waiting for CE2 line..."); 
+  Serial.println("Waiting for CE2 line...");
 }
 
 void loop(void) {
-      
-        if( wifi_ready ) {
-          if ( use_webserver ) {
-  server.handleClient();
-          }
-  } 
+
+  if (wifi_ready) {
+    if (use_webserver) {
+      server.handleClient();
+    }
+  }
   //delay(2);  //allow the cpu to switch to other tasks
 
 
-   if( !isCE2() ) {
-            // Get a command byte
-         cmd = rcvspibyte();
-         Serial.printf("\nCommand byte seen: %c",cmd);
-     }
+  if (!isCE2()) {
+    // Get a command byte
+    cmd = rcvspibyte();
+    Serial.printf("\nCommand byte seen: %c", cmd);
+  }
 
-// Command processing
+  // Command processing
 
-      switch (cmd) {
-      case 0:
-            break;
-      case SPI_ESP_CONFIG:
-            if( debug_level) { Serial.println("SPI_DEBUG"); }
-            tmpbyte=rcvspibyte();
-            if( debug_level) { Serial.printf("\nDebug set to level: %d", tmpbyte); }
-            debug_level=(int) tmpbyte;
-            // TODO Save current level to file
-            break;
+  switch (cmd) {
+    case 0:
+      break;
+    case SPI_ESP_CONFIG:
+      if (debug_level) { Serial.println("SPI_DEBUG"); }
+      tmpByte = rcvspibyte();
+      if (debug_level) { Serial.printf("\nDebug set to level: %d", tmpByte); }
+      debug_level = (int)tmpByte;
+      // TODO Save current level to file
+      break;
 
-// Buffers
-      case SPI_GET_POOL :
-        if( debug_level) { Serial.printf("\nSend string from pool %d", pool_page); }
-        Serial.println(readFile(SPIFFS,"/"+String(pool_page)+"pool.txt"));
-        break;
-      case SPI_PUT_POOL:
-        // Get string to add to pool
+      // Buffers
+    case SPI_GET_POOL:
+      if (debug_level) { Serial.printf("\nSend string from pool %d", pool_page); }
       
-        tmpString=String(rcvspibyte());
-      if( debug_level) { Serial.printf("\nGot string: %s", tmpString); }
-        if( debug_level) { Serial.printf("\nAppend to pool %d", pool_page); }
-        appendFile(SPIFFS,"/"+String(pool_page)+"pool.txt", tmpString);
-        break;
-      case SPI_CLR_POOL:
-        if( debug_level) { Serial.printf("\nClear pool %d", pool_page); }
-        deleteFile(SPIFFS,"/"+String(pool_page)+"pool.txt");
-        break;
+      tmpString=readFile(SPIFFS, "/" + String(pool_page) + "pool.txt");
+      if (debug_level) {Serial.println(tmpString);}
+      sndspistrz(tmpString);
+      
+
+      // TODO Consume pool?
+      break;
+    case SPI_PUT_POOL:
+      // Get string to add to pool
+
+      tmpString = String(rcvspistrz());
+      if (debug_level) { Serial.printf("\nGot string: %s", tmpString); }
+      if (debug_level) { Serial.printf("\nAppend to pool %d", pool_page); }
+      appendFile(SPIFFS, "/" + String(pool_page) + "pool.txt", tmpString);
+      break;
+    case SPI_SELECT_POOL:
+      tmpByte=rcvspibyte();
+      pool_page=(int)tmpByte;
+      SaveCurPool();
+    if (debug_level) { Serial.printf("\nSelect pool %d", pool_page); }
+      break;
+    case SPI_CLR_POOL:
+      if (debug_level) { Serial.printf("\nClear pool %d", pool_page); }
+      deleteFile(SPIFFS, "/" + String(pool_page) + "pool.txt");
+      break;
 
 
-      case SPI_PUTC:
-            if( debug_level ) { Serial.println("SPI_PUTC"); }
-            tmpbyte=rcvspibyte();
-            Serial.printf("%c",cmd);
-            break;
-      case SPI_GETC:
-            break;
-      default:
-        // statements
-        Serial.printf("\n%d: %s", cmd, fna);
-        
-        break;
-    }
+    case SPI_PUTC:
+      if (debug_level) { Serial.println("SPI_PUTC"); }
+      tmpByte = rcvspibyte();
+      Serial.printf("%c", cmd);
+      break;
+    case SPI_GETC:
+      break;
+    default:
+      // statements
+      Serial.printf("\n%d: %s", cmd, fna);
 
-
+      break;
+  }
 }
 
 /*
@@ -601,19 +644,5 @@ hex
 
 
 */
-
-
-String g;
-
-
-
-
-
-
-
-
-
-
-
 
 

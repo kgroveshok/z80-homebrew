@@ -83,9 +83,11 @@ Internet:
 
 Buffers:
 
-0x40  pool count     GET_POOL          Get the next 'count' bytes from the given pool id, a zero count will get until zero term string encountered
-0x41  pool zstr      PUT_POOL          Add zstr to pool id buffer for later access
-0x42  pool           CLR_POOL          Clear given pool id
+0x40           GET_POOL          Get all of the pool contents  until zero term string encountered
+0x41  zstr           PUT_POOL          Add zstr to pool id buffer for later access
+0x42  byte           SELECT_POOL       set current pool id
+0x43               CLR_POOL          Clear current pool
+0x44  count         CONSUME_POOL          Get the next 'count' bytes from the given pool id, a zero count will get until zero term string encountered
 
 
 C like files:

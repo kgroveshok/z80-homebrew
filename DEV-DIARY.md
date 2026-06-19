@@ -54,6 +54,7 @@ Hardware/PCB Design Enhancements:
 Langague Enhancements:
 
 
+* TODO CART? to get the current cart id
 * TODO Add MENUS which is like MENU but instead of the item number selected it is a pointer to the menu item text
 * TODO Add CHECKBOX which functions like MENU but also takes a block of memory used as a check box value. If the prefilled value is 0 then dont allow toggle.
 
@@ -73,7 +74,6 @@ Langague Enhancements:
 * TODO /STRING for string cut (substr???)
 * TODO REPLACES/SUBSTITUTE for string replace
 * TODO SEARCH is simliar to FIND
-* TODO CART? to get the current cart id
 * TODO Handle CONST on all DS_TYPE_STR. Can then use "hello" ptr const . to print a pointer as a string which destroying the original
 * TODO A save and restore word for device/cartdev. If needed could I use symbol reference instead?
 * TODO getid is slow. does it bail on first hit?
@@ -94,10 +94,11 @@ Langague Enhancements:
 
 Core Firmware Enhancements:
 
+* TODO Make sure to reafirm the CE SPI lines are down on boot before storage access otherwise could be bad
 * TODO Add stack checks and guardrails to be options on or off via hardware word bits. have a selection of off, low, mid, high levels of checks if possible
 * TODO Move DMARK to hardware word bit check
 
-* TODO CONFIG option to redirect key/display to ESP for a larger setup
+* TODO CONFIG option to redirect key/display to ESP for a larger setup. Add call to esp putc in the dot command and a full frame draw in update display.
 
 * TODO Hardware config byte containing switches. There is a hardware_config and hardware_word symbols. Is it used? It is 10 bytes
 * TODO Add display if on bottom row and cr is pressed then auto scroll up - added code to the firmway str-to-display but did not not affect dot commands so need to look at how they are displaying

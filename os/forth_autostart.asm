@@ -147,46 +147,48 @@ edit3: db ": ed dup v0! open $01 do i v0@ record cls . edc loop ; ",0
 
 ; v0! = node to send to
 ; ( str count - )
-spi1:       db ": spitype spiceh $00 do dup i + @ spicel $60 spio spio spiceh loop ; ",0
-
+spi1:       db ": uarttype spiceh $00 do dup i + @ spicel $60 spio spio spiceh loop ; ",0
+spi1b:      db ": espdebug spicel $14 spio spio spiceh ; ",0
 ; spiputc ( char - )
-spi2:       db ": spiputc spicel $60 spio ptr @ spio spiceh ; ",0
+spi2:       db ": uartputc spicel $60 spio ptr @ spio spiceh ; ",0
 ; spipool ( u -- )
-spi2b:       db ": spipool spicel $42 spio spio spiceh ; ",0
+spi2b:       db ": setpool spicel $42 spio spio spiceh ; ",0
 ; spiputc ( u node - )
 ;spi2b:       db ": spiputb spicel $10 spio spio spio spiceh ; ",0
 
 ; spigetc ( - n )
-spi4:       db ": spigetc spicel $61 spio spiceh ; ", 0
+spi4:       db ": uartgetc spicel $61 spio spiceh ; ", 0
 
 ; getnode ( - n )
-spi5:       db ": spiaaa nop ; ", 0
+spi5:       db ": pooltopc spicel $45 spio spiceh  ; ", 0
 ;spi5:       db ": getnode spicel $18 spio spii nop spiceh ; ", 0
-
+spi3:       db ": poolfrompc spicel $46 spio spiceh ; ", 0
+spi3a:      db ": poolclr spicel $43 spio spiceh ; ",0
 ; ( str node - ) 
-spi3:       db ": sendnode v0! count spiceh $00 do dup i + @ v0@ spicel $10 spio spio spio spiceh $01 pause loop ; ; ",0
+;spi3:       db ": sendnode v0! count spiceh $00 do dup i + @ v0@ spicel $10 spio spio spio spiceh $01 pause loop ; ; ",0
 ; store string ( str i - )
 
 ;spi3:       db ": storestrold spicel $03 spio spio ptr count clkstro spiceh ; ", 0
-spi6:       db ": storestr spicel $12 spio spio count $00 do dup i + @ spio $01 pause loop spiceh ; ", 0
+spi6:       db ": poolstrz spicel $41 spio spistrz spiceh ; ", 0
+;spi6:       db ": storestr spicel $12 spio spio count $00 do dup i + @ spio $01 pause loop spiceh ; ", 0
 
 ; get string ( addr i -  )    TO FIX
-
-spi7:       db ": getstorestr spicel $13 spio spio \" \" repeat spii dup concat $00 = not until spiceh ; ", 0
+; TODO causes a crash
+spi7:       db ": getpool spicel $40 spio bot-string repeat spii dup concat #0 = not until spiceh ; ", 0
 
 
 ; user word backup
 ; ubie
 ; ubiall
 
-spib1: db ": uball $01 do cls ptr count type list cr concat spicel $41 spio spistrz spiceh 2drop loop ;",0
-spib2: db ": ub $01 do cls ptr count type waitk $79 = if list cr concat spicel $41 spio spistrz spiceh drop then 2drop loop ;", 0
+spib1: db ": uball $01 do cls ptr count type list cr concat spicel $41 spio spistrz spiceh 2drop loop ; ",0
+spib2: db ": ub $01 do cls ptr count type waitk $79 = if list cr concat spicel $41 spio spistrz spiceh drop then 2drop loop ; ", 0
 ;spib2: db ": ubie $01 do cls ptr count type waitk $79 = if list cr concat count soctype drop then 2drop loop ;", 0
-spib3: db ": spistrz ptr count $00 do dup i + @ spio loop ;",0
+spib3: db ": spistrz ptr count #0 do dup i + @ spio loop ; ",0
 ;spib3: db ": spistrz ptr count $00 do dup i + @ spio $01 pause loop ;",0
-spib4: db ": uballt $01 do cls ptr count type list cr concat count spitype 2drop loop ;",0
+spib4: db ": uballt $01 do cls ptr count type list cr concat count spitype 2drop loop ; ",0
 ;spib4: db ": soccon spicel $22 spio spistrz ;",0
-spib5: db ": soctype aa ;",0
+;spib5: db ": soctype aa ;",0
 ;spib5: db ": soctype spiceh spicel $00 do dup i + @ $20 spio spio loop ;",0
 
 

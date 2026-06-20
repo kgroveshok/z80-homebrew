@@ -40,13 +40,13 @@ SPI Command Byte(s)            Action
 
 0x00-0x0F                      Reserved for future support of EEPROM storage protocol to allow for paged onboard direct file storage
 
-0x03             STORAGE_READ 
-0x02             STORAGE_WRITE
-0x06              STORAGE_WREN
+D 0x02             STORAGE_WRITE
+D 0x03             STORAGE_READ 
+D 0x06              STORAGE_WREN
 
 0x09             STORAGE_SYNC    Writes are cached in ram until the STORAGE_SYNC is used to flush to storage
 
-0x10            ESP_POWERED               Device active. Comand is sent, if the device is not powered up then zero will be returned. Any other
+D 0x10            ESP_POWERED               Device active. Comand is sent, if the device is not powered up then zero will be returned. Any other
                                value indicates the device is functioning
 0x11             STORAGE_PAGE              Future set paged current EEPROM bank to use above
 0x12             SLEEP              Sleep. Send the ESP into a sleep/low power state and wait for a wake up on the SPI CE line.
@@ -73,7 +73,7 @@ Internet:
 0x30  zstr           SET_ITARG          Set current target IP address/Socket for connections
 0x31                 OPEN_ICON          Open the connection
 0x32                 CLOSE_ICON          Close the connection
-0x33  pool zstr      SEND_ICON          Send request to current connect. Content will be buffered to the pool id
+0x33  zstr      SEND_ICON          Send request to current connect. Content will be buffered to the current pool id
 0x34  byte           PUTC_ICON          Send a single byte to the current connection
 0x35                 GETC_ICON          Get a single byte from the current connection
 0x36 zstr            CREATE_ICON        Set internet connection profile
@@ -88,8 +88,9 @@ D 0x41  zstr           PUT_POOL          Add zstr to pool id buffer for later ac
 D 0x42  byte           SELECT_POOL       set current pool id
 D 0x43               CLR_POOL          Clear current pool
 0x44  count         CONSUME_POOL          Get the next 'count' bytes from the given pool id, a zero count will get until zero term string encountered
-
-
+D 0x45                UART_OUT_POOL         Send the contents of the pool to the UART
+D 0x46                UART_IN_POOL          Append to contents of the pool from the UART until CR/LF
+0x47                  LIST_POOL           Return a list of the pool ids present (and their sizes?)
 C like files:
 
 0x50  zstr          FILE_NAME           Set current file name to use

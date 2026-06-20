@@ -93,7 +93,7 @@ Langague Enhancements:
 * TODO A word that will allow the loading of a file into memory with strings held in pointer array. Use with TABLE word.
 
 Core Firmware Enhancements:
-
+* TODO SHow start up bank 
 * TODO Make sure to reafirm the CE SPI lines are down on boot before storage access otherwise could be bad
 * TODO Add stack checks and guardrails to be options on or off via hardware word bits. have a selection of off, low, mid, high levels of checks if possible
 * TODO Move DMARK to hardware word bit check

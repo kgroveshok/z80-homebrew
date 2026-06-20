@@ -6,6 +6,10 @@
 #include "FS.h"
 #include "SPIFFS.h"
 
+#define SPI_STORAGE_READ 0x03
+#define SPI_STORAGE_WRITE 0x02
+#define SPI_STORAGE_WREN 0x06
+
 #define SPI_ESP_POWERED 0x10
 #define SPI_ESP_CONFIG 0x14
 
@@ -25,6 +29,8 @@
 #define SPI_PUT_POOL 0x41
 #define SPI_SELECT_POOL 0x42
 #define SPI_CLR_POOL 0x43
+#define SPI_UART_OUT_POOL 0x45
+#define SPI_UART_IN_POOL 0x46
 
 // UART
 
@@ -48,7 +54,7 @@ int debug_level = 1;
 int config_byte = 1;
 int use_webserver = 1;
 
-
+byte storage_block[48000];
 
 //char *wifi_profile="Default";
 
@@ -56,7 +62,10 @@ WebServer server(80);
 
 byte cmd = 0;
 byte tmpByte;
+int storeAddr;
+byte storeData;
 String tmpString;
+int tmpInt;
 
 int wifi_ready = 0;
 const int led = LED_BUILTIN;
@@ -526,13 +535,41 @@ void loop(void) {
 
 
     // Command processing
-
+digitalWrite(led, 1);
     switch (cmd) {
       case 0:
         break;
+      case SPI_STORAGE_READ:
+        if (debug_level) { Serial.printf("O"); }
+        storeAddr = (int)rcvspibyte();
+        storeAddr = storeAddr << 8;
+        storeAddr += (int)rcvspibyte();
+
+        storeData = storage_block[storeAddr];
+        sndspibyte(storeData);
+        break;
+      case SPI_STORAGE_WRITE:
+        if (debug_level) { Serial.printf("I"); }
+        storeAddr = (int)rcvspibyte();
+        storeAddr = storeAddr << 8;
+        storeAddr += (int)rcvspibyte();
+        storeData = rcvspibyte();
+        storage_block[storeAddr] = storeData;
+        break;
+    case SPI_STORAGE_WREN:
+        tmpByte = rcvspibyte();
+        if( tmpByte == SPI_STORAGE_WRITE) {
+          if (debug_level) { Serial.printf("I"); }
+        storeAddr = (int)rcvspibyte();
+        storeAddr = storeAddr << 8;
+        storeAddr += (int)rcvspibyte();
+        storeData = rcvspibyte();
+        storage_block[storeAddr] = storeData;
+        }
+      break;
       case SPI_ESP_POWERED:
         sndspibyte(1);
-      break;
+        break;
       case SPI_ESP_CONFIG:
         if (debug_level) { Serial.println("SPI_DEBUG"); }
         tmpByte = rcvspibyte();
@@ -609,6 +646,22 @@ void loop(void) {
         deleteFile(SPIFFS, "/" + String(pool_page) + "pool.txt");
         break;
 
+      case SPI_UART_OUT_POOL:
+        if (debug_level) { Serial.printf("\nContents of pool %d", pool_page); }
+        tmpString = readFile(SPIFFS, "/" + String(pool_page) + "pool.txt");
+        Serial.printf("%s", tmpString);
+
+        break;
+      case SPI_UART_IN_POOL:
+        if (debug_level) { Serial.printf("\nAdd to pool from UART %d", pool_page); }
+
+        while (Serial.available() == 0) {}
+        tmpString = Serial.readString();
+        tmpString.trim();
+        appendFile(SPIFFS, "/" + String(pool_page) + "pool.txt", tmpString);
+
+        if (debug_level) { Serial.printf("\nAdded string %s", tmpString); }
+        break;
 
       case SPI_PUTC:
         if (debug_level) { Serial.println("SPI_PUTC"); }
@@ -623,6 +676,7 @@ void loop(void) {
 
         break;
     }
+    digitalWrite(led, 0);
   }
 }
 

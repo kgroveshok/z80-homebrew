@@ -94,9 +94,10 @@ Langague Enhancements:
 * DONE CART? to get the current cart id. No, added a DEVSAV/DEVREST to save and switch
 
 Core Firmware Enhancements:
+
 * TODO Make sure to reafirm the CE SPI lines are down on boot before storage access otherwise could be bad
-* TODO Add stack checks and guardrails to be options on or off via hardware word bits. have a selection of off, low, mid, high levels of checks if possible
-* TODO Move DMARK to hardware word bit check
+
+* TODO Add stack checks and guardrails to be options on or off via hardware word bits. have a selection of off, low, mid, high levels of checks if possible. Have added bit set in firmware_init but the bit might be over written by other hardware settings
 
 * TODO CONFIG option to redirect key/display to ESP for a larger setup. Add call to esp putc in the dot command and a full frame draw in update display.
 
@@ -134,7 +135,6 @@ Core Firmware Enhancements:
 * TODO Add user watch break points by putting a hook into the parser or on NEXTW (as if using compiled version)
 * TODO add more editing features. Like what?
 * TODO for op codes compile from dict but at run time look up a calculated table with jumps to the words to save having to scan dict to find op codes
-* DONE Add to autostart to conditionally load if hardware switches are set. Need hardware config switches and then a char following the * to select. Perhaps the cartdev number? In config select device maps to hardware. Now have asterisk prefix for optional auto start in a bank.
 * TODO Add words that do some of the heavy lifting for SPISound out on the current CARTDEV - e.g. sending the three bytes to the spi for a note, playing a full tune
 * TODO Add block/id count for auto load to show where it is looking
 * TODO Could I use frame buffers for cli line storage which would mean they are available for use by code if needed? Would then free up some memory.
@@ -167,11 +167,12 @@ Core Firmware Enhancements:
 * TODO Add a simple assembler feature like BBC Basic
 
 * DONE SHow start up bank 
+* DONE Move DMARK to hardware word bit check. Don't need to worry, as it is using a vector now so ret is the fastest it will be
+* DONE Add to autostart to conditionally load if hardware switches are set. Need hardware config switches and then a char following the * to select. Perhaps the cartdev number? In config select device maps to hardware. Now have asterisk prefix for optional auto start in a bank.
 
 Documentation Changes:
 
 * TODO Draw memory map for ram, rom, devices
-* DONE A Simon says game demo
 * TODO A simple solo card game demo
 * TODO A simple character fighting stat game
 * TODO Top trump like game
@@ -189,6 +190,7 @@ Documentation Changes:
 * TODO do random quotes from file as example code
 * TODO Add to docs that looking up file name of id is just id BREAD 
 
+* DONE A Simon says game demo
 
 
 Major Firmware change for Forth compliation:

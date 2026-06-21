@@ -346,9 +346,9 @@ forth_autoload:
 
 		; display file name we are loading
 
-		call clear_display
+;		call clear_display
 
-		ld a, display_row_2 + 10
+		ld a, display_row_3 + 17
 		ld de, store_page+3
 		call str_at_display
 	
@@ -433,7 +433,7 @@ forth_autoload:
 	push de
 	call active
 	ex de, hl
-	ld a, display_row_2 + 7
+	ld a, display_row_3 + 15
 	call str_at_display
 
 	call update_display

@@ -446,9 +446,29 @@ chk_stk_init:
 	ret
 	
 check_stacks:
-	; check all stack words
+	; check all stack words for corruption
+
+	; Stack checks 
+
+
+	; stack over
+	; return under
+	; return over
+	; loop over
+	; data over
+
 
 	push hl
+	ld hl, (hardware_config+1)
+	bit 7, (hl)
+
+	jr nz, .dochecks
+
+	pop hl
+	ret
+
+.dochecks:
+
 	push de
 
 ;	ld de,(chk_word)

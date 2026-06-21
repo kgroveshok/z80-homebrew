@@ -182,6 +182,8 @@ hardware_config: equ key_face_held - 10
 ;     0000 0001  storage card inserted
 ;     0000 0010  spi sd card active
 ;     0000 0100  LED is on, 0 if off
+;     0010 0000  
+;     0100 0000  Check stack pointers for corruption
 ;     1000 0000  NMI has been activated
 
 ;     
@@ -560,7 +562,9 @@ include "stackimbal.asm"
 
 hardware_init:
 
-	
+		; Set bit for stack checks (if those features are enabled)
+		ld hl, (hardware_config+1)
+		set 7, (hl)
 
 		;ld a, 0
 		;ld (hardware_diag), a

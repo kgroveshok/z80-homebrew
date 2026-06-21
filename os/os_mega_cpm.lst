@@ -196,7 +196,7 @@
 013b			 
 013b ..			buildtime: db   "Build: " 
 0142					include "romtimestamp.asm" 
-0142 ..			db '2026-06-21 16:05' 
+0142 ..			db '2026-06-21 16:10' 
 # End of file romtimestamp.asm
 0152 00				   db 0 
 0153			 
@@ -34701,18 +34701,11 @@
 442d						DMARK "SDV" 
 442d						CALLMONITOR 
 442d					endif 
-442d					ld a, (spi_clktime) 
-442d					ld (spi_savclktime), a 
-442d					ld a, (spi_device_id) 
-442d					ld (spi_savdeviceid),a 
-442d					ld a, (spi_device) 
-442d					ld (spi_savdevice),a 
-442d					ld a, (spi_cartdev) 
-442d					ld (spi_savcartdev), a 
-442d					ld a, (spi_cartdev2) 
-442d					ld (spi_savcartdev2), a 
+442d			 
+442d					call devicesave 
 442d			 
 442d					NEXTW 
+442d			 
 442d			 
 442d			.SAVREST: 
 442d				CWHEAD .SAVEND 31 "DEVREST" 7 WORD_FLAG_CODE 
@@ -34721,16 +34714,8 @@
 442d						DMARK "SDV" 
 442d						CALLMONITOR 
 442d					endif 
-442d					ld a, (spi_savclktime) 
-442d					ld (spi_clktime), a 
-442d					ld a, (spi_savdeviceid) 
-442d					ld (spi_device_id),a 
-442d					ld a, (spi_savdevice) 
-442d					ld (spi_device),a 
-442d					ld a, (spi_savcartdev) 
-442d					ld (spi_cartdev), a 
-442d					ld a, (spi_savcartdev2) 
-442d					ld (spi_cartdev2), a 
+442d			 
+442d					call devicerestore 
 442d			 
 442d					NEXTW 
 442d			 

@@ -192,7 +192,7 @@
 803b			 
 803b ..			buildtime: db   "Build: " 
 8042					include "romtimestamp.asm" 
-8042 ..			db '2026-06-21 16:05' 
+8042 ..			db '2026-06-21 16:10' 
 # End of file romtimestamp.asm
 8052 00				   db 0 
 8053			 
@@ -35183,18 +35183,11 @@ bec4					if DEBUG_FORTH_WORDS_KEY
 bec4						DMARK "SDV" 
 bec4						CALLMONITOR 
 bec4					endif 
-bec4					ld a, (spi_clktime) 
-bec4					ld (spi_savclktime), a 
-bec4					ld a, (spi_device_id) 
-bec4					ld (spi_savdeviceid),a 
-bec4					ld a, (spi_device) 
-bec4					ld (spi_savdevice),a 
-bec4					ld a, (spi_cartdev) 
-bec4					ld (spi_savcartdev), a 
-bec4					ld a, (spi_cartdev2) 
-bec4					ld (spi_savcartdev2), a 
+bec4			 
+bec4					call devicesave 
 bec4			 
 bec4					NEXTW 
+bec4			 
 bec4			 
 bec4			.SAVREST: 
 bec4				CWHEAD .SAVEND 31 "DEVREST" 7 WORD_FLAG_CODE 
@@ -35203,16 +35196,8 @@ bec4					if DEBUG_FORTH_WORDS_KEY
 bec4						DMARK "SDV" 
 bec4						CALLMONITOR 
 bec4					endif 
-bec4					ld a, (spi_savclktime) 
-bec4					ld (spi_clktime), a 
-bec4					ld a, (spi_savdeviceid) 
-bec4					ld (spi_device_id),a 
-bec4					ld a, (spi_savdevice) 
-bec4					ld (spi_device),a 
-bec4					ld a, (spi_savcartdev) 
-bec4					ld (spi_cartdev), a 
-bec4					ld a, (spi_savcartdev2) 
-bec4					ld (spi_cartdev2), a 
+bec4			 
+bec4					call devicerestore 
 bec4			 
 bec4					NEXTW 
 bec4			 

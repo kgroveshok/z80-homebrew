@@ -432,6 +432,35 @@ spi_ce_low:
 	ret
 
 
+; Save/Restore the current device settings for a future restore (to allow quick switching eg ESP and BANK)
+
+devicesave:
+		ld a, (spi_clktime)
+		ld (spi_savclktime), a
+		ld a, (spi_device_id)
+		ld (spi_savdeviceid),a
+		ld a, (spi_device)
+		ld (spi_savdevice),a
+		ld a, (spi_cartdev)
+		ld (spi_savcartdev), a
+		ld a, (spi_cartdev2)
+		ld (spi_savcartdev2), a
+		ret
+
+devicerestore:
+
+		ld a, (spi_savclktime)
+		ld (spi_clktime), a
+		ld a, (spi_savdeviceid)
+		ld (spi_device_id),a
+		ld a, (spi_savdevice)
+		ld (spi_device),a
+		ld a, (spi_savcartdev)
+		ld (spi_cartdev), a
+		ld a, (spi_savcartdev2)
+		ld (spi_cartdev2), a
+
+		ret
 
 ; eof
 

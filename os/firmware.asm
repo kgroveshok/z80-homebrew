@@ -197,6 +197,7 @@ hardware_config: equ key_face_held - 10
 ;     0001 0000   ide interface available
 ;     0010 0000   esp putc on dot command
 ;     0100 0000   esp full frame refresh on update_display
+;     1000 0000   dot command outputs to lcd
 
 hardware_word: equ hardware_config - 2
 

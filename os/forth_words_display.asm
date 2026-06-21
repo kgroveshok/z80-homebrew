@@ -300,6 +300,9 @@ endif
 
 		push de   ; save string start in case we need to advance print
 
+
+; TODO intercept here for hardware config switch to redirect to ESP UART
+
 		ld a, (f_cursor_ptr)
 		call str_at_display
 		ld a,(cli_autodisplay)

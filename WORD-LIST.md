@@ -247,6 +247,8 @@ Also refer to the auto start list examples as these contain extra words created 
 ### 1-! ( addr -- )  Decrement byte at address addr | DONE
 ### 1-2! ( addr -- )  Decrement word at address addr | DONE
 ## Device Words
+### DEVSAV ( --  )  Saves the current BANK/CARTDEV settings in case you want to switch device suddenly. i.e. use ESP | DONE
+### DEVREST ( --  )  Restores the last saved BANK/CARTDEV settings in case you want to switch device suddenly. i.e. use ESP | DONE
 ### SR ( u p --  )  Send byte u to shift reg on port p | DONE
 ### LED ( u --  )  Set case LED on or off | DONE
 ### NB ( u --  )  Sends a note byte to sound card  TODO

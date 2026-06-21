@@ -5,7 +5,7 @@ BASE_SC114: equ 0
 BASE_KEV: equ 1
 BASE_CPM: equ 0
 
-DART_SUPPORT: equ 1
+DART_SUPPORT: equ 0
 TAPE_SUPPORT: equ 1
 ENABLE_BASIC: equ 0
 

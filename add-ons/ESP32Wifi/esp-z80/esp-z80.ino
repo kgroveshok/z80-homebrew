@@ -12,6 +12,7 @@
 
 #define SPI_ESP_POWERED 0x10
 #define SPI_ESP_CONFIG 0x14
+#define SPI_ESP_CONSOLE 0x15
 
 // wifi
 
@@ -577,6 +578,36 @@ digitalWrite(led, 1);
         debug_level = (int)tmpByte;
         // TODO Save current level to file
         break;
+      case SPI_ESP_CONSOLE:
+           Serial.setTimeout(9000); 
+          while((tmpByte=Serial.read())!='q' ) {
+            Serial.println("Console Mode. Use ? for help.");
+          while(Serial.available() == 0 ){}
+              
+            switch( tmpByte  ) {
+                case '?':
+                    Serial.println("q=exit, l=list files,r=display file");
+                    break;
+                case 'l':
+                   listDir(SPIFFS, "/", 0);
+                  break;
+                  case 'r':
+                    Serial.println("Enter file name to view");
+                    tmpString=Serial.readStringUntil(13);
+                    tmpString.trim();
+        tmpString = readFile(SPIFFS, "/" + tmpString);            
+                    Serial.println(tmpString);
+                                        break;
+                 case 'q':
+                    break;
+
+            }
+Serial.println("Console Mode. Use ? for help.");
+
+          }
+          Serial.println("Exiting console mode");
+Serial.setTimeout(1000); 
+        break;
 
         // Wifi
 
@@ -631,7 +662,7 @@ digitalWrite(led, 1);
         // Get string to add to pool
 
         tmpString = String(rcvspistrz());
-        if (debug_level) { Serial.printf("\nGot string: %s", tmpString); }
+        if (debug_level) { Serial.println("Got string: " +tmpString); }
         if (debug_level) { Serial.printf("\nAppend to pool %d", pool_page); }
         appendFile(SPIFFS, "/" + String(pool_page) + "pool.txt", tmpString);
         break;
@@ -649,7 +680,7 @@ digitalWrite(led, 1);
       case SPI_UART_OUT_POOL:
         if (debug_level) { Serial.printf("\nContents of pool %d", pool_page); }
         tmpString = readFile(SPIFFS, "/" + String(pool_page) + "pool.txt");
-        Serial.printf("%s", tmpString);
+        Serial.println(tmpString);
 
         break;
       case SPI_UART_IN_POOL:

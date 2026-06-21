@@ -36,7 +36,7 @@ Hardware/PCB Design Enhancements:
 * DONE Add power to keyboard edge pins
 * DONE Add rj45 socket to pcb with wireout for spi to picospinet node
 * DONE Add onboard WiFi via esp32 spi 1. with spi 0 for lan. code 0 can be used to detect if powered on by a switch to save bat. 
-* DONE Add nmi button with rst vector to address 0x66 - some code stubs in main.asm. add some words to check and restart nmi flag. Code added but not sure what the problem is. Just expose the pins and come back to it later.
+* DONE Add nmi button with rst vector to address 0x66 - some code stubs in main.asm. add some words to check and restart nmi flag. Code added but not sure what the problem is. Just expose the pins and come back to it later. Need to adjust vector location as past 0x66
 * DONE Add address decoding for the SN sound chip - shift working. Maybe add the wr signal to ce to disable read from shift latch
 * DONE Add more address decoding for device a to allow sound and tape plus more. Skip A0/A1 and start from A2
 * DONE Cut cf track and wire temp to spare device ce to test
@@ -54,12 +54,12 @@ Hardware/PCB Design Enhancements:
 Langague Enhancements:
 
 
-* TODO CART? to get the current cart id
 * TODO Add MENUS which is like MENU but instead of the item number selected it is a pointer to the menu item text
 * TODO Add CHECKBOX which functions like MENU but also takes a block of memory used as a check box value. If the prefilled value is 0 then dont allow toggle.
 
-* TODO BETWEEN? word to check is tos is between a range. could just use a uword with lt and tg checks
+* TODO Make the MENU function look nicer and responsive
 * TODO Add to MENU word returning not just the number selected but also the string
+* TODO BETWEEN? word to check is tos is between a range. could just use a uword with lt and tg checks
 * TODO Need a RROT and LROT bitwise byte rotate like the Z80 RRC and RLC op codes
 * TODO Add a version of CALL that takes a block of mem with reg pairs that are loaded before the call and return the values 
 * TODO  once fixed words add uword with prefix of star that is searched for by the run command that allows menu generated to start that word
@@ -77,7 +77,6 @@ Langague Enhancements:
 * TODO Handle CONST on all DS_TYPE_STR. Can then use "hello" ptr const . to print a pointer as a string which destroying the original
 * TODO A save and restore word for device/cartdev. If needed could I use symbol reference instead?
 * TODO getid is slow. does it bail on first hit?
-* TODO Make the MENU function look nicer and responsive
 * TODO Add scroll down indicator to menu code
 * TODO need word to get file id by name
 * TODO need word to get file name by id
@@ -92,8 +91,9 @@ Langague Enhancements:
 * TODO Add support for ELSE and ENDIF. IF THEN ELSE ENDIF   or IF THEN ENDIF. Or IF ... ELSE ... THEN
 * TODO A word that will allow the loading of a file into memory with strings held in pointer array. Use with TABLE word.
 
+* DONE CART? to get the current cart id. No, added a DEVSAV/DEVREST to save and switch
+
 Core Firmware Enhancements:
-* TODO SHow start up bank 
 * TODO Make sure to reafirm the CE SPI lines are down on boot before storage access otherwise could be bad
 * TODO Add stack checks and guardrails to be options on or off via hardware word bits. have a selection of off, low, mid, high levels of checks if possible
 * TODO Move DMARK to hardware word bit check
@@ -165,6 +165,8 @@ Core Firmware Enhancements:
 * TODO Add the floating point maths code in
 * TODO wire up a temp interface to the serial EEPROMS so I can test storage on the SC114 as I have the PIO and digital IO cards installed
 * TODO Add a simple assembler feature like BBC Basic
+
+* DONE SHow start up bank 
 
 Documentation Changes:
 

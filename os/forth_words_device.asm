@@ -4,6 +4,49 @@
 
 
 if BASE_KEV
+
+.SAVDEV: 
+	CWHEAD .SAVREST 31 "DEVSAV" 6 WORD_FLAG_CODE
+; | DEVSAV ( --  )  Saves the current BANK/CARTDEV settings in case you want to switch device suddenly. i.e. use ESP | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "SDV"
+			CALLMONITOR
+		endif
+		ld a, (spi_clktime)
+		ld (spi_savclktime), a
+		ld a, (spi_device_id)
+		ld (spi_savdeviceid),a
+		ld a, (spi_device)
+		ld (spi_savdevice),a
+		ld a, (spi_cartdev)
+		ld (spi_savcartdev), a
+		ld a, (spi_cartdev2)
+		ld (spi_savcartdev2), a
+
+		NEXTW
+
+.SAVREST:
+	CWHEAD .SAVEND 31 "DEVREST" 7 WORD_FLAG_CODE
+; | DEVREST ( --  )  Restores the last saved BANK/CARTDEV settings in case you want to switch device suddenly. i.e. use ESP | DONE
+		if DEBUG_FORTH_WORDS_KEY
+			DMARK "SDV"
+			CALLMONITOR
+		endif
+		ld a, (spi_savclktime)
+		ld (spi_clktime), a
+		ld a, (spi_savdeviceid)
+		ld (spi_device_id),a
+		ld a, (spi_savdevice)
+		ld (spi_device),a
+		ld a, (spi_savcartdev)
+		ld (spi_cartdev), a
+		ld a, (spi_savcartdev2)
+		ld (spi_cartdev2), a
+
+		NEXTW
+
+.SAVEND:
+
 .SR:    
 	CWHEAD .SREND 31 "SR" 2 WORD_FLAG_CODE
 ; | SR ( u p --  )  Send byte u to shift reg on port p | DONE

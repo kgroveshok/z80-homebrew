@@ -141,7 +141,7 @@ endif
 if STORAGE_SE
 
 ;sprompt3: db "Loading from start-up file:",0
-sprompt3: db "  Searching...",0
+sprompt3: db "  Searching bank  ...",0
 ;sprompt4: db "(Any key to stop)",0
 
 
@@ -203,6 +203,8 @@ forth_autoload:
 		push de
 		push hl
 	call clear_display
+
+
 	ld a, display_row_2 + 10
 	ld de, sprompt3
 	call str_at_display
@@ -210,6 +212,16 @@ forth_autoload:
 	ex de, hl
 	ld a, display_row_2 + 7
 	call str_at_display
+
+	ld a, (spi_device_id)
+	ld (scratch), a
+	ld a, 0
+	ld (scratch+1), a
+
+	ld a, display_row_2 + 27
+	ld de, scratch
+	call str_at_display
+ 
 	call update_display
 	pop hl
 	pop de

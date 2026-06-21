@@ -54,6 +54,8 @@ D 0x10            ESP_POWERED               Device active. Comand is sent, if th
 0x14 byte             ESP_CONFIG            ESP Configuration bit mask: abcdefgg  
                                                 gg - Debug level
                                                  f - Enable/Disable web server
+0x15             ESP_CONSOLE           Switch to ESP console control. Z80 device no longer can send and once console is complete. Returns control back.
+                                         Use '?' on uart or usb for console commands.
 
 Wifi:
 
@@ -90,7 +92,13 @@ D 0x43               CLR_POOL          Clear current pool
 0x44  count         CONSUME_POOL          Get the next 'count' bytes from the given pool id, a zero count will get until zero term string encountered
 D 0x45                UART_OUT_POOL         Send the contents of the pool to the UART
 D 0x46                UART_IN_POOL          Append to contents of the pool from the UART until CR/LF
+TODO Not working
 0x47                  LIST_POOL           Return a list of the pool ids present (and their sizes?)
+
+TODO BUG cant seem to send more than 13 chars via 0x41. Appears adding more than 13 chars to pool causes the corruption
+
+
+
 C like files:
 
 0x50  zstr          FILE_NAME           Set current file name to use

@@ -558,6 +558,7 @@ create_startup:
     dw spib2
     dw spib3
     dw spib4
+    dw spib7
 ;    dw spib5
     dw spi6
     dw spi7

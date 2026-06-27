@@ -4,9 +4,13 @@
 #include <WebServer.h>
 #include <ESPmDNS.h>
 #include "FS.h"
-#include "SPIFFS.h"
+#include <SPIFFS.h>
+#include <WiFiS3.h>
+//#include "esp-z80-op.h"
+#include "esp-z80-file.h"
 
 #define SPI_STORAGE_READ 0x03
+// OP_GET_WORD, OP_BYTE_SPI, OP_STORE_VAR, 1, OP_GET_BYTE, OP_BYTE_VARLOC, 1, OP_PUT_BYTE, OP_BYTE_SPI 
 #define SPI_STORAGE_WRITE 0x02
 #define SPI_STORAGE_WREN 0x06
 
@@ -17,6 +21,7 @@
 // wifi
 
 #define SPI_SET_SSID 0x20
+// OP_LOOP_START, OP_GET_BYTE, OP_BYTE_SPI, OP_PUT_BYTE, OP_BYTE_VARLOC, OP_UNTIL_BYTE, 0, 
 #define SPI_SET_PASS 0x21
 #define SPI_GET_IP 0x22
 #define SPI_CREATE_PROF 0x23
@@ -24,6 +29,13 @@
 #define SPI_LIST_PROF 0x25
 #define SPI_WIFI_CONNECT 0x26
 #define SPI_WIFI_DISCON 0x27
+
+// Internet
+
+#define SPI_SET_ITARG  0x30
+#define SPI_SEND_ICON 0x33
+#define SPI_PUTC_ICON 0x34
+#define SPI_GETC_ICON 0x35
 
 // Buffers
 #define SPI_GET_POOL 0x40
@@ -37,6 +49,12 @@
 
 #define SPI_PUTC 0x60
 #define SPI_GETC 0x61
+
+
+
+
+
+// wifi
 
 String wifi_ssid = "";
 String wifi_password = "";
@@ -67,6 +85,10 @@ int storeAddr;
 byte storeData;
 String tmpString;
 int tmpInt;
+
+WifiClient TCP_client;
+
+
 
 int wifi_ready = 0;
 const int led = LED_BUILTIN;
@@ -173,170 +195,6 @@ void sndspistrz(String s) {
 }
 
 
-// File support
-
-/* You only need to format SPIFFS the first time you run a
-   test or else use the SPIFFS plugin to create a partition
-   https://github.com/me-no-dev/arduino-esp32fs-plugin */
-
-#define FORMAT_SPIFFS_IF_FAILED true
-
-void listDir(fs::FS &fs, String dirname, uint8_t levels) {
-  Serial.printf("Listing directory: %s\r\n", dirname);
-
-  File root = fs.open(dirname);
-  if (!root) {
-    Serial.println("- failed to open directory");
-    return;
-  }
-  if (!root.isDirectory()) {
-    Serial.println(" - not a directory");
-    return;
-  }
-
-  File file = root.openNextFile();
-  while (file) {
-    if (file.isDirectory()) {
-      Serial.print("  DIR : ");
-      Serial.println(file.name());
-      if (levels) {
-        listDir(fs, file.path(), levels - 1);
-      }
-    } else {
-      Serial.print("  FILE: ");
-      Serial.print(file.name());
-      Serial.print("\tSIZE: ");
-      Serial.println(file.size());
-    }
-    file = root.openNextFile();
-  }
-}
-
-String readFile(fs::FS &fs, String path) {
-  String r = "";
-  byte ar[2];
-  ar[1] = 0;
-
-  Serial.printf("Reading file: %s\r\n", path);
-
-  File file = fs.open(path);
-  if (!file || file.isDirectory()) {
-    Serial.println("- failed to open file for reading");
-    return String("");
-  }
-
-  Serial.println("- read from file:");
-  while (file.available()) {
-    ar[0] = file.read();
-    r = r + String((char *)ar);
-  }
-  file.close();
-  return r;
-}
-
-void writeFile(fs::FS &fs, String path, String message) {
-  Serial.printf("Writing file: %s\r\n", path);
-
-  File file = fs.open(path, FILE_WRITE);
-  if (!file) {
-    Serial.println("- failed to open file for writing");
-    return;
-  }
-  if (file.print(message)) {
-    Serial.println("- file written");
-  } else {
-    Serial.println("- write failed");
-  }
-  file.close();
-}
-
-void appendFile(fs::FS &fs, String path, String message) {
-  Serial.printf("Appending to file: %s\r\n", path);
-
-  File file = fs.open(path, FILE_APPEND);
-  if (!file) {
-    Serial.println("- failed to open file for appending");
-    return;
-  }
-  if (file.print(message)) {
-    Serial.println("- message appended");
-  } else {
-    Serial.println("- append failed");
-  }
-  file.close();
-}
-
-void renameFile(fs::FS &fs, String path1, String path2) {
-  Serial.printf("Renaming file %s to %s\r\n", path1, path2);
-  if (fs.rename(path1, path2)) {
-    Serial.println("- file renamed");
-  } else {
-    Serial.println("- rename failed");
-  }
-}
-
-void deleteFile(fs::FS &fs, String path) {
-  Serial.printf("Deleting file: %s\r\n", path);
-  if (fs.remove(path)) {
-    Serial.println("- file deleted");
-  } else {
-    Serial.println("- delete failed");
-  }
-}
-
-void testFileIO(fs::FS &fs, const char *path) {
-  Serial.printf("Testing file I/O with %s\r\n", path);
-
-  static uint8_t buf[512];
-  size_t len = 0;
-  File file = fs.open(path, FILE_WRITE);
-  if (!file) {
-    Serial.println("- failed to open file for writing");
-    return;
-  }
-
-  size_t i;
-  Serial.print("- writing");
-  uint32_t start = millis();
-  for (i = 0; i < 2048; i++) {
-    if ((i & 0x001F) == 0x001F) {
-      Serial.print(".");
-    }
-    file.write(buf, 512);
-  }
-  Serial.println("");
-  uint32_t end = millis() - start;
-  Serial.printf(" - %u bytes written in %" PRIu32 " ms\r\n", 2048 * 512, end);
-  file.close();
-
-  file = fs.open(path);
-  start = millis();
-  end = start;
-  i = 0;
-  if (file && !file.isDirectory()) {
-    len = file.size();
-    size_t flen = len;
-    start = millis();
-    Serial.print("- reading");
-    while (len) {
-      size_t toRead = len;
-      if (toRead > 512) {
-        toRead = 512;
-      }
-      file.read(buf, toRead);
-      if ((i++ & 0x001F) == 0x001F) {
-        Serial.print(".");
-      }
-      len -= toRead;
-    }
-    Serial.println("");
-    end = millis() - start;
-    Serial.printf("- %lu bytes read in %" PRIu32 " ms\r\n", (unsigned long)flen, end);
-    file.close();
-  } else {
-    Serial.println("- failed to open file for reading");
-  }
-}
 
 void loadCfg() {
   if (debug_level) { Serial.println("Loading configuration..."); }
@@ -438,6 +296,8 @@ void handleNotFound() {
   digitalWrite(led, 0);
 }
 
+
+
 void setup(void) {
   pinMode(led, OUTPUT);
   digitalWrite(led, 0);
@@ -447,7 +307,10 @@ void setup(void) {
   pinMode(spi_ce_pin, INPUT);
   pinMode(spi_do_pin, INPUT);
   pinMode(spi_sck_pin, INPUT);
-  pinMode(spi_di_pin, OUTPUT);
+  
+// Only set to output once we have CE so as not to corrupt the singal
+   pinMode(spi_di_pin, INPUT);
+   //pinMode(spi_di_pin, OUTPUT);
 
   if (!SPIFFS.begin(FORMAT_SPIFFS_IF_FAILED)) {
     Serial.println("SPIFFS Mount Failed");
@@ -530,6 +393,7 @@ void loop(void) {
 
   if (!isCE2()) {
     // Get a command byte
+   pinMode(spi_di_pin, OUTPUT);
     if (debug_level) { Serial.printf("\nReady for command byte..."); }
     cmd = rcvspibyte();
     if (debug_level) { Serial.printf("\nCommand byte seen: %d", cmd); }
@@ -558,15 +422,16 @@ digitalWrite(led, 1);
         storage_block[storeAddr] = storeData;
         break;
     case SPI_STORAGE_WREN:
-        tmpByte = rcvspibyte();
-        if( tmpByte == SPI_STORAGE_WRITE) {
-          if (debug_level) { Serial.printf("I"); }
-        storeAddr = (int)rcvspibyte();
-        storeAddr = storeAddr << 8;
-        storeAddr += (int)rcvspibyte();
-        storeData = rcvspibyte();
-        storage_block[storeAddr] = storeData;
-        }
+    // Ignore this byte 
+        //tmpByte = rcvspibyte();
+        //if( tmpByte == SPI_STORAGE_WRITE) {
+        //  if (debug_level) { Serial.printf("I"); }
+        //storeAddr = (int)rcvspibyte();
+        //storeAddr = storeAddr << 8;
+        //storeAddr += (int)rcvspibyte();
+        //storeData = rcvspibyte();
+        //storage_block[storeAddr] = storeData;
+        //}
       break;
       case SPI_ESP_POWERED:
         sndspibyte(1);
@@ -701,6 +566,41 @@ Serial.setTimeout(1000);
         break;
         //   case SPI_GETC:
         //     break;
+
+      case SPI_SET_ITARG:
+		
+        // Get string to add to pool
+
+        tmpString = String(rcvspistrz());
+        if (debug_level) { Serial.println("Got IP/Socket: " +tmpString); }
+
+	// TODO Split on colon
+
+	String ip=tmpString.substr(tmpString.IndexOf(":")+1));
+	String sock=tmpString.substr(0, tmpString.IndexOf(":")-1));
+
+        if (debug_level) { Serial.println(ip); Serial.println(sock); }
+	if( TCP_client.connected() ) {
+		TCP_client.stop();
+	}
+	if( TCP_client.connect( ip,sock) ) {
+		
+        if (debug_level) { Serial.println("Connected to service"); }
+	} else {
+        if (debug_level) { Serial.println("Connection failed to service"); }
+}
+		break;
+case SPI_SEND_ICON:
+        tmpString = String(rcvspistrz());
+        if (debug_level) { Serial.println("Send to service: " +tmpString); }
+	TCP_client.writer(tmpString);
+	TCP_client.flush();
+	break;
+case SPI_GETC_ICON:
+	if TCP_client.avaiable()) {
+char c=TCP_client.read();
+sendbyte(c);
+} else { sndbyte(0)};
       default:
         // statements
         Serial.printf("\n%d: %s", cmd, fna);
@@ -708,6 +608,7 @@ Serial.setTimeout(1000);
         break;
     }
     digitalWrite(led, 0);
+   pinMode(spi_di_pin, INPUT);
   }
 }
 

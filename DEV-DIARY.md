@@ -53,6 +53,9 @@ Hardware/PCB Design Enhancements:
 
 Langague Enhancements:
 
+* TODO A word to send a file to pool
+* TODO A word to send pool contents to file
+
 
 * TODO Add MENUS which is like MENU but instead of the item number selected it is a pointer to the menu item text
 * TODO Add CHECKBOX which functions like MENU but also takes a block of memory used as a check box value. If the prefilled value is 0 then dont allow toggle.
@@ -96,6 +99,9 @@ Langague Enhancements:
 Core Firmware Enhancements:
 
 * TODO Make sure to reafirm the CE SPI lines are down on boot before storage access otherwise could be bad
+* TODO EEPROM Defrag
+* TODO Put format type into one of the header bytes to allow for a new storage format
+* TODO Abstract away for the storage format
 
 * TODO Add stack checks and guardrails to be options on or off via hardware word bits. have a selection of off, low, mid, high levels of checks if possible. Have added bit set in firmware_init but the bit might be over written by other hardware settings
 
@@ -169,6 +175,8 @@ Core Firmware Enhancements:
 * DONE SHow start up bank 
 * DONE Move DMARK to hardware word bit check. Don't need to worry, as it is using a vector now so ret is the fastest it will be
 * DONE Add to autostart to conditionally load if hardware switches are set. Need hardware config switches and then a char following the * to select. Perhaps the cartdev number? In config select device maps to hardware. Now have asterisk prefix for optional auto start in a bank.
+
+
 
 Documentation Changes:
 
@@ -264,7 +272,11 @@ Register SP is used as the Data Stack pointer.
 
 
 
+Personal Applications
+---------------------
 
+* TODO A Full screen note taker which saves to both EEPROM and ESP pool
+Enter a line, save in memory, provide scrolling and editing of in memory and then a dump to eeprom and/or pool
 
 
 

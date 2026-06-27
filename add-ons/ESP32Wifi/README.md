@@ -24,6 +24,9 @@ Would just hang. The Arduino IDE wifi SDK is working so will be using that inste
 
 * TODO Could add mailbox on web server
 * TODO Can I get esp to send email
+* TODO Set output pin to input to force high imped and to not corrupt the SPI bus once done.
+* TODO setup inter-esp comms for a mesh network to share files
+* TODO Put a scope on the SPI lines and decode what is going wrong with EEPROM support
 
 
 
@@ -72,12 +75,12 @@ D 0x22                 GET_IP          Get Local IP
 
 Internet:
 
-0x30  zstr           SET_ITARG          Set current target IP address/Socket for connections
-0x31                 OPEN_ICON          Open the connection
-0x32                 CLOSE_ICON          Close the connection
-0x33  zstr      SEND_ICON          Send request to current connect. Content will be buffered to the current pool id
-0x34  byte           PUTC_ICON          Send a single byte to the current connection
-0x35                 GETC_ICON          Get a single byte from the current connection
+D 0x30  zstr           SET_ITARG          Set current target IP address/Socket for connections
+0x31                
+0x32                 
+D 0x33  zstr      SEND_ICON          Send request to current connect. Content will be buffered to the current pool id
+D 0x34  byte           PUTC_ICON          Send a single byte to the current connection
+D 0x35                 GETC_ICON          Get a single byte from the current connection
 0x36 zstr            CREATE_ICON        Set internet connection profile
 0x37 zstr            SELECT_ICON        Select the internet connection profile
 0x38                 LIST_ICON          List internet connection profiles

@@ -8,7 +8,7 @@ Todo List/Enhancements:
 
 Bug list:
 
-* TODO LED only updates if the screen updates
+* TO TEST LED only updates if the screen updates. Issuing a set pos 0 to force LCD write
 * TODO BUG If : word is in caps it wont work. This could be connected with caps on LIST which only works if given as lcase.
 * TODO BUG Need to fix numbers and/or punc in uwords
 * TODO BUG Uword can't have a numeric in the word name???? Odd... Nor special char?

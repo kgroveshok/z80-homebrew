@@ -196,7 +196,7 @@
 013b			 
 013b ..			buildtime: db   "Build: " 
 0142					include "romtimestamp.asm" 
-0142 ..			db '2026-07-11 09:10' 
+0142 ..			db '2026-07-11 21:10' 
 # End of file romtimestamp.asm
 0152 00				   db 0 
 0153			 
@@ -34768,9 +34768,6 @@
 442d					ld a, l 
 442d					call set_led  
 442d					 
-442d			 
-442d			 
-442d			 
 442d					NEXTW 
 442d			.LEDEND: 
 442d			endif 

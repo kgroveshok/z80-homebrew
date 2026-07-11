@@ -73,9 +73,6 @@ if BASE_KEV
 		ld a, l
 		call set_led 
 		
-
-
-
 		NEXTW
 .LEDEND:
 endif

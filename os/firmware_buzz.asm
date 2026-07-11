@@ -42,6 +42,14 @@ set_led:
 .ledon:		set 2, c
 .leddone:	ld a, c
 		ld (hardware_word+1), a
+
+; LED won't update unless the LCD is written to e.g. screen update, string print
+; Do a minimal write to the LCD to trigger action
+
+		or a
+	        call fLCD_Pos	
+
+
 		ret
 
 ; eof

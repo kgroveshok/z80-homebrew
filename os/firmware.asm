@@ -175,14 +175,16 @@ key_face_held: equ key_fd - 1
 
 hardware_config: equ key_face_held - 10
 
-; hardware config switches
+; hardware word switches
 ; TODO add bitmasks on includes for hardware
 ; high byte for expansion ids
-;     0000 0000  no card inserted
-;     0000 0001  storage card inserted
-;     0000 0010  spi sd card active
+;     0000 0000  
+;     0000 0001 
+;     0000 0010  
 ;     0000 0100  LED is on, 0 if off
-;     0010 0000  
+;     0000 1000
+;     0001 0000
+;     0010 0000  New uWords are to be compiled (1) or parsed (0) 
 ;     0100 0000  Check stack pointers for corruption
 ;     1000 0000  NMI has been activated
 

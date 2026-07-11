@@ -8,6 +8,7 @@ Todo List/Enhancements:
 
 Bug list:
 
+* TODO LED only updates if the screen updates
 * TODO BUG If : word is in caps it wont work. This could be connected with caps on LIST which only works if given as lcase.
 * TODO BUG Need to fix numbers and/or punc in uwords
 * TODO BUG Uword can't have a numeric in the word name???? Odd... Nor special char?
@@ -53,6 +54,8 @@ Hardware/PCB Design Enhancements:
 
 Langague Enhancements:
 
+
+* TODO MENU to support multicolumn selections if width given?
 * TODO A word to send a file to pool
 * TODO A word to send pool contents to file
 
@@ -208,11 +211,10 @@ New compiler ideas
 
 Add a uword which can set or unset compile on new uwords
 
-Prefix uword with header with if compiled or not
-
-In LIST check for the compiled flag and if seen then return the uword in comment brackets saying compiled and no source code
 
 To compile:
+
+build compiled body into spare memory first to get malloc length needed
 
 Parse token.
 If found
@@ -220,6 +222,10 @@ If found
 	In uword body add the jp instruction and add the address
 If not found then store as string
 Allow parser to get next token
+malloc correct size and crete uword header + copy of compiled block
+Set uword as contains compiled code
+
+In LIST if uword contains compiled code return uword in comment as compiled
 
 
 At runtime parser
@@ -276,7 +282,7 @@ Personal Applications
 ---------------------
 
 * TODO A Full screen note taker which saves to both EEPROM and ESP pool
-Enter a line, save in memory, provide scrolling and editing of in memory and then a dump to eeprom and/or pool
+Enter a line, save in memory, provide scrolling and editing of in memory and then a dump to eeprom and/or pool. Inspired by the application on the Sinclair Z88.
 
 
 

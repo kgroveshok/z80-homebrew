@@ -196,7 +196,7 @@
 013b			 
 013b ..			buildtime: db   "Build: " 
 0142					include "romtimestamp.asm" 
-0142 ..			db '2026-06-21 16:10' 
+0142 ..			db '2026-07-11 09:10' 
 # End of file romtimestamp.asm
 0152 00				   db 0 
 0153			 
@@ -446,14 +446,16 @@
 0153			  
 0153			hardware_config: equ key_face_held - 10  
 0153			  
-0153			; hardware config switches  
+0153			; hardware word switches  
 0153			; TODO add bitmasks on includes for hardware  
 0153			; high byte for expansion ids  
-0153			;     0000 0000  no card inserted  
-0153			;     0000 0001  storage card inserted  
-0153			;     0000 0010  spi sd card active  
+0153			;     0000 0000    
+0153			;     0000 0001   
+0153			;     0000 0010    
 0153			;     0000 0100  LED is on, 0 if off  
-0153			;     0010 0000    
+0153			;     0000 1000  
+0153			;     0001 0000  
+0153			;     0010 0000  New uWords are to be compiled (1) or parsed (0)   
 0153			;     0100 0000  Check stack pointers for corruption  
 0153			;     1000 0000  NMI has been activated  
 0153			  
@@ -468,6 +470,7 @@
 0153			;     0001 0000   ide interface available  
 0153			;     0010 0000   esp putc on dot command  
 0153			;     0100 0000   esp full frame refresh on update_display  
+0153			;     1000 0000   dot command outputs to lcd  
 0153			  
 0153			hardware_word: equ hardware_config - 2  
 0153			  
@@ -28493,6 +28496,9 @@
 36cf			endif	 
 36cf			 
 36cf d5					push de   ; save string start in case we need to advance print 
+36d0			 
+36d0			 
+36d0			; TODO intercept here for hardware config switch to redirect to ESP UART 
 36d0			 
 36d0 3a 3a ea				ld a, (f_cursor_ptr) 
 36d3 cd cb 09				call str_at_display 

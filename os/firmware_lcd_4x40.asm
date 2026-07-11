@@ -606,36 +606,36 @@ LCDDelay:   PUSH DE
             RET
 
 
-testlcd:
-	ld a, kLCD_Line1
-	call fLCD_Pos
-	ld b, 40
-	ld de, .ttext1
-	call write_len_string
-
-	ld a, kLCD_Line2
-	call fLCD_Pos
-	ld b, 40
-	ld de, .ttext2
-	call write_len_string
-	ld a, kLCD_Line3
-	call fLCD_Pos
-	ld b, 40
-	ld de, .ttext3
-	call write_len_string
-	ld a, kLCD_Line4
-	call fLCD_Pos
-	ld b, 40
-	ld de, .ttext4
-	call write_len_string
-
-	halt
-
-
-.ttext1: db "A234567890123456789012345678901234567890",0
-.ttext2: db "B234567890123456789012345678901234567890",0
-.ttext3: db "C234567890123456789012345678901234567890",0
-.ttext4: db "D234567890123456789012345678901234567890",0
+;testlcd:
+;	ld a, kLCD_Line1
+;	call fLCD_Pos
+;	ld b, 40
+;	ld de, .ttext1
+;	call write_len_string
+;
+;	ld a, kLCD_Line2
+;	call fLCD_Pos
+;	ld b, 40
+;	ld de, .ttext2
+;	call write_len_string
+;	ld a, kLCD_Line3
+;	call fLCD_Pos
+;	ld b, 40
+;	ld de, .ttext3
+;	call write_len_string
+;	ld a, kLCD_Line4
+;	call fLCD_Pos
+;	ld b, 40
+;	ld de, .ttext4
+;	call write_len_string
+;
+;	halt
+;
+;
+;.ttext1: db "A234567890123456789012345678901234567890",0
+;.ttext2: db "B234567890123456789012345678901234567890",0
+;.ttext3: db "C234567890123456789012345678901234567890",0
+;.ttext4: db "D234567890123456789012345678901234567890",0
  
 
 

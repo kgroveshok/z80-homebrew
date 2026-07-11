@@ -4,13 +4,13 @@
 #include <WebServer.h>
 #include <ESPmDNS.h>
 #include "FS.h"
-#include <SPIFFS.h>
-#include <WiFiS3.h>
+#include "SPIFFS.h"
+//#include <WiFiS3.h>
 //#include "esp-z80-op.h"
 #include "esp-z80-file.h"
 
 #define SPI_STORAGE_READ 0x03
-// OP_GET_WORD, OP_BYTE_SPI, OP_STORE_VAR, 1, OP_GET_BYTE, OP_BYTE_VARLOC, 1, OP_PUT_BYTE, OP_BYTE_SPI 
+// OP_GET_WORD, OP_BYTE_SPI, OP_STORE_VAR, 1, OP_GET_BYTE, OP_BYTE_VARLOC, 1, OP_PUT_BYTE, OP_BYTE_SPI
 #define SPI_STORAGE_WRITE 0x02
 #define SPI_STORAGE_WREN 0x06
 
@@ -21,7 +21,7 @@
 // wifi
 
 #define SPI_SET_SSID 0x20
-// OP_LOOP_START, OP_GET_BYTE, OP_BYTE_SPI, OP_PUT_BYTE, OP_BYTE_VARLOC, OP_UNTIL_BYTE, 0, 
+// OP_LOOP_START, OP_GET_BYTE, OP_BYTE_SPI, OP_PUT_BYTE, OP_BYTE_VARLOC, OP_UNTIL_BYTE, 0,
 #define SPI_SET_PASS 0x21
 #define SPI_GET_IP 0x22
 #define SPI_CREATE_PROF 0x23
@@ -32,7 +32,7 @@
 
 // Internet
 
-#define SPI_SET_ITARG  0x30
+#define SPI_SET_ITARG 0x30
 #define SPI_SEND_ICON 0x33
 #define SPI_PUTC_ICON 0x34
 #define SPI_GETC_ICON 0x35
@@ -86,7 +86,7 @@ byte storeData;
 String tmpString;
 int tmpInt;
 
-WifiClient TCP_client;
+WiFiClient TCP_client;
 
 
 
@@ -307,10 +307,10 @@ void setup(void) {
   pinMode(spi_ce_pin, INPUT);
   pinMode(spi_do_pin, INPUT);
   pinMode(spi_sck_pin, INPUT);
-  
-// Only set to output once we have CE so as not to corrupt the singal
-   pinMode(spi_di_pin, INPUT);
-   //pinMode(spi_di_pin, OUTPUT);
+
+  // Only set to output once we have CE so as not to corrupt the singal
+  pinMode(spi_di_pin, INPUT);
+  //pinMode(spi_di_pin, OUTPUT);
 
   if (!SPIFFS.begin(FORMAT_SPIFFS_IF_FAILED)) {
     Serial.println("SPIFFS Mount Failed");
@@ -393,14 +393,14 @@ void loop(void) {
 
   if (!isCE2()) {
     // Get a command byte
-   pinMode(spi_di_pin, OUTPUT);
+    pinMode(spi_di_pin, OUTPUT);
     if (debug_level) { Serial.printf("\nReady for command byte..."); }
     cmd = rcvspibyte();
     if (debug_level) { Serial.printf("\nCommand byte seen: %d", cmd); }
 
 
     // Command processing
-digitalWrite(led, 1);
+    digitalWrite(led, 1);
     switch (cmd) {
       case 0:
         break;
@@ -421,8 +421,8 @@ digitalWrite(led, 1);
         storeData = rcvspibyte();
         storage_block[storeAddr] = storeData;
         break;
-    case SPI_STORAGE_WREN:
-    // Ignore this byte 
+      case SPI_STORAGE_WREN:
+        // Ignore this byte
         //tmpByte = rcvspibyte();
         //if( tmpByte == SPI_STORAGE_WRITE) {
         //  if (debug_level) { Serial.printf("I"); }
@@ -432,7 +432,7 @@ digitalWrite(led, 1);
         //storeData = rcvspibyte();
         //storage_block[storeAddr] = storeData;
         //}
-      break;
+        break;
       case SPI_ESP_POWERED:
         sndspibyte(1);
         break;
@@ -444,34 +444,32 @@ digitalWrite(led, 1);
         // TODO Save current level to file
         break;
       case SPI_ESP_CONSOLE:
-           Serial.setTimeout(9000); 
-          while((tmpByte=Serial.read())!='q' ) {
-            Serial.println("Console Mode. Use ? for help.");
-          while(Serial.available() == 0 ){}
-              
-            switch( tmpByte  ) {
-                case '?':
-                    Serial.println("q=exit, l=list files,r=display file");
-                    break;
-                case 'l':
-                   listDir(SPIFFS, "/", 0);
-                  break;
-                  case 'r':
-                    Serial.println("Enter file name to view");
-                    tmpString=Serial.readStringUntil(13);
-                    tmpString.trim();
-        tmpString = readFile(SPIFFS, "/" + tmpString);            
-                    Serial.println(tmpString);
-                                        break;
-                 case 'q':
-                    break;
+        Serial.setTimeout(9000);
+        while ((tmpByte = Serial.read()) != 'q') {
+          Serial.println("Console Mode. Use ? for help.");
+          while (Serial.available() == 0) {}
 
-            }
-Serial.println("Console Mode. Use ? for help.");
-
+          switch (tmpByte) {
+            case '?':
+              Serial.println("q=exit, l=list files,r=display file");
+              break;
+            case 'l':
+              listDir(SPIFFS, "/", 0);
+              break;
+            case 'r':
+              Serial.println("Enter file name to view");
+              tmpString = Serial.readStringUntil(13);
+              tmpString.trim();
+              tmpString = readFile(SPIFFS, "/" + tmpString);
+              Serial.println(tmpString);
+              break;
+            case 'q':
+              break;
           }
-          Serial.println("Exiting console mode");
-Serial.setTimeout(1000); 
+          Serial.println("Console Mode. Use ? for help.");
+        }
+        Serial.println("Exiting console mode");
+        Serial.setTimeout(1000);
         break;
 
         // Wifi
@@ -527,7 +525,7 @@ Serial.setTimeout(1000);
         // Get string to add to pool
 
         tmpString = String(rcvspistrz());
-        if (debug_level) { Serial.println("Got string: " +tmpString); }
+        if (debug_level) { Serial.println("Got string: " + tmpString); }
         if (debug_level) { Serial.printf("\nAppend to pool %d", pool_page); }
         appendFile(SPIFFS, "/" + String(pool_page) + "pool.txt", tmpString);
         break;
@@ -567,40 +565,45 @@ Serial.setTimeout(1000);
         //   case SPI_GETC:
         //     break;
 
-      case SPI_SET_ITARG:
-		
+        /*      case SPI_SET_ITARG:
+
         // Get string to add to pool
 
         tmpString = String(rcvspistrz());
-        if (debug_level) { Serial.println("Got IP/Socket: " +tmpString); }
+        if (debug_level) { Serial.println("Got IP/Socket: " + tmpString); }
 
-	// TODO Split on colon
+        // TODO Split on colon
 
-	String ip=tmpString.substr(tmpString.IndexOf(":")+1));
-	String sock=tmpString.substr(0, tmpString.IndexOf(":")-1));
+  String ip=tmpString.substring(tmpString.indexOf(":")+1));
+  String sock=tmpString.substring(0, tmpString.indexOf(":")-1));
 
-        if (debug_level) { Serial.println(ip); Serial.println(sock); }
-	if( TCP_client.connected() ) {
-		TCP_client.stop();
-	}
-	if( TCP_client.connect( ip,sock) ) {
-		
-        if (debug_level) { Serial.println("Connected to service"); }
-	} else {
-        if (debug_level) { Serial.println("Connection failed to service"); }
-}
-		break;
-case SPI_SEND_ICON:
+  if (debug_level) {
+    Serial.println(ip);
+    Serial.println(sock);
+  }
+  if (TCP_client.connected()) {
+    TCP_client.stop();
+  }
+  if (TCP_client.connect(ip, sock)) {
+
+    if (debug_level) { Serial.println("Connected to service"); }
+  } else {
+    if (debug_level) { Serial.println("Connection failed to service"); }
+  }
+  break;
+      case SPI_SEND_ICON:
         tmpString = String(rcvspistrz());
-        if (debug_level) { Serial.println("Send to service: " +tmpString); }
-	TCP_client.writer(tmpString);
-	TCP_client.flush();
-	break;
-case SPI_GETC_ICON:
-	if TCP_client.avaiable()) {
-char c=TCP_client.read();
-sendbyte(c);
-} else { sndbyte(0)};
+        if (debug_level) { Serial.println("Send to service: " + tmpString); }
+        TCP_client.writer(tmpString);
+        TCP_client.flush();
+        break;
+      case SPI_GETC_ICON:
+        if TCP_client.avaiable()) {
+            char c = TCP_client.read();
+            sendbyte(c);
+          }
+        else { sndbyte(0) };
+        */
       default:
         // statements
         Serial.printf("\n%d: %s", cmd, fna);
@@ -608,11 +611,12 @@ sendbyte(c);
         break;
     }
     digitalWrite(led, 0);
-   pinMode(spi_di_pin, INPUT);
+    pinMode(spi_di_pin, INPUT);
   }
+
 }
 
-/*
+  /*
 
 hex
  

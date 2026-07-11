@@ -340,9 +340,9 @@ chk_stk_init:	equ $6565
 chk_stovr:	equ $fe3b
 chk_stund:	equ $ffff
 chk_word:	equ $f0b4
-cin:	equ $6ce8
-cin_wait:	equ $6cd9
-cinndb:	equ $6cfb
+cin:	equ $6c0f
+cin_wait:	equ $6c00
+cinndb:	equ $6c22
 clear:	equ $2088
 clear_display:	equ $0b75
 clear_nmi:	equ $692e
@@ -569,7 +569,7 @@ key_fc:	equ $fdba
 key_fd:	equ $fdb9
 key_held:	equ $fdc2
 key_held_prev:	equ $fdc1
-key_init:	equ $6c01
+key_init:	equ $6b28
 key_macrolast:	equ $fe37
 key_macroroot:	equ $fe39
 key_repeat_ct:	equ $fdbd
@@ -633,8 +633,8 @@ malloc_error:	equ $5530
 malloc_find_space:	equ $11b5
 malloc_no_space:	equ $1246
 malloc_update_links:	equ $1234
-matrix:	equ $6d95
-matrixold:	equ $6e3f
+matrix:	equ $6cbc
+matrixold:	equ $6d66
 menu:	equ $0bbb
 monitor:	equ $1ea4
 msdelay:	equ $0a9b
@@ -882,7 +882,6 @@ test8:	equ $5e09
 test9:	equ $5e35
 testenter:	equ $1e65
 testenter2:	equ $1e5c
-testlcd:	equ $6b28
 toUpper:	equ $110a
 to_lower:	equ $102c
 to_upper:	equ $1023

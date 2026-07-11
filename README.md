@@ -63,11 +63,6 @@ Current Specification/Feature Set
 * Built-in address decoder for four devices (2 used above)
 * Tape support in progress on Device F.
 * On board sound support on device B.
-* External cart support via PIO 2 Port B. Adding support for:
-   - Real time clock SPI (TODO)
-   - Extra storage via SD and/or Microchip serial EEPROMS  (TODO)
-   - RP Pico using SPI for extra features such as wifi network support via PicoSPINet addon
-   - GPIO on the 8 pins (TODO) and independant control use of SPI bus
 * Feature to load a user dictionary from file storage at boot time
 * Highlevel and low level storage words
 * Hardware abstraction layers to allow for common entry points and drivers for different keyboards, screens, etc
@@ -147,7 +142,13 @@ Stage 4.5 in June 2026 now has tape, sound, shift reg bus, and an ESP 32 on boar
 
 ![](Schematics/Schematic_z80-system-4.5-sbc_2026-06-16.png)
 
-Should fit in the existing case, but will redesign for a sleaker look.
+Should fit in the existing case, but will redesign for a sleaker look like this...
+
+![](images/20260710_165029.jpg)
+![](images/20260710_165304.jpg)
+![](images/20260710_165611.jpg)
+
+I was aiming for an Oric/MSX like colour scheme. Always wanted one of those back in the day.
 
 
 A simple game of 'Simon Says'

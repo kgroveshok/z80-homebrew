@@ -193,7 +193,7 @@
 003b			 
 003b ..			buildtime: db   "Build: " 
 0042					include "romtimestamp.asm" 
-0042 ..			db '2026-06-21 16:10' 
+0042 ..			db '2026-07-11 09:10' 
 # End of file romtimestamp.asm
 0052 00				   db 0 
 0053			 
@@ -443,14 +443,16 @@
 00a0			  
 00a0			hardware_config: equ key_face_held - 10  
 00a0			  
-00a0			; hardware config switches  
+00a0			; hardware word switches  
 00a0			; TODO add bitmasks on includes for hardware  
 00a0			; high byte for expansion ids  
-00a0			;     0000 0000  no card inserted  
-00a0			;     0000 0001  storage card inserted  
-00a0			;     0000 0010  spi sd card active  
+00a0			;     0000 0000    
+00a0			;     0000 0001   
+00a0			;     0000 0010    
 00a0			;     0000 0100  LED is on, 0 if off  
-00a0			;     0010 0000    
+00a0			;     0000 1000  
+00a0			;     0001 0000  
+00a0			;     0010 0000  New uWords are to be compiled (1) or parsed (0)   
 00a0			;     0100 0000  Check stack pointers for corruption  
 00a0			;     1000 0000  NMI has been activated  
 00a0			  
@@ -465,6 +467,7 @@
 00a0			;     0001 0000   ide interface available  
 00a0			;     0010 0000   esp putc on dot command  
 00a0			;     0100 0000   esp full frame refresh on update_display  
+00a0			;     1000 0000   dot command outputs to lcd  
 00a0			  
 00a0			hardware_word: equ hardware_config - 2  
 00a0			  
@@ -1042,7 +1045,7 @@
 00c0			  
 00c0 cd 4e 69				call lcd_init		; lcd hardware first as some screen functions called during key_init e.g. cursor shapes  
 00c3			  
-00c3 cd 01 6c			call key_init  
+00c3 cd 28 6b			call key_init  
 00c6 cd da 02			call storage_init  
 00c9				if TAPE_SUPPORT  
 00c9 cd 39 13				call tape_init  
@@ -5880,7 +5883,7 @@
 0bc1			 
 0bc1			if BASE_KEV 
 0bc1			 
-0bc1 cd e8 6c		.mbounce:	call cin 
+0bc1 cd 0f 6c		.mbounce:	call cin 
 0bc4			;		cp 0 
 0bc4 b7					or a 
 0bc5 20 fa				jr nz, .mbounce 
@@ -5974,7 +5977,7 @@
 0c33			 
 0c33					; handle key 
 0c33			 
-0c33 cd d9 6c				call cin_wait 
+0c33 cd 00 6c				call cin_wait 
 0c36			 
 0c36 fe 05				cp KEY_UP 
 0c38 28 2b				jr z, .mgoup 
@@ -6810,7 +6813,7 @@
 0e63			if BASE_CPM 
 0e63					call cin_wait 
 0e63			else 
-0e63 cd e8 6c				call cin    ; _wait 
+0e63 cd 0f 6c				call cin    ; _wait 
 0e66			endif 
 0e66			;		cp 0 
 0e66 b7					or a 
@@ -11065,7 +11068,7 @@
 1546 21 00 00			ld hl, 0 
 1549 22 78 f9			ld (tape_sync+2), hl 
 154c			 
-154c cd e8 6c			call cin 
+154c cd 0f 6c			call cin 
 154f fe 71			cp 'q' 
 1551 28 07			jr z, .tce 
 1553 fe 74			cp 't' 
@@ -11102,7 +11105,7 @@
 1563 cd 87 0b			call  str_at_display 
 1566 cd ad 0b			call update_display 
 1569			 
-1569 cd e8 6c			call cin 
+1569 cd 0f 6c			call cin 
 156c fe 71			cp 'q' 
 156e 28 ea			jr z, .tce 
 1570 fe 74			cp 't' 
@@ -11167,7 +11170,7 @@
 15d3 cd b4 0a			call delay1s 
 15d6 cd b4 0a			call delay1s 
 15d9			 
-15d9 cd e8 6c			call cin 
+15d9 cd 0f 6c			call cin 
 15dc fe 00			cp 0 
 15de 28 bf			jr z, .tt1 
 15e0 cd 05 14			call tape_ready_stop 
@@ -12805,7 +12808,7 @@
 1ae2 11 e4 20		        ld de, endprg 
 1ae5 cd 87 0b			call str_at_display 
 1ae8 cd ad 0b			call update_display 
-1aeb cd d9 6c			call cin_wait 
+1aeb cd 00 6c			call cin_wait 
 1aee			 
 1aee c3 40 1a			jp .bps1 
 1af1			 
@@ -13160,7 +13163,7 @@
 1d89			 
 1d89				; detect if any keys are held down to enable breakpoints at start up 
 1d89			 
-1d89 cd e8 6c			call cin  
+1d89 cd 0f 6c			call cin  
 1d8c fe 00			cp 0 
 1d8e 28 03			jr z, .nokeys 
 1d90			 
@@ -14006,7 +14009,7 @@
 20ec 11 e4 20		        ld de, endprg 
 20ef cd 87 0b			call str_at_display 
 20f2 cd ad 0b			call update_display 
-20f5 cd d9 6c			call cin_wait 
+20f5 cd 00 6c			call cin_wait 
 20f8 c1				pop bc 
 20f9 f1				pop af 
 20fa d1				pop de 
@@ -30223,6 +30226,9 @@
 3c35			 
 3c35 d5					push de   ; save string start in case we need to advance print 
 3c36			 
+3c36			 
+3c36			; TODO intercept here for hardware config switch to redirect to ESP UART 
+3c36			 
 3c36 3a 75 f9				ld a, (f_cursor_ptr) 
 3c39 cd 87 0b				call str_at_display 
 3c3c 3a 53 f9				ld a,(cli_autodisplay) 
@@ -35353,7 +35359,7 @@
 # End of macro CALLMONITOR
 45e5					endif 
 45e5			; TODO currently waits 
-45e5 cd fb 6c				call cinndb 
+45e5 cd 22 6c				call cinndb 
 45e8					;call cin_wait 
 45e8 6f					ld l, a 
 45e9 26 00				ld h, 0 
@@ -35425,7 +35431,7 @@
 # End of macro CALLMONITOR
 460b					endif 
 460b			; TODO currently waits 
-460b cd e8 6c				call cin 
+460b cd 0f 6c				call cin 
 460e					;call cin_wait 
 460e 6f					ld l, a 
 460f 26 00				ld h, 0 
@@ -35493,7 +35499,7 @@
 4631				endm  
 # End of macro CALLMONITOR
 4631					endif 
-4631 cd d9 6c				call cin_wait 
+4631 cd 00 6c				call cin_wait 
 4634 6f					ld l, a 
 4635 26 00				ld h, 0 
 4637					;call forth_push_numhl 
@@ -36397,9 +36403,9 @@
 4833 95 f9		dw store_tmppageid 
 4835 87 11		dw malloc 
 4837 51 12		dw free 
-4839 e8 6c		dw cin 
+4839 0f 6c		dw cin 
 483b			; 70 
-483b d9 6c		dw cin_wait 
+483b 00 6c		dw cin_wait 
 483d 6c 21		dw forth_push_numhl 
 483f c9 21		dw forth_push_str 
 4841 a3 fd		dw parse_vector 
@@ -43026,7 +43032,7 @@
 5544 cd 87 0b			call str_at_display 
 5547 cd ad 0b			call update_display 
 554a				;call break_point_state 
-554a cd d9 6c			call cin_wait 
+554a cd 00 6c			call cin_wait 
 554d			 
 554d			;	ld a, ' ' 
 554d			;	ld (os_view_disable), a 
@@ -45378,1531 +45384,1531 @@
 6b27 c9			            RET  
 6b28			  
 6b28			  
-6b28			testlcd:  
-6b28 3e 00			ld a, kLCD_Line1  
-6b2a cd a5 6a			call fLCD_Pos  
-6b2d 06 28			ld b, 40  
-6b2f 11 5d 6b			ld de, .ttext1  
-6b32 cd d4 69			call write_len_string  
-6b35			  
-6b35 3e 28			ld a, kLCD_Line2  
-6b37 cd a5 6a			call fLCD_Pos  
-6b3a 06 28			ld b, 40  
-6b3c 11 86 6b			ld de, .ttext2  
-6b3f cd d4 69			call write_len_string  
-6b42 3e 50			ld a, kLCD_Line3  
-6b44 cd a5 6a			call fLCD_Pos  
-6b47 06 28			ld b, 40  
-6b49 11 af 6b			ld de, .ttext3  
-6b4c cd d4 69			call write_len_string  
-6b4f 3e 78			ld a, kLCD_Line4  
-6b51 cd a5 6a			call fLCD_Pos  
-6b54 06 28			ld b, 40  
-6b56 11 d8 6b			ld de, .ttext4  
-6b59 cd d4 69			call write_len_string  
-6b5c			  
-6b5c 76				halt  
-6b5d			  
-6b5d			  
-6b5d .. 00		.ttext1: db "A234567890123456789012345678901234567890",0  
-6b86 .. 00		.ttext2: db "B234567890123456789012345678901234567890",0  
-6baf .. 00		.ttext3: db "C234567890123456789012345678901234567890",0  
-6bd8 .. 00		.ttext4: db "D234567890123456789012345678901234567890",0  
-6c01			   
-6c01			  
-6c01			  
-6c01			; eof  
-6c01			  
+6b28			;testlcd:  
+6b28			;	ld a, kLCD_Line1  
+6b28			;	call fLCD_Pos  
+6b28			;	ld b, 40  
+6b28			;	ld de, .ttext1  
+6b28			;	call write_len_string  
+6b28			;  
+6b28			;	ld a, kLCD_Line2  
+6b28			;	call fLCD_Pos  
+6b28			;	ld b, 40  
+6b28			;	ld de, .ttext2  
+6b28			;	call write_len_string  
+6b28			;	ld a, kLCD_Line3  
+6b28			;	call fLCD_Pos  
+6b28			;	ld b, 40  
+6b28			;	ld de, .ttext3  
+6b28			;	call write_len_string  
+6b28			;	ld a, kLCD_Line4  
+6b28			;	call fLCD_Pos  
+6b28			;	ld b, 40  
+6b28			;	ld de, .ttext4  
+6b28			;	call write_len_string  
+6b28			;  
+6b28			;	halt  
+6b28			;  
+6b28			;  
+6b28			;.ttext1: db "A234567890123456789012345678901234567890",0  
+6b28			;.ttext2: db "B234567890123456789012345678901234567890",0  
+6b28			;.ttext3: db "C234567890123456789012345678901234567890",0  
+6b28			;.ttext4: db "D234567890123456789012345678901234567890",0  
+6b28			   
+6b28			  
+6b28			  
+6b28			; eof  
+6b28			  
 # End of file firmware_lcd_4x40.asm
-6c01			;include "firmware_lcd_4x20.asm" 
-6c01			include "firmware_key_5x10.asm" 
-6c01			; 5 x 10 decade counter scanner  
-6c01			  
-6c01			  
-6c01			; TODO do cursor shape change for shift keys  
-6c01			; TODO hard coded positions for the shift keys. Change to work like 4x4 and detect and then hide them  
-6c01			  
-6c01			  
-6c01			; bit mask for each scan column and row for teing the matrix  
-6c01			  
-6c01			  
-6c01			key_init:  
-6c01			  
-6c01				; init keyboard macro pointers  
-6c01 21 00 00			ld hl, 0  
-6c04 22 39 fe			ld (key_macroroot), hl  
-6c07 22 37 fe			ld (key_macrolast), hl  
-6c0a			; SCMonAPI functions used  
-6c0a			  
-6c0a			; Alphanumeric LCD functions used  
-6c0a			; no need to specify specific functions for this module  
-6c0a			  
-6c0a			  
-6c0a 3e cf		            LD   A, 11001111b  
-6c0c d3 c3		            OUT  (portbctl), A  ;Port A = PIO 'control' mode  
-6c0e			;            LD   A, 00000000b  
-6c0e 3e 1f		            LD   A, 00011111b  
-6c10 d3 c3		            OUT  (portbctl),A   ;Port A = all lines are outputs  
+6b28			;include "firmware_lcd_4x20.asm" 
+6b28			include "firmware_key_5x10.asm" 
+6b28			; 5 x 10 decade counter scanner  
+6b28			  
+6b28			  
+6b28			; TODO do cursor shape change for shift keys  
+6b28			; TODO hard coded positions for the shift keys. Change to work like 4x4 and detect and then hide them  
+6b28			  
+6b28			  
+6b28			; bit mask for each scan column and row for teing the matrix  
+6b28			  
+6b28			  
+6b28			key_init:  
+6b28			  
+6b28				; init keyboard macro pointers  
+6b28 21 00 00			ld hl, 0  
+6b2b 22 39 fe			ld (key_macroroot), hl  
+6b2e 22 37 fe			ld (key_macrolast), hl  
+6b31			; SCMonAPI functions used  
+6b31			  
+6b31			; Alphanumeric LCD functions used  
+6b31			; no need to specify specific functions for this module  
+6b31			  
+6b31			  
+6b31 3e cf		            LD   A, 11001111b  
+6b33 d3 c3		            OUT  (portbctl), A  ;Port A = PIO 'control' mode  
+6b35			;            LD   A, 00000000b  
+6b35 3e 1f		            LD   A, 00011111b  
+6b37 d3 c3		            OUT  (portbctl),A   ;Port A = all lines are outputs  
+6b39			  
+6b39			  
+6b39				; TODO Configure cursor shapes  
+6b39			  
+6b39				; Load cursor shapes   
+6b39 3e 01		            LD   A, 1           ;First character to define (0 to 7)  
+6b3b 11 4b 6b		            LD   DE, .cursor_shapes    ;Pointer to start of bitmap data  
+6b3e 06 02		            LD   B, 2           ;Number of characters to define  
+6b40 cd d1 6a		.DefLoop:   CALL fLCD_Def       ;Define custom character  
+6b43 10 fb		            DJNZ .DefLoop       ;Repeat for each character  
+6b45			  
+6b45 3e 01				ld a, 1  
+6b47 32 f1 fa			ld (cursor_shape),a  
+6b4a c9				ret  
+6b4b			  
+6b4b			; Custom characters for cursor shapes 5 pixels wide by 8 pixels high  
+6b4b			; Up to 8 custom characters can be defined  
+6b4b			.cursor_shapes:      
+6b4b			;; Character 0x00 = Normal  
+6b4b 1f			            DB  11111b  
+6b4c 1f			            DB  11111b  
+6b4d 1f			            DB  11111b  
+6b4e 1f			            DB  11111b  
+6b4f 1f			            DB  11111b  
+6b50 1f			            DB  11111b  
+6b51 1f			            DB  11111b  
+6b52 1f			            DB  11111b  
+6b53			;; Character 0x01 = Modifier  
+6b53 1f			            DB  11111b  
+6b54 1b			            DB  11011b  
+6b55 1b			            DB  11011b  
+6b56 1b			            DB  11011b  
+6b57 1b			            DB  11011b  
+6b58 1f			            DB  11111b  
+6b59 1b			            DB  11011b  
+6b5a 1f			            DB  11111b  
+6b5b			  
+6b5b			  
+6b5b			  
+6b5b			  
+6b5b			; Display custom character 0  
+6b5b			;            LD   A, kLCD_Line1+14  
+6b5b			;            CALL fLCD_Pos       ;Position cursor to location in A  
+6b5b			;            LD   A, 0  
+6b5b			;            CALL fLCD_Data      ;Write character in A at cursor  
+6b5b			  
+6b5b			; Display custom character 1  
+6b5b			;            LD   A, kLCD_Line2+14  
+6b5b			;            CALL fLCD_Pos      ;Position cursor to location in A  
+6b5b			;            LD   A, 1  
+6b5b			;            CALL fLCD_Data     ;Write character in A at cursor  
+6b5b			  
+6b5b			; keyboard scanning   
+6b5b			  
+6b5b			; character in from keyboard  
+6b5b			  
+6b5b			; mapping for the pcb layout  
+6b5b			  
+6b5b			.matrix_to_char:  
+6b5b .. 08 05 0a 00			db "1357890",KEY_BS,KEY_UP,KEY_DOWN,0  
+6b66 .. 0b 0c 00			db "qweryiop",KEY_LEFT,KEY_RIGHT,0  
+6b71 7e .. 0d 00			db KEY_SYMBOLSHIFT,"asdfghjk",KEY_CR,0  
+6b7c 7e .. 7e 00			db KEY_SHIFT,"zxcvbnm ",KEY_SHIFT,0  
+6b87 .. 10 11 12 .. 13 00			db "246tu",KEY_F1,KEY_F2,KEY_F3,"l",KEY_F4,0  
+6b92			.matrix_to_shift:  
+6b92			  
+6b92 .. 08 05 0a 00			db "!#%&*()",KEY_BS,KEY_UP,KEY_DOWN,0  
+6b9d .. 07 06 00			db "QWERYIOP",KEY_PREVWORD,KEY_NEXTWORD,0  
+6ba8 7e .. 0d 00			db KEY_SYMBOLSHIFT,"ASDFGHJK",KEY_CR,0  
+6bb3 7e .. 7e 00			db KEY_SHIFT,"ZXCVBNM|",KEY_SHIFT,0  
+6bbe .. .. 14 15 16 .. 17 00			db '"',"$^TU",KEY_F5,KEY_F6,KEY_F7,"L",KEY_F8,0  
+6bc9			  
+6bc9			.matrix_to_symbolshift:  
+6bc9			  
+6bc9 fc ed .. f7 08 05 0a 00			db 252,237,"5789",247,KEY_BS,KEY_UP,KEY_DOWN,0  
+6bd4 .. b0 0e 0f 00			db "-+/=_?~",176,KEY_HOME,KEY_END,0  
+6bdf 7e .. a5 7c db ff 0d 00			db KEY_SYMBOLSHIFT,"[]{}",165,124,219,255,KEY_CR,0  
+6bea			;		db KEY_SHIFT,"<>,.:;'\\",KEY_SHIFT,0  
+6bea 7e .. 5c 7e 00	    	 	db KEY_SHIFT,"<>,.:;'",92, KEY_SHIFT,0  
+6bf5 .. f6 eb 7d 7e 18 19 1a df 1b 00			db "@",246,235,125,126,KEY_F9,KEY_F10,KEY_F11,223,KEY_F12,0  
+6c00			  
+6c00			  
+6c00			  
+6c00			; mapping for a simple straight through breadboard layout  
+6c00			  
+6c00			;.matrix_to_char:  
+6c00			;		db KEY_SHIFT,"zxcv",KEY_UP,KEY_DOWN,"m",KEY_LEFT, KEY_RIGHT,0  
+6c00			;		db KEY_SHIFT,"zxcvbnm ",KEY_SYMBOLSHIFT,0  
+6c00			;		db "asdfghjkl",KEY_CR,0  
+6c00			;		db "qwertyuiop",0  
+6c00			;		 db "1234567890",0  
+6c00			;.matrix_to_shift:  
+6c00			;		db KEY_SHIFT,"zxcv",KEY_UP,KEY_DOWN,"m",KEY_HOME, KEY_END,0  
+6c00			;		db KEY_SHIFT,"ZXCVBNM",KEY_BS,KEY_SYMBOLSHIFT,0  
+6c00			;		db "ASDFGHJKL",KEY_CR,0  
+6c00			;		db "QWERTYUIOP",0  
+6c00			;		 db "!",'"',"#$%^&*()",0  
+6c00			;.matrix_to_symbolshift:  
+6c00			;		db KEY_SHIFT,"zxcv",KEY_UP,KEY_DOWN,"m",KEY_LEFT, KEY_RIGHT,0  
+6c00			;		db KEY_SHIFT,"<>:;b,.",KEY_BS,KEY_SYMBOLSHIFT,0  
+6c00			;		db "_?*fghjk=",KEY_CR,0  
+6c00			;		db "-/+*[]{}@#",0  
+6c00			;		 db "1234567890",0  
+6c00			  
+6c00			;.matrix_to_char: db "D#0*C987B654A321"  
+6c00			  
+6c00			  
+6c00				  
+6c00			  
+6c00			; add cin and cin_wait  
+6c00			  
+6c00 cd 0f 6c		cin_wait: 	call cin  
+6c03						if DEBUG_KEYCINWAIT  
+6c03							push af  
+6c03							  
+6c03							ld hl,key_repeat_ct  
+6c03							ld (hl),a  
+6c03							inc hl  
+6c03							call hexout  
+6c03							ld hl,key_repeat_ct+3  
+6c03			;				ld a,0  
+6c03							ld (hl),0  
+6c03			  
+6c03							    LD   A, kLCD_Line1+11  
+6c03							    CALL fLCD_Pos       ;Position cursor to location in A  
+6c03							    LD   DE, key_repeat_ct  
+6c03							    ;LD   DE, MsgHello  
+6c03							    CALL fLCD_Str       ;Display string pointed to by DE  
+6c03			  
+6c03			  
+6c03			  
+6c03							pop af  
+6c03						endif  
+6c03			;	cp 0  
+6c03 b7				or a  
+6c04 28 fa			jr z, cin_wait   ; block until key press  
+6c06			  
+6c06							if DEBUG_KEYCINWAIT  
+6c06								push af  
+6c06			  
+6c06			;					ld a, 'A'	  
+6c06								ld hl,key_repeat_ct  
+6c06								ld (hl),'A'  
+6c06								inc hl  
+6c06			;					ld a,0  
+6c06								ld (hl),0  
+6c06			  
+6c06								    LD   A, kLCD_Line2+11  
+6c06								    CALL fLCD_Pos       ;Position cursor to location in A  
+6c06								    LD   DE, key_repeat_ct  
+6c06								    ;LD   DE, MsgHello  
+6c06								    CALL fLCD_Str       ;Display string pointed to by DE  
+6c06			  
+6c06							call delay500ms  
+6c06			  
+6c06								pop af  
+6c06							endif  
+6c06 f5				push af   ; save key pressed  
+6c07			  
+6c07			.cin_wait1:	  
+6c07							if DEBUG_KEYCINWAIT  
+6c07								push af  
+6c07			  
+6c07			;					ld a, 'b'	  
+6c07								ld hl,key_repeat_ct  
+6c07								ld (hl),'b'  
+6c07								inc hl  
+6c07			;					ld a,0  
+6c07								ld (hl),0  
+6c07			  
+6c07								    LD   A, kLCD_Line2+11  
+6c07								    CALL fLCD_Pos       ;Position cursor to location in A  
+6c07								    LD   DE, key_repeat_ct  
+6c07								    ;LD   DE, MsgHello  
+6c07								    CALL fLCD_Str       ;Display string pointed to by DE  
+6c07			  
+6c07			  
+6c07							call delay500ms  
+6c07			  
+6c07								pop af  
+6c07							endif  
+6c07			  
+6c07 cd 0f 6c		call cin  
+6c0a			;	cp 0  
+6c0a b7				or a  
+6c0b 20 fa			jr nz, .cin_wait1  	; wait for key release  
+6c0d			if DEBUG_KEYCINWAIT  
+6c0d				push af  
+6c0d			  
+6c0d			;	ld a, '3'	  
+6c0d				ld hl,key_repeat_ct  
+6c0d				ld (hl),'3'  
+6c0d				inc hl  
+6c0d			;	ld a,0  
+6c0d				ld (hl),0  
+6c0d			  
+6c0d			            LD   A, kLCD_Line2+11  
+6c0d			            CALL fLCD_Pos       ;Position cursor to location in A  
+6c0d			            LD   DE, key_repeat_ct  
+6c0d			            ;LD   DE, MsgHello  
+6c0d			            CALL fLCD_Str       ;Display string pointed to by DE  
+6c0d			  
+6c0d			  
+6c0d			call delay500ms  
+6c0d			  
+6c0d				pop af  
+6c0d			endif  
+6c0d			  
+6c0d f1				pop af   ; get key  
+6c0e c9				ret  
+6c0f			  
+6c0f			  
+6c0f			; cin - key non-blocking except for keybounce release  
+6c0f			  
+6c0f cd 2b 6c		cin: 	call .mtoc  
+6c12			  
+6c12			if DEBUG_KEYCIN  
+6c12				push af  
+6c12				  
+6c12				ld hl,key_repeat_ct  
+6c12				ld (hl),a  
+6c12				inc hl  
+6c12				call hexout  
+6c12				ld hl,key_repeat_ct+3  
+6c12			;	ld a,0  
+6c12				ld (hl),0  
+6c12			  
+6c12			            LD   A, kLCD_Line3+15  
+6c12			            CALL fLCD_Pos       ;Position cursor to location in A  
+6c12			            LD   DE, key_repeat_ct  
+6c12			            ;LD   DE, MsgHello  
+6c12			            CALL fLCD_Str       ;Display string pointed to by DE  
 6c12			  
 6c12			  
-6c12				; TODO Configure cursor shapes  
+6c12			call delay500ms  
 6c12			  
-6c12				; Load cursor shapes   
-6c12 3e 01		            LD   A, 1           ;First character to define (0 to 7)  
-6c14 11 24 6c		            LD   DE, .cursor_shapes    ;Pointer to start of bitmap data  
-6c17 06 02		            LD   B, 2           ;Number of characters to define  
-6c19 cd d1 6a		.DefLoop:   CALL fLCD_Def       ;Define custom character  
-6c1c 10 fb		            DJNZ .DefLoop       ;Repeat for each character  
-6c1e			  
-6c1e 3e 01				ld a, 1  
-6c20 32 f1 fa			ld (cursor_shape),a  
-6c23 c9				ret  
-6c24			  
-6c24			; Custom characters for cursor shapes 5 pixels wide by 8 pixels high  
-6c24			; Up to 8 custom characters can be defined  
-6c24			.cursor_shapes:      
-6c24			;; Character 0x00 = Normal  
-6c24 1f			            DB  11111b  
-6c25 1f			            DB  11111b  
-6c26 1f			            DB  11111b  
-6c27 1f			            DB  11111b  
-6c28 1f			            DB  11111b  
-6c29 1f			            DB  11111b  
-6c2a 1f			            DB  11111b  
-6c2b 1f			            DB  11111b  
-6c2c			;; Character 0x01 = Modifier  
-6c2c 1f			            DB  11111b  
-6c2d 1b			            DB  11011b  
-6c2e 1b			            DB  11011b  
-6c2f 1b			            DB  11011b  
-6c30 1b			            DB  11011b  
-6c31 1f			            DB  11111b  
-6c32 1b			            DB  11011b  
-6c33 1f			            DB  11111b  
-6c34			  
-6c34			  
-6c34			  
-6c34			  
-6c34			; Display custom character 0  
-6c34			;            LD   A, kLCD_Line1+14  
-6c34			;            CALL fLCD_Pos       ;Position cursor to location in A  
-6c34			;            LD   A, 0  
-6c34			;            CALL fLCD_Data      ;Write character in A at cursor  
-6c34			  
-6c34			; Display custom character 1  
-6c34			;            LD   A, kLCD_Line2+14  
-6c34			;            CALL fLCD_Pos      ;Position cursor to location in A  
-6c34			;            LD   A, 1  
-6c34			;            CALL fLCD_Data     ;Write character in A at cursor  
-6c34			  
-6c34			; keyboard scanning   
-6c34			  
-6c34			; character in from keyboard  
-6c34			  
-6c34			; mapping for the pcb layout  
-6c34			  
-6c34			.matrix_to_char:  
-6c34 .. 08 05 0a 00			db "1357890",KEY_BS,KEY_UP,KEY_DOWN,0  
-6c3f .. 0b 0c 00			db "qweryiop",KEY_LEFT,KEY_RIGHT,0  
-6c4a 7e .. 0d 00			db KEY_SYMBOLSHIFT,"asdfghjk",KEY_CR,0  
-6c55 7e .. 7e 00			db KEY_SHIFT,"zxcvbnm ",KEY_SHIFT,0  
-6c60 .. 10 11 12 .. 13 00			db "246tu",KEY_F1,KEY_F2,KEY_F3,"l",KEY_F4,0  
-6c6b			.matrix_to_shift:  
-6c6b			  
-6c6b .. 08 05 0a 00			db "!#%&*()",KEY_BS,KEY_UP,KEY_DOWN,0  
-6c76 .. 07 06 00			db "QWERYIOP",KEY_PREVWORD,KEY_NEXTWORD,0  
-6c81 7e .. 0d 00			db KEY_SYMBOLSHIFT,"ASDFGHJK",KEY_CR,0  
-6c8c 7e .. 7e 00			db KEY_SHIFT,"ZXCVBNM|",KEY_SHIFT,0  
-6c97 .. .. 14 15 16 .. 17 00			db '"',"$^TU",KEY_F5,KEY_F6,KEY_F7,"L",KEY_F8,0  
+6c12				pop af  
+6c12			endif  
+6c12			  
+6c12			  
+6c12				; no key held  
+6c12			;	cp 0  
+6c12 b7				or a  
+6c13 c8				ret z  
+6c14			  
+6c14			if DEBUG_KEYCIN  
+6c14				push af  
+6c14			  
+6c14			;	ld a, '1'	  
+6c14				ld hl,key_repeat_ct  
+6c14				ld (hl),'1'  
+6c14				inc hl  
+6c14			;	ld a,0  
+6c14				ld (hl),0  
+6c14			  
+6c14			            LD   A, kLCD_Line4+15  
+6c14			            CALL fLCD_Pos       ;Position cursor to location in A  
+6c14			            LD   DE, key_repeat_ct  
+6c14			            ;LD   DE, MsgHello  
+6c14			            CALL fLCD_Str       ;Display string pointed to by DE  
+6c14			  
+6c14			  
+6c14			call delay500ms  
+6c14			  
+6c14				pop af  
+6c14			endif  
+6c14			  
+6c14				; stop key bounce  
+6c14			  
+6c14 32 c2 fd			ld (key_held),a		 ; save it  
+6c17 47				ld b, a  
+6c18			  
+6c18 c5			.cina1:	push bc  
+6c19			if DEBUG_KEYCIN  
+6c19				push af  
+6c19			  
+6c19				ld hl,key_repeat_ct  
+6c19				inc hl  
+6c19				call hexout  
+6c19				ld hl,key_repeat_ct+3  
+6c19			;	ld a,0  
+6c19				ld (hl),0  
+6c19				ld hl,key_repeat_ct  
+6c19			;	ld a, '2'	  
+6c19				ld (hl),'2'  
+6c19			  
+6c19			            LD   A, kLCD_Line4+15  
+6c19			            CALL fLCD_Pos       ;Position cursor to location in A  
+6c19			            LD   DE, key_repeat_ct  
+6c19			            ;LD   DE, MsgHello  
+6c19			            CALL fLCD_Str       ;Display string pointed to by DE  
+6c19			  
+6c19				pop af  
+6c19			endif  
+6c19 cd 2b 6c			call .mtoc  
+6c1c c1				pop bc  
+6c1d b8				cp b  
+6c1e 28 f8			jr z, .cina1  
+6c20 78				ld a,b		  
+6c21			if DEBUG_KEYCIN  
+6c21				push af  
+6c21			  
+6c21				ld hl,key_repeat_ct  
+6c21				inc hl  
+6c21				call hexout  
+6c21				ld hl,key_repeat_ct+3  
+6c21			;	ld a,0  
+6c21				ld (hl),0  
+6c21				ld hl,key_repeat_ct  
+6c21			;	ld a, '3'	  
+6c21				ld (hl),'3'  
+6c21			  
+6c21			            LD   A, kLCD_Line4+15  
+6c21			            CALL fLCD_Pos       ;Position cursor to location in A  
+6c21			            LD   DE, key_repeat_ct  
+6c21			            ;LD   DE, MsgHello  
+6c21			            CALL fLCD_Str       ;Display string pointed to by DE  
+6c21			  
+6c21				pop af  
+6c21			endif  
+6c21 c9				ret  
+6c22			  
+6c22			; cinndb - key non-blocking without keybounce release  
+6c22			  
+6c22 cd 2b 6c		cinndb: 	call .mtoc  
+6c25			  
+6c25			if DEBUG_KEYCIN  
+6c25				push af  
+6c25				  
+6c25				ld hl,key_repeat_ct  
+6c25				ld (hl),a  
+6c25				inc hl  
+6c25				call hexout  
+6c25				ld hl,key_repeat_ct+3  
+6c25			;	ld a,0  
+6c25				ld (hl),0  
+6c25			  
+6c25			            LD   A, kLCD_Line3+15  
+6c25			            CALL fLCD_Pos       ;Position cursor to location in A  
+6c25			            LD   DE, key_repeat_ct  
+6c25			            ;LD   DE, MsgHello  
+6c25			            CALL fLCD_Str       ;Display string pointed to by DE  
+6c25			  
+6c25			  
+6c25			call delay500ms  
+6c25			  
+6c25				pop af  
+6c25			endif  
+6c25			  
+6c25			  
+6c25				; no key held  
+6c25			;	cp 0  
+6c25 b7				or a  
+6c26 c8				ret z  
+6c27			  
+6c27			if DEBUG_KEYCIN  
+6c27				push af  
+6c27			  
+6c27			;	ld a, '1'	  
+6c27				ld hl,key_repeat_ct  
+6c27				ld (hl),'1'  
+6c27				inc hl  
+6c27			;	ld a,0  
+6c27				ld (hl),0  
+6c27			  
+6c27			            LD   A, kLCD_Line4+15  
+6c27			            CALL fLCD_Pos       ;Position cursor to location in A  
+6c27			            LD   DE, key_repeat_ct  
+6c27			            ;LD   DE, MsgHello  
+6c27			            CALL fLCD_Str       ;Display string pointed to by DE  
+6c27			  
+6c27			  
+6c27			call delay500ms  
+6c27			  
+6c27				pop af  
+6c27			endif  
+6c27			  
+6c27 32 c2 fd			ld (key_held),a		 ; save it  
+6c2a			  
+6c2a			if DEBUG_KEYCIN  
+6c2a				push af  
+6c2a			  
+6c2a				ld hl,key_repeat_ct  
+6c2a				inc hl  
+6c2a				call hexout  
+6c2a				ld hl,key_repeat_ct+3  
+6c2a			;	ld a,0  
+6c2a				ld (hl),0  
+6c2a				ld hl,key_repeat_ct  
+6c2a			;	ld a, '3'	  
+6c2a				ld (hl),'3'  
+6c2a			  
+6c2a			            LD   A, kLCD_Line4+15  
+6c2a			            CALL fLCD_Pos       ;Position cursor to location in A  
+6c2a			            LD   DE, key_repeat_ct  
+6c2a			            ;LD   DE, MsgHello  
+6c2a			            CALL fLCD_Str       ;Display string pointed to by DE  
+6c2a			  
+6c2a				pop af  
+6c2a			endif  
+6c2a c9				ret  
+6c2b			; detect keyboard modifier key press and apply new overlay to the face key held  
+6c2b			; hl is the key modifer flag, de map to apply to key_face_held and store in key_actual_pressed  
+6c2b			  
+6c2b			;.cin_map_modifier:   
+6c2b			;	ld a, (hl)  
+6c2b			;	and 255  
+6c2b			;	ret NZ		; modifier key not flagged  
+6c2b			;  
+6c2b			;	; get key face  
+6c2b			;  
+6c2b			;	ld b,(key_face_held)  
+6c2b			;  
+6c2b			;	ld b, key_cols * key_rows  
+6c2b			;  
+6c2b			;	push de  
+6c2b			;	pop hl  
+6c2b			;  
+6c2b			;.mmod1: ld a,(hl)   ; get map test  
+6c2b			;	cp b  
+6c2b			;	jr z, .mmod2  
+6c2b			;  
+6c2b			;  
+6c2b			;  
+6c2b			;.mmod2: inc hl    ;   
+6c2b			;  
+6c2b			;	  
+6c2b			;  
+6c2b			;	  
+6c2b			;  
+6c2b			;	ld hl,key_actual_pressed  
+6c2b			;	ld (hl),a,  
+6c2b			;	ret  
+6c2b			  
+6c2b			; map matrix key held to char on face of key  
+6c2b			  
+6c2b			.mtoc:  
+6c2b			  
+6c2b			; test decade counter strobes  
+6c2b			  
+6c2b			;.decadetest1:  
+6c2b			  
+6c2b			; reset counter  
+6c2b			;ld a, 128  
+6c2b			;out (portbdata),a  
+6c2b			  
+6c2b			  
+6c2b			;ld b, 5  
+6c2b			;.dec1:  
+6c2b			;ld a, 0  
+6c2b			;out (portbdata),a  
+6c2b			;call delay1s  
+6c2b			  
+6c2b			;ld a, 32  
+6c2b			;out (portbdata),a  
+6c2b			;call delay1s  
+6c2b			;call delay1s  
+6c2b			;call delay1s  
+6c2b			;  
+6c2b			;ld a, 64+32  
+6c2b			;out (portbdata),a  
+6c2b			;call delay1s  
+6c2b			;;djnz .dec1  
+6c2b			;  
+6c2b			;jp .decadetest1  
+6c2b			  
+6c2b			  
+6c2b			  
+6c2b			  
+6c2b			  
+6c2b			  
+6c2b			  
+6c2b			  
+6c2b			  
+6c2b			  
+6c2b				; scan keyboard matrix and generate raw scan map  
+6c2b cd bc 6c			call matrix  
+6c2e			  
+6c2e				; reuse c bit 0 left modifer button - ie shift  
+6c2e			        ; reuse c bit 1 for right modifer button - ie symbol shift  
+6c2e				; both can be used with their other mappings and if seen together can do extra mappings (forth keywords????)  
+6c2e			  
+6c2e 0e 00			ld c, 0  
+6c30			  
+6c30				; TODO set flags for modifer key presses   
+6c30				; TODO do a search for modifer key...  
+6c30			  
+6c30				;ld hl,keyscan_table_row4  
+6c30 21 21 fe			ld hl,keyscan_table_row2  
+6c33			  
+6c33 7e				ld a, (hl)  
+6c34 fe 23			cp '#'  
+6c36 20 07			jr nz, .nextmodcheck  
+6c38 cb c1			set 0, c  
+6c3a 21 92 6b			ld hl, .matrix_to_shift  
+6c3d 18 21			jr .dokeymap  
+6c3f				; TODO for now igonre  
+6c3f			.nextmodcheck:  
+6c3f 21 16 fe			ld hl,keyscan_table_row3  
+6c42			  
+6c42 7e				ld a, (hl)  
+6c43 fe 23			cp '#'  
+6c45 20 07			jr nz, .nextmodcheck2  
+6c47 cb c9			set 1, c   
+6c49 21 c9 6b			ld hl, .matrix_to_symbolshift  
+6c4c 18 12			jr .dokeymap  
+6c4e			.nextmodcheck2:  
+6c4e 21 2a fe			ld hl,keyscan_table_row2+9    ; right shift  
+6c51			  
+6c51 7e				ld a, (hl)  
+6c52 fe 23			cp '#'  
+6c54 20 07			jr nz, .donemodcheck  
+6c56 cb c9			set 1, c   
+6c58 21 92 6b			ld hl, .matrix_to_shift  
+6c5b 18 03			jr .dokeymap  
+6c5d			  
+6c5d				; no modifer found so just map to normal keys  
+6c5d				; get mtoc map matrix to respective keys  
+6c5d			;	ld hl, .matrix_to_char  
+6c5d			;	ld hl, .matrix_to_char  
+6c5d			;	ld b, ((key_cols+1)*key_rows)    ; 30 keys to remap + 8 nulls   
+6c5d			;	ld a, KEY_SHIFT  
+6c5d			;	call findchar  
+6c5d			;  
+6c5d			;	; got offset to key modifer in b  
+6c5d			;  
+6c5d			;	ld hl,keyscan_table_row5  
+6c5d			;  
+6c5d			;	ld a,b  
+6c5d			;	call addatohl  
+6c5d			;	ld a,(hl)  
+6c5d			;  
+6c5d			;	cp '#'  
+6c5d			;	jr nz, .nextmodcheck  
+6c5d			;	set 0, c  
+6c5d			;	ld hl, .matrix_to_char  
+6c5d			;	jr .dokeymap  
+6c5d			;	; TODO for now igonre  
+6c5d			;.nextmodcheck:  
+6c5d			;	ld hl, .matrix_to_symbolshift  
+6c5d			;	ld b, ((key_cols+1)*key_rows)    ; 30 keys to remap + 8 nulls   
+6c5d			;	ld a, KEY_SYMBOLSHIFT  
+6c5d			;	call findchar  
+6c5d			;  
+6c5d			;  
+6c5d			;	; got offset to key modifer in b  
+6c5d			;  
+6c5d			;	ld hl,keyscan_table_row5  
+6c5d			;  
+6c5d			;	ld a,b  
+6c5d			;	call addatohl  
+6c5d			;	ld a,(hl)  
+6c5d			;  
+6c5d			;	cp '#'  
+6c5d			;	jr nz, .donemodcheck  
+6c5d			;	set 1, c   
+6c5d			;	ld hl, .matrix_to_symbolshift  
+6c5d			;	jr .dokeymap  
+6c5d			  
+6c5d			  
+6c5d			  
+6c5d			.donemodcheck:  
+6c5d				; no modifer found so just map to normal keys  
+6c5d				; get mtoc map matrix to respective keys  
+6c5d 21 5b 6b			ld hl, .matrix_to_char  
+6c60			  
+6c60			.dokeymap:  
+6c60				;ld (key_fa), c   
+6c60 cd 78 6c			call .mapkeys  
+6c63			  
+6c63			  
+6c63			if DEBUG_KEY  
+6c63			  
+6c63			; Display text on first line  
+6c63			            LD   A, kLCD_Line1  
+6c63			            CALL fLCD_Pos       ;Position cursor to location in A  
+6c63			            LD   DE, keyscan_table_row1  
+6c63			            ;LD   DE, MsgHello  
+6c63			            CALL fLCD_Str       ;Display string pointed to by DE  
+6c63			  
+6c63			; Display text on second line  
+6c63			            LD   A, kLCD_Line2  
+6c63			            CALL fLCD_Pos       ;Position cursor to location in A  
+6c63			            LD   DE, keyscan_table_row2  
+6c63			            CALL fLCD_Str       ;Display string pointed to by DE  
+6c63			            LD   A, kLCD_Line3  
+6c63			            CALL fLCD_Pos       ;Position cursor to location in A  
+6c63			            LD   DE, keyscan_table_row3  
+6c63			            CALL fLCD_Str       ;Display string pointed to by DE  
+6c63			            LD   A, kLCD_Line4  
+6c63			            CALL fLCD_Pos       ;Position cursor to location in A  
+6c63			            LD   DE, keyscan_table_row4  
+6c63			            CALL fLCD_Str       ;Display string pointed to by DE  
+6c63			            LD   A, kLCD_Line1+10  
+6c63			            CALL fLCD_Pos       ;Position cursor to location in A  
+6c63			            LD   DE, keyscan_table_row5  
+6c63			            CALL fLCD_Str       ;Display string pointed to by DE  
+6c63			  
+6c63				;call delay250ms  
+6c63			endif  
+6c63			;	jp testkey  
+6c63			  
+6c63			; get first char reported  
+6c63			  
+6c63 21 00 fe			ld hl,keyscan_table_row5  
+6c66			  
+6c66				;ld b, 46   ; 30 keys to remap + 8 nulls   
+6c66 06 37			ld b, (key_cols+1)*key_rows    ; 30 keys to remap + 8 nulls   
+6c68			.findkey:  
+6c68 7e				ld a,(hl)  
+6c69			;	cp 0  
+6c69 b7				or a  
+6c6a 28 04			jr z, .nextkey  
+6c6c fe 7e			cp KEY_MATRIX_NO_PRESS  
+6c6e 20 06			jr nz, .foundkey  
+6c70			.nextkey:  
+6c70 23				inc hl  
+6c71 10 f5			djnz .findkey  
+6c73 3e 00			ld a,0  
+6c75 c9				ret  
+6c76			.foundkey:  
+6c76 7e				ld a,(hl)  
+6c77 c9				ret  
+6c78				  
+6c78			  
+6c78			; convert the raw key map given hl for destination key  
+6c78			.mapkeys:  
+6c78 11 00 fe			ld de,keyscan_table_row5  
+6c7b			  
+6c7b 06 37			ld b, (key_cols+1)*key_rows    ; 30 keys to remap + 8 nulls   
+6c7d			.remap:  
+6c7d 1a				ld a,(de)  
+6c7e fe 23			cp '#'  
+6c80 20 02			jr nz, .remapnext  
+6c82				;CALLMONITOR  
+6c82 7e				ld a,(hl)  
+6c83 12				ld (de),a  
+6c84			  
+6c84			  
+6c84			  
+6c84			.remapnext:  
+6c84 23				inc hl  
+6c85 13				inc de  
+6c86 10 f5			djnz .remap  
+6c88				  
+6c88 c9				ret  
+6c89			  
+6c89			  
+6c89			  
+6c89			.mtocold2:  
+6c89			  
+6c89			;	; flag if key D is held down and remove from reporting  
+6c89			;	ld bc, .key_map_fd    
+6c89			;	ld hl, keyscan_table  
+6c89			;	ld de, key_fd  
+6c89			;	call .key_shift_hold  
+6c89			;	cp 255  
+6c89			;	jr z, .cinmap  
+6c89			;	; flag if key C is held down and remove from reporting  
+6c89			;	ld bc, .key_map_fc    
+6c89			;	ld hl, keyscan_table+key_cols  
+6c89			;	ld de, key_fc  
+6c89			;	call .key_shift_hold  
+6c89			;	cp 255  
+6c89			;	jr z, .cinmap  
+6c89			;	; flag if key B is held down and remove from reporting  
+6c89			;	ld bc, .key_map_fb    
+6c89			;	ld hl, keyscan_table+(key_cols*2)  
+6c89			;	ld de, key_fb  
+6c89			;	call .key_shift_hold  
+6c89			;	cp 255  
+6c89			;	jr z, .cinmap  
+6c89			;	; flag if key A is held down and remove from reporting  
+6c89			;	ld bc, .key_map_fa    
+6c89			;	ld hl, keyscan_table+(key_cols*3)  
+6c89			;	ld de, key_fa  
+6c89			;	call .key_shift_hold  
+6c89			;	cp 255  
+6c89			;	jr z, .cinmap  
+6c89			  
+6c89 11 5b 6b			ld de, .matrix_to_char  
+6c8c			  
+6c8c			  
+6c8c			.cinmap1:   
+6c8c				if DEBUG_KEY  
+6c8c			            LD   A, kLCD_Line4  
+6c8c			            CALL fLCD_Pos       ;Position cursor to location in A  
+6c8c					push de  
+6c8c			            LD   DE, keyscan_table  
+6c8c			            CALL fLCD_Str       ;Display string pointed to by DE  
+6c8c					pop de  
+6c8c				endif  
+6c8c			  
+6c8c				; scan key matrix table for any held key  
+6c8c			  
+6c8c				; de holds either the default matrix or one selected above  
+6c8c			  
+6c8c 21 cd fd			ld hl, keyscan_table  
+6c8f 06 32			ld b,key_cols*key_rows  
+6c91			  
+6c91 7e			.cin11:	ld a,(hl)  
+6c92 fe 23			cp '#'  
+6c94 28 08			jr z, .cinhit1  
+6c96 23				inc hl  
+6c97 13				inc de  
+6c98 05				dec b  
+6c99 20 f6			jr nz, .cin11  
+6c9b				; no key found held  
+6c9b 3e 00			ld a,0  
+6c9d c9				ret  
+6c9e d5			.cinhit1: push de  
+6c9f e1				pop hl  
+6ca0 7e				ld a,(hl)  
+6ca1 c9				ret  
 6ca2			  
-6ca2			.matrix_to_symbolshift:  
+6ca2			; flag a control key is held   
+6ca2			; hl is key pin, de is flag indicator  
 6ca2			  
-6ca2 fc ed .. f7 08 05 0a 00			db 252,237,"5789",247,KEY_BS,KEY_UP,KEY_DOWN,0  
-6cad .. b0 0e 0f 00			db "-+/=_?~",176,KEY_HOME,KEY_END,0  
-6cb8 7e .. a5 7c db ff 0d 00			db KEY_SYMBOLSHIFT,"[]{}",165,124,219,255,KEY_CR,0  
-6cc3			;		db KEY_SHIFT,"<>,.:;'\\",KEY_SHIFT,0  
-6cc3 7e .. 5c 7e 00	    	 	db KEY_SHIFT,"<>,.:;'",92, KEY_SHIFT,0  
-6cce .. f6 eb 7d 7e 18 19 1a df 1b 00			db "@",246,235,125,126,KEY_F9,KEY_F10,KEY_F11,223,KEY_F12,0  
+6ca2			.key_shift_hold1:  
+6ca2 c5				push bc  
+6ca3 3e 01			ld a, 1  
+6ca5 32 f1 fa			ld (cursor_shape),a  
+6ca8 06 00			ld b, 0  
+6caa 7e				ld a, (hl)  
+6cab fe 2e			cp '.'  
+6cad 28 09			jr z, .key_shift11  
+6caf 06 ff			ld b, 255  
+6cb1			;	ld a, '+'    ; hide key from later scans  
+6cb1 36 2b			ld (hl),'+'  
+6cb3 3e 02			ld a, 2  
+6cb5 32 f1 fa			ld (cursor_shape), a  
+6cb8			.key_shift11:  
+6cb8				; write flag indicator  
+6cb8 78				ld a,b  
+6cb9 12				ld (de),a  
+6cba			  
+6cba d1				pop de    ; de now holds the key map ptr  
+6cbb c9				ret  
+6cbc			  
+6cbc				  
+6cbc			  
+6cbc			; scans keyboard matrix and flags key press in memory array	  
+6cbc				  
+6cbc			matrix:  
+6cbc				;call matrix  
+6cbc				; TODO optimise the code....  
+6cbc			  
+6cbc			  
+6cbc			;ld hl, keyscan_table_row1  
+6cbc			;ld de, keyscan_table_row1+1  
+6cbc			;ld bc,46  
+6cbc			;ld a,KEY_MATRIX_NO_PRESS  
+6cbc			;ldir  
+6cbc			  
+6cbc			  
+6cbc			  
+6cbc			; reset counter  
+6cbc 3e 80		ld a, 128  
+6cbe d3 c1		out (portbdata),a  
+6cc0			  
+6cc0 06 0a		ld b, 10  
+6cc2 0e 00		ld c, 0       ; current clock toggle  
+6cc4			  
+6cc4			.colscan:  
+6cc4			  
+6cc4			; set current column  
+6cc4			; disable clock enable and set clock low  
+6cc4			  
+6cc4			;ld a, 0  
+6cc4			;out (portbdata),a  
+6cc4			  
+6cc4			; For each column scan for switches  
+6cc4			  
+6cc4 c5			push bc  
+6cc5 21 c3 fd		ld hl, keyscan_scancol  
+6cc8 cd cc 6d		call .rowscan  
+6ccb c1			pop bc  
+6ccc			  
+6ccc			  
+6ccc			; get back current column  
+6ccc			  
+6ccc			; translate the row scan  
+6ccc			  
+6ccc			;   
+6ccc			; row 1  
+6ccc			  
+6ccc 78			ld a,b  
+6ccd			  
+6ccd 21 36 fe		LD   hl, keyscan_table_row1+10  
+6cd0			  
+6cd0 cd cd 0d		call subafromhl  
+6cd3			;call addatohl  
+6cd3			  
+6cd3 11 c3 fd		ld de, keyscan_scancol  
+6cd6			  
+6cd6 1a			ld a,(de)  
+6cd7 77			ld (hl),a  
+6cd8			  
+6cd8			  
+6cd8			  
+6cd8			  
+6cd8			; row 2  
+6cd8			  
+6cd8 78			ld a,b  
 6cd9			  
-6cd9			  
-6cd9			  
-6cd9			; mapping for a simple straight through breadboard layout  
-6cd9			  
-6cd9			;.matrix_to_char:  
-6cd9			;		db KEY_SHIFT,"zxcv",KEY_UP,KEY_DOWN,"m",KEY_LEFT, KEY_RIGHT,0  
-6cd9			;		db KEY_SHIFT,"zxcvbnm ",KEY_SYMBOLSHIFT,0  
-6cd9			;		db "asdfghjkl",KEY_CR,0  
-6cd9			;		db "qwertyuiop",0  
-6cd9			;		 db "1234567890",0  
-6cd9			;.matrix_to_shift:  
-6cd9			;		db KEY_SHIFT,"zxcv",KEY_UP,KEY_DOWN,"m",KEY_HOME, KEY_END,0  
-6cd9			;		db KEY_SHIFT,"ZXCVBNM",KEY_BS,KEY_SYMBOLSHIFT,0  
-6cd9			;		db "ASDFGHJKL",KEY_CR,0  
-6cd9			;		db "QWERTYUIOP",0  
-6cd9			;		 db "!",'"',"#$%^&*()",0  
-6cd9			;.matrix_to_symbolshift:  
-6cd9			;		db KEY_SHIFT,"zxcv",KEY_UP,KEY_DOWN,"m",KEY_LEFT, KEY_RIGHT,0  
-6cd9			;		db KEY_SHIFT,"<>:;b,.",KEY_BS,KEY_SYMBOLSHIFT,0  
-6cd9			;		db "_?*fghjk=",KEY_CR,0  
-6cd9			;		db "-/+*[]{}@#",0  
-6cd9			;		 db "1234567890",0  
-6cd9			  
-6cd9			;.matrix_to_char: db "D#0*C987B654A321"  
-6cd9			  
-6cd9			  
-6cd9				  
-6cd9			  
-6cd9			; add cin and cin_wait  
-6cd9			  
-6cd9 cd e8 6c		cin_wait: 	call cin  
-6cdc						if DEBUG_KEYCINWAIT  
-6cdc							push af  
-6cdc							  
-6cdc							ld hl,key_repeat_ct  
-6cdc							ld (hl),a  
-6cdc							inc hl  
-6cdc							call hexout  
-6cdc							ld hl,key_repeat_ct+3  
-6cdc			;				ld a,0  
-6cdc							ld (hl),0  
+6cd9 21 2b fe		LD   hl, keyscan_table_row2+10  
 6cdc			  
-6cdc							    LD   A, kLCD_Line1+11  
-6cdc							    CALL fLCD_Pos       ;Position cursor to location in A  
-6cdc							    LD   DE, key_repeat_ct  
-6cdc							    ;LD   DE, MsgHello  
-6cdc							    CALL fLCD_Str       ;Display string pointed to by DE  
-6cdc			  
-6cdc			  
-6cdc			  
-6cdc							pop af  
-6cdc						endif  
-6cdc			;	cp 0  
-6cdc b7				or a  
-6cdd 28 fa			jr z, cin_wait   ; block until key press  
+6cdc			;call addatohl  
+6cdc cd cd 0d		call subafromhl  
 6cdf			  
-6cdf							if DEBUG_KEYCINWAIT  
-6cdf								push af  
 6cdf			  
-6cdf			;					ld a, 'A'	  
-6cdf								ld hl,key_repeat_ct  
-6cdf								ld (hl),'A'  
-6cdf								inc hl  
-6cdf			;					ld a,0  
-6cdf								ld (hl),0  
-6cdf			  
-6cdf								    LD   A, kLCD_Line2+11  
-6cdf								    CALL fLCD_Pos       ;Position cursor to location in A  
-6cdf								    LD   DE, key_repeat_ct  
-6cdf								    ;LD   DE, MsgHello  
-6cdf								    CALL fLCD_Str       ;Display string pointed to by DE  
-6cdf			  
-6cdf							call delay500ms  
-6cdf			  
-6cdf								pop af  
-6cdf							endif  
-6cdf f5				push af   ; save key pressed  
-6ce0			  
-6ce0			.cin_wait1:	  
-6ce0							if DEBUG_KEYCINWAIT  
-6ce0								push af  
-6ce0			  
-6ce0			;					ld a, 'b'	  
-6ce0								ld hl,key_repeat_ct  
-6ce0								ld (hl),'b'  
-6ce0								inc hl  
-6ce0			;					ld a,0  
-6ce0								ld (hl),0  
-6ce0			  
-6ce0								    LD   A, kLCD_Line2+11  
-6ce0								    CALL fLCD_Pos       ;Position cursor to location in A  
-6ce0								    LD   DE, key_repeat_ct  
-6ce0								    ;LD   DE, MsgHello  
-6ce0								    CALL fLCD_Str       ;Display string pointed to by DE  
-6ce0			  
-6ce0			  
-6ce0							call delay500ms  
-6ce0			  
-6ce0								pop af  
-6ce0							endif  
-6ce0			  
-6ce0 cd e8 6c		call cin  
-6ce3			;	cp 0  
-6ce3 b7				or a  
-6ce4 20 fa			jr nz, .cin_wait1  	; wait for key release  
-6ce6			if DEBUG_KEYCINWAIT  
-6ce6				push af  
-6ce6			  
-6ce6			;	ld a, '3'	  
-6ce6				ld hl,key_repeat_ct  
-6ce6				ld (hl),'3'  
-6ce6				inc hl  
-6ce6			;	ld a,0  
-6ce6				ld (hl),0  
-6ce6			  
-6ce6			            LD   A, kLCD_Line2+11  
-6ce6			            CALL fLCD_Pos       ;Position cursor to location in A  
-6ce6			            LD   DE, key_repeat_ct  
-6ce6			            ;LD   DE, MsgHello  
-6ce6			            CALL fLCD_Str       ;Display string pointed to by DE  
-6ce6			  
-6ce6			  
-6ce6			call delay500ms  
-6ce6			  
-6ce6				pop af  
-6ce6			endif  
-6ce6			  
-6ce6 f1				pop af   ; get key  
-6ce7 c9				ret  
+6cdf 11 c4 fd		ld de, keyscan_scancol+1  
+6ce2			  
+6ce2 1a			ld a,(de)  
+6ce3 77			ld (hl),a  
+6ce4			  
+6ce4			  
+6ce4			; row 3  
+6ce4			  
+6ce4 78			ld a,b  
+6ce5			  
+6ce5 21 20 fe		LD   hl, keyscan_table_row3+10  
 6ce8			  
-6ce8			  
-6ce8			; cin - key non-blocking except for keybounce release  
-6ce8			  
-6ce8 cd 04 6d		cin: 	call .mtoc  
+6ce8			;call addatohl  
+6ce8 cd cd 0d		call subafromhl  
 6ceb			  
-6ceb			if DEBUG_KEYCIN  
-6ceb				push af  
-6ceb				  
-6ceb				ld hl,key_repeat_ct  
-6ceb				ld (hl),a  
-6ceb				inc hl  
-6ceb				call hexout  
-6ceb				ld hl,key_repeat_ct+3  
-6ceb			;	ld a,0  
-6ceb				ld (hl),0  
-6ceb			  
-6ceb			            LD   A, kLCD_Line3+15  
-6ceb			            CALL fLCD_Pos       ;Position cursor to location in A  
-6ceb			            LD   DE, key_repeat_ct  
-6ceb			            ;LD   DE, MsgHello  
-6ceb			            CALL fLCD_Str       ;Display string pointed to by DE  
-6ceb			  
-6ceb			  
-6ceb			call delay500ms  
-6ceb			  
-6ceb				pop af  
-6ceb			endif  
-6ceb			  
-6ceb			  
-6ceb				; no key held  
-6ceb			;	cp 0  
-6ceb b7				or a  
-6cec c8				ret z  
-6ced			  
-6ced			if DEBUG_KEYCIN  
-6ced				push af  
-6ced			  
-6ced			;	ld a, '1'	  
-6ced				ld hl,key_repeat_ct  
-6ced				ld (hl),'1'  
-6ced				inc hl  
-6ced			;	ld a,0  
-6ced				ld (hl),0  
-6ced			  
-6ced			            LD   A, kLCD_Line4+15  
-6ced			            CALL fLCD_Pos       ;Position cursor to location in A  
-6ced			            LD   DE, key_repeat_ct  
-6ced			            ;LD   DE, MsgHello  
-6ced			            CALL fLCD_Str       ;Display string pointed to by DE  
-6ced			  
-6ced			  
-6ced			call delay500ms  
-6ced			  
-6ced				pop af  
-6ced			endif  
-6ced			  
-6ced				; stop key bounce  
-6ced			  
-6ced 32 c2 fd			ld (key_held),a		 ; save it  
-6cf0 47				ld b, a  
+6ceb 11 c5 fd		ld de, keyscan_scancol+2  
+6cee			  
+6cee 1a			ld a,(de)  
+6cef 77			ld (hl),a  
+6cf0			  
+6cf0			  
+6cf0			  
+6cf0			; row 4  
+6cf0			  
+6cf0 78			ld a,b  
 6cf1			  
-6cf1 c5			.cina1:	push bc  
-6cf2			if DEBUG_KEYCIN  
-6cf2				push af  
-6cf2			  
-6cf2				ld hl,key_repeat_ct  
-6cf2				inc hl  
-6cf2				call hexout  
-6cf2				ld hl,key_repeat_ct+3  
-6cf2			;	ld a,0  
-6cf2				ld (hl),0  
-6cf2				ld hl,key_repeat_ct  
-6cf2			;	ld a, '2'	  
-6cf2				ld (hl),'2'  
-6cf2			  
-6cf2			            LD   A, kLCD_Line4+15  
-6cf2			            CALL fLCD_Pos       ;Position cursor to location in A  
-6cf2			            LD   DE, key_repeat_ct  
-6cf2			            ;LD   DE, MsgHello  
-6cf2			            CALL fLCD_Str       ;Display string pointed to by DE  
-6cf2			  
-6cf2				pop af  
-6cf2			endif  
-6cf2 cd 04 6d			call .mtoc  
-6cf5 c1				pop bc  
-6cf6 b8				cp b  
-6cf7 28 f8			jr z, .cina1  
-6cf9 78				ld a,b		  
-6cfa			if DEBUG_KEYCIN  
-6cfa				push af  
+6cf1 21 15 fe		LD   hl, keyscan_table_row4+10  
+6cf4			  
+6cf4			;call addatohl  
+6cf4 cd cd 0d		call subafromhl  
+6cf7			  
+6cf7 11 c6 fd		ld de, keyscan_scancol+3  
 6cfa			  
-6cfa				ld hl,key_repeat_ct  
-6cfa				inc hl  
-6cfa				call hexout  
-6cfa				ld hl,key_repeat_ct+3  
-6cfa			;	ld a,0  
-6cfa				ld (hl),0  
-6cfa				ld hl,key_repeat_ct  
-6cfa			;	ld a, '3'	  
-6cfa				ld (hl),'3'  
-6cfa			  
-6cfa			            LD   A, kLCD_Line4+15  
-6cfa			            CALL fLCD_Pos       ;Position cursor to location in A  
-6cfa			            LD   DE, key_repeat_ct  
-6cfa			            ;LD   DE, MsgHello  
-6cfa			            CALL fLCD_Str       ;Display string pointed to by DE  
-6cfa			  
-6cfa				pop af  
-6cfa			endif  
-6cfa c9				ret  
-6cfb			  
-6cfb			; cinndb - key non-blocking without keybounce release  
-6cfb			  
-6cfb cd 04 6d		cinndb: 	call .mtoc  
-6cfe			  
-6cfe			if DEBUG_KEYCIN  
-6cfe				push af  
-6cfe				  
-6cfe				ld hl,key_repeat_ct  
-6cfe				ld (hl),a  
-6cfe				inc hl  
-6cfe				call hexout  
-6cfe				ld hl,key_repeat_ct+3  
-6cfe			;	ld a,0  
-6cfe				ld (hl),0  
-6cfe			  
-6cfe			            LD   A, kLCD_Line3+15  
-6cfe			            CALL fLCD_Pos       ;Position cursor to location in A  
-6cfe			            LD   DE, key_repeat_ct  
-6cfe			            ;LD   DE, MsgHello  
-6cfe			            CALL fLCD_Str       ;Display string pointed to by DE  
-6cfe			  
-6cfe			  
-6cfe			call delay500ms  
-6cfe			  
-6cfe				pop af  
-6cfe			endif  
-6cfe			  
-6cfe			  
-6cfe				; no key held  
-6cfe			;	cp 0  
-6cfe b7				or a  
-6cff c8				ret z  
+6cfa 1a			ld a,(de)  
+6cfb 77			ld (hl),a  
+6cfc			  
+6cfc			; row 5  
+6cfc			  
+6cfc 78			ld a,b  
+6cfd			  
+6cfd 21 0a fe		LD   hl, keyscan_table_row5+10  
 6d00			  
-6d00			if DEBUG_KEYCIN  
-6d00				push af  
-6d00			  
-6d00			;	ld a, '1'	  
-6d00				ld hl,key_repeat_ct  
-6d00				ld (hl),'1'  
-6d00				inc hl  
-6d00			;	ld a,0  
-6d00				ld (hl),0  
-6d00			  
-6d00			            LD   A, kLCD_Line4+15  
-6d00			            CALL fLCD_Pos       ;Position cursor to location in A  
-6d00			            LD   DE, key_repeat_ct  
-6d00			            ;LD   DE, MsgHello  
-6d00			            CALL fLCD_Str       ;Display string pointed to by DE  
-6d00			  
-6d00			  
-6d00			call delay500ms  
-6d00			  
-6d00				pop af  
-6d00			endif  
-6d00			  
-6d00 32 c2 fd			ld (key_held),a		 ; save it  
+6d00			;call addatohl  
+6d00 cd cd 0d		call subafromhl  
 6d03			  
-6d03			if DEBUG_KEYCIN  
-6d03				push af  
-6d03			  
-6d03				ld hl,key_repeat_ct  
-6d03				inc hl  
-6d03				call hexout  
-6d03				ld hl,key_repeat_ct+3  
-6d03			;	ld a,0  
-6d03				ld (hl),0  
-6d03				ld hl,key_repeat_ct  
-6d03			;	ld a, '3'	  
-6d03				ld (hl),'3'  
-6d03			  
-6d03			            LD   A, kLCD_Line4+15  
-6d03			            CALL fLCD_Pos       ;Position cursor to location in A  
-6d03			            LD   DE, key_repeat_ct  
-6d03			            ;LD   DE, MsgHello  
-6d03			            CALL fLCD_Str       ;Display string pointed to by DE  
-6d03			  
-6d03				pop af  
-6d03			endif  
-6d03 c9				ret  
-6d04			; detect keyboard modifier key press and apply new overlay to the face key held  
-6d04			; hl is the key modifer flag, de map to apply to key_face_held and store in key_actual_pressed  
-6d04			  
-6d04			;.cin_map_modifier:   
-6d04			;	ld a, (hl)  
-6d04			;	and 255  
-6d04			;	ret NZ		; modifier key not flagged  
-6d04			;  
-6d04			;	; get key face  
-6d04			;  
-6d04			;	ld b,(key_face_held)  
-6d04			;  
-6d04			;	ld b, key_cols * key_rows  
-6d04			;  
-6d04			;	push de  
-6d04			;	pop hl  
-6d04			;  
-6d04			;.mmod1: ld a,(hl)   ; get map test  
-6d04			;	cp b  
-6d04			;	jr z, .mmod2  
-6d04			;  
-6d04			;  
-6d04			;  
-6d04			;.mmod2: inc hl    ;   
-6d04			;  
-6d04			;	  
-6d04			;  
-6d04			;	  
-6d04			;  
-6d04			;	ld hl,key_actual_pressed  
-6d04			;	ld (hl),a,  
-6d04			;	ret  
-6d04			  
-6d04			; map matrix key held to char on face of key  
-6d04			  
-6d04			.mtoc:  
-6d04			  
-6d04			; test decade counter strobes  
-6d04			  
-6d04			;.decadetest1:  
-6d04			  
-6d04			; reset counter  
-6d04			;ld a, 128  
-6d04			;out (portbdata),a  
-6d04			  
-6d04			  
-6d04			;ld b, 5  
-6d04			;.dec1:  
-6d04			;ld a, 0  
-6d04			;out (portbdata),a  
-6d04			;call delay1s  
-6d04			  
-6d04			;ld a, 32  
-6d04			;out (portbdata),a  
-6d04			;call delay1s  
-6d04			;call delay1s  
-6d04			;call delay1s  
-6d04			;  
-6d04			;ld a, 64+32  
-6d04			;out (portbdata),a  
-6d04			;call delay1s  
-6d04			;;djnz .dec1  
-6d04			;  
-6d04			;jp .decadetest1  
-6d04			  
-6d04			  
-6d04			  
-6d04			  
-6d04			  
-6d04			  
-6d04			  
-6d04			  
-6d04			  
-6d04			  
-6d04				; scan keyboard matrix and generate raw scan map  
-6d04 cd 95 6d			call matrix  
-6d07			  
-6d07				; reuse c bit 0 left modifer button - ie shift  
-6d07			        ; reuse c bit 1 for right modifer button - ie symbol shift  
-6d07				; both can be used with their other mappings and if seen together can do extra mappings (forth keywords????)  
-6d07			  
-6d07 0e 00			ld c, 0  
-6d09			  
-6d09				; TODO set flags for modifer key presses   
-6d09				; TODO do a search for modifer key...  
-6d09			  
-6d09				;ld hl,keyscan_table_row4  
-6d09 21 21 fe			ld hl,keyscan_table_row2  
+6d03 11 c7 fd		ld de, keyscan_scancol+4  
+6d06			  
+6d06 1a			ld a,(de)  
+6d07 77			ld (hl),a  
+6d08			  
+6d08			; handshake next column  
+6d08			  
+6d08			  
+6d08 3e 40		ld a, 64  
+6d0a d3 c1		out (portbdata),a  
 6d0c			  
-6d0c 7e				ld a, (hl)  
-6d0d fe 23			cp '#'  
-6d0f 20 07			jr nz, .nextmodcheck  
-6d11 cb c1			set 0, c  
-6d13 21 6b 6c			ld hl, .matrix_to_shift  
-6d16 18 21			jr .dokeymap  
-6d18				; TODO for now igonre  
-6d18			.nextmodcheck:  
-6d18 21 16 fe			ld hl,keyscan_table_row3  
-6d1b			  
-6d1b 7e				ld a, (hl)  
-6d1c fe 23			cp '#'  
-6d1e 20 07			jr nz, .nextmodcheck2  
-6d20 cb c9			set 1, c   
-6d22 21 a2 6c			ld hl, .matrix_to_symbolshift  
-6d25 18 12			jr .dokeymap  
-6d27			.nextmodcheck2:  
-6d27 21 2a fe			ld hl,keyscan_table_row2+9    ; right shift  
-6d2a			  
-6d2a 7e				ld a, (hl)  
-6d2b fe 23			cp '#'  
-6d2d 20 07			jr nz, .donemodcheck  
-6d2f cb c9			set 1, c   
-6d31 21 6b 6c			ld hl, .matrix_to_shift  
-6d34 18 03			jr .dokeymap  
-6d36			  
-6d36				; no modifer found so just map to normal keys  
-6d36				; get mtoc map matrix to respective keys  
-6d36			;	ld hl, .matrix_to_char  
-6d36			;	ld hl, .matrix_to_char  
-6d36			;	ld b, ((key_cols+1)*key_rows)    ; 30 keys to remap + 8 nulls   
-6d36			;	ld a, KEY_SHIFT  
-6d36			;	call findchar  
-6d36			;  
-6d36			;	; got offset to key modifer in b  
-6d36			;  
-6d36			;	ld hl,keyscan_table_row5  
-6d36			;  
-6d36			;	ld a,b  
-6d36			;	call addatohl  
-6d36			;	ld a,(hl)  
-6d36			;  
-6d36			;	cp '#'  
-6d36			;	jr nz, .nextmodcheck  
-6d36			;	set 0, c  
-6d36			;	ld hl, .matrix_to_char  
-6d36			;	jr .dokeymap  
-6d36			;	; TODO for now igonre  
-6d36			;.nextmodcheck:  
-6d36			;	ld hl, .matrix_to_symbolshift  
-6d36			;	ld b, ((key_cols+1)*key_rows)    ; 30 keys to remap + 8 nulls   
-6d36			;	ld a, KEY_SYMBOLSHIFT  
-6d36			;	call findchar  
-6d36			;  
-6d36			;  
-6d36			;	; got offset to key modifer in b  
-6d36			;  
-6d36			;	ld hl,keyscan_table_row5  
-6d36			;  
-6d36			;	ld a,b  
-6d36			;	call addatohl  
-6d36			;	ld a,(hl)  
-6d36			;  
-6d36			;	cp '#'  
-6d36			;	jr nz, .donemodcheck  
-6d36			;	set 1, c   
-6d36			;	ld hl, .matrix_to_symbolshift  
-6d36			;	jr .dokeymap  
-6d36			  
-6d36			  
-6d36			  
-6d36			.donemodcheck:  
-6d36				; no modifer found so just map to normal keys  
-6d36				; get mtoc map matrix to respective keys  
-6d36 21 34 6c			ld hl, .matrix_to_char  
-6d39			  
-6d39			.dokeymap:  
-6d39				;ld (key_fa), c   
-6d39 cd 51 6d			call .mapkeys  
-6d3c			  
-6d3c			  
-6d3c			if DEBUG_KEY  
-6d3c			  
-6d3c			; Display text on first line  
-6d3c			            LD   A, kLCD_Line1  
-6d3c			            CALL fLCD_Pos       ;Position cursor to location in A  
-6d3c			            LD   DE, keyscan_table_row1  
-6d3c			            ;LD   DE, MsgHello  
-6d3c			            CALL fLCD_Str       ;Display string pointed to by DE  
-6d3c			  
-6d3c			; Display text on second line  
-6d3c			            LD   A, kLCD_Line2  
-6d3c			            CALL fLCD_Pos       ;Position cursor to location in A  
-6d3c			            LD   DE, keyscan_table_row2  
-6d3c			            CALL fLCD_Str       ;Display string pointed to by DE  
-6d3c			            LD   A, kLCD_Line3  
-6d3c			            CALL fLCD_Pos       ;Position cursor to location in A  
-6d3c			            LD   DE, keyscan_table_row3  
-6d3c			            CALL fLCD_Str       ;Display string pointed to by DE  
-6d3c			            LD   A, kLCD_Line4  
-6d3c			            CALL fLCD_Pos       ;Position cursor to location in A  
-6d3c			            LD   DE, keyscan_table_row4  
-6d3c			            CALL fLCD_Str       ;Display string pointed to by DE  
-6d3c			            LD   A, kLCD_Line1+10  
-6d3c			            CALL fLCD_Pos       ;Position cursor to location in A  
-6d3c			            LD   DE, keyscan_table_row5  
-6d3c			            CALL fLCD_Str       ;Display string pointed to by DE  
-6d3c			  
-6d3c				;call delay250ms  
-6d3c			endif  
-6d3c			;	jp testkey  
-6d3c			  
-6d3c			; get first char reported  
-6d3c			  
-6d3c 21 00 fe			ld hl,keyscan_table_row5  
-6d3f			  
-6d3f				;ld b, 46   ; 30 keys to remap + 8 nulls   
-6d3f 06 37			ld b, (key_cols+1)*key_rows    ; 30 keys to remap + 8 nulls   
-6d41			.findkey:  
-6d41 7e				ld a,(hl)  
-6d42			;	cp 0  
-6d42 b7				or a  
-6d43 28 04			jr z, .nextkey  
-6d45 fe 7e			cp KEY_MATRIX_NO_PRESS  
-6d47 20 06			jr nz, .foundkey  
-6d49			.nextkey:  
-6d49 23				inc hl  
-6d4a 10 f5			djnz .findkey  
-6d4c 3e 00			ld a,0  
-6d4e c9				ret  
-6d4f			.foundkey:  
-6d4f 7e				ld a,(hl)  
-6d50 c9				ret  
-6d51				  
-6d51			  
-6d51			; convert the raw key map given hl for destination key  
-6d51			.mapkeys:  
-6d51 11 00 fe			ld de,keyscan_table_row5  
-6d54			  
-6d54 06 37			ld b, (key_cols+1)*key_rows    ; 30 keys to remap + 8 nulls   
-6d56			.remap:  
-6d56 1a				ld a,(de)  
-6d57 fe 23			cp '#'  
-6d59 20 02			jr nz, .remapnext  
-6d5b				;CALLMONITOR  
-6d5b 7e				ld a,(hl)  
-6d5c 12				ld (de),a  
-6d5d			  
-6d5d			  
-6d5d			  
-6d5d			.remapnext:  
-6d5d 23				inc hl  
-6d5e 13				inc de  
-6d5f 10 f5			djnz .remap  
-6d61				  
-6d61 c9				ret  
-6d62			  
-6d62			  
-6d62			  
-6d62			.mtocold2:  
-6d62			  
-6d62			;	; flag if key D is held down and remove from reporting  
-6d62			;	ld bc, .key_map_fd    
-6d62			;	ld hl, keyscan_table  
-6d62			;	ld de, key_fd  
-6d62			;	call .key_shift_hold  
-6d62			;	cp 255  
-6d62			;	jr z, .cinmap  
-6d62			;	; flag if key C is held down and remove from reporting  
-6d62			;	ld bc, .key_map_fc    
-6d62			;	ld hl, keyscan_table+key_cols  
-6d62			;	ld de, key_fc  
-6d62			;	call .key_shift_hold  
-6d62			;	cp 255  
-6d62			;	jr z, .cinmap  
-6d62			;	; flag if key B is held down and remove from reporting  
-6d62			;	ld bc, .key_map_fb    
-6d62			;	ld hl, keyscan_table+(key_cols*2)  
-6d62			;	ld de, key_fb  
-6d62			;	call .key_shift_hold  
-6d62			;	cp 255  
-6d62			;	jr z, .cinmap  
-6d62			;	; flag if key A is held down and remove from reporting  
-6d62			;	ld bc, .key_map_fa    
-6d62			;	ld hl, keyscan_table+(key_cols*3)  
-6d62			;	ld de, key_fa  
-6d62			;	call .key_shift_hold  
-6d62			;	cp 255  
-6d62			;	jr z, .cinmap  
-6d62			  
-6d62 11 34 6c			ld de, .matrix_to_char  
-6d65			  
-6d65			  
-6d65			.cinmap1:   
-6d65				if DEBUG_KEY  
-6d65			            LD   A, kLCD_Line4  
-6d65			            CALL fLCD_Pos       ;Position cursor to location in A  
-6d65					push de  
-6d65			            LD   DE, keyscan_table  
-6d65			            CALL fLCD_Str       ;Display string pointed to by DE  
-6d65					pop de  
-6d65				endif  
-6d65			  
-6d65				; scan key matrix table for any held key  
-6d65			  
-6d65				; de holds either the default matrix or one selected above  
-6d65			  
-6d65 21 cd fd			ld hl, keyscan_table  
-6d68 06 32			ld b,key_cols*key_rows  
-6d6a			  
-6d6a 7e			.cin11:	ld a,(hl)  
-6d6b fe 23			cp '#'  
-6d6d 28 08			jr z, .cinhit1  
-6d6f 23				inc hl  
-6d70 13				inc de  
-6d71 05				dec b  
-6d72 20 f6			jr nz, .cin11  
-6d74				; no key found held  
-6d74 3e 00			ld a,0  
-6d76 c9				ret  
-6d77 d5			.cinhit1: push de  
-6d78 e1				pop hl  
-6d79 7e				ld a,(hl)  
-6d7a c9				ret  
-6d7b			  
-6d7b			; flag a control key is held   
-6d7b			; hl is key pin, de is flag indicator  
-6d7b			  
-6d7b			.key_shift_hold1:  
-6d7b c5				push bc  
-6d7c 3e 01			ld a, 1  
-6d7e 32 f1 fa			ld (cursor_shape),a  
-6d81 06 00			ld b, 0  
-6d83 7e				ld a, (hl)  
-6d84 fe 2e			cp '.'  
-6d86 28 09			jr z, .key_shift11  
-6d88 06 ff			ld b, 255  
-6d8a			;	ld a, '+'    ; hide key from later scans  
-6d8a 36 2b			ld (hl),'+'  
-6d8c 3e 02			ld a, 2  
-6d8e 32 f1 fa			ld (cursor_shape), a  
-6d91			.key_shift11:  
-6d91				; write flag indicator  
-6d91 78				ld a,b  
-6d92 12				ld (de),a  
-6d93			  
-6d93 d1				pop de    ; de now holds the key map ptr  
-6d94 c9				ret  
-6d95			  
-6d95				  
-6d95			  
-6d95			; scans keyboard matrix and flags key press in memory array	  
-6d95				  
-6d95			matrix:  
-6d95				;call matrix  
-6d95				; TODO optimise the code....  
-6d95			  
-6d95			  
-6d95			;ld hl, keyscan_table_row1  
-6d95			;ld de, keyscan_table_row1+1  
-6d95			;ld bc,46  
-6d95			;ld a,KEY_MATRIX_NO_PRESS  
-6d95			;ldir  
-6d95			  
-6d95			  
-6d95			  
-6d95			; reset counter  
-6d95 3e 80		ld a, 128  
-6d97 d3 c1		out (portbdata),a  
-6d99			  
-6d99 06 0a		ld b, 10  
-6d9b 0e 00		ld c, 0       ; current clock toggle  
-6d9d			  
-6d9d			.colscan:  
-6d9d			  
-6d9d			; set current column  
-6d9d			; disable clock enable and set clock low  
-6d9d			  
-6d9d			;ld a, 0  
-6d9d			;out (portbdata),a  
-6d9d			  
-6d9d			; For each column scan for switches  
-6d9d			  
-6d9d c5			push bc  
-6d9e 21 c3 fd		ld hl, keyscan_scancol  
-6da1 cd a5 6e		call .rowscan  
-6da4 c1			pop bc  
+6d0c 3e 00		ld a, 0  
+6d0e d3 c1		out (portbdata),a  
+6d10			  
+6d10			; toggle clk and move to next column  
+6d10			;ld a, 64  
+6d10			;cp c  
+6d10			;  
+6d10			;jr z, .coltoglow  
+6d10			;ld c, a  
+6d10			;jr .coltog  
+6d10			;.coltoglow:  
+6d10			;ld c, 0  
+6d10			;.coltog:  
+6d10			;ld a, c  
+6d10			;out (portbdata),a  
+6d10			  
+6d10 10 b2		djnz .colscan  
+6d12			  
+6d12 3e 0a		ld a,10  
+6d14 21 2c fe		LD   hl, keyscan_table_row1  
+6d17 cd bb 0d		call addatohl  
+6d1a			;ld a, 0  
+6d1a 36 00		ld (hl), 0  
+6d1c			  
+6d1c			  
+6d1c 3e 0a		ld a,10  
+6d1e 21 21 fe		LD   hl, keyscan_table_row2  
+6d21 cd bb 0d		call addatohl  
+6d24			;ld a, 0  
+6d24 36 00		ld (hl), 0  
+6d26			  
+6d26 3e 0a		ld a,10  
+6d28 21 16 fe		LD   hl, keyscan_table_row3  
+6d2b cd bb 0d		call addatohl  
+6d2e			;ld a, 0  
+6d2e 36 00		ld (hl), 0  
+6d30			  
+6d30 3e 0a		ld a,10  
+6d32 21 0b fe		LD   hl, keyscan_table_row4  
+6d35 cd bb 0d		call addatohl  
+6d38			;ld a, 0  
+6d38 36 00		ld (hl), 0  
+6d3a			  
+6d3a 3e 0a		ld a,10  
+6d3c 21 00 fe		LD   hl, keyscan_table_row5  
+6d3f cd bb 0d		call addatohl  
+6d42			;ld a, 0  
+6d42 36 00		ld (hl), 0  
+6d44			  
+6d44			if DEBUG_KEY_MATRIX  
+6d44			  
+6d44			; Display text on first line  
+6d44			            LD   A, kLCD_Line1  
+6d44			            CALL fLCD_Pos       ;Position cursor to location in A  
+6d44			            LD   DE, keyscan_table_row1  
+6d44			            ;LD   DE, MsgHello  
+6d44			            CALL fLCD_Str       ;Display string pointed to by DE  
+6d44			  
+6d44			; Display text on second line  
+6d44			            LD   A, kLCD_Line2  
+6d44			            CALL fLCD_Pos       ;Position cursor to location in A  
+6d44			            LD   DE, keyscan_table_row2  
+6d44			            CALL fLCD_Str       ;Display string pointed to by DE  
+6d44			            LD   A, kLCD_Line3  
+6d44			            CALL fLCD_Pos       ;Position cursor to location in A  
+6d44			            LD   DE, keyscan_table_row3  
+6d44			            CALL fLCD_Str       ;Display string pointed to by DE  
+6d44			            LD   A, kLCD_Line4  
+6d44			            CALL fLCD_Pos       ;Position cursor to location in A  
+6d44			            LD   DE, keyscan_table_row4  
+6d44			            CALL fLCD_Str       ;Display string pointed to by DE  
+6d44			            LD   A, kLCD_Line4+10  
+6d44			            CALL fLCD_Pos       ;Position cursor to location in A  
+6d44			            LD   DE, keyscan_table_row5  
+6d44			            CALL fLCD_Str       ;Display string pointed to by DE  
+6d44			  
+6d44			;call delay250ms  
+6d44				jp matrix  
+6d44			endif  
+6d44 c9			ret  
+6d45			  
+6d45			; using decade counter....  
+6d45			  
+6d45			  
+6d45			; TODO reset decade counter to start of scan  
+6d45			  
+6d45			; reset 15  
+6d45			; clock 14  
+6d45			; ce 13  
+6d45			  
+6d45			; 1 - q5  
+6d45			; 2 - q1  
+6d45			; 3 - q0  
+6d45			; 4 - q2  
+6d45			; 5 - q6  
+6d45			; 6 - q7  
+6d45			; 7 - q3  
+6d45			; 8 - vss  
+6d45			; 9 - q8  
+6d45			; 10 - q4  
+6d45			; 11 - q9  
+6d45			; 12 - cout  
+6d45			; 16 - vdd  
+6d45			  
+6d45			; clock      ce       reset     output  
+6d45			; 0          x        0         n  
+6d45			; x          1        0         n  
+6d45			; x          x        1         q0  
+6d45			; rising     0        0         n+1  
+6d45			; falling    x        0         n  
+6d45			; x          rising   0         n  
+6d45			; 1          falling  0         x+1  
+6d45			;  
+6d45			; x = dont care, if n < 5 carry = 1 otherwise 0  
+6d45			  
+6d45			;   
+6d45			; reset   
+6d45			; 13=0, 14=0, 15=1 .. 15=0  
+6d45			;  
+6d45			; handshake line  
+6d45			; 14=1.... read line 14=0  
+6d45			  
+6d45			  
+6d45			  
+6d45			  
+6d45			  
+6d45			; TODO hand shake clock for next column scan  
+6d45			; TODO detect each row  
+6d45			  
+6d45			  
+6d45			  
+6d45			  
+6d45			; reset 128  
+6d45			; clock 64  
+6d45			; ce 32  
+6d45			  
+6d45			  
+6d45			.cyclestart:  
+6d45			  
+6d45			; reset counter  
+6d45 3e 80		ld a, 128  
+6d47 d3 c1		out (portbdata),a  
+6d49			  
+6d49			; loop leds  
+6d49 06 0a		ld b,10  
+6d4b			  
+6d4b			.cycle1:  
+6d4b c5			push bc  
+6d4c 3e 00		ld a, 0  
+6d4e d3 c1		out (portbdata),a  
+6d50 cd a8 0a		call delay250ms  
+6d53			  
+6d53 3e 40		ld a, 64  
+6d55 d3 c1		out (portbdata),a  
+6d57 cd a8 0a		call delay250ms  
+6d5a			  
+6d5a 3e 00		ld a, 0  
+6d5c d3 c1		out (portbdata),a  
+6d5e cd a8 0a		call delay250ms  
+6d61			  
+6d61 c1			pop bc  
+6d62 10 e7		djnz .cycle1  
+6d64			  
+6d64			  
+6d64 18 df		jr .cyclestart  
+6d66			  
+6d66			  
+6d66			  
+6d66			  
+6d66			  
+6d66			  
+6d66			  
+6d66			  
+6d66			  
+6d66			; map matrix key held to char on face of key  
+6d66			  
+6d66			;.mtocold:  
+6d66			;  
+6d66			;  
+6d66			;; reset counter  
+6d66			;ld a, 128  
+6d66			;out (portbdata),a  
+6d66			;  
+6d66			;  
+6d66			;; scan keyboard row 1  
+6d66			;ld a, 0  
+6d66			;out (portbdata),a  
+6d66			;;ld a, 64  
+6d66			;;out (portbdata),a  
+6d66			;  
+6d66			;  
+6d66			;	ld a, 128  
+6d66			;	ld hl, keyscan_table  
+6d66			;	call .rowscan  
+6d66			;  
+6d66			;;ld a, 0  
+6d66			;;out (portbdata),a  
+6d66			;ld a, 64  
+6d66			;out (portbdata),a  
+6d66			;  
+6d66			;	ld a, 64  
+6d66			;	ld hl, keyscan_table+key_cols  
+6d66			;	call .rowscan  
+6d66			;  
+6d66			;ld a, 0  
+6d66			;out (portbdata),a  
+6d66			;;ld a, 64  
+6d66			;;out (portbdata),a  
+6d66			;	ld a, 32  
+6d66			;	ld hl, keyscan_table+(key_cols*2)  
+6d66			;	call .rowscan  
+6d66			;  
+6d66			;  
+6d66			;;ld a, 0  
+6d66			;;out (portbdata),a  
+6d66			;ld a, 64  
+6d66			;out (portbdata),a  
+6d66			;  
+6d66			;	ld a, 16  
+6d66			;	ld hl, keyscan_table+(key_cols*3)  
+6d66			;	call .rowscan  
+6d66			;  
+6d66			;  
+6d66			;	; flag if key D is held down and remove from reporting  
+6d66			;	ld bc, .key_map_fd    
+6d66			;	ld hl, keyscan_table  
+6d66			;	ld de, key_fd  
+6d66			;	call .key_shift_hold  
+6d66			;	cp 255  
+6d66			;	jr z, .cinmap  
+6d66			;	; flag if key C is held down and remove from reporting  
+6d66			;	ld bc, .key_map_fc    
+6d66			;	ld hl, keyscan_table+key_cols  
+6d66			;	ld de, key_fc  
+6d66			;	call .key_shift_hold  
+6d66			;	cp 255  
+6d66			;	jr z, .cinmap  
+6d66			;	; flag if key B is held down and remove from reporting  
+6d66			;	ld bc, .key_map_fb    
+6d66			;	ld hl, keyscan_table+(key_cols*2)  
+6d66			;	ld de, key_fb  
+6d66			;	call .key_shift_hold  
+6d66			;	cp 255  
+6d66			;	jr z, .cinmap  
+6d66			;	; flag if key A is held down and remove from reporting  
+6d66			;	ld bc, .key_map_fa    
+6d66			;	ld hl, keyscan_table+(key_cols*3)  
+6d66			;	ld de, key_fa  
+6d66			;	call .key_shift_hold  
+6d66			;	cp 255  
+6d66			;	jr z, .cinmap  
+6d66			;  
+6d66			;	ld de, .matrix_to_char  
+6d66			;  
+6d66			;  
+6d66			;.cinmap:   
+6d66			;	if DEBUG_KEY  
+6d66			;            LD   A, kLCD_Line4  
+6d66			;            CALL fLCD_Pos       ;Position cursor to location in A  
+6d66			;		push de  
+6d66			;            LD   DE, keyscan_table  
+6d66			;            CALL fLCD_Str       ;Display string pointed to by DE  
+6d66			;		pop de  
+6d66			;	endif  
+6d66			  
+6d66				; scan key matrix table for any held key  
+6d66			  
+6d66				; de holds either the default matrix or one selected above  
+6d66			  
+6d66			;	ld hl, keyscan_table  
+6d66			;	ld b,key_cols*key_rows  
+6d66			;  
+6d66			;.cin1:	ld a,(hl)  
+6d66			;	cp '#'  
+6d66			;	jr z, .cinhit  
+6d66			;	inc hl  
+6d66			;	inc de  
+6d66			;	dec b  
+6d66			;	jr nz, .cin1  
+6d66			;	; no key found held  
+6d66			;	ld a,0  
+6d66			;	ret  
+6d66			;.cinhit: push de  
+6d66			;	pop hl  
+6d66			;	ld a,(hl)  
+6d66			;	ret  
+6d66			  
+6d66			; flag a control key is held   
+6d66			; hl is key pin, de is flag indicator  
+6d66			  
+6d66			;.key_shift_hold:  
+6d66			;	push bc  
+6d66			;	ld a, 1  
+6d66			;	ld (cursor_shape),a  
+6d66			;	ld b, 0  
+6d66			;	ld a, (hl)  
+6d66			;	cp '.'  
+6d66			;	jr z, .key_shift1  
+6d66			;	ld b, 255  
+6d66			;	ld a, '+'    ; hide key from later scans  
+6d66			;	ld (hl),a  
+6d66			;	ld a, 2  
+6d66			;	ld (cursor_shape),a  
+6d66			;.key_shift1:  
+6d66			;	; write flag indicator  
+6d66			;	ld a,b  
+6d66			;	ld (de),a  
+6d66			;  
+6d66			;	pop de    ; de now holds the key map ptr  
+6d66			;	ret  
+6d66			  
+6d66				  
+6d66				  
+6d66			  
+6d66			  
+6d66			  
+6d66			  
+6d66			  
+6d66			  
+6d66			  
+6d66			  
+6d66			  
+6d66			  
+6d66			  
+6d66			;	push hl  
+6d66			;	push de  
+6d66			;	push bc  
+6d66			;	call keyscan  
+6d66			;	; map key matrix to ascii value of key face  
+6d66			;  
+6d66			;	ld hl, key_face_map  
+6d66			;	ld de, keyscan_table  
+6d66			;  
+6d66			;	; get how many keys to look at  
+6d66			;	ld b, keyscan_table_len  
+6d66			;	  
+6d66			;  
+6d66			;	; at this stage fall out on first key hit  
+6d66			;	; TODO handle multiple key press  
+6d66			;  
+6d66			;map1:	ld a,(hl)  
+6d66			;	cp '#'  
+6d66			;	jr z, keyhit  
+6d66			;	inc hl  
+6d66			;	inc de  
+6d66			;	dec b  
+6d66			;	jr nz, map1  
+6d66			;nohit:	ld a, 0  
+6d66			;	jr keydone  
+6d66			;keyhit: push de  
+6d66			;	pop hl  
+6d66			;	ld a,(hl)  
+6d66			;keydone:  
+6d66			;	push bc  
+6d66			;	push de  
+6d66			; 	push hl  
+6d66			;	ret   
+6d66			;  
+6d66			  
+6d66			  
+6d66			  
+6d66			  
+6d66			; scan physical key matrix  
+6d66			  
+6d66			  
+6d66			;keyscan:  
+6d66			;  
+6d66			;; for each key_row use keyscanr bit mask for out  
+6d66			;; then read in for keyscanc bitmask  
+6d66			;; save result of row scan to keyscantable  
+6d66			;  
+6d66			;; scan keyboard row 1  
+6d66			;  
+6d66			;	ld b, key_rows  
+6d66			;	ld hl, key_scanr  
+6d66			;	ld de, keyscan_table  
+6d66			;  
+6d66			;rowloop:  
+6d66			;  
+6d66			;	ld a,(hl)		; out bit mask to energise keyboard row  
+6d66			;	call rowscan  
+6d66			;	inc hl  
+6d66			;	dec b  
+6d66			;	jr nz, rowloop  
+6d66			;  
+6d66			;	ret  
+6d66			;  
+6d66			;  
+6d66			;; pass a out bitmask, b row number  
+6d66			;arowscan:   
+6d66			;	push bc  
+6d66			;  
+6d66			;	ld d, b  
+6d66			;  
+6d66			;	; calculate buffer location for this row  
+6d66			;  
+6d66			;	ld hl, keyscan_table	  
+6d66			;kbufr:  ld e, key_cols  
+6d66			;kbufc:	inc hl  
+6d66			;	dec e  
+6d66			;	jr nz, kbufc  
+6d66			;	dec d  
+6d66			;	jr nz, kbufr  
+6d66			;  
+6d66			;	; energise row and read columns  
+6d66			;  
+6d66			;	out (portbdata),a  
+6d66			;	in a,(portbdata)  
+6d66			;	ld c,a  
+6d66			;  
+6d66			;  
+6d66			;	; save buffer loc  
+6d66			;  
+6d66			;	ld (keybufptr), hl  
+6d66			;  
+6d66			;	ld hl, key_scanc  
+6d66			;	ld d, key_cols  
+6d66			;  
+6d66			;	; for each column check each bit mask  
+6d66			;  
+6d66			;colloop:  
+6d66			;	  
+6d66			;  
+6d66			;	; reset flags for the row   
+6d66			;  
+6d66			;	ld b,'.'  
+6d66			;	and (hl)  
+6d66			;	jr z, maskskip  
+6d66			;	ld b,'#'  
+6d66			;maskskip:  
+6d66			;	; save  key state  
+6d66			;	push hl  
+6d66			;	ld hl, (keybufptr)  
+6d66			;	ld (hl), b  
+6d66			;	inc hl  
+6d66			;	ld (keybufptr), hl  
+6d66			;  
+6d66			;	; move to next bit mask  
+6d66			;	pop hl  
+6d66			;	inc hl  
+6d66			;  
+6d66			;	dec d  
+6d66			;	jr nz, colloop  
+6d66			;  
+6d66			;	ret  
+6d66			;  
+6d66			;  
+6d66			;;  
+6d66			; lcd functions  
+6d66			;  
+6d66			;  
+6d66			  
+6d66			;if DEBUG_KEY_MATRIX  
+6d66			  
+6d66			; test function to display hardware view of matrix state  
+6d66			  
+6d66			matrixold:  
+6d66			  
+6d66			  
+6d66			  
+6d66			; reset counter  
+6d66 3e 80		ld a, 128  
+6d68 d3 c1		out (portbdata),a  
+6d6a			; scan keyboard row 1  
+6d6a 3e 00		ld a, 0  
+6d6c d3 c1		out (portbdata),a  
+6d6e			;ld a, 64  
+6d6e			;out (portbdata),a  
+6d6e 3e 80			ld a, 128  
+6d70 21 2c fe			ld hl, keyscan_table_row1  
+6d73 cd cc 6d			call .rowscan  
+6d76			  
+6d76			;ld a, 0  
+6d76			;out (portbdata),a  
+6d76 3e 40		ld a, 64  
+6d78 d3 c1		out (portbdata),a  
+6d7a 3e 40			ld a, 64  
+6d7c 21 21 fe			ld hl, keyscan_table_row2  
+6d7f cd cc 6d			call .rowscan  
+6d82			  
+6d82 3e 00		ld a, 0  
+6d84 d3 c1		out (portbdata),a  
+6d86			;ld a, 64  
+6d86			;out (portbdata),a  
+6d86 3e 20			ld a, 32  
+6d88 21 16 fe			ld hl, keyscan_table_row3  
+6d8b cd cc 6d			call .rowscan  
+6d8e			  
+6d8e			;ld a, 0  
+6d8e			;out (portbdata),a  
+6d8e 3e 40		ld a, 64  
+6d90 d3 c1		out (portbdata),a  
+6d92 3e 10			ld a, 16  
+6d94 21 0b fe			ld hl, keyscan_table_row4  
+6d97 cd cc 6d			call .rowscan  
+6d9a			  
+6d9a			; Display text on first line  
+6d9a 3e 00		            LD   A, kLCD_Line1  
+6d9c cd a5 6a		            CALL fLCD_Pos       ;Position cursor to location in A  
+6d9f 11 2c fe		            LD   DE, keyscan_table_row1  
+6da2			            ;LD   DE, MsgHello  
+6da2 cd c7 6a		            CALL fLCD_Str       ;Display string pointed to by DE  
 6da5			  
-6da5			  
-6da5			; get back current column  
-6da5			  
-6da5			; translate the row scan  
-6da5			  
-6da5			;   
-6da5			; row 1  
-6da5			  
-6da5 78			ld a,b  
-6da6			  
-6da6 21 36 fe		LD   hl, keyscan_table_row1+10  
-6da9			  
-6da9 cd cd 0d		call subafromhl  
-6dac			;call addatohl  
-6dac			  
-6dac 11 c3 fd		ld de, keyscan_scancol  
-6daf			  
-6daf 1a			ld a,(de)  
-6db0 77			ld (hl),a  
-6db1			  
-6db1			  
-6db1			  
-6db1			  
-6db1			; row 2  
-6db1			  
-6db1 78			ld a,b  
-6db2			  
-6db2 21 2b fe		LD   hl, keyscan_table_row2+10  
-6db5			  
-6db5			;call addatohl  
-6db5 cd cd 0d		call subafromhl  
-6db8			  
-6db8			  
-6db8 11 c4 fd		ld de, keyscan_scancol+1  
-6dbb			  
-6dbb 1a			ld a,(de)  
-6dbc 77			ld (hl),a  
-6dbd			  
-6dbd			  
-6dbd			; row 3  
-6dbd			  
-6dbd 78			ld a,b  
-6dbe			  
-6dbe 21 20 fe		LD   hl, keyscan_table_row3+10  
-6dc1			  
-6dc1			;call addatohl  
-6dc1 cd cd 0d		call subafromhl  
-6dc4			  
-6dc4 11 c5 fd		ld de, keyscan_scancol+2  
-6dc7			  
-6dc7 1a			ld a,(de)  
-6dc8 77			ld (hl),a  
-6dc9			  
-6dc9			  
-6dc9			  
-6dc9			; row 4  
-6dc9			  
-6dc9 78			ld a,b  
-6dca			  
-6dca 21 15 fe		LD   hl, keyscan_table_row4+10  
-6dcd			  
-6dcd			;call addatohl  
-6dcd cd cd 0d		call subafromhl  
-6dd0			  
-6dd0 11 c6 fd		ld de, keyscan_scancol+3  
-6dd3			  
-6dd3 1a			ld a,(de)  
-6dd4 77			ld (hl),a  
-6dd5			  
-6dd5			; row 5  
-6dd5			  
-6dd5 78			ld a,b  
-6dd6			  
-6dd6 21 0a fe		LD   hl, keyscan_table_row5+10  
+6da5			; Display text on second line  
+6da5 3e 28		            LD   A, kLCD_Line2  
+6da7 cd a5 6a		            CALL fLCD_Pos       ;Position cursor to location in A  
+6daa 11 21 fe		            LD   DE, keyscan_table_row2  
+6dad cd c7 6a		            CALL fLCD_Str       ;Display string pointed to by DE  
+6db0 3e 50		            LD   A, kLCD_Line3  
+6db2 cd a5 6a		            CALL fLCD_Pos       ;Position cursor to location in A  
+6db5 11 16 fe		            LD   DE, keyscan_table_row3  
+6db8 cd c7 6a		            CALL fLCD_Str       ;Display string pointed to by DE  
+6dbb 3e 78		            LD   A, kLCD_Line4  
+6dbd cd a5 6a		            CALL fLCD_Pos       ;Position cursor to location in A  
+6dc0 11 0b fe		            LD   DE, keyscan_table_row4  
+6dc3 cd c7 6a		            CALL fLCD_Str       ;Display string pointed to by DE  
+6dc6			  
+6dc6 cd a8 0a			call delay250ms  
+6dc9 c3 bc 6c			jp matrix  
+6dcc			  
+6dcc			; pass de as row display flags  
+6dcc			.rowscan:   
+6dcc			;	out (portbdata),a  
+6dcc db c1			in a,(portbdata)  
+6dce 4f				ld c,a  
+6dcf				; reset flags for the row   
+6dcf 06 7e			ld b,KEY_MATRIX_NO_PRESS  
+6dd1 e6 01			and 1  
+6dd3 28 02			jr z, .p1on  
+6dd5 06 23			ld b,'#'  
+6dd7			.p1on:  
+6dd7 70				ld (hl), b  
+6dd8 23				inc hl  
 6dd9			  
-6dd9			;call addatohl  
-6dd9 cd cd 0d		call subafromhl  
-6ddc			  
-6ddc 11 c7 fd		ld de, keyscan_scancol+4  
-6ddf			  
-6ddf 1a			ld a,(de)  
-6de0 77			ld (hl),a  
-6de1			  
-6de1			; handshake next column  
-6de1			  
-6de1			  
-6de1 3e 40		ld a, 64  
-6de3 d3 c1		out (portbdata),a  
-6de5			  
-6de5 3e 00		ld a, 0  
-6de7 d3 c1		out (portbdata),a  
-6de9			  
-6de9			; toggle clk and move to next column  
-6de9			;ld a, 64  
-6de9			;cp c  
-6de9			;  
-6de9			;jr z, .coltoglow  
-6de9			;ld c, a  
-6de9			;jr .coltog  
-6de9			;.coltoglow:  
-6de9			;ld c, 0  
-6de9			;.coltog:  
-6de9			;ld a, c  
-6de9			;out (portbdata),a  
-6de9			  
-6de9 10 b2		djnz .colscan  
-6deb			  
-6deb 3e 0a		ld a,10  
-6ded 21 2c fe		LD   hl, keyscan_table_row1  
-6df0 cd bb 0d		call addatohl  
-6df3			;ld a, 0  
-6df3 36 00		ld (hl), 0  
-6df5			  
-6df5			  
-6df5 3e 0a		ld a,10  
-6df7 21 21 fe		LD   hl, keyscan_table_row2  
-6dfa cd bb 0d		call addatohl  
-6dfd			;ld a, 0  
-6dfd 36 00		ld (hl), 0  
-6dff			  
-6dff 3e 0a		ld a,10  
-6e01 21 16 fe		LD   hl, keyscan_table_row3  
-6e04 cd bb 0d		call addatohl  
-6e07			;ld a, 0  
-6e07 36 00		ld (hl), 0  
-6e09			  
-6e09 3e 0a		ld a,10  
-6e0b 21 0b fe		LD   hl, keyscan_table_row4  
-6e0e cd bb 0d		call addatohl  
-6e11			;ld a, 0  
-6e11 36 00		ld (hl), 0  
-6e13			  
-6e13 3e 0a		ld a,10  
-6e15 21 00 fe		LD   hl, keyscan_table_row5  
-6e18 cd bb 0d		call addatohl  
-6e1b			;ld a, 0  
-6e1b 36 00		ld (hl), 0  
-6e1d			  
-6e1d			if DEBUG_KEY_MATRIX  
-6e1d			  
-6e1d			; Display text on first line  
-6e1d			            LD   A, kLCD_Line1  
-6e1d			            CALL fLCD_Pos       ;Position cursor to location in A  
-6e1d			            LD   DE, keyscan_table_row1  
-6e1d			            ;LD   DE, MsgHello  
-6e1d			            CALL fLCD_Str       ;Display string pointed to by DE  
-6e1d			  
-6e1d			; Display text on second line  
-6e1d			            LD   A, kLCD_Line2  
-6e1d			            CALL fLCD_Pos       ;Position cursor to location in A  
-6e1d			            LD   DE, keyscan_table_row2  
-6e1d			            CALL fLCD_Str       ;Display string pointed to by DE  
-6e1d			            LD   A, kLCD_Line3  
-6e1d			            CALL fLCD_Pos       ;Position cursor to location in A  
-6e1d			            LD   DE, keyscan_table_row3  
-6e1d			            CALL fLCD_Str       ;Display string pointed to by DE  
-6e1d			            LD   A, kLCD_Line4  
-6e1d			            CALL fLCD_Pos       ;Position cursor to location in A  
-6e1d			            LD   DE, keyscan_table_row4  
-6e1d			            CALL fLCD_Str       ;Display string pointed to by DE  
-6e1d			            LD   A, kLCD_Line4+10  
-6e1d			            CALL fLCD_Pos       ;Position cursor to location in A  
-6e1d			            LD   DE, keyscan_table_row5  
-6e1d			            CALL fLCD_Str       ;Display string pointed to by DE  
-6e1d			  
-6e1d			;call delay250ms  
-6e1d				jp matrix  
-6e1d			endif  
-6e1d c9			ret  
-6e1e			  
-6e1e			; using decade counter....  
-6e1e			  
-6e1e			  
-6e1e			; TODO reset decade counter to start of scan  
-6e1e			  
-6e1e			; reset 15  
-6e1e			; clock 14  
-6e1e			; ce 13  
-6e1e			  
-6e1e			; 1 - q5  
-6e1e			; 2 - q1  
-6e1e			; 3 - q0  
-6e1e			; 4 - q2  
-6e1e			; 5 - q6  
-6e1e			; 6 - q7  
-6e1e			; 7 - q3  
-6e1e			; 8 - vss  
-6e1e			; 9 - q8  
-6e1e			; 10 - q4  
-6e1e			; 11 - q9  
-6e1e			; 12 - cout  
-6e1e			; 16 - vdd  
-6e1e			  
-6e1e			; clock      ce       reset     output  
-6e1e			; 0          x        0         n  
-6e1e			; x          1        0         n  
-6e1e			; x          x        1         q0  
-6e1e			; rising     0        0         n+1  
-6e1e			; falling    x        0         n  
-6e1e			; x          rising   0         n  
-6e1e			; 1          falling  0         x+1  
-6e1e			;  
-6e1e			; x = dont care, if n < 5 carry = 1 otherwise 0  
-6e1e			  
-6e1e			;   
-6e1e			; reset   
-6e1e			; 13=0, 14=0, 15=1 .. 15=0  
-6e1e			;  
-6e1e			; handshake line  
-6e1e			; 14=1.... read line 14=0  
-6e1e			  
-6e1e			  
-6e1e			  
-6e1e			  
-6e1e			  
-6e1e			; TODO hand shake clock for next column scan  
-6e1e			; TODO detect each row  
-6e1e			  
-6e1e			  
-6e1e			  
-6e1e			  
-6e1e			; reset 128  
-6e1e			; clock 64  
-6e1e			; ce 32  
-6e1e			  
-6e1e			  
-6e1e			.cyclestart:  
-6e1e			  
-6e1e			; reset counter  
-6e1e 3e 80		ld a, 128  
-6e20 d3 c1		out (portbdata),a  
-6e22			  
-6e22			; loop leds  
-6e22 06 0a		ld b,10  
-6e24			  
-6e24			.cycle1:  
-6e24 c5			push bc  
-6e25 3e 00		ld a, 0  
-6e27 d3 c1		out (portbdata),a  
-6e29 cd a8 0a		call delay250ms  
-6e2c			  
-6e2c 3e 40		ld a, 64  
-6e2e d3 c1		out (portbdata),a  
-6e30 cd a8 0a		call delay250ms  
-6e33			  
-6e33 3e 00		ld a, 0  
-6e35 d3 c1		out (portbdata),a  
-6e37 cd a8 0a		call delay250ms  
-6e3a			  
-6e3a c1			pop bc  
-6e3b 10 e7		djnz .cycle1  
-6e3d			  
-6e3d			  
-6e3d 18 df		jr .cyclestart  
-6e3f			  
-6e3f			  
-6e3f			  
-6e3f			  
-6e3f			  
-6e3f			  
-6e3f			  
-6e3f			  
-6e3f			  
-6e3f			; map matrix key held to char on face of key  
-6e3f			  
-6e3f			;.mtocold:  
-6e3f			;  
-6e3f			;  
-6e3f			;; reset counter  
-6e3f			;ld a, 128  
-6e3f			;out (portbdata),a  
-6e3f			;  
-6e3f			;  
-6e3f			;; scan keyboard row 1  
-6e3f			;ld a, 0  
-6e3f			;out (portbdata),a  
-6e3f			;;ld a, 64  
-6e3f			;;out (portbdata),a  
-6e3f			;  
-6e3f			;  
-6e3f			;	ld a, 128  
-6e3f			;	ld hl, keyscan_table  
-6e3f			;	call .rowscan  
-6e3f			;  
-6e3f			;;ld a, 0  
-6e3f			;;out (portbdata),a  
-6e3f			;ld a, 64  
-6e3f			;out (portbdata),a  
-6e3f			;  
-6e3f			;	ld a, 64  
-6e3f			;	ld hl, keyscan_table+key_cols  
-6e3f			;	call .rowscan  
-6e3f			;  
-6e3f			;ld a, 0  
-6e3f			;out (portbdata),a  
-6e3f			;;ld a, 64  
-6e3f			;;out (portbdata),a  
-6e3f			;	ld a, 32  
-6e3f			;	ld hl, keyscan_table+(key_cols*2)  
-6e3f			;	call .rowscan  
-6e3f			;  
-6e3f			;  
-6e3f			;;ld a, 0  
-6e3f			;;out (portbdata),a  
-6e3f			;ld a, 64  
-6e3f			;out (portbdata),a  
-6e3f			;  
-6e3f			;	ld a, 16  
-6e3f			;	ld hl, keyscan_table+(key_cols*3)  
-6e3f			;	call .rowscan  
-6e3f			;  
-6e3f			;  
-6e3f			;	; flag if key D is held down and remove from reporting  
-6e3f			;	ld bc, .key_map_fd    
-6e3f			;	ld hl, keyscan_table  
-6e3f			;	ld de, key_fd  
-6e3f			;	call .key_shift_hold  
-6e3f			;	cp 255  
-6e3f			;	jr z, .cinmap  
-6e3f			;	; flag if key C is held down and remove from reporting  
-6e3f			;	ld bc, .key_map_fc    
-6e3f			;	ld hl, keyscan_table+key_cols  
-6e3f			;	ld de, key_fc  
-6e3f			;	call .key_shift_hold  
-6e3f			;	cp 255  
-6e3f			;	jr z, .cinmap  
-6e3f			;	; flag if key B is held down and remove from reporting  
-6e3f			;	ld bc, .key_map_fb    
-6e3f			;	ld hl, keyscan_table+(key_cols*2)  
-6e3f			;	ld de, key_fb  
-6e3f			;	call .key_shift_hold  
-6e3f			;	cp 255  
-6e3f			;	jr z, .cinmap  
-6e3f			;	; flag if key A is held down and remove from reporting  
-6e3f			;	ld bc, .key_map_fa    
-6e3f			;	ld hl, keyscan_table+(key_cols*3)  
-6e3f			;	ld de, key_fa  
-6e3f			;	call .key_shift_hold  
-6e3f			;	cp 255  
-6e3f			;	jr z, .cinmap  
-6e3f			;  
-6e3f			;	ld de, .matrix_to_char  
-6e3f			;  
-6e3f			;  
-6e3f			;.cinmap:   
-6e3f			;	if DEBUG_KEY  
-6e3f			;            LD   A, kLCD_Line4  
-6e3f			;            CALL fLCD_Pos       ;Position cursor to location in A  
-6e3f			;		push de  
-6e3f			;            LD   DE, keyscan_table  
-6e3f			;            CALL fLCD_Str       ;Display string pointed to by DE  
-6e3f			;		pop de  
-6e3f			;	endif  
-6e3f			  
-6e3f				; scan key matrix table for any held key  
-6e3f			  
-6e3f				; de holds either the default matrix or one selected above  
-6e3f			  
-6e3f			;	ld hl, keyscan_table  
-6e3f			;	ld b,key_cols*key_rows  
-6e3f			;  
-6e3f			;.cin1:	ld a,(hl)  
-6e3f			;	cp '#'  
-6e3f			;	jr z, .cinhit  
-6e3f			;	inc hl  
-6e3f			;	inc de  
-6e3f			;	dec b  
-6e3f			;	jr nz, .cin1  
-6e3f			;	; no key found held  
-6e3f			;	ld a,0  
-6e3f			;	ret  
-6e3f			;.cinhit: push de  
-6e3f			;	pop hl  
-6e3f			;	ld a,(hl)  
-6e3f			;	ret  
-6e3f			  
-6e3f			; flag a control key is held   
-6e3f			; hl is key pin, de is flag indicator  
-6e3f			  
-6e3f			;.key_shift_hold:  
-6e3f			;	push bc  
-6e3f			;	ld a, 1  
-6e3f			;	ld (cursor_shape),a  
-6e3f			;	ld b, 0  
-6e3f			;	ld a, (hl)  
-6e3f			;	cp '.'  
-6e3f			;	jr z, .key_shift1  
-6e3f			;	ld b, 255  
-6e3f			;	ld a, '+'    ; hide key from later scans  
-6e3f			;	ld (hl),a  
-6e3f			;	ld a, 2  
-6e3f			;	ld (cursor_shape),a  
-6e3f			;.key_shift1:  
-6e3f			;	; write flag indicator  
-6e3f			;	ld a,b  
-6e3f			;	ld (de),a  
-6e3f			;  
-6e3f			;	pop de    ; de now holds the key map ptr  
-6e3f			;	ret  
-6e3f			  
-6e3f				  
-6e3f				  
-6e3f			  
-6e3f			  
-6e3f			  
-6e3f			  
-6e3f			  
-6e3f			  
-6e3f			  
-6e3f			  
-6e3f			  
-6e3f			  
-6e3f			  
-6e3f			;	push hl  
-6e3f			;	push de  
-6e3f			;	push bc  
-6e3f			;	call keyscan  
-6e3f			;	; map key matrix to ascii value of key face  
-6e3f			;  
-6e3f			;	ld hl, key_face_map  
-6e3f			;	ld de, keyscan_table  
-6e3f			;  
-6e3f			;	; get how many keys to look at  
-6e3f			;	ld b, keyscan_table_len  
-6e3f			;	  
-6e3f			;  
-6e3f			;	; at this stage fall out on first key hit  
-6e3f			;	; TODO handle multiple key press  
-6e3f			;  
-6e3f			;map1:	ld a,(hl)  
-6e3f			;	cp '#'  
-6e3f			;	jr z, keyhit  
-6e3f			;	inc hl  
-6e3f			;	inc de  
-6e3f			;	dec b  
-6e3f			;	jr nz, map1  
-6e3f			;nohit:	ld a, 0  
-6e3f			;	jr keydone  
-6e3f			;keyhit: push de  
-6e3f			;	pop hl  
-6e3f			;	ld a,(hl)  
-6e3f			;keydone:  
-6e3f			;	push bc  
-6e3f			;	push de  
-6e3f			; 	push hl  
-6e3f			;	ret   
-6e3f			;  
-6e3f			  
-6e3f			  
-6e3f			  
-6e3f			  
-6e3f			; scan physical key matrix  
-6e3f			  
-6e3f			  
-6e3f			;keyscan:  
-6e3f			;  
-6e3f			;; for each key_row use keyscanr bit mask for out  
-6e3f			;; then read in for keyscanc bitmask  
-6e3f			;; save result of row scan to keyscantable  
-6e3f			;  
-6e3f			;; scan keyboard row 1  
-6e3f			;  
-6e3f			;	ld b, key_rows  
-6e3f			;	ld hl, key_scanr  
-6e3f			;	ld de, keyscan_table  
-6e3f			;  
-6e3f			;rowloop:  
-6e3f			;  
-6e3f			;	ld a,(hl)		; out bit mask to energise keyboard row  
-6e3f			;	call rowscan  
-6e3f			;	inc hl  
-6e3f			;	dec b  
-6e3f			;	jr nz, rowloop  
-6e3f			;  
-6e3f			;	ret  
-6e3f			;  
-6e3f			;  
-6e3f			;; pass a out bitmask, b row number  
-6e3f			;arowscan:   
-6e3f			;	push bc  
-6e3f			;  
-6e3f			;	ld d, b  
-6e3f			;  
-6e3f			;	; calculate buffer location for this row  
-6e3f			;  
-6e3f			;	ld hl, keyscan_table	  
-6e3f			;kbufr:  ld e, key_cols  
-6e3f			;kbufc:	inc hl  
-6e3f			;	dec e  
-6e3f			;	jr nz, kbufc  
-6e3f			;	dec d  
-6e3f			;	jr nz, kbufr  
-6e3f			;  
-6e3f			;	; energise row and read columns  
-6e3f			;  
-6e3f			;	out (portbdata),a  
-6e3f			;	in a,(portbdata)  
-6e3f			;	ld c,a  
-6e3f			;  
-6e3f			;  
-6e3f			;	; save buffer loc  
-6e3f			;  
-6e3f			;	ld (keybufptr), hl  
-6e3f			;  
-6e3f			;	ld hl, key_scanc  
-6e3f			;	ld d, key_cols  
-6e3f			;  
-6e3f			;	; for each column check each bit mask  
-6e3f			;  
-6e3f			;colloop:  
-6e3f			;	  
-6e3f			;  
-6e3f			;	; reset flags for the row   
-6e3f			;  
-6e3f			;	ld b,'.'  
-6e3f			;	and (hl)  
-6e3f			;	jr z, maskskip  
-6e3f			;	ld b,'#'  
-6e3f			;maskskip:  
-6e3f			;	; save  key state  
-6e3f			;	push hl  
-6e3f			;	ld hl, (keybufptr)  
-6e3f			;	ld (hl), b  
-6e3f			;	inc hl  
-6e3f			;	ld (keybufptr), hl  
-6e3f			;  
-6e3f			;	; move to next bit mask  
-6e3f			;	pop hl  
-6e3f			;	inc hl  
-6e3f			;  
-6e3f			;	dec d  
-6e3f			;	jr nz, colloop  
-6e3f			;  
-6e3f			;	ret  
-6e3f			;  
-6e3f			;  
-6e3f			;;  
-6e3f			; lcd functions  
-6e3f			;  
-6e3f			;  
-6e3f			  
-6e3f			;if DEBUG_KEY_MATRIX  
-6e3f			  
-6e3f			; test function to display hardware view of matrix state  
-6e3f			  
-6e3f			matrixold:  
-6e3f			  
-6e3f			  
-6e3f			  
-6e3f			; reset counter  
-6e3f 3e 80		ld a, 128  
-6e41 d3 c1		out (portbdata),a  
-6e43			; scan keyboard row 1  
-6e43 3e 00		ld a, 0  
-6e45 d3 c1		out (portbdata),a  
-6e47			;ld a, 64  
-6e47			;out (portbdata),a  
-6e47 3e 80			ld a, 128  
-6e49 21 2c fe			ld hl, keyscan_table_row1  
-6e4c cd a5 6e			call .rowscan  
-6e4f			  
-6e4f			;ld a, 0  
-6e4f			;out (portbdata),a  
-6e4f 3e 40		ld a, 64  
-6e51 d3 c1		out (portbdata),a  
-6e53 3e 40			ld a, 64  
-6e55 21 21 fe			ld hl, keyscan_table_row2  
-6e58 cd a5 6e			call .rowscan  
-6e5b			  
-6e5b 3e 00		ld a, 0  
-6e5d d3 c1		out (portbdata),a  
-6e5f			;ld a, 64  
-6e5f			;out (portbdata),a  
-6e5f 3e 20			ld a, 32  
-6e61 21 16 fe			ld hl, keyscan_table_row3  
-6e64 cd a5 6e			call .rowscan  
-6e67			  
-6e67			;ld a, 0  
-6e67			;out (portbdata),a  
-6e67 3e 40		ld a, 64  
-6e69 d3 c1		out (portbdata),a  
-6e6b 3e 10			ld a, 16  
-6e6d 21 0b fe			ld hl, keyscan_table_row4  
-6e70 cd a5 6e			call .rowscan  
-6e73			  
-6e73			; Display text on first line  
-6e73 3e 00		            LD   A, kLCD_Line1  
-6e75 cd a5 6a		            CALL fLCD_Pos       ;Position cursor to location in A  
-6e78 11 2c fe		            LD   DE, keyscan_table_row1  
-6e7b			            ;LD   DE, MsgHello  
-6e7b cd c7 6a		            CALL fLCD_Str       ;Display string pointed to by DE  
-6e7e			  
-6e7e			; Display text on second line  
-6e7e 3e 28		            LD   A, kLCD_Line2  
-6e80 cd a5 6a		            CALL fLCD_Pos       ;Position cursor to location in A  
-6e83 11 21 fe		            LD   DE, keyscan_table_row2  
-6e86 cd c7 6a		            CALL fLCD_Str       ;Display string pointed to by DE  
-6e89 3e 50		            LD   A, kLCD_Line3  
-6e8b cd a5 6a		            CALL fLCD_Pos       ;Position cursor to location in A  
-6e8e 11 16 fe		            LD   DE, keyscan_table_row3  
-6e91 cd c7 6a		            CALL fLCD_Str       ;Display string pointed to by DE  
-6e94 3e 78		            LD   A, kLCD_Line4  
-6e96 cd a5 6a		            CALL fLCD_Pos       ;Position cursor to location in A  
-6e99 11 0b fe		            LD   DE, keyscan_table_row4  
-6e9c cd c7 6a		            CALL fLCD_Str       ;Display string pointed to by DE  
-6e9f			  
-6e9f cd a8 0a			call delay250ms  
-6ea2 c3 95 6d			jp matrix  
-6ea5			  
-6ea5			; pass de as row display flags  
-6ea5			.rowscan:   
-6ea5			;	out (portbdata),a  
-6ea5 db c1			in a,(portbdata)  
-6ea7 4f				ld c,a  
-6ea8				; reset flags for the row   
-6ea8 06 7e			ld b,KEY_MATRIX_NO_PRESS  
-6eaa e6 01			and 1  
-6eac 28 02			jr z, .p1on  
-6eae 06 23			ld b,'#'  
-6eb0			.p1on:  
-6eb0 70				ld (hl), b  
-6eb1 23				inc hl  
-6eb2			  
-6eb2 06 7e			ld b,KEY_MATRIX_NO_PRESS  
-6eb4 79				ld a,c  
-6eb5 e6 02			and 2  
-6eb7			;	bit 0,a  
-6eb7 28 02			jr z, .p2on  
-6eb9 06 23			ld b,'#'  
-6ebb			.p2on:  
-6ebb 70				ld (hl), b  
-6ebc 23				inc hl  
-6ebd			;  
-6ebd 06 7e			ld b,KEY_MATRIX_NO_PRESS  
-6ebf 79				ld a,c  
-6ec0 e6 04			and 4  
-6ec2			;;	bit 0,a  
-6ec2 28 02			jr z, .p3on  
-6ec4 06 23			ld b,'#'  
-6ec6			.p3on:  
-6ec6 70				ld (hl), b  
-6ec7 23				inc hl  
-6ec8			;;  
-6ec8 06 7e			ld b,KEY_MATRIX_NO_PRESS  
-6eca			;;	bit 0,a  
-6eca 79				ld a,c  
-6ecb e6 08			and 8  
-6ecd 28 02			jr z, .p4on  
-6ecf 06 23			ld b,'#'  
-6ed1			.p4on:  
-6ed1 70				ld (hl), b  
-6ed2 23				inc hl  
-6ed3			  
-6ed3 06 7e			ld b,KEY_MATRIX_NO_PRESS  
-6ed5			;;	bit 0,a  
-6ed5 79				ld a,c  
-6ed6 e6 10			and 16  
-6ed8 28 02			jr z, .p5on  
-6eda 06 23			ld b,'#'  
-6edc			.p5on:  
-6edc 70				ld (hl), b  
-6edd 23				inc hl  
-6ede			; zero term  
-6ede			;	ld b,0  
-6ede 36 00			ld (hl), 0  
-6ee0			  
-6ee0 c9			.rscandone: ret  
-6ee1			  
-6ee1			;addatohl:  
-6ee1			;  
-6ee1			 ;add   a, l    ; A = A+L  
-6ee1			  ;  ld    l, a    ; L = A+L  
-6ee1			   ; adc   a, h    ; A = A+L+H+carry  
-6ee1			   ; sub   l       ; A = H+carry  
-6ee1			   ; ld    h, a    ; H = H+carry  
-6ee1			  
-6ee1			;ret  
-6ee1			; eof  
+6dd9 06 7e			ld b,KEY_MATRIX_NO_PRESS  
+6ddb 79				ld a,c  
+6ddc e6 02			and 2  
+6dde			;	bit 0,a  
+6dde 28 02			jr z, .p2on  
+6de0 06 23			ld b,'#'  
+6de2			.p2on:  
+6de2 70				ld (hl), b  
+6de3 23				inc hl  
+6de4			;  
+6de4 06 7e			ld b,KEY_MATRIX_NO_PRESS  
+6de6 79				ld a,c  
+6de7 e6 04			and 4  
+6de9			;;	bit 0,a  
+6de9 28 02			jr z, .p3on  
+6deb 06 23			ld b,'#'  
+6ded			.p3on:  
+6ded 70				ld (hl), b  
+6dee 23				inc hl  
+6def			;;  
+6def 06 7e			ld b,KEY_MATRIX_NO_PRESS  
+6df1			;;	bit 0,a  
+6df1 79				ld a,c  
+6df2 e6 08			and 8  
+6df4 28 02			jr z, .p4on  
+6df6 06 23			ld b,'#'  
+6df8			.p4on:  
+6df8 70				ld (hl), b  
+6df9 23				inc hl  
+6dfa			  
+6dfa 06 7e			ld b,KEY_MATRIX_NO_PRESS  
+6dfc			;;	bit 0,a  
+6dfc 79				ld a,c  
+6dfd e6 10			and 16  
+6dff 28 02			jr z, .p5on  
+6e01 06 23			ld b,'#'  
+6e03			.p5on:  
+6e03 70				ld (hl), b  
+6e04 23				inc hl  
+6e05			; zero term  
+6e05			;	ld b,0  
+6e05 36 00			ld (hl), 0  
+6e07			  
+6e07 c9			.rscandone: ret  
+6e08			  
+6e08			;addatohl:  
+6e08			;  
+6e08			 ;add   a, l    ; A = A+L  
+6e08			  ;  ld    l, a    ; L = A+L  
+6e08			   ; adc   a, h    ; A = A+L+H+carry  
+6e08			   ; sub   l       ; A = H+carry  
+6e08			   ; ld    h, a    ; H = H+carry  
+6e08			  
+6e08			;ret  
+6e08			; eof  
 # End of file firmware_key_5x10.asm
-6ee1			;include "firmware_key_4x10.asm" 
-6ee1			 
-6ee1			heap_size:    equ heap_end - heap_start 
-6ee1			;eof 
+6e08			;include "firmware_key_4x10.asm" 
+6e08			 
+6e08			heap_size:    equ heap_end - heap_start 
+6e08			;eof 
 # End of file os_mega.asm
-6ee1
+6e08

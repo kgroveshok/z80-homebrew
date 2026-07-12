@@ -424,7 +424,9 @@ endif
 		ld (MENU_ITEM_CT), a
 		or a
 		ld (MENU_MORE_ITEMS), a
-.mitemlp:	ld a, (MENU_ITEM_CT)
+		ld b, 4
+.mitemlp:	push bc
+		ld a, (MENU_ITEM_CT)
 		;ld a,(store_tmp2+1)
 		ld l, a
 		ld h, 0
@@ -446,6 +448,11 @@ endif
 		;ld a, (store_tmp3)
 		call str_at_display
 		
+		ld a, (MENU_ROW_TMP)
+		sub 4
+		ld de, .mbar
+		call str_at_display
+
 		;  TODO if the current displayed row is what we are currently on then display pointer
 
 		ld a, (MENU_ITEM_CT)
@@ -453,14 +460,15 @@ endif
 		cp (hl)
 		jr nz, .notonrow
 
-		ld b, c     ; save current line counter for easier row location rather than screen pos
+	;	ld b, c     ; save current line counter for easier row location rather than screen pos
 		ld a, (MENU_ROW_TMP)
 		dec a
-		dec a
+		;dec a
 		dec a
 		dec a
 		ld de, .msel
 		call str_at_display
+
 
 		; if current option + 1 is not null then display V in bottom
 		; get key
@@ -492,22 +500,31 @@ endif
 
 		; at end of screen?
 
-		cp display_rows*4
-		jr nz, .mitemlp
-
+;		cp display_rows*3
+;		jr nz, .mitemlp
+		pop bc
+		djnz .mitemlp
+		push bc
 
 ;   not exhusted the item list so display a down arrow
 
 		ld a, 1
 		ld (MENU_MORE_ITEMS), a
-		ld a, display_row_2
-		ld de, .mdown
-		call str_at_display
 
 		; draw options to fill the screens with active item on line 1
 		; if current option is 2 or more then display ^ in top
 
-.nodn:		ld a, (MENU_TOP_ITEM)
+.nodn:		pop bc
+
+		ld a, (MENU_MORE_ITEMS)
+;		or a
+		cp 0
+		jr z, .nomore
+		ld a, display_row_4
+		ld de, .mdown
+		call str_at_display
+.nomore:
+	ld a, (MENU_TOP_ITEM)
 		cp 0
 ;		or a
 		jr z, .noup
@@ -580,32 +597,39 @@ endif
 	; move down one
 .mgod:
 		ld a, (MENU_ITEM_LAST_SHOWN)
-		dec a
+;		dec a
 		ld b, a
 
 		ld a, (MENU_CUR_ITEM)
 		cp b
-		jp z, .mloop
+		jp z, .mgods
 
 		inc a
 		ld (MENU_CUR_ITEM), a
+		jp .mloop
 
 		; can we scroll down?
 		
 
 		; on last row
 
-		ld a, (MENU_TOP_ITEM)
+.mgods:		ld a, (MENU_TOP_ITEM)
 		ld b, a
 		ld a, (MENU_CUR_ITEM)
 		sub 1
 		sub b
 		cp 3
 		jp nz, .mloop
+		; and there are more items we can scroll up...
+		ld a, (MENU_MORE_ITEMS)
+		cp 0
+		jp z, .mloop
 
 	        ld hl, MENU_TOP_ITEM
 		inc (hl)	
 
+;	        ld hl, MENU_CUR_ITEM
+;		inc (hl)	
 
 
 		jp .mloop
@@ -635,6 +659,7 @@ endif
 
 	ret
 
+.mbar: db "|", 0
 if BASE_KEV
 .msel:   db 126,0
 .mup:   db "^",0

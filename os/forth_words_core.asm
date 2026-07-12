@@ -3,7 +3,14 @@
 
 ;if MALLOC_4
 
+.NMICLR: 
 
+CWHEAD .NMICLREND OPCODE_HEAP "NMICLR" 6 WORD_FLAG_CODE
+; | NMICLR ( -- ) Clears the use of the NMI switch | DONE
+	call clear_nmi
+
+	NEXTW
+.NMICLREND:
 
 .NEW:
 CWHEAD .HEAP OPCODE_HEAP "NEW" 3 WORD_FLAG_CODE

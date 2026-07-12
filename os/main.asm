@@ -135,16 +135,7 @@ if BASE_KEV = 1
 	db 0,255,0,255,0,255
 	db 0,255,0,255,0,255
 	db 0,255,0,255,0,255
-	db 0,255,0,255,0,255
-	db 0,255,0,255,0,255
-	db 0,255,0,255,0,255
-	db 0,255,0,255,0,255
-	db 0,255,0,255,0,255
-	db 0,255,0,255,0,255
-	db 0,255,0,255,0,255
-	db 0,255,0,255,0,255
-	db 0,255,0,255,0,255
-	db 0,255
+        db 0
 	jp nmi
 endif
 
@@ -1013,8 +1004,10 @@ init_nmi:
 	ld a, $c9   ; RET
 	ld (nmi_vector), a
 if BASE_KEV
+	ld a, $c3   ; jp
+	ld (nmi_vector), a
 	ld hl, led_on
-	ld (nmi_vector), hl
+	ld (nmi_vector+1), hl
 endif
 	ret
 
@@ -1033,14 +1026,23 @@ nmi:
 	push de
 	push bc
 	push af
-	; set the hardware flag for nmi use
+
+	; check to see if already nmi has been set
+
         ld a, (hardware_word+1)
+
+	bit 7, a
+	jr nz, .rest     ; yes so skip any vector calls	
+	
+
+	; set the hardware flag for nmi use
 	set 7,a
         ld (hardware_word+1),a
 
 	; call user function
 	call nmi_vector
-	push af
+
+.rest:	push af
 	push bc
 	push de
 	push hl

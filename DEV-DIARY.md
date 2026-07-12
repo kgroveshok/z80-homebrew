@@ -9,9 +9,9 @@ Todo List/Enhancements:
 Bug list:
 
 * TO TEST LED only updates if the screen updates. Issuing a set pos 0 to force LCD write
-* TODO BUG If : word is in caps it wont work. This could be connected with caps on LIST which only works if given as lcase.
-* TODO BUG Need to fix numbers and/or punc in uwords
-* TODO BUG Uword can't have a numeric in the word name???? Odd... Nor special char?
+* TO TEST BUG If : word is in caps it wont work. This could be connected with caps on LIST which only works if given as lcase.
+* TO TEST BUG Need to fix numbers and/or punc in uwords
+* TO TEST BUG Uword can't have a numeric in the word name???? Odd... Nor special char?
 * TODO Stop menu scrolling past last item
 * TODO BUG ed word has a rouge address pushed to stack when editing a record
 * TODO BUG ed word cant cope with lread. Do a check on READCONT and if true add a null to end of edit buffer
@@ -28,9 +28,10 @@ Hardware/PCB Design Enhancements:
 
 * TODO Can i add 32k ram bank switch to cover the rom?
 * TODO Look at using 64k Serial EEPROMs to double storage. 128k page size so can keep the current page code, just change the PHY... var
-* TODO New case design - Have a new one, printed and need to refine for use with PicoNET
+* DONE New case design - Have a new one, printed and need to refine for use with PicoNET
 * TODO Move Tape support Forth code into firmware
 * TODO Code ESP32 device for networking etc
+* BUG The ROM Ziff socket lever is hitting the CF bottom two pins. Move it back a bit.
 
 * DONE Create new double row header for 4x40 lcd and remap pins. Keep existing single row for other lcd type
 * DONE Reroute VIDCLK to E2 on LCD header
@@ -54,7 +55,7 @@ Hardware/PCB Design Enhancements:
 
 Langague Enhancements:
 
-
+* TODO Add a BPSET and BPCLR to set a string that is compared to CALLMONITOR in the DMARK macro. 
 * TODO MENU to support multicolumn selections if width given?
 * TODO A word to send a file to pool
 * TODO A word to send pool contents to file
@@ -113,7 +114,7 @@ Core Firmware Enhancements:
 * TODO Hardware config byte containing switches. There is a hardware_config and hardware_word symbols. Is it used? It is 10 bytes
 * TODO Add display if on bottom row and cr is pressed then auto scroll up - added code to the firmway str-to-display but did not not affect dot commands so need to look at how they are displaying
 * TODO Config option to disable breakpoints and garbage collection
-* TODO CONFIG option to add a program break key. Or perhaps use NMI button? What pointers need to change to signify? Could set a var and then check in parser doing a warm boot. nmi vector to ram which then allows the function to be changed.
+* DONE CONFIG option to add a program break key. Or perhaps use NMI button? What pointers need to change to signify? Could set a var and then check in parser doing a warm boot. nmi vector to ram which then allows the function to be changed.
 * TODO SN sound chip firmware
 * TODO Add ? after file name to prompt for optional load/skip during autoload
 * TODO Add garbage colleciton/gaurd checks as a vector that can be enabled and disabled via CONFIG

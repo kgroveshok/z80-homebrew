@@ -294,7 +294,8 @@ store_longread: equ store_readbuf -1 ;   if zero then only read one block. If no
 store_tmp1: equ store_longread - 2      ; temp pointer holders during ops
 store_tmp2: equ store_tmp1 - 2        ; temp pointer holders during ops
 store_tmp3: equ store_tmp2 - 2        ; temp pointer holders during ops
-store_tmpid: equ store_tmp3 - 1		; page temp id
+store_tmp4: equ store_tmp3 - 2        ; temp pointer holders during ops
+store_tmpid: equ store_tmp4 - 1		; page temp id
 store_tmpext: equ store_tmpid - 1		; file extent temp
 store_readcont: equ store_tmpid - 1		; If current read results in an overflow buffer to next record flag it up
 store_openaddr: equ store_readcont - 2		; file block address of current opened file for read

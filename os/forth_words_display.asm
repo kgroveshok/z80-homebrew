@@ -731,7 +731,7 @@ endif
 		endif
 
 		ld b, l	
-		dec b
+;		dec b
 
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 
@@ -759,7 +759,7 @@ endif
 		inc hl
 		ex de, hl
 
-		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
+		FORTH_DSP_POP  ;  add stock underflow checks and throws 
 
 		djnz .mbuild
 

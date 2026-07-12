@@ -368,15 +368,24 @@ cout:
 ; DOWN, Z - Down
 
 
+MENU_ARRAY_PTR: equ store_tmp1
+MENU_CUR_ITEM: equ store_tmp2
+MENU_ITEM_CT: equ store_tmp2+1
+MENU_ROW_TMP: equ store_tmp3
 
-
+MENU_TOP_ITEM: equ store_tmp3+1
+MENU_MORE_ITEMS: equ store_tmp4
+MENU_ITEM_LAST_SHOWN: equ store_tmp4+1
 
 menu:
 
 		; keep array pointer
 
-		ld (store_tmp1), hl
-		ld (store_tmp2), a
+		;ld (store_tmp1), hl
+		ld (MENU_ARRAY_PTR), hl
+		;ld (store_tmp2), a
+		ld (MENU_CUR_ITEM), a
+		ld (MENU_TOP_ITEM), a
 
 		; check for key bounce
 
@@ -394,80 +403,123 @@ endif
 		ld (display_fb_active), hl
 
 .mloop:		call clear_display
-		call update_display
+		;call update_display
 
 		; draw selection id '>' at 1
 
 		; init start of list display
 
 		ld a, 5
-		ld (store_tmp3), a   ; display row count
-		ld a,( store_tmp2)
-		ld (store_tmp2+1), a   ; display item count
+		ld (MENU_ROW_TMP), a   ; display row count
+		;ld (store_tmp3), a   ; display row count
+		;ild a,( MENU_CUR_ITEM)
+		;ld ( MENU_TOP_ITEM), a
+		;ld a,( store_tmp2)
+		;ld (MENU_ITEM_CT), a   ; display item count
+		;ld (store_tmp2+1), a   ; display item count
 
-		
-.mitem:	
 
-
-		ld a,(store_tmp2+1)
+		ld a,(MENU_TOP_ITEM)
+		ld (MENU_ITEM_LAST_SHOWN), a
+		ld (MENU_ITEM_CT), a
+		or a
+		ld (MENU_MORE_ITEMS), a
+.mitemlp:	ld a, (MENU_ITEM_CT)
+		;ld a,(store_tmp2+1)
 		ld l, a
 		ld h, 0
 		add hl, hl
-		ld de, (store_tmp1)
+		ld de, (MENU_ARRAY_PTR)
+		;ld de, (store_tmp1)
 		add hl, de
 		ld a, (hl)
 		inc hl
 		ld h,(hl)
 		ld l, a
 
+
 		call ishlzero
-		jr z, .mdone
+		jr z, .nodn
 
 		ex de, hl
-		ld a, (store_tmp3)
+		ld a, (MENU_ROW_TMP)
+		;ld a, (store_tmp3)
 		call str_at_display
 		
+		;  TODO if the current displayed row is what we are currently on then display pointer
+
+		ld a, (MENU_ITEM_CT)
+		ld hl, MENU_CUR_ITEM
+		cp (hl)
+		jr nz, .notonrow
+
+		ld b, c     ; save current line counter for easier row location rather than screen pos
+		ld a, (MENU_ROW_TMP)
+		dec a
+		dec a
+		dec a
+		dec a
+		ld de, .msel
+		call str_at_display
+
+		; if current option + 1 is not null then display V in bottom
+		; get key
+		;call update_display
+.notonrow:	
+
 
 		; next item
-		ld a, (store_tmp2+1)
-		inc a
-		ld (store_tmp2+1), a   ; display item count
+		ld hl, MENU_ITEM_CT
+;		ld a, (store_tmp2+1)
+;		inc a
+;		ld (store_tmp2+1), a   ; display item count
+		inc (hl)
+
+		
+		ld hl, MENU_ITEM_LAST_SHOWN
+		inc (hl)
+
 
  		; next row
-
-		ld a, (store_tmp3)
+;		ld hl, MENU_ROW_BOT
+;		inc (hl)      ; increase line counter
+	
+		ld a, (MENU_ROW_TMP)
+		;ld a, (store_tmp3)
 		add display_cols
-		ld (store_tmp3), a
+		ld (MENU_ROW_TMP), a
+		;ld (store_tmp3), a
 
 		; at end of screen?
 
 		cp display_rows*4
-		jr nz, .mitem
+		jr nz, .mitemlp
 
 
-.mdone:
-		call ishlzero
-		jr z, .nodn
+;   not exhusted the item list so display a down arrow
 
-		ld a, display_row_4
+		ld a, 1
+		ld (MENU_MORE_ITEMS), a
+		ld a, display_row_2
 		ld de, .mdown
 		call str_at_display
 
 		; draw options to fill the screens with active item on line 1
 		; if current option is 2 or more then display ^ in top
 
-.nodn:		ld a, (store_tmp2)
-;		cp 0
-		or a
+.nodn:		ld a, (MENU_TOP_ITEM)
+		cp 0
+;		or a
 		jr z, .noup
-
+;
 		ld a, 0
 		ld de, .mup
 		call str_at_display
 
-.noup:		ld a, 2
-		ld de, .msel
-		call str_at_display
+.noup:	
+;	ld a, 2
+;		ld de, .msel
+;		call str_at_display
 
 		; if current option + 1 is not null then display V in bottom
 		; get key
@@ -507,26 +559,62 @@ endif
 
 	; move up one
 .mgoup:
-		ld a, (store_tmp2)
+		ld a, (MENU_CUR_ITEM)
 ;		cp 0
 		or a
-		jp z, .mloop
+		jp z, .mgscup
 		dec a
-		ld (store_tmp2), a
+		ld (MENU_CUR_ITEM), a
 		jp .mloop
+
+.mgscup:	ld hl, MENU_TOP_ITEM
+		or a
+		cp (hl)
+		jp z, .mloop
+		dec (hl)
+		ld a, (hl)
+		ld (MENU_CUR_ITEM), a
+		jp .mloop
+
 
 	; move down one
 .mgod:
-		ld a, (store_tmp2)
+		ld a, (MENU_ITEM_LAST_SHOWN)
+		dec a
+		ld b, a
+
+		ld a, (MENU_CUR_ITEM)
+		cp b
+		jp z, .mloop
+
 		inc a
-		ld (store_tmp2), a
+		ld (MENU_CUR_ITEM), a
+
+		; can we scroll down?
+		
+
+		; on last row
+
+		ld a, (MENU_TOP_ITEM)
+		ld b, a
+		ld a, (MENU_CUR_ITEM)
+		sub 1
+		sub b
+		cp 3
+		jp nz, .mloop
+
+	        ld hl, MENU_TOP_ITEM
+		inc (hl)	
+
+
+
 		jp .mloop
 
 
 .goend:
 		; get selected item number
 
-		ld a, (store_tmp2)
+		ld a, (MENU_CUR_ITEM)
 		inc a
 
 .goend2:
@@ -547,9 +635,22 @@ endif
 
 	ret
 
+if BASE_KEV
+.msel:   db 126,0
+.mup:   db "^",0
+.mdown:   db "v",0
+endif
+if BASE_CPM
 .msel:   db ">",0
 .mup:   db "^",0
 .mdown:   db "v",0
+endif
+if BASE_SC114
+.msel:   db ">",0
+.mup:   db "^",0
+.mdown:   db "v",0
+endif
+
 
 
 ; eof

@@ -8,19 +8,20 @@ Todo List/Enhancements:
 
 Bug list:
 
-* TO TEST LED only updates if the screen updates. Issuing a set pos 0 to force LCD write
-* TO TEST BUG If : word is in caps it wont work. This could be connected with caps on LIST which only works if given as lcase.
-* TO TEST BUG Need to fix numbers and/or punc in uwords
-* TO TEST BUG Uword can't have a numeric in the word name???? Odd... Nor special char?
 * TODO Stop menu scrolling past last item
 * TODO BUG ed word has a rouge address pushed to stack when editing a record
 * TODO BUG ed word cant cope with lread. Do a check on READCONT and if true add a null to end of edit buffer
 * TO TEST need word to report where cursor current at
-* DONE BUG Future bug? stack imbalance on storage_read. Needs a pop of de if no record found. Have added code watch for further issues
 * TODO BUG read ext concat is the problem
 * TODO BUG Cant use special chars in quoted strings??? Why? Emit works for the char code.
 * TODO BUG CP/M screen clearing not working well
 * TODO BUG CP/M keyboard entry not great
+
+* DONE BUG LED only updates if the screen updates. Issuing a set pos 0 to force LCD write
+* DONE BUG If : word is in caps it wont work. This could be connected with caps on LIST which only works if given as lcase.
+* DONE BUG Need to fix numbers and/or punc in uwords
+* DONE BUG Uword can't have a numeric in the word name???? Odd... Nor special char?
+* DONE BUG Future bug? stack imbalance on storage_read. Needs a pop of de if no record found. Have added code watch for further issues
 
 
 Hardware/PCB Design Enhancements:
@@ -28,11 +29,11 @@ Hardware/PCB Design Enhancements:
 
 * TODO Can i add 32k ram bank switch to cover the rom?
 * TODO Look at using 64k Serial EEPROMs to double storage. 128k page size so can keep the current page code, just change the PHY... var
-* DONE New case design - Have a new one, printed and need to refine for use with PicoNET
 * TODO Move Tape support Forth code into firmware
 * TODO Code ESP32 device for networking etc
 * BUG The ROM Ziff socket lever is hitting the CF bottom two pins. Move it back a bit.
 
+* DONE New case design - Have a new one, printed and need to refine for use with PicoNET
 * DONE Create new double row header for 4x40 lcd and remap pins. Keep existing single row for other lcd type
 * DONE Reroute VIDCLK to E2 on LCD header
 * DONE Add power to keyboard edge pins
@@ -55,17 +56,17 @@ Hardware/PCB Design Enhancements:
 
 Langague Enhancements:
 
-* TODO Add a BPSET and BPCLR to set a string that is compared to CALLMONITOR in the DMARK macro. 
+* TODO Add MENUS which is like MENU but instead of the item number selected it is a pointer to the menu item text
+* TODO Add CHECKBOX which functions like MENU but also takes a block of memory used as a check box value. If the prefilled value is 0 then dont allow toggle.
+* TODO Add to MENU word returning not just the number selected but also the string
 * TODO MENU to support multicolumn selections if width given?
+* TODO Make the MENU function look nicer and responsive
+
+* TODO Add a BPSET and BPCLR to set a string that is compared to CALLMONITOR in the DMARK macro. 
 * TODO A word to send a file to pool
 * TODO A word to send pool contents to file
 
 
-* TODO Add MENUS which is like MENU but instead of the item number selected it is a pointer to the menu item text
-* TODO Add CHECKBOX which functions like MENU but also takes a block of memory used as a check box value. If the prefilled value is 0 then dont allow toggle.
-
-* TODO Make the MENU function look nicer and responsive
-* TODO Add to MENU word returning not just the number selected but also the string
 * TODO BETWEEN? word to check is tos is between a range. could just use a uword with lt and tg checks
 * TODO Need a RROT and LROT bitwise byte rotate like the Z80 RRC and RLC op codes
 * TODO Add a version of CALL that takes a block of mem with reg pairs that are loaded before the call and return the values 

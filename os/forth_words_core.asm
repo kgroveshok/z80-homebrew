@@ -579,7 +579,7 @@ ld de, sysdict       ; continue on with the scan to the system dict
 ld (hl), e
 inc hl
 ld (hl), d
-inc hl
+inc hl                ; length of uword
 
 
 ;    Setup dict word
@@ -593,11 +593,17 @@ ld (os_new_work_ptr), hl     ; save start of dict word
 ld hl, (os_tok_ptr)
 inc hl
 inc hl    ; position to start of dict word
-ld a, 0
-call strlent
+;ld a, 0
+call strlenz
 
 
-inc hl    ; to include null???
+inc hl    ; to include null
+
+; TODO DEBUG to here uword issue. Length of uword here is correct
+if DEBUG_FORTH_UWORD
+		DMARK ":UL"
+CALLMONITOR
+endif
 
 ; write length of dict word
 
@@ -609,9 +615,10 @@ ex de, hl
 
 
 
-; copy 
-ld c, l
-ld b, 0
+; copy
+;ld c, l
+;ld b, 0
+ld b, l
 ld de, (os_new_work_ptr)   ; get dest for copy of word
 ld hl, (os_tok_ptr)
 inc hl
@@ -619,24 +626,32 @@ inc hl    ; position to start of dict word
 
 ;	ldir       ; copy word - HL now is where we need to be for copy of the line
 
-; TODO need to convert word to upper case
+; need to convert word to upper case
 
+if DEBUG_FORTH_UWORD
+		DMARK ":UC"
+CALLMONITOR
+endif
 ucasetok:	
 ld a,(hl)
 call toUpper
-ld (hl),a
-ldi
-jp p, ucasetok
+ld (de),a
+;ld (hl),a
+; TODO find out why the ldi, jp p is not working
+;ldi
+;jp p, ucasetok
+inc de
+inc hl
+djnz ucasetok
 
-
-
+;inc de
+;inc de
 ; de now points to start of where the word body code should be placed
 ld (os_new_work_ptr), de
 ; hl now points to the words to throw at forthexec which needs to be copied
 ld (os_new_src_ptr), hl
 
-; TODO add 'call to forthexec'
-
+; add 'call to forthexec'
 if DEBUG_FORTH_UWORD
 push bc
 ld bc, (os_new_malloc)
@@ -648,24 +663,24 @@ endif
 
 ; create word preamble which should be:
 
-; TODO possibly push the current os_tok_ptr to rsp and the current rsp will be the start of the string and not current pc????
+; possibly push the current os_tok_ptr to rsp and the current rsp will be the start of the string and not current pc????
 
 ;    ld hl, <word code>
 ;    jp user_exec
 ;    <word code bytes>
 
 
-;	inc de     ; TODO ??? or are we already past the word's null
+;	inc de     ;  ??? or are we already past the word's null
 ex de, hl
 
-ld (hl), 021h     ; TODO get bytes poke "ld hl, "
+ld (hl), 021h     ; get bytes poke "ld hl, "
 
 inc hl
 ld (os_new_exec_ptr),hl     ; save this location to poke with the address of the word buffer
 inc hl
 
 inc hl
-ld (hl), 0c3h     ; TODO get bytes poke "jp xx  "
+ld (hl), 0c3h     ; get bytes poke "jp xx  "
 
 ld bc, user_exec
 inc hl
@@ -720,7 +735,7 @@ ldir		 ; copy defintion
 
 ; poke the address of where the new word bytes live for forthexec
 
-ld hl, (os_new_exec_ptr)     ; TODO this isnt correct
+ld hl, (os_new_exec_ptr)     
 
 ld de, (os_new_exec)     
 

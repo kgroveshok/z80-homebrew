@@ -19,12 +19,6 @@ Bug list:
 * TODO BUG CP/M screen clearing not working well
 * TODO BUG CP/M keyboard entry not great
 
-* DONE BUG LED only updates if the screen updates. Issuing a set pos 0 to force LCD write
-* DONE BUG If : word is in caps it wont work. This could be connected with caps on LIST which only works if given as lcase.
-* DONE BUG Need to fix numbers and/or punc in uwords
-* DONE BUG Uword can't have a numeric in the word name???? Odd... Nor special char?
-* DONE BUG Future bug? stack imbalance on storage_read. Needs a pop of de if no record found. Have added code watch for further issues
-
 
 Hardware/PCB Design Enhancements:
 
@@ -35,26 +29,17 @@ Hardware/PCB Design Enhancements:
 * TODO Code ESP32 device for networking etc
 * BUG The ROM Ziff socket lever is hitting the CF bottom two pins. Move it back a bit.
 
-* DONE New case design - Have a new one, printed and need to refine for use with PicoNET
-* DONE Create new double row header for 4x40 lcd and remap pins. Keep existing single row for other lcd type
-* DONE Reroute VIDCLK to E2 on LCD header
-* DONE Add power to keyboard edge pins
-* DONE Add rj45 socket to pcb with wireout for spi to picospinet node
-* DONE Add onboard WiFi via esp32 spi 1. with spi 0 for lan. code 0 can be used to detect if powered on by a switch to save bat. 
-* DONE Add nmi button with rst vector to address 0x66 - some code stubs in main.asm. add some words to check and restart nmi flag. Code added but not sure what the problem is. Just expose the pins and come back to it later. Need to adjust vector location as past 0x66
-* DONE Add address decoding for the SN sound chip - shift working. Maybe add the wr signal to ce to disable read from shift latch
-* DONE Add more address decoding for device a to allow sound and tape plus more. Skip A0/A1 and start from A2
-* DONE Cut cf track and wire temp to spare device ce to test
-* DONE Move cf card interface to spare device addr
-* DONE Change circuit so that the storage cart is actually on port a and provides a full 5 chip pack. Then move sound to port b
-* DONE Change the spi cart to a row of spi slots so i can then insert the rtc or sd card on its own
-* DONE Include exposure of the shift reg latached data bus to multiple pin headers for other devices/uses.
-* DONE Set up led on last vid pin. add to keyboard firmware a check for config bit set to enable disable. See firmware_buzz.asm + lcd 4x40. Coded and working with a test led. Need circuit added to schem. Pin is VIDDO
-* DONE Added support for 595 shift reg on any port via SR word
-* DONE Add op-amp circuit to SPISound and allow for selection at wire time. Moving SPISound to on board via direct bus use
-* DONE Add dart. Not doing. With a CTC will take up too much space. Better use if going to use the ESP.
-* DONE Pico to handle display to have two way return of data. Switching to a ESP Mini for extra features
-* DONE Take the vid out handshake lines and code up a Pico to handle display. Not done as going to use the ESP
+ESP32 via SPI
+-------------
+
+* TODO Add low power mode with CE wake up
+* TODO Setup wifi profiles
+* TODO Internet service/socket access to make work. How to interface?
+* TODO Pool access to finish
+* TODO Internode comms
+
+
+
 
 Langague Enhancements:
 
@@ -63,14 +48,13 @@ Langague Enhancements:
 * TODO Add to MENU word returning not just the number selected but also the string
 * TODO MENU to support multicolumn selections if width given?
 
-* DONE Make the MENU function look nicer and responsive
 
 * TODO Add a BPSET and BPCLR to set a string that is compared to CALLMONITOR in the DMARK macro. 
 * TODO A word to send a file to pool
 * TODO A word to send pool contents to file
 
 
-* TODO BETWEEN? word to check is tos is between a range. could just use a uword with lt and tg checks
+
 * TODO Need a RROT and LROT bitwise byte rotate like the Z80 RRC and RLC op codes
 * TODO Add a version of CALL that takes a block of mem with reg pairs that are loaded before the call and return the values 
 * TODO  once fixed words add uword with prefix of star that is searched for by the run command that allows menu generated to start that word
@@ -81,28 +65,21 @@ Langague Enhancements:
 * TODO 2tuck       w1 w2 w3 w4 – w3 w4 w1 w2 w3 w4 
 * TODO 2rot       w1 w2 w3 w4 w5 w6 – w3 w4 w5 w6 w1 w2
 * TODO LEAVE to exit DO LOOP
-* TODO between word s e -- x ..... x    generates a list of numbers on stack in range
 * TODO /STRING for string cut (substr???)
 * TODO REPLACES/SUBSTITUTE for string replace
 * TODO SEARCH is simliar to FIND
 * TODO Handle CONST on all DS_TYPE_STR. Can then use "hello" ptr const . to print a pointer as a string which destroying the original
-* TODO A save and restore word for device/cartdev. If needed could I use symbol reference instead?
 * TODO getid is slow. does it bail on first hit?
-* TODO Add scroll down indicator to menu code
 * TODO need word to get file id by name
 * TODO need word to get file name by id
-* TODO Add words that do some of the heavy lifting for PicoSPINet out on the current CARTDEV e.g. native send and get char
 * TODO need words to report on hardware e.g. screen dims
 * TODO Add word to call fill_display with a char. accesss it via the symbol list???
 * TODO Word to define lcd user character 0-3. Then word to output via emit etc
-* TODO Add word for setting node number to talk to???
 * TODO Add FILL word - ( addr n char -- ) fills address for n long with char
 * TODO Add ERASE word - ( addr n -- ) fills address for n long with zero  
-* TODO Enhance the DUMP word to provide direct memory editing like the tec monitor
 * TODO Add support for ELSE and ENDIF. IF THEN ELSE ENDIF   or IF THEN ENDIF. Or IF ... ELSE ... THEN
 * TODO A word that will allow the loading of a file into memory with strings held in pointer array. Use with TABLE word.
-
-* DONE CART? to get the current cart id. No, added a DEVSAV/DEVREST to save and switch
+* TODO Include files with duplicate uword detection
 
 Core Firmware Enhancements:
 
@@ -111,16 +88,16 @@ Core Firmware Enhancements:
 * TODO Put format type into one of the header bytes to allow for a new storage format
 * TODO Abstract away for the storage format
 
+* TODO Enhance the DUMP word to provide direct memory editing like the tec monitor
 * TODO Add stack checks and guardrails to be options on or off via hardware word bits. have a selection of off, low, mid, high levels of checks if possible. Have added bit set in firmware_init but the bit might be over written by other hardware settings
 
 * TODO CONFIG option to redirect key/display to ESP for a larger setup. Add call to esp putc in the dot command and a full frame draw in update display.
 
-* TODO Hardware config byte containing switches. There is a hardware_config and hardware_word symbols. Is it used? It is 10 bytes
+* TODO Hardware config byte containing switches. There is a hardware_config and hardware_word symbols. Is it used? It is 10 bytes. Add toggle to CONFIG
 * TODO Add display if on bottom row and cr is pressed then auto scroll up - added code to the firmway str-to-display but did not not affect dot commands so need to look at how they are displaying
 * TODO Config option to disable breakpoints and garbage collection
-* DONE CONFIG option to add a program break key. Or perhaps use NMI button? What pointers need to change to signify? Could set a var and then check in parser doing a warm boot. nmi vector to ram which then allows the function to be changed.
 * TODO SN sound chip firmware
-* TODO Add ? after file name to prompt for optional load/skip during autoload
+* TODO Add ? after file name prefix * to prompt for optional load/skip during autoload
 * TODO Add garbage colleciton/gaurd checks as a vector that can be enabled and disabled via CONFIG
 * TODO  .f word to output formatted. ie x "9999" .f four dec
 * TODO .h word to output as hex value
@@ -139,8 +116,6 @@ Core Firmware Enhancements:
 * TODO storage block reuse working?
 * TODO provideca f key hook which can be triggered at any get key
 * TODO sort out ntp get 
-* TODO  save file from socket
-* TODO  copy file to isocket backup 
 * TODO add write protect to bank - byte zero? any attempt to write should throw system message
 * TODO add more to config menu
 * TODO Using the vector hook though means only jumps. Need a wrapper around use to preserve current concontext and then restore it after
@@ -149,7 +124,6 @@ Core Firmware Enhancements:
 * TODO Add user watch break points by putting a hook into the parser or on NEXTW (as if using compiled version)
 * TODO add more editing features. Like what?
 * TODO for op codes compile from dict but at run time look up a calculated table with jumps to the words to save having to scan dict to find op codes
-* TODO Add words that do some of the heavy lifting for SPISound out on the current CARTDEV - e.g. sending the three bytes to the spi for a note, playing a full tune
 * TODO Add block/id count for auto load to show where it is looking
 * TODO Could I use frame buffers for cli line storage which would mean they are available for use by code if needed? Would then free up some memory.
 * TODO Add stack and malloc guard vectors plus code to enable and disable then in config and cli
@@ -166,7 +140,7 @@ Core Firmware Enhancements:
 * TODO Add a means to attach some code to a vector hook
 * TODO Add hook vectors. Can change  dbug checks to vector with return if disabled to save on push and asterisk checks. Add hook for stack checks to disable. Add hooks for some other points such as before and after words
 * TODO Add config feature to select which devices are on specific SPI addresses and have words for easier selection???
-* TODO Conslidate all prompts into a single file to allow for removing duplicates and may even localisation
+* TODO Conslidate all prompts into a single file to allow for removing duplicates and maybe even localisation
 * TODO add ram test to the diags
 * TODO Alt T is duplicated }. Free to reuse
 * TODO Alt H is duplicated |. Free to reuse
@@ -179,10 +153,6 @@ Core Firmware Enhancements:
 * TODO Add the floating point maths code in
 * TODO wire up a temp interface to the serial EEPROMS so I can test storage on the SC114 as I have the PIO and digital IO cards installed
 * TODO Add a simple assembler feature like BBC Basic
-
-* DONE SHow start up bank 
-* DONE Move DMARK to hardware word bit check. Don't need to worry, as it is using a vector now so ret is the fastest it will be
-* DONE Add to autostart to conditionally load if hardware switches are set. Need hardware config switches and then a char following the * to select. Perhaps the cartdev number? In config select device maps to hardware. Now have asterisk prefix for optional auto start in a bank.
 
 
 
@@ -206,7 +176,6 @@ Documentation Changes:
 * TODO do random quotes from file as example code
 * TODO Add to docs that looking up file name of id is just id BREAD 
 
-* DONE A Simon says game demo
 
 
 Major Firmware change for Forth compliation:
@@ -299,6 +268,55 @@ Enter a line, save in memory, provide scrolling and editing of in memory and the
 
 Done Items
 ----------
+
+12th July 2026
+--------------
+
+
+* DONE BETWEEN? word to check is tos is between a range. could just use a uword with lt and tg checks : between? ( fr to x -- b ) dup rot < rot rot < = ; 
+* DONE between word st en -- x ..... x    generates a list of numbers on stack in range:   : between ( f t -- x .. ) swap do i loop ;
+
+* DONE BUG LED only updates if the screen updates. Issuing a set pos 0 to force LCD write
+* DONE BUG If : word is in caps it wont work. This could be connected with caps on LIST which only works if given as lcase.
+* DONE Add words that do some of the heavy lifting for SPISound out on the current CARTDEV - e.g. sending the three bytes to the spi for a note, playing a full tune. SN Hardware now in place.
+* DONE BUG Need to fix numbers and/or punc in uwords
+* DONE BUG Uword can't have a numeric in the word name???? Odd... Nor special char?
+* DONE New case design - Have a new one, printed and need to refine for use with PicoNET
+* DONE Create new double row header for 4x40 lcd and remap pins. Keep existing single row for other lcd type
+* DONE Reroute VIDCLK to E2 on LCD header
+* DONE Add power to keyboard edge pins
+* DONE Add rj45 socket to pcb with wireout for spi to picospinet node
+* DONE Add onboard WiFi via esp32 spi 1. with spi 0 for lan. code 0 can be used to detect if powered on by a switch to save bat. 
+* DONE Add nmi button with rst vector to address 0x66 - some code stubs in main.asm. add some words to check and restart nmi flag. Code added but not sure what the problem is. Just expose the pins and come back to it later. Need to adjust vector location as past 0x66
+* DONE Add address decoding for the SN sound chip - shift working. Maybe add the wr signal to ce to disable read from shift latch
+* DONE Add more address decoding for device a to allow sound and tape plus more. Skip A0/A1 and start from A2
+* DONE Cut cf track and wire temp to spare device ce to test
+* DONE Move cf card interface to spare device addr
+* DONE Change circuit so that the storage cart is actually on port a and provides a full 5 chip pack. Then move sound to port b
+* DONE Change the spi cart to a row of spi slots so i can then insert the rtc or sd card on its own
+* DONE Include exposure of the shift reg latached data bus to multiple pin headers for other devices/uses.
+* DONE Set up led on last vid pin. add to keyboard firmware a check for config bit set to enable disable. See firmware_buzz.asm + lcd 4x40. Coded and working with a test led. Need circuit added to schem. Pin is VIDDO
+* DONE Added support for 595 shift reg on any port via SR word
+* DONE Add op-amp circuit to SPISound and allow for selection at wire time. Moving SPISound to on board via direct bus use
+* DONE Add dart. Not doing. With a CTC will take up too much space. Better use if going to use the ESP.
+* DONE Pico to handle display to have two way return of data. Switching to a ESP Mini for extra features
+* DONE Take the vid out handshake lines and code up a Pico to handle display. Not done as going to use the ESP
+* DONE BUG Future bug? stack imbalance on storage_read. Needs a pop of de if no record found. Have added code watch for further issues
+
+* DONE Make the MENU function look nicer and responsive
+* DONE A save and restore word for device/cartdev. If needed could I use symbol reference instead?
+* DONE Add scroll down indicator to menu code
+* DONE Add words that do some of the heavy lifting for PicoSPINet out on the current CARTDEV e.g. native send and get char. Not doing now I have ESP
+* DONE Add word for setting node number to talk to??? Now using ESP
+* DONE CART? to get the current cart id. No, added a DEVSAV/DEVREST to save and switch
+* DONE CONFIG option to add a program break key. Or perhaps use NMI button? What pointers need to change to signify? Could set a var and then check in parser doing a warm boot. nmi vector to ram which then allows the function to be changed.
+* DONE SHow start up bank 
+* DONE A Simon says game demo
+* DONE Move DMARK to hardware word bit check. Don't need to worry, as it is using a vector now so ret is the fastest it will be
+* DONE Add to autostart to conditionally load if hardware switches are set. Need hardware config switches and then a char following the * to select. Perhaps the cartdev number? In config select device maps to hardware. Now have asterisk prefix for optional auto start in a bank.
+
+* DONE  save file from socket. esp now
+* DONE  copy file to isocket backup. esp now
 
 29th Apr 2026
 -------------

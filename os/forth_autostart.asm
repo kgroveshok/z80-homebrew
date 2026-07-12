@@ -453,6 +453,12 @@ tape7: db ": tob ( byte --- ) #8 #1 do dup #128 and thc tlc lshift loop drop ; "
 
 tape8: db ": to ( str --- ) cls tohead ptr count #0 do dup i + @ dup emit tob tg tg tg tg loop ; ",0
 
+; Extra utils
+
+
+bet1: db ": between? ( fr to x -- b ) dup rot < rot rot < = ; ", 0
+bet2: db ": between ( f t -- x .. ) swap do i loop ; ", 0
+
 
 
 ; eof

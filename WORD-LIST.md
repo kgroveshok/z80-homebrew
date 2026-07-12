@@ -104,6 +104,7 @@ Also refer to the auto start list examples as these contain extra words created 
  dw tape_port
  ```
 ## Core Words
+### NMICLR ( -- ) Clears the use of the NMI switch | DONE
 ### NEW ( -- ) Clears all user words and stack | DONE
 ### HEAP ( -- u1 u2 )   Pushes u1 the current number of bytes in the heap and u2 the remaining bytes - Only present if using my MALLOC | DONE
  u1 - Current number of bytes in the heap

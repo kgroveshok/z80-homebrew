@@ -497,6 +497,8 @@ create_startup:
 	dw repstr1
 	dw repstr2
 	dw execuword
+        dw bet1
+        dw bet2
 ; duplicated
 ;	dw start3b
 ;	dw start3c

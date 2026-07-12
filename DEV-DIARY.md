@@ -8,8 +8,10 @@ Todo List/Enhancements:
 
 Bug list:
 
-* TODO Stop menu scrolling past last item
-* TODO BUG ed word has a rouge address pushed to stack when editing a record
+* TODO BUG Stop menu scrolling past last item - still there after updates
+* TODO BUG MENU down arrow not disappearing on last item. OK if not enough to fill.
+
+* TODO BUG ed word has a rogue address pushed to stack when editing a record
 * TODO BUG ed word cant cope with lread. Do a check on READCONT and if true add a null to end of edit buffer
 * TO TEST need word to report where cursor current at
 * TODO BUG read ext concat is the problem
@@ -60,7 +62,8 @@ Langague Enhancements:
 * TODO Add CHECKBOX which functions like MENU but also takes a block of memory used as a check box value. If the prefilled value is 0 then dont allow toggle.
 * TODO Add to MENU word returning not just the number selected but also the string
 * TODO MENU to support multicolumn selections if width given?
-* TODO Make the MENU function look nicer and responsive
+
+* DONE Make the MENU function look nicer and responsive
 
 * TODO Add a BPSET and BPCLR to set a string that is compared to CALLMONITOR in the DMARK macro. 
 * TODO A word to send a file to pool

@@ -22,20 +22,26 @@ Bug list:
 
 Hardware/PCB Design Enhancements:
 
+* TODO Test shift reg bank
+* TODO Test sound card support
+
+* TODO make three way header for esp to either power up and/or supply main board power so can hook up to usb and run from batteries 
+* BUG The ROM Ziff socket lever is hitting the CF bottom two pins. Move it back a bit.
+* TODO If redoing PCB move the keyboard connectpor to the right side of the board as at the bottom it is long cable
+* BUG had to switch DI/DO on the ESP. Check all SI/DI and SO/DO lines are labelled and connected correctly. Ensure MISO and MOSI is the standard
+* BUG DI/DO on the array and ESP are not connected to SI/DO on the SPI bus. Solder a quick couple of wires across for now
 
 * TODO Can i add 32k ram bank switch to cover the rom?
 * TODO Look at using 64k Serial EEPROMs to double storage. 128k page size so can keep the current page code, just change the PHY... var
 * TODO Move Tape support Forth code into firmware
 * TODO Code ESP32 device for networking etc
-* BUG The ROM Ziff socket lever is hitting the CF bottom two pins. Move it back a bit.
 
 ESP32 via SPI
 -------------
 
-* TODO Add low power mode with CE wake up
-* TODO Setup wifi profiles
+* TODO Continue writing remaining ESP functions
+* TODO Support EEPROM SPI protocol for onboard storage
 * TODO Internet service/socket access to make work. How to interface?
-* TODO Pool access to finish
 * TODO Internode comms
 
 
@@ -268,6 +274,13 @@ Enter a line, save in memory, provide scrolling and editing of in memory and the
 
 Done Items
 ----------
+
+15th July 2026
+--------------
+
+* DONE ESP Pool access to finish (mostly, enough for backups)
+* DONE ESP Setup wifi connection
+* DONE Add ESP low power mode with CE wake up
 
 12th July 2026
 --------------

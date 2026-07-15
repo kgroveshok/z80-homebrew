@@ -147,34 +147,28 @@ edit3: db ": ed dup v0! open $01 do i v0@ record cls . edc loop ; ",0
 
 ; v0! = node to send to
 ; ( str count - )
-spi1:       db ": uarttype spiceh $00 do dup i + @ spicel $60 spio spio spiceh loop ; ",0
-spi1b:      db ": espdebug spicel $14 spio spio spiceh ; ",0
+spi1:       db ": uarttype $00 do dup i + @ uartputc loop ; ",0
+spi1b:      db ": espdebug $20 spio #2 spio spio ; ",0
 ; spiputc ( char - )
-spi2:       db ": uartputc spicel $60 spio ptr @ spio spiceh ; ",0
+spi2:       db ": uartputc $60 spio spio  ; ",0
 ; spipool ( u -- )
-spi2b:       db ": setpool spicel $42 spio spio spiceh ; ",0
-; spiputc ( u node - )
-;spi2b:       db ": spiputb spicel $10 spio spio spio spiceh ; ",0
+spi2b:       db ": setpool $23 spio #3 spio spio ; ",0
 
 ; spigetc ( - n )
-spi4:       db ": uartgetc spicel $61 spio spii spiceh ; ", 0
+spi4:       db ": uartgetc $61 spio spii ; ", 0
 
-; getnode ( - n )
-spi5:       db ": pooltopc spicel $45 spio spiceh  ; ", 0
-;spi5:       db ": getnode spicel $18 spio spii nop spiceh ; ", 0
-spi3:       db ": poolfrompc spicel $46 spio spiceh ; ", 0
-spi3a:      db ": poolclr spicel $43 spio spiceh ; ",0
+spi5:       db ": setssid $21 spio #1 spio spistrz ; ", 0
+spi3:       db ": setpass $21 spio #2 spio spistrz ; ", 0
+
+spi3a:      db ": poolclr $23 spio #4 spio ; ",0
 ; ( str node - ) 
 ;spi3:       db ": sendnode v0! count spiceh $00 do dup i + @ v0@ spicel $10 spio spio spio spiceh $01 pause loop ; ; ",0
 ; store string ( str i - )
 
 ;spi3:       db ": storestrold spicel $03 spio spio ptr count clkstro spiceh ; ", 0
-spi6:       db ": poolstrz spicel $41 spio spistrz spiceh ; ", 0
+spi6:       db ": poolstrz $23 spio $0b spio spistrz ; ", 0
 ;spi6:       db ": storestr spicel $12 spio spio count $00 do dup i + @ spio $01 pause loop spiceh ; ", 0
-
-; get string ( addr i -  )    TO FIX
-; TODO causes a crash
-spi7:       db ": getpool spicel $40 spio bot-string repeat spii dup concat #0 = not until spiceh ; ", 0
+spi7:       db ": pooltouart $23 spio #5 spio ; ", 0
 
 
 ; user word backup

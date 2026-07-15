@@ -1,64 +1,21 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <NetworkClient.h>
-#include <WebServer.h>
+//#include <WebServer.h>
 #include <ESPmDNS.h>
 #include "FS.h"
 #include "SPIFFS.h"
 //#include <WiFiS3.h>
-//#include "esp-z80-op.h"
+#include "esp-z80-op.h"
+#include "esp-spi-op.h"
 #include "esp-z80-file.h"
-
-#define SPI_STORAGE_READ 0x03
-// OP_GET_WORD, OP_BYTE_SPI, OP_STORE_VAR, 1, OP_GET_BYTE, OP_BYTE_VARLOC, 1, OP_PUT_BYTE, OP_BYTE_SPI
-#define SPI_STORAGE_WRITE 0x02
-#define SPI_STORAGE_WREN 0x06
-
-#define SPI_ESP_POWERED 0x10
-#define SPI_ESP_CONFIG 0x14
-#define SPI_ESP_CONSOLE 0x15
-
-// wifi
-
-#define SPI_SET_SSID 0x20
-// OP_LOOP_START, OP_GET_BYTE, OP_BYTE_SPI, OP_PUT_BYTE, OP_BYTE_VARLOC, OP_UNTIL_BYTE, 0,
-#define SPI_SET_PASS 0x21
-#define SPI_GET_IP 0x22
-#define SPI_CREATE_PROF 0x23
-#define SPI_SELECT_PROF 0x24
-#define SPI_LIST_PROF 0x25
-#define SPI_WIFI_CONNECT 0x26
-#define SPI_WIFI_DISCON 0x27
-
-// Internet
-
-#define SPI_SET_ITARG 0x30
-#define SPI_SEND_ICON 0x33
-#define SPI_PUTC_ICON 0x34
-#define SPI_GETC_ICON 0x35
-
-// Buffers
-#define SPI_GET_POOL 0x40
-#define SPI_PUT_POOL 0x41
-#define SPI_SELECT_POOL 0x42
-#define SPI_CLR_POOL 0x43
-#define SPI_UART_OUT_POOL 0x45
-#define SPI_UART_IN_POOL 0x46
-
-// UART
-
-#define SPI_PUTC 0x60
-#define SPI_GETC 0x61
-
-
-
 
 
 // wifi
 
 String wifi_ssid = "";
 String wifi_password = "";
-const char *fna = "That feature is not available right now!";
+//const char *fna = "That feature is not available right now!";
 
 // Profile/Page ids
 
@@ -71,15 +28,15 @@ int pool_page = 0;
 
 int debug_level = 1;
 int config_byte = 1;
-int use_webserver = 1;
+//int use_webserver = 0;
 
 byte storage_block[48000];
 
 //char *wifi_profile="Default";
 
-WebServer server(80);
+//WebServer server(80);
 
-byte cmd = 0;
+byte cmd = 0, cmd2 = 0;
 byte tmpByte;
 int storeAddr;
 byte storeData;
@@ -93,10 +50,165 @@ WiFiClient TCP_client;
 int wifi_ready = 0;
 const int led = LED_BUILTIN;
 
+#define esp_wake_up_ce GPIO_NUM_10
 const int spi_ce_pin = 10;
-const int spi_do_pin = 9;
+const int spi_do_pin = 7;
 const int spi_sck_pin = 8;
-const int spi_di_pin = 7;
+const int spi_di_pin = 9;
+
+
+// command arrays
+
+
+
+typedef struct {
+  byte p_cmd;
+  byte s_cmd;
+  const char *des;
+  byte op_codes[];
+} COMMAND_STREAM;
+
+#define FUNC_SET_DEBUG 0
+#define FUNC_SET_SSID 1
+#define FUNC_SET_WIFIPASS 2
+#define FUNC_ESP_SLEEP 3
+#define FUNC_SET_WEBSERVER 4
+#define FUNC_POOL_PUTZ 5
+#define FUNC_POOL_UART_OUT 6
+
+COMMAND_STREAM spi_esp_powered = { SPI_ESP_SYS, SPI_ESP_SYS_POWERED, "ESP is on?", { OP_VAR_LIT, 0, 1, OP_OUTBYTE, OP_BYTE_SPI, 0, OP_END_PROC } };
+COMMAND_STREAM spi_esp_debug = { SPI_ESP_SYS, SPI_ESP_SYS_DEBUG, "Set debug flag", { OP_INBYTE, OP_BYTE_SPI, OP_EXEC_FUNC, FUNC_SET_DEBUG, OP_END_PROC } };
+COMMAND_STREAM spi_esp_sleep = { SPI_ESP_SYS, SPI_ESP_SYS_SLEEP, "Go to sleep", { OP_EXEC_FUNC, FUNC_ESP_SLEEP, OP_END_PROC } };
+
+
+COMMAND_STREAM spi_wifi_setssid = { SPI_WIFI, SPI_WIFI_SET_SSID, "Set SSID", { OP_LOOP_START, OP_INBYTE, OP_BYTE_SPI, OP_UNTIL_BYTE, 0, OP_EXEC_FUNC, FUNC_SET_SSID, OP_END_PROC } };
+COMMAND_STREAM spi_wifi_setpass = { SPI_WIFI, SPI_WIFI_SET_PASS, "Set Wifi Password", { OP_LOOP_START, OP_INBYTE, OP_BYTE_SPI, OP_UNTIL_BYTE, 0, OP_EXEC_FUNC, FUNC_SET_WIFIPASS, OP_END_PROC } };
+COMMAND_STREAM spi_wifi_use_webserver = { SPI_WIFI, SPI_WIFI_USE_WEBSERVER, "Use Webserver", { OP_INBYTE, OP_BYTE_SPI, OP_EXEC_FUNC, FUNC_SET_WEBSERVER, OP_END_PROC } };
+
+COMMAND_STREAM spi_pool_get = { SPI_POOL, SPI_POOL_GET, "Pool get", { OP_INBYTE, OP_BYTE_FILE, OP_OUTBYTE, OP_BYTE_SPI, OP_END_PROC } };
+COMMAND_STREAM spi_pool_put = { SPI_POOL, SPI_POOL_PUT, "Pool put", { OP_INBYTE, OP_BYTE_SPI, OP_OUTBYTE, OP_BYTE_FILE, 0, OP_END_PROC } };
+COMMAND_STREAM spi_pool_select = { SPI_POOL, SPI_POOL_SELECT, "pool select", { OP_INBYTE, OP_BYTE_SPI, OP_OPENF, 'p', 0, OP_FILEEOF, OP_END_PROC } };
+COMMAND_STREAM spi_pool_putz = { SPI_POOL, SPI_POOL_PUTZ, "Pool put string", { OP_LOOP_START, OP_INBYTE, OP_BYTE_SPI, OP_UNTIL_BYTE, 0, OP_EXEC_FUNC, FUNC_POOL_PUTZ, OP_END_PROC } };
+COMMAND_STREAM spi_pool_art_out = { SPI_POOL, SPI_POOL_UART_OUT, "Dump pool to uart", { OP_EXEC_FUNC, FUNC_POOL_UART_OUT, OP_END_PROC } };
+
+
+
+COMMAND_STREAM spi_putc = { SPI_PUTC, 0, "Uart put", { OP_INBYTE, OP_BYTE_SPI, OP_OUTBYTE, OP_BYTE_UART, 0, OP_END_PROC } };
+COMMAND_STREAM spi_getc = { SPI_GETC, 0, "Uart get", { OP_INBYTE, OP_BYTE_UART, OP_OUTBYTE, OP_BYTE_SPI, 0, OP_END_PROC } };
+
+
+void SaveDebug() {
+  if (debug_level) { Serial.println("Saving debug.txt..."); }
+  writeFile(SPIFFS, "/debug.txt", String(debug_level));
+}
+
+
+
+int exec_pool_putz() {
+  if (debug_level) { Serial.println("exec save string to pool"); }
+  char s[512];
+  memset(s,0,sizeof(s));
+  for(int i=0; op_vars[i]!= 0; i++) s[i]=op_vars[i];
+  
+current_file.print(s);
+current_file.flush();
+  return 0;
+}
+int exec_esp_sleep() {
+  if (debug_level) { Serial.println("exec go to sleep"); }
+  int ret = esp_light_sleep_start();
+  Serial.printf("\nReturn from sleep: %d", ret);
+  return 0;
+}
+
+int exec_set_webserver() {
+  if (debug_level) { Serial.println("exec set webserver"); }
+  //  use_webserver = op_vars[0];
+
+  return 0;
+}
+
+
+int exec_set_debug() {
+  if (debug_level) { Serial.println("exec set config"); }
+  debug_level = op_vars[0];
+  SaveDebug();
+  listDir(SPIFFS, "/", 0);   // do a list dir to help with any diags
+  return 0;
+}
+
+int exec_set_ssid() {
+  if (debug_level) { Serial.println("exec set ssid"); }
+
+  char s[512];
+  memset(s,0,sizeof(s));
+  for(int i=0; op_vars[i]!= 0; i++) s[i]=op_vars[i];
+  
+  wifi_ssid = s ;
+  if (debug_level) { Serial.printf("Wifi set:%s", wifi_ssid); }
+
+  writeFile(SPIFFS, "/0wifi_ssid.txt", String(wifi_ssid));
+
+  return 0;
+}
+
+int exec_set_wifipass() {
+  if (debug_level) { Serial.println("exec set wifi pass"); }
+char s[512];
+  memset(s,0,sizeof(s));
+  for(int i=0; op_vars[i]!= 0; i++) s[i]=op_vars[i];
+  
+
+  wifi_password = s;
+  if (debug_level) { Serial.printf("Wifi set:%s", wifi_password); }
+  writeFile(SPIFFS, "/0wifi_password.txt", String(wifi_password));
+    return 0;
+}
+
+int exec_pool_uart_out(){
+  current_file.seek(0L,SeekSet);
+
+
+
+  String r = "";
+  byte ar[2];
+  ar[1] = 0;
+while (current_file.available()) {
+    ar[0] = current_file.read();
+    r = r + String((char *)ar);
+  }
+Serial.println(r);
+  return 0;
+}
+
+
+void set_exec_funcs() {
+  exec_func[FUNC_SET_DEBUG] = exec_set_debug;
+  exec_func[FUNC_SET_SSID] = exec_set_ssid;
+  exec_func[FUNC_SET_WIFIPASS] = exec_set_wifipass;
+  exec_func[FUNC_ESP_SLEEP] = exec_esp_sleep;
+  exec_func[FUNC_POOL_PUTZ] = exec_pool_putz;
+
+  exec_func[FUNC_POOL_UART_OUT]=exec_pool_uart_out;
+}
+
+
+COMMAND_STREAM *op_commands[] = {
+  &spi_esp_powered,
+  &spi_esp_debug,
+  &spi_pool_get,
+  &spi_pool_put,
+  &spi_pool_select,
+  &spi_pool_art_out,
+  &spi_putc,
+  &spi_getc,
+  &spi_wifi_setssid,
+  &spi_wifi_setpass,
+  &spi_wifi_use_webserver,
+  &spi_pool_putz,
+  0
+};
+
 
 // Signal helper functions
 
@@ -119,13 +231,18 @@ void fromCLKHigh() {  //Serial.println("In isCLKHigh");
 int fromCLKLowIn() {
   int d;
   //Serial.println("In isCLKLowIn");
-  while (!isCLK()) { d = getDO(); };
+  while (!isCLK()) {
+    d = getDO();
+    if (isCE2()) return 255;
+  };
   //Serial.println("Done");
   return d;
 }
 void fromCLKLowOut() {
   //Serial.println("In isCLKLowOut");
-  while (!isCLK()) {};
+  while (!isCLK()) {
+    if (isCE2()) return;
+  };
   //Serial.println("Done");
 }
 void isCE2en() {
@@ -141,6 +258,7 @@ byte rcvspibyte() {
   int d;
   for (int i = 0; i < 7; i++) {
     fromCLKHigh();
+    if (isCE2()) return 255;
     if (fromCLKLowIn() == 1) {
       b++;
       //Serial.printf("\n%d: 1 ", i);
@@ -148,6 +266,7 @@ byte rcvspibyte() {
     b = b << 1;
   }
   fromCLKHigh();
+  if (isCE2()) return 255;
   if (fromCLKLowIn() == 1) {
     b++;
     //Serial.printf("\nE: 1 ");
@@ -206,15 +325,15 @@ void loadCfg() {
 
   if (wifi_ssid.length() > 0 and wifi_password.length() > 0) { wifi_ready = 1; }
 
-  r = readFile(SPIFFS, "/config.txt");
+  r = readFile(SPIFFS, "/debug.txt");
   Serial.println(r);
   if (r.length() == 0) {
-    SaveCfg();
+    SaveDebug();
   }
 
-  config_byte = r.toInt();
+  debug_level = r.toInt();
 
-  // TODO set server config flags
+  /*// TODO set server config flags
   // TODO enable disable webserver on use_webserver
 
   r = readFile(SPIFFS, "/cur_storage.txt");
@@ -244,12 +363,13 @@ void loadCfg() {
   }
 
   int pool_page = r.toInt();
+  */
 }
 void SaveCfg() {
   if (debug_level) { Serial.println("Saving config.txt..."); }
-  writeFile(SPIFFS, "/config.txt", String(config_byte));
+  writeFile(SPIFFS, "/config.txt", String(debug_level));
 }
-
+/*
 void SaveCurStorage() {
   if (debug_level) { Serial.println("Saving cur_storage.txt..."); }
   writeFile(SPIFFS, "/cur_storage.txt", String(storage_page));
@@ -269,15 +389,16 @@ void SaveCurPool() {
   if (debug_level) { Serial.println("Saving cur_pool.txt..."); }
   writeFile(SPIFFS, "/cur_pool.txt", String(pool_page));
 }
-
+*/
 
 // Webserver support
-
+#ifdef RUN_WEBSERVER
 void handleRoot() {
   digitalWrite(led, 1);
   server.send(200, "text/plain", "hello from esp32!");
   digitalWrite(led, 0);
 }
+
 
 void handleNotFound() {
   digitalWrite(led, 1);
@@ -295,7 +416,237 @@ void handleNotFound() {
   server.send(404, "text/plain", message);
   digitalWrite(led, 0);
 }
+#endif
 
+//// op exec
+
+void execOpOutByte() {
+  if (debug_level) { Serial.println("op out byte"); }
+
+  current_cmd++;  // move to source of get
+  switch (*current_cmd) {
+    case OP_BYTE_SPI:
+      if (debug_level) { Serial.println("byte via spi"); }
+      current_cmd++;
+      sndspibyte(op_vars[*current_cmd]);
+
+      break;
+
+    case OP_BYTE_FILE:
+      if (debug_level) { Serial.println("byte via file"); }
+
+      break;
+    case OP_BYTE_SOCK:
+      if (debug_level) { Serial.println("byte via socket"); }
+
+      break;
+    case OP_BYTE_VARLOC:
+      if (debug_level) { Serial.println("byte via varloc"); }
+      break;
+    case OP_BYTE_UART:
+
+      if (debug_level) { Serial.println("byte via uart"); }
+      current_cmd++;
+      Serial.printf("%c", op_vars[*current_cmd]);
+      break;
+  }
+}
+void execOpInByte() {
+  if (debug_level) { Serial.println("op in byte"); }
+  current_cmd++;  // move to source of get
+
+  switch (*current_cmd) {
+    case OP_BYTE_SPI:
+      if (debug_level) { Serial.println("byte via spi"); }
+      op_vars[current_var] = rcvspibyte();
+      break;
+
+    case OP_BYTE_FILE:
+      if (debug_level) { Serial.println("byte via file"); }
+      current_cmd++;
+      current_file.printf("%c", op_vars[*current_cmd]);
+      break;
+    case OP_BYTE_SOCK:
+      if (debug_level) { Serial.println("byte via socket"); }
+
+      break;
+    case OP_BYTE_VARLOC:
+      if (debug_level) { Serial.println("byte via varloc"); }
+      break;
+    case OP_BYTE_UART:
+
+      if (debug_level) { Serial.println("byte via uart"); }
+
+      break;
+  }
+
+  if (debug_level) { Serial.printf("\ngot var %d as %d", current_var, op_vars[current_var]); }
+  current_var++;
+}
+void execOpMakeWord() {
+  // construct a 16bit word using msb, lsb from given var slots to depost in var slot x
+  if (debug_level) { Serial.println("op word word"); }
+  int msb = ++*current_cmd;
+  int lsb = ++*current_cmd;
+  int var = ++*current_cmd;
+
+  op_vars[var] = (msb << 8) + lsb;
+}
+void execOpBreakWord() {
+  // split a 16bit word in var slot x into given msb, lsb from given var slots
+  if (debug_level) { Serial.println("op brake word"); }
+  int var = op_vars[++*current_cmd];
+  int msb = ++*current_cmd;
+  int lsb = ++*current_cmd;
+
+
+  op_vars[msb] = var >> 8;
+  op_vars[lsb] = var && 255;
+}
+
+void execOpLoopStart() {
+  if (debug_level) { Serial.println("op loop start"); }
+  current_loop_start = current_cmd ;
+   current_loop_count = 0;
+}
+
+void execOpUntilByte() {
+  if (debug_level) { Serial.println("op untl byte"); }
+  ++current_cmd;
+  if (op_vars[current_var-1] != *current_cmd) { current_cmd = current_loop_start;
+  if (debug_level) { Serial.println("not zero so back to start of loop"); }
+   }
+  else { if (debug_level) { Serial.println("zero found"); }}
+}
+void execOpUntilCount() {
+  if (debug_level) { Serial.println("op until count"); }
+  current_loop_count++;
+  if (current_loop_count < *(++current_cmd)) { current_cmd = current_loop_start; }
+}
+void execOpOpenF() {
+  if (debug_level) { Serial.println("op openf"); }
+
+  if (current_file) { current_file.close(); }
+  // open file with prefix and var number
+  current_cmd++;
+  byte p = *current_cmd;
+  current_cmd++;
+  int v = op_vars[*current_cmd];
+  char path[20];
+  sprintf(path, "/%c%d.txt", p, v);
+  //String path = "/" + String(p) + String(v) + ".txt";
+  if (debug_level) { Serial.println(path); }
+  // TODO set rw append mode instead
+  current_file = SPIFFS.open(path, "a+");
+}
+
+void execOpVarLit() {
+  // set lit on a var
+  // op, position, value
+  if (debug_level) { Serial.println("op var lit"); }
+  current_cmd++;
+  int thisvar = *current_cmd;
+  current_cmd++;
+  op_vars[thisvar] = *current_cmd;
+}
+
+
+
+void execOpCloseF() {
+  if (debug_level) { Serial.println("op closef"); }
+  if (current_file) { current_file.close(); }
+}
+void execOpClrStr() {
+  if (debug_level) { Serial.println("op clr str"); }
+}
+void execOpAddToStr() {
+  if (debug_level) { Serial.println("op add to str"); }
+}
+void execOpStarVar() {
+  if (debug_level) { Serial.println("op store var"); }
+}
+
+
+
+void cmdExec(byte *opcodes) {
+  current_cmd = opcodes;  // pointer to cmd op being processed
+  current_var = 0;        // current var that any get will insert into
+
+  if (debug_level) { Serial.println("Exec op codes..."); }
+
+  while (*current_cmd != OP_END_PROC) {
+    if (debug_level) { dump_op_vars(); }
+    if (debug_level) { Serial.printf("\nExec op code: %d", *current_cmd); }
+
+
+    switch (*current_cmd) {
+
+      case OP_MAKEWORD:
+
+        execOpMakeWord();
+        break;
+
+      case OP_INBYTE:
+
+        execOpInByte();
+        break;
+      case OP_OUTBYTE:
+
+        execOpOutByte();
+        break;
+      case OP_BREAKWORD:
+
+        execOpBreakWord();
+        break;
+      case OP_LOOP_START:
+
+        execOpLoopStart();
+        break;
+      case OP_UNTIL_BYTE:
+
+        execOpUntilByte();
+        break;
+      case OP_UNTIL_COUNT:
+
+        execOpUntilCount();
+        break;
+      case OP_OPENF:
+
+        execOpOpenF();
+        break;
+      case OP_CLOSEF:
+
+        execOpCloseF();
+        break;
+      case OP_STR_CLR:
+
+        execOpClrStr();
+        break;
+      case OP_STR_ADD:
+
+        execOpAddToStr();
+        break;
+      case OP_STORE_VAR:
+
+        execOpStarVar();
+        break;
+      case OP_VAR_LIT:
+        execOpVarLit();
+        break;
+      case OP_EXEC_FUNC:
+        if (debug_level) { Serial.println("op exec func"); }
+        current_cmd++;
+        int func = *current_cmd;
+        int ret = (*exec_func[func])();
+        break;
+    }
+
+
+    current_cmd++;
+  }
+
+  if (debug_level) { Serial.printf("\nExec done"); }
+}
 
 
 void setup(void) {
@@ -311,6 +662,8 @@ void setup(void) {
   // Only set to output once we have CE so as not to corrupt the singal
   pinMode(spi_di_pin, INPUT);
   //pinMode(spi_di_pin, OUTPUT);
+
+  esp_sleep_enable_ext0_wakeup(esp_wake_up_ce, 0);
 
   if (!SPIFFS.begin(FORMAT_SPIFFS_IF_FAILED)) {
     Serial.println("SPIFFS Mount Failed");
@@ -332,13 +685,10 @@ void setup(void) {
   //  deleteFile(SPIFFS, "/test.txt");
 
 
+  set_exec_funcs();
 
 
-
-
-
-
-
+  // TODO remove this once configured
 
   if (wifi_ready) {
     WiFi.mode(WIFI_STA);
@@ -346,10 +696,17 @@ void setup(void) {
     Serial.println("");
 
     // Wait for connection
-    while (WiFi.status() != WL_CONNECTED) {
+
+    for( int retries =0 ; WiFi.status() != WL_CONNECTED & retries < 10 ; retries++ ) {
       delay(500);
       Serial.print(".");
     }
+
+    if( WiFi.status() != WL_CONNECTED) {
+      Serial.println("Failed to connect to wifi. Disabled.") ;
+      deleteFile(SPIFFS, "/0wifi_password.txt");
+      wifi_ready=0;
+    } else {
     Serial.println("");
     Serial.print("Connected to ");
     Serial.println(wifi_ssid);
@@ -359,7 +716,9 @@ void setup(void) {
     if (MDNS.begin("esp32")) {
       Serial.println("MDNS responder started");
     }
+    }
 
+#ifdef RUN_WEBSERVER
     server.on("/", handleRoot);
 
     server.on("/inline", []() {
@@ -373,6 +732,7 @@ void setup(void) {
     } else {
       Serial.println("HTTP server configured to not run. Skipped start up.");
     }
+    #endif
   } else {
     Serial.println("Wifi not configured. Skipping HTTP server startup");
   }
@@ -382,18 +742,30 @@ void setup(void) {
 }
 
 void loop(void) {
+debug_level=1;
+  int sleep_ret;
+#ifdef RUN_WEBSERVER
 
   if (wifi_ready) {
     if (use_webserver) {
       server.handleClient();
+    } else {
     }
+  
+#endif
+  if (isCE2()) {
+    if (debug_level) {Serial.println("\nNo activity, entering sleep");}
+    sleep_ret = esp_light_sleep_start();
+    if (debug_level) {Serial.printf("\nReturn from sleep: %d", sleep_ret);}
   }
+
   //delay(2);  //allow the cpu to switch to other tasks
 
 
   if (!isCE2()) {
     // Get a command byte
     pinMode(spi_di_pin, OUTPUT);
+    
     if (debug_level) { Serial.printf("\nReady for command byte..."); }
     cmd = rcvspibyte();
     if (debug_level) { Serial.printf("\nCommand byte seen: %d", cmd); }
@@ -401,298 +773,44 @@ void loop(void) {
 
     // Command processing
     digitalWrite(led, 1);
-    switch (cmd) {
-      case 0:
-        break;
-      case SPI_STORAGE_READ:
-        if (debug_level) { Serial.printf("O"); }
-        storeAddr = (int)rcvspibyte();
-        storeAddr = storeAddr << 8;
-        storeAddr += (int)rcvspibyte();
 
-        storeData = storage_block[storeAddr];
-        sndspibyte(storeData);
-        break;
-      case SPI_STORAGE_WRITE:
-        if (debug_level) { Serial.printf("I"); }
-        storeAddr = (int)rcvspibyte();
-        storeAddr = storeAddr << 8;
-        storeAddr += (int)rcvspibyte();
-        storeData = rcvspibyte();
-        storage_block[storeAddr] = storeData;
-        break;
-      case SPI_STORAGE_WREN:
-        // Ignore this byte
-        //tmpByte = rcvspibyte();
-        //if( tmpByte == SPI_STORAGE_WRITE) {
-        //  if (debug_level) { Serial.printf("I"); }
-        //storeAddr = (int)rcvspibyte();
-        //storeAddr = storeAddr << 8;
-        //storeAddr += (int)rcvspibyte();
-        //storeData = rcvspibyte();
-        //storage_block[storeAddr] = storeData;
-        //}
-        break;
-      case SPI_ESP_POWERED:
-        sndspibyte(1);
-        break;
-      case SPI_ESP_CONFIG:
-        if (debug_level) { Serial.println("SPI_DEBUG"); }
-        tmpByte = rcvspibyte();
-        if (debug_level) { Serial.printf("\nDebug set to level: %d", tmpByte); }
-        debug_level = (int)tmpByte;
-        // TODO Save current level to file
-        break;
-      case SPI_ESP_CONSOLE:
-        Serial.setTimeout(9000);
-        while ((tmpByte = Serial.read()) != 'q') {
-          Serial.println("Console Mode. Use ? for help.");
-          while (Serial.available() == 0) {}
+    // scan the first byte of command array for a hit
 
-          switch (tmpByte) {
-            case '?':
-              Serial.println("q=exit, l=list files,r=display file");
+    if (debug_level) { Serial.println("Scanning"); }
+    for (int a = 0; op_commands[a] != 0; a++) {
+      if (debug_level > 5) { Serial.printf("\np_cmd: %d", op_commands[a]->p_cmd); }
+
+      if (op_commands[a]->p_cmd == cmd) {
+        if (debug_level) { Serial.println("First level command found on "); }
+        if (debug_level) { Serial.println(a); }
+        // Check for second level need
+        if (op_commands[a]->s_cmd > 0) {
+          if (debug_level) { Serial.println("Need a sub command..."); }
+
+          // TODO get another byte
+          cmd2 = rcvspibyte();
+          // TODO rescan
+          for (int aa = 0; op_commands[aa] != 0; aa++) {
+            if (op_commands[aa]->p_cmd == cmd & op_commands[aa]->s_cmd == cmd2) {
+              if (debug_level) { Serial.println("Exec:" + String(op_commands[aa]->des)); }
+              cmdExec(op_commands[aa]->op_codes);
               break;
-            case 'l':
-              listDir(SPIFFS, "/", 0);
-              break;
-            case 'r':
-              Serial.println("Enter file name to view");
-              tmpString = Serial.readStringUntil(13);
-              tmpString.trim();
-              tmpString = readFile(SPIFFS, "/" + tmpString);
-              Serial.println(tmpString);
-              break;
-            case 'q':
-              break;
+            }
           }
-          Serial.println("Console Mode. Use ? for help.");
+          break;
+        } else {
+          if (debug_level) { Serial.println("Don't need sub command passing off to processing"); }
+          if (debug_level) { Serial.println("Exec:" + String(op_commands[a]->des)); }
+          cmdExec(op_commands[a]->op_codes);
+          // TODO process
+          break;
         }
-        Serial.println("Exiting console mode");
-        Serial.setTimeout(1000);
-        break;
-
-        // Wifi
-
-      case SPI_SET_SSID:
-
-        tmpString = String(rcvspistrz());
-        if (debug_level) { Serial.printf("\nSet SSID: %s", tmpString); }
-
-        writeFile(SPIFFS, "/" + String(wifi_profile) + "wifi_ssid.txt", tmpString);
-        break;
-      case SPI_SET_PASS:
-        tmpString = String(rcvspistrz());
-        if (debug_level) { Serial.printf("\nSet password: %s", tmpString); }
-
-        writeFile(SPIFFS, "/" + String(wifi_profile) + "wifi_password.txt", tmpString);
-        break;
-      case SPI_GET_IP:
-
-        if (debug_level) { Serial.printf("\nGet IP: %s", WiFi.localIP()); }
-
-
-        sndspistrz(String(WiFi.localIP()));
-
-        break;
-      case SPI_SELECT_PROF:
-        tmpByte = rcvspibyte();
-        wifi_profile = (int)tmpByte;
-        SaveCurWProfile();
-        break;
-        //        case SPI_LIST_PROF:
-        //
-        //        break;
-        //       case SPI_WIFI_CONNECT:
-        //
-        //        break;
-        //        case SPI_WIFI_DISCON:
-        //
-        //        break;
-
-        // Buffers
-      case SPI_GET_POOL:
-        if (debug_level) { Serial.printf("\nSend string from pool %d", pool_page); }
-
-        tmpString = readFile(SPIFFS, "/" + String(pool_page) + "pool.txt");
-        if (debug_level) { Serial.println(tmpString); }
-        sndspistrz(tmpString);
-
-
-        // TODO Consume pool?
-        break;
-      case SPI_PUT_POOL:
-        // Get string to add to pool
-
-        tmpString = String(rcvspistrz());
-        if (debug_level) { Serial.println("Got string: " + tmpString); }
-        if (debug_level) { Serial.printf("\nAppend to pool %d", pool_page); }
-        appendFile(SPIFFS, "/" + String(pool_page) + "pool.txt", tmpString);
-        break;
-      case SPI_SELECT_POOL:
-        tmpByte = rcvspibyte();
-        pool_page = (int)tmpByte;
-        SaveCurPool();
-        if (debug_level) { Serial.printf("\nSelect pool %d", pool_page); }
-        break;
-      case SPI_CLR_POOL:
-        if (debug_level) { Serial.printf("\nClear pool %d", pool_page); }
-        deleteFile(SPIFFS, "/" + String(pool_page) + "pool.txt");
-        break;
-
-      case SPI_UART_OUT_POOL:
-        if (debug_level) { Serial.printf("\nContents of pool %d", pool_page); }
-        tmpString = readFile(SPIFFS, "/" + String(pool_page) + "pool.txt");
-        Serial.println(tmpString);
-
-        break;
-      case SPI_UART_IN_POOL:
-        if (debug_level) { Serial.printf("\nAdd to pool from UART %d", pool_page); }
-
-        while (Serial.available() == 0) {}
-        tmpString = Serial.readString();
-        tmpString.trim();
-        appendFile(SPIFFS, "/" + String(pool_page) + "pool.txt", tmpString);
-
-        if (debug_level) { Serial.printf("\nAdded string %s", tmpString); }
-        break;
-
-      case SPI_PUTC:
-        if (debug_level) { Serial.println("SPI_PUTC"); }
-        tmpByte = rcvspibyte();
-        Serial.printf("%c", tmpByte);
-        break;
-        //   case SPI_GETC:
-        //     break;
-
-        /*      case SPI_SET_ITARG:
-
-        // Get string to add to pool
-
-        tmpString = String(rcvspistrz());
-        if (debug_level) { Serial.println("Got IP/Socket: " + tmpString); }
-
-        // TODO Split on colon
-
-  String ip=tmpString.substring(tmpString.indexOf(":")+1));
-  String sock=tmpString.substring(0, tmpString.indexOf(":")-1));
-
-  if (debug_level) {
-    Serial.println(ip);
-    Serial.println(sock);
-  }
-  if (TCP_client.connected()) {
-    TCP_client.stop();
-  }
-  if (TCP_client.connect(ip, sock)) {
-
-    if (debug_level) { Serial.println("Connected to service"); }
-  } else {
-    if (debug_level) { Serial.println("Connection failed to service"); }
-  }
-  break;
-      case SPI_SEND_ICON:
-        tmpString = String(rcvspistrz());
-        if (debug_level) { Serial.println("Send to service: " + tmpString); }
-        TCP_client.writer(tmpString);
-        TCP_client.flush();
-        break;
-      case SPI_GETC_ICON:
-        if TCP_client.avaiable()) {
-            char c = TCP_client.read();
-            sendbyte(c);
-          }
-        else { sndbyte(0) };
-        */
-      default:
-        // statements
-        Serial.printf("\n%d: %s", cmd, fna);
-
-        break;
+        if (debug_level) { Serial.println("Done"); }
+      }
     }
+
+
     digitalWrite(led, 0);
     pinMode(spi_di_pin, INPUT);
   }
-
 }
-
-  /*
-
-hex
- 
-( ce 10 do 9 sck 8 di 7 )
-: sck? 8 digitalread ;
-: do? 9 digitalread ;
-: di 7 pin ;
-: ce2? 10 digitalread ;
-: isclkhigh begin sck? until ;
-: isclklowin 0 begin drop do? sck? 0 = until ;
-: isclklowout begin sck? 0 = until ;
-: isce2en   begin ce2? 0 = until ;
-: bitin if 1 + then ;
-
-: rcvspibyte 0 8 1 do isclkhigh isclklowin bitin 1 lshift loop isclkhigh isclklowin bitin ;
-
-: rcvstrz ( begin rcvspibyte 0 = until) ;
-
-: monitor begin rcvspibyte emit 0 = until ;
-
-( sending out )
-
-: sndspibyte isclkhigh 8 1 do dup 80 and 80 = if high ." 1" else low ." 0" then di 1 lshift isclklowout isclkhigh loop ;
-
-( scan for spi command bytes )
-
-: nae ." EEPROM Bank feature not available yet!" ;
-: na ." Feature not available yet!" ;
-: nab ." Buffer feature not available yet!" ;
-		
-		
-: bufupdate  cr ." Add string to buffer pool" ;
-: bufget  cr ." Get string from buffer pool" ;
-: bufclear  cr ." Clear buffer pool" ;								
-
-
-      
-: syscmd case  	10 of na endof 		11 of na endof 		12 of na endof 		 		endcase  ;
-
-
-: sepcmd case 0 of nae endof   case 1 of nae endof      case 2 of nae endof endcase ;
- 
-      case 3 of nae endof
-      case 4 of nae endof
-     case 5 of nae endof
-      case 6 of nae endof      
-      case 7 of nae endof      
-      case 8 of nae endof
-      case 9 of nae endof
-      case 0a of nae endof
-      case 0b of nae endof
-      case 0c of nae endof
-      case 0d of nae endof
-      case 0e of nae endof
-      case 0f of nae endof 
-      endcase 
-      ;
-
-: buffcmd 
-        case 
-	40 of bufget rcvspibyte ." Use buffer pool:" . nab endof
-	41 of bufupdate rcvspibyte ." Send back from buffer pool:" .  nab endof
-	42 of bufclear rcvspibyte ." Clear buffer pool:" .  nab endof 
-	endcase  
-	;
-                                               
-
-: cmdscan dup cr ." Command:" .  dup sepcmd  dup syscmd dup buffcmd ;
-
-\ : cmdscan dup cr ." Command:" . dup buffcmd ;    
-
-
-
-( : z80start spiinit begin page ." Waiting for CE2 low" isce2en  cr ." Line enabled. Get byte..." cr rcvspibyte dup ." Got byte:" . cr cmdscan 0 until ; )
-
-
-
-
-*/

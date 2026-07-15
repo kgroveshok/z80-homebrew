@@ -175,13 +175,13 @@ spi7:       db ": pooltouart $23 spio #5 spio ; ", 0
 ; ubie
 ; ubiall
 
-spib1: db ": uball $01 do cls ptr count type list cr concat poolstrz 2drop loop ; ",0
+spib1: db ": uball $01 do cls ptr count type list cr concat poolstrz 2drop drop loop ; ",0
 ;spib1: db ": uball $01 do cls ptr count type list cr concat spicel $41 spio spistrz spiceh 2drop loop ; ",0
-spib2: db ": ub $01 do cls ptr count type waitk $79 = if list cr concat poolstrz drop then 2drop loop ; ", 0
+spib2: db ": ub $01 do cls ptr count type waitk $79 = if list cr concat poolstrz drop then 2drop drop loop ; ", 0
 ;spib2: db ": ubie $01 do cls ptr count type waitk $79 = if list cr concat count soctype drop then 2drop loop ;", 0
 spib3: db ": spistrz ptr count #0 do dup i + @ spio loop ; ",0
 ;spib3: db ": spistrz ptr count $00 do dup i + @ spio $01 pause loop ;",0
-spib4: db ": uballt $01 do cls ptr count type list cr concat count spitype 2drop loop ; ",0
+spib4: db ": uballt $01 do cls ptr count type list cr concat count uartype 2drop drop loop ; ",0
 spib7: db ": esp devsav #2 cartdev ; ",0
 ;spib4: db ": soccon spicel $22 spio spistrz ;",0
 ;spib5: db ": soctype aa ;",0

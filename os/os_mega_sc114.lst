@@ -192,7 +192,7 @@
 803b			 
 803b ..			buildtime: db   "Build: " 
 8042					include "romtimestamp.asm" 
-8042 ..			db '2026-07-15 20:19' 
+8042 ..			db '2026-07-15 21:08' 
 # End of file romtimestamp.asm
 8052 00				   db 0 
 8053			 
@@ -1034,9 +1034,9 @@
 8070 cd 15 88				call clear_display  
 8073			  
 8073			  
-8073 cd 91 d5				call lcd_init		; lcd hardware first as some screen functions called during key_init e.g. cursor shapes  
+8073 cd a0 d5				call lcd_init		; lcd hardware first as some screen functions called during key_init e.g. cursor shapes  
 8076			  
-8076 cd 33 d6			call key_init  
+8076 cd 42 d6			call key_init  
 8079 cd e9 80			call storage_init  
 807c				if TAPE_SUPPORT  
 807c cd 1e 90				call tape_init  
@@ -4891,7 +4891,7 @@
 884d			update_display: 
 884d e5				push hl 
 884e 2a c1 eb			ld hl, (display_fb_active) 
-8851 cd a8 d5			call write_display 
+8851 cd b7 d5			call write_display 
 8854 e1				pop hl 
 8855 c9				ret 
 8856			 
@@ -5137,7 +5137,7 @@
 88f9			 
 88f9					; handle key 
 88f9			 
-88f9 cd 3d d6				call cin_wait 
+88f9 cd 4c d6				call cin_wait 
 88fc			 
 88fc fe 05				cp KEY_UP 
 88fe 28 2b				jr z, .mgoup 
@@ -6030,7 +6030,7 @@
 8b61			if BASE_CPM 
 8b61					call cin_wait 
 8b61			else 
-8b61 cd 43 d6				call cin    ; _wait 
+8b61 cd 52 d6				call cin    ; _wait 
 8b64			endif 
 8b64			;		cp 0 
 8b64 b7					or a 
@@ -8386,16 +8386,16 @@
 8e61 e5			      push  HL 
 8e62			 
 8e62			      ; Initialise free list struct 
-8e62 21 61 d6		      ld    HL, heap_start 
-8e65 22 5c d6		      ld    (free_list), HL 
+8e62 21 70 d6		      ld    HL, heap_start 
+8e65 22 6b d6		      ld    (free_list), HL 
 8e68 21 00 00		      ld    HL, 0 
-8e6b 22 5e d6		      ld    (free_list+2), HL 
+8e6b 22 6d d6		      ld    (free_list+2), HL 
 8e6e			 
 8e6e			      ; Insert first free block at bottom of heap, consumes entire heap 
 8e6e 21 72 e2		      ld    HL, heap_start+heap_size-4 
-8e71 22 61 d6		      ld    (heap_start), HL        ; Next block (end of free list) 
-8e74 21 11 0c		      ld    HL, heap_size-4 
-8e77 22 63 d6		      ld    (heap_start+2), HL      ; Block size 
+8e71 22 70 d6		      ld    (heap_start), HL        ; Next block (end of free list) 
+8e74 21 02 0c		      ld    HL, heap_size-4 
+8e77 22 72 d6		      ld    (heap_start+2), HL      ; Block size 
 8e7a			 
 8e7a			      ; Insert end of free list block at top of heap - two null words will 
 8e7a			      ; terminate the free list 
@@ -8528,7 +8528,7 @@
 8e9e 44			      ld    B, H                    ; Move want to BC 
 8e9f 4d			      ld    C, L 
 8ea0			 
-8ea0 21 5c d6		      ld    HL, free_list           ; Store prev_free ptr to stack 
+8ea0 21 6b d6		      ld    HL, free_list           ; Store prev_free ptr to stack 
 8ea3 dd 75 04		      ld    (IX+4), L 
 8ea6 dd 74 05		      ld    (IX+5), H 
 8ea9			 
@@ -8807,7 +8807,7 @@
 8f72			 
 8f72			      ; Loop through the free list to find the first block with an address 
 8f72			      ; higher than the block being freed 
-8f72 21 5c d6		      ld    HL, free_list 
+8f72 21 6b d6		      ld    HL, free_list 
 8f75			 
 8f75			free_find_higher_block: 
 8f75 5e			      ld    E, (HL)                 ; Load next ptr from free block 
@@ -10235,7 +10235,7 @@
 922b 21 00 00			ld hl, 0 
 922e 22 3b ea			ld (tape_sync+2), hl 
 9231			 
-9231 cd 43 d6			call cin 
+9231 cd 52 d6			call cin 
 9234 fe 71			cp 'q' 
 9236 28 07			jr z, .tce 
 9238 fe 74			cp 't' 
@@ -10272,7 +10272,7 @@
 9248 cd 27 88			call  str_at_display 
 924b cd 4d 88			call update_display 
 924e			 
-924e cd 43 d6			call cin 
+924e cd 52 d6			call cin 
 9251 fe 71			cp 'q' 
 9253 28 ea			jr z, .tce 
 9255 fe 74			cp 't' 
@@ -10337,7 +10337,7 @@
 92b8 cd 54 87			call delay1s 
 92bb cd 54 87			call delay1s 
 92be			 
-92be cd 43 d6			call cin 
+92be cd 52 d6			call cin 
 92c1 fe 00			cp 0 
 92c3 28 bf			jr z, .tt1 
 92c5 cd ea 90			call tape_ready_stop 
@@ -11681,7 +11681,7 @@
 94aa 11 ee 99		        ld de, endprg 
 94ad cd 27 88			call str_at_display 
 94b0 cd 4d 88			call update_display 
-94b3 cd 3d d6			call cin_wait 
+94b3 cd 4c d6			call cin_wait 
 94b6			 
 94b6 c3 08 94			jp .bps1 
 94b9			 
@@ -11996,7 +11996,7 @@
 9665			 
 9665 f3				di 
 9666 31 00 f0			ld sp, tos 
-9669 cd 67 d5			call init_nmi 
+9669 cd 76 d5			call init_nmi 
 966c			;	ei 
 966c			 
 966c				; init spinner 
@@ -12036,7 +12036,7 @@
 9693			 
 9693				; detect if any keys are held down to enable breakpoints at start up 
 9693			 
-9693 cd 43 d6			call cin  
+9693 cd 52 d6			call cin  
 9696 fe 00			cp 0 
 9698 28 03			jr z, .nokeys 
 969a			 
@@ -12118,7 +12118,7 @@
 96a9						if STORAGE_SE 
 96a9							call forth_autoload 
 96a9						endif 
-96a9 cd b7 d4					call forth_startup 
+96a9 cd c6 d4					call forth_startup 
 96ac					endif 
 96ac			 
 96ac					if STARTUP_V2 
@@ -12151,7 +12151,7 @@
 96b4				;ld hl, heap_size 
 96b4				;ld de, topusermem 
 96b4				;ld de, heap_start 
-96b4 ed 5b 5c d6			ld de, (free_list )      
+96b4 ed 5b 6b d6			ld de, (free_list )      
 96b8 21 76 e2				ld hl, heap_end 
 96bb ed 52			sbc hl, de 
 96bd				;push hl 
@@ -12882,7 +12882,7 @@
 99f6 11 ee 99		        ld de, endprg 
 99f9 cd 27 88			call str_at_display 
 99fc cd 4d 88			call update_display 
-99ff cd 3d d6			call cin_wait 
+99ff cd 4c d6			call cin_wait 
 9a02 c1				pop bc 
 9a03 f1				pop af 
 9a04 d1				pop de 
@@ -13000,7 +13000,7 @@
 9a07			 
 9a07			macro_forth_dsp_next: 
 9a07				if DEBUG_FORTH_STACK_GUARD 
-9a07 cd 82 d2				call check_stacks 
+9a07 cd 91 d2				call check_stacks 
 9a0a				endif 
 9a0a e5				push hl 
 9a0b d5				push de 
@@ -13018,7 +13018,7 @@
 9a19 d1				pop de 
 9a1a e1				pop hl 
 9a1b				if DEBUG_FORTH_STACK_GUARD 
-9a1b cd 82 d2				call check_stacks 
+9a1b cd 91 d2				call check_stacks 
 9a1e				endif 
 9a1e c9				ret 
 9a1f			 
@@ -13031,7 +13031,7 @@
 9a1f			 
 9a1f			macro_forth_rsp_next: 
 9a1f				if DEBUG_FORTH_STACK_GUARD 
-9a1f cd 82 d2				call check_stacks 
+9a1f cd 91 d2				call check_stacks 
 9a22				endif 
 9a22 e5				push hl 
 9a23 d5				push de 
@@ -13046,7 +13046,7 @@
 9a30 d1				pop de 
 9a31 e1				pop hl 
 9a32				if DEBUG_FORTH_STACK_GUARD 
-9a32 cd 82 d2				call check_stacks 
+9a32 cd 91 d2				call check_stacks 
 9a35				endif 
 9a35 c9				ret 
 9a36			 
@@ -13089,14 +13089,14 @@
 9a3d			macro_forth_rsp_pop: 
 9a3d				if DEBUG_FORTH_STACK_GUARD 
 9a3d			;		DMARK "RPP" 
-9a3d cd 82 d2				call check_stacks 
+9a3d cd 91 d2				call check_stacks 
 9a40					FORTH_CHK_RSP_UNDER 
 9a40 e5				push hl 
 9a41 d5				push de 
 9a42 2a cc e9			ld hl,(cli_ret_sp) 
 9a45 11 86 e9			ld de, cli_ret_stack 
 9a48 cd d7 8a			call cmp16 
-9a4b da a3 d3			jp c, fault_rsp_under 
+9a4b da b2 d3			jp c, fault_rsp_under 
 9a4e d1				pop de 
 9a4f e1				pop hl 
 9a50				endm 
@@ -13133,14 +13133,14 @@
 9a59				; do stack underflow checks 
 9a59 e1				pop hl 
 9a5a				if DEBUG_FORTH_STACK_GUARD 
-9a5a cd 82 d2				call check_stacks 
+9a5a cd 91 d2				call check_stacks 
 9a5d					FORTH_CHK_RSP_UNDER 
 9a5d e5				push hl 
 9a5e d5				push de 
 9a5f 2a cc e9			ld hl,(cli_ret_sp) 
 9a62 11 86 e9			ld de, cli_ret_stack 
 9a65 cd d7 8a			call cmp16 
-9a68 da a3 d3			jp c, fault_rsp_under 
+9a68 da b2 d3			jp c, fault_rsp_under 
 9a6b d1				pop de 
 9a6c e1				pop hl 
 9a6d				endm 
@@ -14043,7 +14043,7 @@
 9c08			 
 9c08			macro_forth_loop_next: 
 9c08				if DEBUG_FORTH_STACK_GUARD 
-9c08 cd 82 d2				call check_stacks 
+9c08 cd 91 d2				call check_stacks 
 9c0b				endif 
 9c0b e5				push hl 
 9c0c d5				push de 
@@ -14097,7 +14097,7 @@
 9c27 d1				pop de    ; been reversed so save a swap on restore 
 9c28 e1				pop hl 
 9c29				if DEBUG_FORTH_STACK_GUARD 
-9c29 cd 82 d2				call check_stacks 
+9c29 cd 91 d2				call check_stacks 
 9c2c				endif 
 9c2c c9				ret 
 9c2d			 
@@ -14154,14 +14154,14 @@
 9c45				endif  
 9c45			endm  
 # End of macro DMARK
-9c45 cd 82 d2				call check_stacks 
+9c45 cd 91 d2				call check_stacks 
 9c48					FORTH_CHK_LOOP_UNDER 
 9c48 e5				push hl 
 9c49 d5				push de 
 9c4a 2a ca e9			ld hl,(cli_loop_sp) 
 9c4d 11 04 e9			ld de, cli_loop_stack 
 9c50 cd d7 8a			call cmp16 
-9c53 da a9 d3			jp c, fault_loop_under 
+9c53 da b8 d3			jp c, fault_loop_under 
 9c56 d1				pop de 
 9c57 e1				pop hl 
 9c58				endm 
@@ -14175,14 +14175,14 @@
 9c61				; TODO do stack underflow checks 
 9c61 e1				pop hl 
 9c62				if DEBUG_FORTH_STACK_GUARD 
-9c62 cd 82 d2				call check_stacks 
+9c62 cd 91 d2				call check_stacks 
 9c65					FORTH_CHK_LOOP_UNDER 
 9c65 e5				push hl 
 9c66 d5				push de 
 9c67 2a ca e9			ld hl,(cli_loop_sp) 
 9c6a 11 04 e9			ld de, cli_loop_stack 
 9c6d cd d7 8a			call cmp16 
-9c70 da a9 d3			jp c, fault_loop_under 
+9c70 da b8 d3			jp c, fault_loop_under 
 9c73 d1				pop de 
 9c74 e1				pop hl 
 9c75				endm 
@@ -14197,14 +14197,14 @@
 9c77				; release malloc data 
 9c77			 
 9c77				if DEBUG_FORTH_STACK_GUARD 
-9c77 cd 82 d2				call check_stacks 
+9c77 cd 91 d2				call check_stacks 
 9c7a					FORTH_CHK_DSP_UNDER 
 9c7a e5				push hl 
 9c7b d5				push de 
 9c7c 2a c8 e9			ld hl,(cli_data_sp) 
 9c7f 11 02 e8			ld de, cli_data_stack 
 9c82 cd d7 8a			call cmp16 
-9c85 da 9d d3			jp c, fault_dsp_under 
+9c85 da ac d3			jp c, fault_dsp_under 
 9c88 d1				pop de 
 9c89 e1				pop hl 
 9c8a				endm 
@@ -14333,14 +14333,14 @@
 9cb7 22 c8 e9			ld (cli_data_sp), hl 
 9cba			 
 9cba				if DEBUG_FORTH_STACK_GUARD 
-9cba cd 82 d2				call check_stacks 
+9cba cd 91 d2				call check_stacks 
 9cbd					FORTH_CHK_DSP_UNDER 
 9cbd e5				push hl 
 9cbe d5				push de 
 9cbf 2a c8 e9			ld hl,(cli_data_sp) 
 9cc2 11 02 e8			ld de, cli_data_stack 
 9cc5 cd d7 8a			call cmp16 
-9cc8 da 9d d3			jp c, fault_dsp_under 
+9cc8 da ac d3			jp c, fault_dsp_under 
 9ccb d1				pop de 
 9ccc e1				pop hl 
 9ccd				endm 
@@ -14501,7 +14501,7 @@
 9d2c			forth_warmstart: 
 9d2c				; setup stack over/under flow checks 
 9d2c				if DEBUG_FORTH_STACK_GUARD 
-9d2c cd 68 d2				call chk_stk_init 
+9d2c cd 77 d2				call chk_stk_init 
 9d2f				endif 
 9d2f			 
 9d2f				; init stack pointers  - * these stacks go upwards *  
@@ -14567,7 +14567,7 @@
 9d68			 
 9d68				; set start of word list in start of ram - for use when creating user words 
 9d68			 
-9d68 21 52 d6			ld hl, baseram 
+9d68 21 61 d6			ld hl, baseram 
 9d6b 22 98 e5			ld (os_last_new_uword), hl 
 9d6e cd 13 9d			call user_word_eol 
 9d71				 
@@ -15046,7 +15046,7 @@
 9e1a			;       while at start of word: 
 9e1a			; get start of dict (in user area first) 
 9e1a			 
-9e1a 21 52 d6		ld hl, baseram 
+9e1a 21 61 d6		ld hl, baseram 
 9e1d			;ld hl, sysdict 
 9e1d 22 1c ea		ld (cli_nextword),hl                            ; here do we need to do this? 
 9e20			;           match word at pc 
@@ -15777,7 +15777,7 @@
 9eca				endm 
 # End of macro CWHEAD
 9eca			; | NMICLR ( -- ) Clears the use of the NMI switch | DONE 
-9eca cd 6d d5			call clear_nmi 
+9eca cd 7c d5			call clear_nmi 
 9ecd			 
 9ecd				NEXTW 
 9ecd cd 68 ee			call parse_vector 
@@ -15800,7 +15800,7 @@
 9edb					call  heap_init 
 9edb				endif 
 9edb				; reset uword pointers 
-9edb 21 52 d6			ld hl, baseram 
+9edb 21 61 d6			ld hl, baseram 
 9ede 22 98 e5			ld (os_last_new_uword), hl 
 9ee1 cd 13 9d			call user_word_eol 
 9ee4				; clear stack 
@@ -15865,8 +15865,8 @@
 9f04				endm  
 # End of macro CALLMONITOR
 9f04				endif 
-9f04 2a 5c d6			ld hl, (free_list )      
-9f07 11 61 d6			ld de, heap_start 
+9f04 2a 6b d6			ld hl, (free_list )      
+9f07 11 70 d6			ld de, heap_start 
 9f0a			 
 9f0a ed 52			sbc hl, de  
 9f0c			 
@@ -15882,7 +15882,7 @@
 # End of macro FORTH_PUSH_VALUEHL
 9f0c			 
 9f0c			 
-9f0c ed 5b 5c d6		ld de, (free_list )      
+9f0c ed 5b 6b d6		ld de, (free_list )      
 9f10 21 76 e2			ld hl, heap_end 
 9f13			 
 9f13 ed 52			sbc hl, de 
@@ -19288,7 +19288,7 @@ a4c8				endif
 a4c8				endm  
 # End of macro CALLMONITOR
 a4c8			endif 
-a4c8 21 52 d6			ld hl, baseram 
+a4c8 21 61 d6			ld hl, baseram 
 a4cb				;ld hl, baseusermem 
 a4cb 01 00 00			ld bc, 0    ; start a counter 
 a4ce			 
@@ -20044,7 +20044,7 @@ a5f8			;		push hl
 a5f8			;		ex de, hl    ; put into DE 
 a5f8			 
 a5f8			 
-a5f8 21 52 d6			ld hl, baseram 
+a5f8 21 61 d6			ld hl, baseram 
 a5fb				;ld hl, baseusermem 
 a5fb			 
 a5fb e5			push hl   ; sacreifical push 
@@ -20459,7 +20459,7 @@ a695			;		push hl
 a695			;		ex de, hl    ; put into DE 
 a695			 
 a695			 
-a695 21 52 d6			ld hl, baseram 
+a695 21 61 d6			ld hl, baseram 
 a698				;ld hl, baseusermem 
 a698			 
 a698 e5			push hl   ; sacreifical push 
@@ -21343,7 +21343,7 @@ a7d4 c1					pop bc
 a7d5			;		ex de, hl    ; put into DE 
 a7d5			 
 a7d5			 
-a7d5 21 52 d6				ld hl, baseram 
+a7d5 21 61 d6				ld hl, baseram 
 a7d8					;ld hl, baseusermem 
 a7d8			 
 a7d8				; skip dict stub 
@@ -34334,7 +34334,7 @@ bd0a				endm
 # End of macro CALLMONITOR
 bd0a					endif 
 bd0a			; TODO currently waits 
-bd0a cd 43 d6				call cinndb 
+bd0a cd 52 d6				call cinndb 
 bd0d					;call cin_wait 
 bd0d 6f					ld l, a 
 bd0e 26 00				ld h, 0 
@@ -34406,7 +34406,7 @@ bd2e				endm
 # End of macro CALLMONITOR
 bd2e					endif 
 bd2e			; TODO currently waits 
-bd2e cd 43 d6				call cin 
+bd2e cd 52 d6				call cin 
 bd31					;call cin_wait 
 bd31 6f					ld l, a 
 bd32 26 00				ld h, 0 
@@ -34474,7 +34474,7 @@ bd52				endif
 bd52				endm  
 # End of macro CALLMONITOR
 bd52					endif 
-bd52 cd 3d d6				call cin_wait 
+bd52 cd 4c d6				call cin_wait 
 bd55 6f					ld l, a 
 bd56 26 00				ld h, 0 
 bd58					;call forth_push_numhl 
@@ -35378,9 +35378,9 @@ bf3e 61 ea		dw store_tmpid
 bf40 58 ea		dw store_tmppageid 
 bf42 85 8e		dw malloc 
 bf44 4f 8f		dw free 
-bf46 43 d6		dw cin 
+bf46 52 d6		dw cin 
 bf48			; 70 
-bf48 3d d6		dw cin_wait 
+bf48 4c d6		dw cin_wait 
 bf4a 75 9a		dw forth_push_numhl 
 bf4c d1 9a		dw forth_push_str 
 bf4e 68 ee		dw parse_vector 
@@ -37253,7 +37253,7 @@ c26e
 c26e cd 27 88			call str_at_display 
 c271 cd 4d 88			call update_display 
 c274				;call break_point_state 
-c274 cd 3d d6			call cin_wait 
+c274 cd 4c d6			call cin_wait 
 c277			 
 c277			;	ld a, ' ' 
 c277			;	ld (os_view_disable), a 
@@ -37458,16 +37458,16 @@ c35b			;	dw edit2
 c35b			;	dw edit3 
 c35b			 
 c35b			;	dw longread 
-c35b ab c7			dw clrstack 
-c35d df c7			dw type 
-c35f 04 c8			dw ztype 
-c361 ab c9			dw nip 
-c363 98 c9			dw tuck 
+c35b ba c7			dw clrstack 
+c35d ee c7			dw type 
+c35f 13 c8			dw ztype 
+c361 ba c9			dw nip 
+c363 a7 c9			dw tuck 
 c365			;	dw stest 
-c365 3b c8			dw strncpy 
-c367 bd c9			dw list 
-c369 9c c8			dw start1 
-c36b ac c8			dw start2 
+c365 4a c8			dw strncpy 
+c367 cc c9			dw list 
+c369 ab c8			dw start1 
+c36b bb c8			dw start2 
 c36d			;	dw start3 
 c36d			;	dw start3b 
 c36d			;	dw start3c 
@@ -37494,30 +37494,30 @@ c36d			;	dw game2mba
 c36d			;	dw game2mbas 
 c36d			;	dw game2mb 
 c36d			 
-c36d ee cb			dw game1 
-c36f ff cb			dw game1a 
-c371 61 cc			dw game1b 
-c373 96 cc			dw game1c 
-c375 cc cc			dw game1d 
-c377 fd cc			dw game1s 
-c379 11 cd			dw game1t 
-c37b 26 cd			dw game1f 
-c37d 5a cd			dw game1z 
-c37f 9e cd			dw game1zz 
+c36d fd cb			dw game1 
+c36f 0e cc			dw game1a 
+c371 70 cc			dw game1b 
+c373 a5 cc			dw game1c 
+c375 db cc			dw game1d 
+c377 0c cd			dw game1s 
+c379 20 cd			dw game1t 
+c37b 35 cd			dw game1f 
+c37d 69 cd			dw game1z 
+c37f ad cd			dw game1zz 
 c381			 
-c381 27 ca			dw test5 
-c383 5f ca			dw test6 
-c385 97 ca			dw test7 
-c387 ab ca			dw test8 
-c389 d7 ca			dw test9 
-c38b ed ca			dw test10 
+c381 36 ca			dw test5 
+c383 6e ca			dw test6 
+c385 a6 ca			dw test7 
+c387 ba ca			dw test8 
+c389 e6 ca			dw test9 
+c38b fc ca			dw test10 
 c38d				 
-c38d 75 ce		        dw ssv5 
-c38f 59 ce		        dw ssv4 
-c391 3d ce		        dw ssv3 
-c393 07 ce		        dw ssv2 
-c395 8e ce		        dw ssv1 
-c397 d6 ce		        dw ssv1cpm 
+c38d 84 ce		        dw ssv5 
+c38f 68 ce		        dw ssv4 
+c391 4c ce		        dw ssv3 
+c393 16 ce		        dw ssv2 
+c395 9d ce		        dw ssv1 
+c397 e5 ce		        dw ssv1cpm 
 c399			;	dw keyup 
 c399			;	dw keydown 
 c399			;	dw keyleft 
@@ -37583,1223 +37583,1223 @@ c589			; user word backup
 c589			; ubie 
 c589			; ubiall 
 c589			 
-c589 .. 00		spib1: db ": uball $01 do cls ptr count type list cr concat poolstrz 2drop loop ; ",0 
-c5d1			;spib1: db ": uball $01 do cls ptr count type list cr concat spicel $41 spio spistrz spiceh 2drop loop ; ",0 
-c5d1 .. 00		spib2: db ": ub $01 do cls ptr count type waitk $79 = if list cr concat poolstrz drop then 2drop loop ; ", 0 
-c62f			;spib2: db ": ubie $01 do cls ptr count type waitk $79 = if list cr concat count soctype drop then 2drop loop ;", 0 
-c62f .. 00		spib3: db ": spistrz ptr count #0 do dup i + @ spio loop ; ",0 
-c660			;spib3: db ": spistrz ptr count $00 do dup i + @ spio $01 pause loop ;",0 
-c660 .. 00		spib4: db ": uballt $01 do cls ptr count type list cr concat count spitype 2drop loop ; ",0 
-c6ae .. 00		spib7: db ": esp devsav #2 cartdev ; ",0 
-c6c9			;spib4: db ": soccon spicel $22 spio spistrz ;",0 
-c6c9			;spib5: db ": soctype aa ;",0 
-c6c9			;spib5: db ": soctype spiceh spicel $00 do dup i + @ $20 spio spio loop ;",0 
-c6c9			 
-c6c9			 
-c6c9			; NETCHAT (TODO) 
-c6c9			; Program to allow two nodes to chat with eachother 
-c6c9			; 
-c6c9			; v0 - target node 
-c6c9			;  
-c6c9			; accept input at 0,0 
-c6c9			; if input is string send spitype to target node 
-c6c9			; starting at row 2,0 , while spigetchr is not zero ->  
-c6c9			; 
-c6c9			; 
-c6c9			; TODO add paging of get request 
-c6c9			 
-c6c9			; ( node - ) 
-c6c9			;spi8:		db ": netchatp $00 $00 at accept ;", 0 
-c6c9			;spi9: 		db ": netchatr repeat spigetchr dup dup $00 = not if emit then $00 = not until $02 pause ; ",0 
-c6c9			;spi10:		db ": netchat v0! repeat netchatp count dup $00 > if spitype $01 pause then cls $00 $03 at \">\" . netchatr true until nop ; ", 0 
-c6c9			 
-c6c9 .. 00		scancode: 	db ": scancode repeat key dup cls chr .> bl ,> .  until ; ",0 
-c700			 
-c700 .. 00		repstr1:	db "( str ct --- long string ) ",0 
-c71c .. 00		repstr2:	db ": r over swap #1 do over concat loop ; ",0 
-c744			 
-c744 .. 00		execuword: 	db ": exec ( cmd --- ) uptr call ; ",0 
-c764			 
-c764			; Long read of currently open file 
-c764 .. 00		longread:   db ": lread read repeat readcont if read concat then readcont until nop ; ", 0 
-c7ab			 
-c7ab			; clear stack  
-c7ab			 
-c7ab .. 00		clrstack:  db ": clrstk depth ?dup if $01 do drop loop then nop ; ", 0 
-c7df			 
-c7df			; type ( addr count - ) 
-c7df .. 00		type:     db ": type $00 do dup i + @ emit loop ; ", 0 
-c804 .. 00		ztype:     db ": ztype repeat dup @ emit #1 + dup @ #0 = not until ; ", 0 
-c83b			 
-c83b			; some direct memory words 
-c83b			; strncpy ( len t f -- t ) 
-c83b			 
-c83b .. 00		strncpy:   db ": strncpy $00 scratch 2! $02 scratch 2! do $00 scratch 2@ i + @ $02 scratch 2@ i + ! loop nop  ;",0 
-c89c			 
-c89c .. 00		start1:     	db ": bpon $00 bp ;",0 
-c8ac .. 00		start2:     	db ": bpoff $01 bp ;",0 
-c8bd .. 00		start3b:         db ": ls dir cls drop dup $00 > if $01 do $08 $04 at . $01 $04 at . $04 $04 at . $23 $04 at accept drop scroll loop then nop ;",0 
-c938 .. 00		start3c:         db ": dirlist dir cls drop dup $00 > if $01 do \"/\" .> .> \"Ext:\" .> .> \"Id: \" .> .>  loop then nop ;",0 
-c998			 
-c998 .. 00		tuck:         db ": tuck swap over ;", 0 
-c9ab .. 00		nip:         db ": nip swap drop ;", 0 
-c9bd			 
-c9bd			; a handy word to list items on the stack 
-c9bd			 
-c9bd .. 00		list:            db ": more cls repeat scroll $01 $04 at depth . $0a $04 at .> $01 $01 at accept drop depth 0= not until nop ;",0 
-ca27			 
-ca27			 
-ca27			; test stack  
-ca27			; rnd8 stest 
-ca27			 
-ca27			;stest:   db ": stest cls  v0! v0@ $00 do rnd8 $01 $01 at i . $01 pause loop v0@ $00 do drop $12 $01 at depth . $01 pause loop nop ;",0  
-ca27			 
-ca27			; random malloc and free cycles 
-ca27			 
-ca27			;mtesta:      db ": mtesta $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . rnd8 dup $13 $01 at . malloc heap $1f $01 at . $1f $02 at . $01 pause free $01 until nop ;", 0 
-ca27			 
-ca27			; fixed malloc and free cycles 
-ca27			 
-ca27			;mtestb:      db ": mtestb $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . $80 malloc heap $1f $01 at . $1f $02 at . $01 pause free $01 until nop ;", 0 
-ca27			 
-ca27			; fixed double string push and drop cycle  
-ca27			 
-ca27			;mtestc:      db ": mtestc $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . $80 spaces $2f spaces  heap $1f $01 at . $1f $02 at . $01 pause drop drop $01 until nop ; ", 0 
-ca27			 
-ca27			; consistent fixed string push and drop cycle  
-ca27			 
-ca27			;mtestd:      db ": mtestd $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . $80 spaces heap $1f $01 at . $1f $02 at . $01 pause drop $01 until nop ; ", 0 
-ca27			 
-ca27			;mteste:      db ": mteste $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . rnd8 dup spaces $0f $02 at . heap $1f $01 at . $1f $02 at . $01 pause drop $01 until nop ; ", 0 
-ca27			 
-ca27			;test1:		db ": aa 1 2 3 ;", 0 
-ca27			;test2:     	db "111 aa 888 999",0 
-ca27			;test3:     	db ": bb 77 ;",0 
-ca27			;test4:     	db "$02 $01 do i . loop bb",0 
-ca27			 
-ca27 .. 00		test5:     	db ": hline $13 $00 do i $01 at 1 . i $04 at 1 . loop nop ;",0 
-ca5f .. 00		test6:     	db ": vline $04 $01 do $00 i at 1 . $13 i at 1 . loop nop ;",0 
-ca97 .. 00		test7:     	db ": box hline vline ;",0 
-caab .. 00		test8:     	db ": world cls box $03 $03 at Hello-World! . ;",0 
-cad7 .. 00		test9:     	db ": sw $01 adsp world ;",0 
-caed .. 00		test10:     	db ": fw $00 adsp world draw $05 pause ;",0 
-cb12			;test11:     	db "hello create .",0 
-cb12			;test12:     	db "hello2 create .",0 
-cb12			 
-cb12			;mmtest1:     	db "cls $0001 $0008 MIN . $0002 pause",0 
-cb12			;mmtest2:     	db "cls $0101 $0008 MIN . $0002 pause",0 
-cb12			;mmtest3:     	db "cls $0001 $0008 MAX . $0002 pause",0 
-cb12			;mmtest4:     	db "cls $0101 $0008 MAX . $0002 pause",0 
-cb12			;mmtest5:     	db "cls $0001 $0001 MIN . $0002 pause",0 
-cb12			;mmtest6:     	db "cls $0001 $0001 MAX . $0002 pause",0 
-cb12			 
-cb12			;iftest1:     	db "$0001 IF cls .",0 
-cb12			;iftest2:     	db "$0000 IF cls .",0 
-cb12			;iftest3:     	db "$0002 $0003 - IF cls .",0 
-cb12			;looptest1:     	db "$0003 $0001 do i . loop 8",0 
-cb12			;looptest2:     	db "$0003 $0001 do i . $0001 pause loop 8",0 
-cb12			 
-cb12			;ifthtest1:     	db "$0001 IF is-true . $0005 pause THEN next-word . $0005 pause",0 
-cb12			;ifthtest2:     	db "$0000 IF is-true . $0005 pause THEN next-word . $0005 pause",0 
-cb12			;ifthtest3:     	db "$0002 $0003 - IF is-true . $0005 pause THEN next-word . $0005 pause",0 
-cb12			 
-cb12			 
-cb12 .. 00		sound1: db ": note spicel spio spiceh spicel ; ",0 
-cb36 .. 00		sound2: db ": slient $9f note $bf note $df note $ff note ; ", 0 
-cb66 .. 00		sound3: db ": sound $01 cartdev $00 spitime ! ; ",0 
-cb8b .. 00		sound4: db ": cha $00 ; ",0 
-cb98 .. 00		sound5: db ": chb $20 ; ",0 
-cba5 .. 00		sound6: db ": chc $40 ; ",0 
-cbb2 .. 00		sound7: db ": chd $60 ; ",0 
-cbbf .. 00		sound8: db ": cnote $80 + + note ; ", 0 
-cbd7 .. 00		sound9: db ": cvol $90 + + note ; ", 0 
-cbee			 
-cbee			 
-cbee			 
-cbee			 
-cbee			; a small guess the number game 
-cbee			 
-cbee .. 00		game1:          db ": gsn rnd8 v1! ;",0 
-cbff .. 00		game1a:          db ": gs $00 $00 at Enter-a-number .- $00 $02 at between-1-and-255 .- $00 $03 at accept str2num v2! ;",0 
-cc61			 
-cc61 .. 00		game1b:          db ": gcb v2@ v1@ < if $00 $00 at Too-low! .- $01 then ;",0 
-cc96 .. 00		game1c:          db ": gcc v2@ v1@ > if $00 $00 at Too-high! .- $01 then ;",0 
-cccc .. 00		game1d:          db ": gcd v2@ v1@ = if $00 $00 at Yes! .- $00 then ;",0 
-ccfd .. 00		game1s:          db ": gck gcb gcc gcd ;",0 
-cd11 .. 00		game1t:          db ": sc v3@ $01 + v3! ;",0 
-cd26 .. 00		game1f:          db ": fsc v3@ cls $01 $01 at You-Took .- $02 $03 at . ;",0 
-cd5a .. 00		game1z:         db ": ga $00 v3! gsn repeat cls gs cls gck $02 pause sc until fsc nop ;",0 
-cd9e			 
-cd9e			; Using 'ga' save a high score across multiple runs using external storage 
-cd9e			 
-cd9e .. 00		game1zz:         db ": gas ga $01 bank $80 bread $01 $04 at Prev-Score .> storepage ptr $02 + dup 2@ . v3@ swap 2! $80 bupd ;",0 
-ce07			 
-ce07			 
-ce07			;game2r:          db ": m2r rnd8 v1! ;  ",0, 0, 0, FORTH_END_BUFFER 
-ce07			;game2b1:          db ": m2b1 $1f $00 do i v2@ at rnd8 $30 < if A . then loop nop ;  ",0, 0, 0, FORTH_END_BUFFER 
-ce07			;game2b2:          db ": m2b cls $04 $01 do i v2! m2b1 loop ;  ",0, 0, 0, FORTH_END_BUFFER 
-ce07			 
-ce07			; simple screen saver to test code memory reuse to destruction 
-ce07			 
-ce07 .. 00		ssv2:            db ": ssvchr $2a $2d rnd dup $2c = if drop $20 then nop ;",0 
-ce3d .. 00		ssv3:            db ": ssvposx $01 $27 rnd v0! ;",0 
-ce59 .. 00		ssv4:            db ": ssvposy $01 $05 rnd v1! ;",0 
-ce75 .. 00		ssv5:            db ": ssvt ssvposx ssvposy ;",0 
-ce8e .. 00		ssv1:          db ": ssv cls repeat ssvposx ssvposy v0@ v1@ at ssvchr emit $01 until nop ;",0 
-ced6 .. 00		ssv1cpm:          db ": ssvcpm cls repeat ssvposx ssvposy v0@ v1@ at ssvchr emit $01 pausems $01 until nop ;",0 
-cf2d			;ssv1:          db ": ssv cls repeat ssvt v0@ v1@ at ssvchr emit $01 until nop ;",0 
-cf2d			;ssv1:          db ": ssv ssvposx ssvposy at ssvchr ;",0 
-cf2d			;ssv1:            db ": ssv repeat ssvpos rnd8 $10 if               $01 until nop ;",0 
-cf2d			;ssv2:            db ": ssvchr v0! v1! at? ;",0 
-cf2d			;ssv5:            db ": ssvt ssvposx ssvposy v0@ .> v1@ .> ;",0 
-cf2d			;ssv2:            db ": ssvchr $2a $2d rnd  ;",0 
-cf2d			 
-cf2d			 
-cf2d			 
-cf2d			; minesweeper/battleship finding game 
-cf2d			; draws a game board of random ship/mine positions 
-cf2d			; user enters coords to see if it hits on 
-cf2d			; game ends when all are hit 
-cf2d			; when hit or miss says how many may be in the area 
-cf2d			 
-cf2d			; setup the game board and then hide it 
-cf2d			;game2b:          db ": mbsetup $02 fb cls $04 $01 do i v2! $10 $01 do i v2@ at rnd8 $30 < if A . then loop loop $05 pause $01 fb ;",0 
-cf2d			;game2bf:         db ": mbsetupf cls $04 $01 do i v2! $10 $01 do i v2@ at \"+\" . loop loop nop ;",0 
-cf2d			;; prompt for where to target 
-cf2d			;game2mba:        db ": mbp $12 $04 at Turns .> v3@ . $12 $03 at Score .> v0@ . $12 $01 at Enter-X-__ .- $1a $01 at accept $12 $02 at Enter-Y-__ .- $1a $02 at accept nop ;", 0  
-cf2d			;game2mbas:        db ": mbsv str2num v2! str2num v1! nop ;", 0  
-cf2d			;; TODO see if the entered coords hits or misses pushes char hit of miss 
-cf2d			;game2mbht:      db ": mbckht nop ;",0 
-cf2d			;game2mbms:      db ": mbcms nop ;",0 
-cf2d			; TODO how many might be near by 
-cf2d			;game2mb:          db ": mb $00 v0! $00 v3! mbsetup mbsetupf repeat mbp mbsv $02 fb mbckht mbcms v1@ v2@ at@ $01 fb v1@ v2@ at emit $01 until nop ;",0 
-cf2d			 
-cf2d			; Game 3 
-cf2d			 
-cf2d			; Vert scroller ski game - avoid the trees! 
-cf2d			 
-cf2d			; v0 score (ie turns) 
-cf2d			; v1 player pos 
-cf2d			; v2 left wall 
-cf2d			; v3 right wall 
-cf2d			 
-cf2d			; Draw side walls randomly 
-cf2d			 
-cf2d			;game3w:   db ": vsw v2@ $04 at \"|\" . v3@ $04 at \"|\" . nop ;", 0 
-cf2d			 
-cf2d			; Draw player 
-cf2d			;game3p:   db ": vsp v1@ $01 at \"V\" . nop ; ", 0 
-cf2d			 
-cf2d			; TODO Get Key 
-cf2d			 
-cf2d			; TODO Move left right 
-cf2d			 
-cf2d			; scroll and move walls a bit 
-cf2d			 
-cf2d			;game3sc:  db ": vsscl v2@ $01 + v2! v3@ $01 - v3! scroll nop ;", 0 
-cf2d			 
-cf2d			; main game loop 
-cf2d			 
-cf2d			;game3vsi:    db ": vsi $00 v0! $01 v2! $12 v3! $06 v1! nop ;",0 
-cf2d			;game3vs:    db ": vs vsi repeat vsw vsp vsscl $05 pause scroll $01 until nop ;",0 
-cf2d			 
-cf2d			; key board defs 
-cf2d			 
-cf2d .. 00		keyup:       db ": keyup $05 ;",0 
-cf3b .. 00		keydown:       db ": keydown $0a ;",0 
-cf4b .. 00		keyleft:       db ": keyleft $0b ;",0 
-cf5b .. 00		keyright:       db ": keyright $0c ;",0 
-cf6c .. 00		keyf1:       db ": keyf1 $10 ;",0 
-cf7a .. 00		keyf2:       db ": keyf2 $11 ;",0 
-cf88 .. 00		keyf3:       db ": keyf3 $12 ;",0 
-cf96 .. 00		keyf4:       db ": keyf4 $13 ;",0 
-cfa4 .. 00		keyf5:       db ": keyf5 $14 ;",0 
-cfb2 .. 00		keyf6:       db ": keyf6 $15 ;",0 
-cfc0 .. 00		keyf7:       db ": keyf7 $16 ;",0 
-cfce .. 00		keyf8:       db ": keyf8 $17 ;",0 
-cfdc .. 00		keyf9:       db ": keyf9 $18 ;",0 
-cfea .. 00		keyf10:       db ": keyf10 $19 ;",0 
-cff9 .. 00		keyf11:       db ": keyf11 $1a ;",0 
-d008 .. 00		keyf12:       db ": keyf12 $1b ;",0 
-d017			 
-d017 .. 00		keytab:       db ": keytab $09 ;",0 
-d026 .. 00		keycr:       db ": keycr $0d ;",0 
-d034 .. 00		keyhome:       db ": keyhome $0e ;",0 
-d044 .. 00		keyend:       db ": keyend $0f ;",0 
-d053 .. 00		keybs:       db ": keybs $08 ;",0 
-d061			 
-d061			; Test tape support 
-d061			 
-d061			 
-d061			   
-d061 .. 00		tape1: db ": setto ( gap low high --- ) v0! v1! v2! ; ", 0 
-d08d .. 00		tape2a: db ": tosc #0 do #170 spio loop ; ",0  
-d0ac			;tape2a: db ": tosc #0 do #0 spio #170 spio loop ; ",0  
-d0ac			;tape2a: db ": tosc #0 do #0 spio #255 spio loop ; ",0  
-d0ac			;tape2a: db ": tosc #0 do spicel spiceh nop loop ; ",0  
-d0ac			;tape2a: db ": tosc #0 do spicel nop spiceh nop loop ; ",0  
-d0ac			;tape2: db ": th spiceh v0@ pause spicel tg ; ",0 
-d0ac			;tape3: db ": tl spiceh v1@ pause spicel tg ; ",0 
-d0ac .. 00		tape2: db ": th v0@ tosc tg ; ",0 
-d0c0 .. 00		tape3: db ": tl v1@ tosc tg ; ",0 
-d0d4 .. 00		tape4: db ": tg #0 spio v2@ #0 do nop loop ; ",0 
-d0f7			;tape4: db ": tg spicel v2@ #0 do nop loop ; ",0 
-d0f7 .. 00		tape5: db ": tohead tg tg tg th tl th tl th tl tg tg tg ; ",0 
-d127 .. 00		tape6: db ": toinit  tohead ; ",0 
-d13b .. 00		tape7a: db ": thc dup if th then ; ", 0 
-d153 .. 00		tape7b: db ": tlc not if tl then ; ", 0 
-d16b			; TODO bit checksum 
-d16b			; TODO To test. Round the wrong way. Change mask and shift or add RROT etc  
-d16b .. 00		tape7: db ": tob ( byte --- ) #8 #1 do dup #128 and thc tlc lshift loop drop ; ",0 
-d1b0			;tape7: db ": tob ( byte --- ) #8 #1 do dup #1 and thc tlc rshift loop drop ; ",0 
-d1b0			 
-d1b0 .. 00		tape8: db ": to ( str --- ) cls tohead ptr count #0 do dup i + @ dup emit tob tg tg tg tg loop ; ",0 
-d207			 
-d207			; Extra utils 
-d207			 
-d207			 
-d207 .. 00		bet1: db ": between? ( fr to x -- b ) dup rot < rot rot < = ; ", 0 
-d23c .. 00		bet2: db ": between ( f t -- x .. ) swap do i loop ; ", 0 
-d268			 
-d268			 
-d268			 
-d268			; eof 
+c589 .. 00		spib1: db ": uball $01 do cls ptr count type list cr concat poolstrz 2drop drop loop ; ",0 
+c5d6			;spib1: db ": uball $01 do cls ptr count type list cr concat spicel $41 spio spistrz spiceh 2drop loop ; ",0 
+c5d6 .. 00		spib2: db ": ub $01 do cls ptr count type waitk $79 = if list cr concat poolstrz drop then 2drop drop loop ; ", 0 
+c639			;spib2: db ": ubie $01 do cls ptr count type waitk $79 = if list cr concat count soctype drop then 2drop loop ;", 0 
+c639 .. 00		spib3: db ": spistrz ptr count #0 do dup i + @ spio loop ; ",0 
+c66a			;spib3: db ": spistrz ptr count $00 do dup i + @ spio $01 pause loop ;",0 
+c66a .. 00		spib4: db ": uballt $01 do cls ptr count type list cr concat count uartype 2drop drop loop ; ",0 
+c6bd .. 00		spib7: db ": esp devsav #2 cartdev ; ",0 
+c6d8			;spib4: db ": soccon spicel $22 spio spistrz ;",0 
+c6d8			;spib5: db ": soctype aa ;",0 
+c6d8			;spib5: db ": soctype spiceh spicel $00 do dup i + @ $20 spio spio loop ;",0 
+c6d8			 
+c6d8			 
+c6d8			; NETCHAT (TODO) 
+c6d8			; Program to allow two nodes to chat with eachother 
+c6d8			; 
+c6d8			; v0 - target node 
+c6d8			;  
+c6d8			; accept input at 0,0 
+c6d8			; if input is string send spitype to target node 
+c6d8			; starting at row 2,0 , while spigetchr is not zero ->  
+c6d8			; 
+c6d8			; 
+c6d8			; TODO add paging of get request 
+c6d8			 
+c6d8			; ( node - ) 
+c6d8			;spi8:		db ": netchatp $00 $00 at accept ;", 0 
+c6d8			;spi9: 		db ": netchatr repeat spigetchr dup dup $00 = not if emit then $00 = not until $02 pause ; ",0 
+c6d8			;spi10:		db ": netchat v0! repeat netchatp count dup $00 > if spitype $01 pause then cls $00 $03 at \">\" . netchatr true until nop ; ", 0 
+c6d8			 
+c6d8 .. 00		scancode: 	db ": scancode repeat key dup cls chr .> bl ,> .  until ; ",0 
+c70f			 
+c70f .. 00		repstr1:	db "( str ct --- long string ) ",0 
+c72b .. 00		repstr2:	db ": r over swap #1 do over concat loop ; ",0 
+c753			 
+c753 .. 00		execuword: 	db ": exec ( cmd --- ) uptr call ; ",0 
+c773			 
+c773			; Long read of currently open file 
+c773 .. 00		longread:   db ": lread read repeat readcont if read concat then readcont until nop ; ", 0 
+c7ba			 
+c7ba			; clear stack  
+c7ba			 
+c7ba .. 00		clrstack:  db ": clrstk depth ?dup if $01 do drop loop then nop ; ", 0 
+c7ee			 
+c7ee			; type ( addr count - ) 
+c7ee .. 00		type:     db ": type $00 do dup i + @ emit loop ; ", 0 
+c813 .. 00		ztype:     db ": ztype repeat dup @ emit #1 + dup @ #0 = not until ; ", 0 
+c84a			 
+c84a			; some direct memory words 
+c84a			; strncpy ( len t f -- t ) 
+c84a			 
+c84a .. 00		strncpy:   db ": strncpy $00 scratch 2! $02 scratch 2! do $00 scratch 2@ i + @ $02 scratch 2@ i + ! loop nop  ;",0 
+c8ab			 
+c8ab .. 00		start1:     	db ": bpon $00 bp ;",0 
+c8bb .. 00		start2:     	db ": bpoff $01 bp ;",0 
+c8cc .. 00		start3b:         db ": ls dir cls drop dup $00 > if $01 do $08 $04 at . $01 $04 at . $04 $04 at . $23 $04 at accept drop scroll loop then nop ;",0 
+c947 .. 00		start3c:         db ": dirlist dir cls drop dup $00 > if $01 do \"/\" .> .> \"Ext:\" .> .> \"Id: \" .> .>  loop then nop ;",0 
+c9a7			 
+c9a7 .. 00		tuck:         db ": tuck swap over ;", 0 
+c9ba .. 00		nip:         db ": nip swap drop ;", 0 
+c9cc			 
+c9cc			; a handy word to list items on the stack 
+c9cc			 
+c9cc .. 00		list:            db ": more cls repeat scroll $01 $04 at depth . $0a $04 at .> $01 $01 at accept drop depth 0= not until nop ;",0 
+ca36			 
+ca36			 
+ca36			; test stack  
+ca36			; rnd8 stest 
+ca36			 
+ca36			;stest:   db ": stest cls  v0! v0@ $00 do rnd8 $01 $01 at i . $01 pause loop v0@ $00 do drop $12 $01 at depth . $01 pause loop nop ;",0  
+ca36			 
+ca36			; random malloc and free cycles 
+ca36			 
+ca36			;mtesta:      db ": mtesta $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . rnd8 dup $13 $01 at . malloc heap $1f $01 at . $1f $02 at . $01 pause free $01 until nop ;", 0 
+ca36			 
+ca36			; fixed malloc and free cycles 
+ca36			 
+ca36			;mtestb:      db ": mtestb $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . $80 malloc heap $1f $01 at . $1f $02 at . $01 pause free $01 until nop ;", 0 
+ca36			 
+ca36			; fixed double string push and drop cycle  
+ca36			 
+ca36			;mtestc:      db ": mtestc $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . $80 spaces $2f spaces  heap $1f $01 at . $1f $02 at . $01 pause drop drop $01 until nop ; ", 0 
+ca36			 
+ca36			; consistent fixed string push and drop cycle  
+ca36			 
+ca36			;mtestd:      db ": mtestd $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . $80 spaces heap $1f $01 at . $1f $02 at . $01 pause drop $01 until nop ; ", 0 
+ca36			 
+ca36			;mteste:      db ": mteste $01 v0! repeat heap cls $01 $01 at v0@ . v0@ $01 + v0! $08 $01 at . $08 $02 at . rnd8 dup spaces $0f $02 at . heap $1f $01 at . $1f $02 at . $01 pause drop $01 until nop ; ", 0 
+ca36			 
+ca36			;test1:		db ": aa 1 2 3 ;", 0 
+ca36			;test2:     	db "111 aa 888 999",0 
+ca36			;test3:     	db ": bb 77 ;",0 
+ca36			;test4:     	db "$02 $01 do i . loop bb",0 
+ca36			 
+ca36 .. 00		test5:     	db ": hline $13 $00 do i $01 at 1 . i $04 at 1 . loop nop ;",0 
+ca6e .. 00		test6:     	db ": vline $04 $01 do $00 i at 1 . $13 i at 1 . loop nop ;",0 
+caa6 .. 00		test7:     	db ": box hline vline ;",0 
+caba .. 00		test8:     	db ": world cls box $03 $03 at Hello-World! . ;",0 
+cae6 .. 00		test9:     	db ": sw $01 adsp world ;",0 
+cafc .. 00		test10:     	db ": fw $00 adsp world draw $05 pause ;",0 
+cb21			;test11:     	db "hello create .",0 
+cb21			;test12:     	db "hello2 create .",0 
+cb21			 
+cb21			;mmtest1:     	db "cls $0001 $0008 MIN . $0002 pause",0 
+cb21			;mmtest2:     	db "cls $0101 $0008 MIN . $0002 pause",0 
+cb21			;mmtest3:     	db "cls $0001 $0008 MAX . $0002 pause",0 
+cb21			;mmtest4:     	db "cls $0101 $0008 MAX . $0002 pause",0 
+cb21			;mmtest5:     	db "cls $0001 $0001 MIN . $0002 pause",0 
+cb21			;mmtest6:     	db "cls $0001 $0001 MAX . $0002 pause",0 
+cb21			 
+cb21			;iftest1:     	db "$0001 IF cls .",0 
+cb21			;iftest2:     	db "$0000 IF cls .",0 
+cb21			;iftest3:     	db "$0002 $0003 - IF cls .",0 
+cb21			;looptest1:     	db "$0003 $0001 do i . loop 8",0 
+cb21			;looptest2:     	db "$0003 $0001 do i . $0001 pause loop 8",0 
+cb21			 
+cb21			;ifthtest1:     	db "$0001 IF is-true . $0005 pause THEN next-word . $0005 pause",0 
+cb21			;ifthtest2:     	db "$0000 IF is-true . $0005 pause THEN next-word . $0005 pause",0 
+cb21			;ifthtest3:     	db "$0002 $0003 - IF is-true . $0005 pause THEN next-word . $0005 pause",0 
+cb21			 
+cb21			 
+cb21 .. 00		sound1: db ": note spicel spio spiceh spicel ; ",0 
+cb45 .. 00		sound2: db ": slient $9f note $bf note $df note $ff note ; ", 0 
+cb75 .. 00		sound3: db ": sound $01 cartdev $00 spitime ! ; ",0 
+cb9a .. 00		sound4: db ": cha $00 ; ",0 
+cba7 .. 00		sound5: db ": chb $20 ; ",0 
+cbb4 .. 00		sound6: db ": chc $40 ; ",0 
+cbc1 .. 00		sound7: db ": chd $60 ; ",0 
+cbce .. 00		sound8: db ": cnote $80 + + note ; ", 0 
+cbe6 .. 00		sound9: db ": cvol $90 + + note ; ", 0 
+cbfd			 
+cbfd			 
+cbfd			 
+cbfd			 
+cbfd			; a small guess the number game 
+cbfd			 
+cbfd .. 00		game1:          db ": gsn rnd8 v1! ;",0 
+cc0e .. 00		game1a:          db ": gs $00 $00 at Enter-a-number .- $00 $02 at between-1-and-255 .- $00 $03 at accept str2num v2! ;",0 
+cc70			 
+cc70 .. 00		game1b:          db ": gcb v2@ v1@ < if $00 $00 at Too-low! .- $01 then ;",0 
+cca5 .. 00		game1c:          db ": gcc v2@ v1@ > if $00 $00 at Too-high! .- $01 then ;",0 
+ccdb .. 00		game1d:          db ": gcd v2@ v1@ = if $00 $00 at Yes! .- $00 then ;",0 
+cd0c .. 00		game1s:          db ": gck gcb gcc gcd ;",0 
+cd20 .. 00		game1t:          db ": sc v3@ $01 + v3! ;",0 
+cd35 .. 00		game1f:          db ": fsc v3@ cls $01 $01 at You-Took .- $02 $03 at . ;",0 
+cd69 .. 00		game1z:         db ": ga $00 v3! gsn repeat cls gs cls gck $02 pause sc until fsc nop ;",0 
+cdad			 
+cdad			; Using 'ga' save a high score across multiple runs using external storage 
+cdad			 
+cdad .. 00		game1zz:         db ": gas ga $01 bank $80 bread $01 $04 at Prev-Score .> storepage ptr $02 + dup 2@ . v3@ swap 2! $80 bupd ;",0 
+ce16			 
+ce16			 
+ce16			;game2r:          db ": m2r rnd8 v1! ;  ",0, 0, 0, FORTH_END_BUFFER 
+ce16			;game2b1:          db ": m2b1 $1f $00 do i v2@ at rnd8 $30 < if A . then loop nop ;  ",0, 0, 0, FORTH_END_BUFFER 
+ce16			;game2b2:          db ": m2b cls $04 $01 do i v2! m2b1 loop ;  ",0, 0, 0, FORTH_END_BUFFER 
+ce16			 
+ce16			; simple screen saver to test code memory reuse to destruction 
+ce16			 
+ce16 .. 00		ssv2:            db ": ssvchr $2a $2d rnd dup $2c = if drop $20 then nop ;",0 
+ce4c .. 00		ssv3:            db ": ssvposx $01 $27 rnd v0! ;",0 
+ce68 .. 00		ssv4:            db ": ssvposy $01 $05 rnd v1! ;",0 
+ce84 .. 00		ssv5:            db ": ssvt ssvposx ssvposy ;",0 
+ce9d .. 00		ssv1:          db ": ssv cls repeat ssvposx ssvposy v0@ v1@ at ssvchr emit $01 until nop ;",0 
+cee5 .. 00		ssv1cpm:          db ": ssvcpm cls repeat ssvposx ssvposy v0@ v1@ at ssvchr emit $01 pausems $01 until nop ;",0 
+cf3c			;ssv1:          db ": ssv cls repeat ssvt v0@ v1@ at ssvchr emit $01 until nop ;",0 
+cf3c			;ssv1:          db ": ssv ssvposx ssvposy at ssvchr ;",0 
+cf3c			;ssv1:            db ": ssv repeat ssvpos rnd8 $10 if               $01 until nop ;",0 
+cf3c			;ssv2:            db ": ssvchr v0! v1! at? ;",0 
+cf3c			;ssv5:            db ": ssvt ssvposx ssvposy v0@ .> v1@ .> ;",0 
+cf3c			;ssv2:            db ": ssvchr $2a $2d rnd  ;",0 
+cf3c			 
+cf3c			 
+cf3c			 
+cf3c			; minesweeper/battleship finding game 
+cf3c			; draws a game board of random ship/mine positions 
+cf3c			; user enters coords to see if it hits on 
+cf3c			; game ends when all are hit 
+cf3c			; when hit or miss says how many may be in the area 
+cf3c			 
+cf3c			; setup the game board and then hide it 
+cf3c			;game2b:          db ": mbsetup $02 fb cls $04 $01 do i v2! $10 $01 do i v2@ at rnd8 $30 < if A . then loop loop $05 pause $01 fb ;",0 
+cf3c			;game2bf:         db ": mbsetupf cls $04 $01 do i v2! $10 $01 do i v2@ at \"+\" . loop loop nop ;",0 
+cf3c			;; prompt for where to target 
+cf3c			;game2mba:        db ": mbp $12 $04 at Turns .> v3@ . $12 $03 at Score .> v0@ . $12 $01 at Enter-X-__ .- $1a $01 at accept $12 $02 at Enter-Y-__ .- $1a $02 at accept nop ;", 0  
+cf3c			;game2mbas:        db ": mbsv str2num v2! str2num v1! nop ;", 0  
+cf3c			;; TODO see if the entered coords hits or misses pushes char hit of miss 
+cf3c			;game2mbht:      db ": mbckht nop ;",0 
+cf3c			;game2mbms:      db ": mbcms nop ;",0 
+cf3c			; TODO how many might be near by 
+cf3c			;game2mb:          db ": mb $00 v0! $00 v3! mbsetup mbsetupf repeat mbp mbsv $02 fb mbckht mbcms v1@ v2@ at@ $01 fb v1@ v2@ at emit $01 until nop ;",0 
+cf3c			 
+cf3c			; Game 3 
+cf3c			 
+cf3c			; Vert scroller ski game - avoid the trees! 
+cf3c			 
+cf3c			; v0 score (ie turns) 
+cf3c			; v1 player pos 
+cf3c			; v2 left wall 
+cf3c			; v3 right wall 
+cf3c			 
+cf3c			; Draw side walls randomly 
+cf3c			 
+cf3c			;game3w:   db ": vsw v2@ $04 at \"|\" . v3@ $04 at \"|\" . nop ;", 0 
+cf3c			 
+cf3c			; Draw player 
+cf3c			;game3p:   db ": vsp v1@ $01 at \"V\" . nop ; ", 0 
+cf3c			 
+cf3c			; TODO Get Key 
+cf3c			 
+cf3c			; TODO Move left right 
+cf3c			 
+cf3c			; scroll and move walls a bit 
+cf3c			 
+cf3c			;game3sc:  db ": vsscl v2@ $01 + v2! v3@ $01 - v3! scroll nop ;", 0 
+cf3c			 
+cf3c			; main game loop 
+cf3c			 
+cf3c			;game3vsi:    db ": vsi $00 v0! $01 v2! $12 v3! $06 v1! nop ;",0 
+cf3c			;game3vs:    db ": vs vsi repeat vsw vsp vsscl $05 pause scroll $01 until nop ;",0 
+cf3c			 
+cf3c			; key board defs 
+cf3c			 
+cf3c .. 00		keyup:       db ": keyup $05 ;",0 
+cf4a .. 00		keydown:       db ": keydown $0a ;",0 
+cf5a .. 00		keyleft:       db ": keyleft $0b ;",0 
+cf6a .. 00		keyright:       db ": keyright $0c ;",0 
+cf7b .. 00		keyf1:       db ": keyf1 $10 ;",0 
+cf89 .. 00		keyf2:       db ": keyf2 $11 ;",0 
+cf97 .. 00		keyf3:       db ": keyf3 $12 ;",0 
+cfa5 .. 00		keyf4:       db ": keyf4 $13 ;",0 
+cfb3 .. 00		keyf5:       db ": keyf5 $14 ;",0 
+cfc1 .. 00		keyf6:       db ": keyf6 $15 ;",0 
+cfcf .. 00		keyf7:       db ": keyf7 $16 ;",0 
+cfdd .. 00		keyf8:       db ": keyf8 $17 ;",0 
+cfeb .. 00		keyf9:       db ": keyf9 $18 ;",0 
+cff9 .. 00		keyf10:       db ": keyf10 $19 ;",0 
+d008 .. 00		keyf11:       db ": keyf11 $1a ;",0 
+d017 .. 00		keyf12:       db ": keyf12 $1b ;",0 
+d026			 
+d026 .. 00		keytab:       db ": keytab $09 ;",0 
+d035 .. 00		keycr:       db ": keycr $0d ;",0 
+d043 .. 00		keyhome:       db ": keyhome $0e ;",0 
+d053 .. 00		keyend:       db ": keyend $0f ;",0 
+d062 .. 00		keybs:       db ": keybs $08 ;",0 
+d070			 
+d070			; Test tape support 
+d070			 
+d070			 
+d070			   
+d070 .. 00		tape1: db ": setto ( gap low high --- ) v0! v1! v2! ; ", 0 
+d09c .. 00		tape2a: db ": tosc #0 do #170 spio loop ; ",0  
+d0bb			;tape2a: db ": tosc #0 do #0 spio #170 spio loop ; ",0  
+d0bb			;tape2a: db ": tosc #0 do #0 spio #255 spio loop ; ",0  
+d0bb			;tape2a: db ": tosc #0 do spicel spiceh nop loop ; ",0  
+d0bb			;tape2a: db ": tosc #0 do spicel nop spiceh nop loop ; ",0  
+d0bb			;tape2: db ": th spiceh v0@ pause spicel tg ; ",0 
+d0bb			;tape3: db ": tl spiceh v1@ pause spicel tg ; ",0 
+d0bb .. 00		tape2: db ": th v0@ tosc tg ; ",0 
+d0cf .. 00		tape3: db ": tl v1@ tosc tg ; ",0 
+d0e3 .. 00		tape4: db ": tg #0 spio v2@ #0 do nop loop ; ",0 
+d106			;tape4: db ": tg spicel v2@ #0 do nop loop ; ",0 
+d106 .. 00		tape5: db ": tohead tg tg tg th tl th tl th tl tg tg tg ; ",0 
+d136 .. 00		tape6: db ": toinit  tohead ; ",0 
+d14a .. 00		tape7a: db ": thc dup if th then ; ", 0 
+d162 .. 00		tape7b: db ": tlc not if tl then ; ", 0 
+d17a			; TODO bit checksum 
+d17a			; TODO To test. Round the wrong way. Change mask and shift or add RROT etc  
+d17a .. 00		tape7: db ": tob ( byte --- ) #8 #1 do dup #128 and thc tlc lshift loop drop ; ",0 
+d1bf			;tape7: db ": tob ( byte --- ) #8 #1 do dup #1 and thc tlc rshift loop drop ; ",0 
+d1bf			 
+d1bf .. 00		tape8: db ": to ( str --- ) cls tohead ptr count #0 do dup i + @ dup emit tob tg tg tg tg loop ; ",0 
+d216			 
+d216			; Extra utils 
+d216			 
+d216			 
+d216 .. 00		bet1: db ": between? ( fr to x -- b ) dup rot < rot rot < = ; ", 0 
+d24b .. 00		bet2: db ": between ( f t -- x .. ) swap do i loop ; ", 0 
+d277			 
+d277			 
+d277			 
+d277			; eof 
 # End of file forth_autostart.asm
-d268			 
-d268			 
-d268			 
-d268			; stack over and underflow checks 
-d268			 
-d268			; init the words to detect the under/overflow 
-d268			 
-d268			chk_stk_init: 
-d268				; a vague random number to check so we dont get any "lucky" hits 
-d268 3e 2d			ld a, 45 
-d26a 6f				ld l, a 
-d26b 00				nop 
-d26c 3e 17			ld a, 23 
-d26e 67				ld h, a 
-d26f			 
-d26f 22 77 e2			ld (chk_word), hl     ; the word we need to check against 
-d272			 
-d272			;	ld (chk_stund), hl	; stack points.... 
-d272 22 00 ef			ld (chk_stovr), hl 
-d275 22 c6 e9			ld (chk_ret_und), hl 
-d278 22 84 e9			ld (chk_ret_ovr), hl 
-d27b 22 02 e9			ld (chk_loop_ovr), hl 
-d27e 22 00 e8			ld (chk_data_ovr), hl 
-d281 c9				ret 
-d282				 
-d282			check_stacks: 
-d282				; check all stack words for corruption 
-d282			 
-d282				; Stack checks  
-d282			 
-d282			 
-d282				; stack over 
-d282				; return under 
-d282				; return over 
-d282				; loop over 
-d282				; data over 
-d282			 
-d282			 
-d282 e5				push hl 
-d283 2a 74 ee			ld hl, (hardware_config+1) 
-d286 cb 7e			bit 7, (hl) 
-d288			 
-d288 20 02			jr nz, .dochecks 
-d28a			 
-d28a e1				pop hl 
-d28b c9				ret 
-d28c			 
-d28c			.dochecks: 
-d28c			 
-d28c d5				push de 
-d28d			 
-d28d			;	ld de,(chk_word) 
-d28d			;	ld hl, (chk_stund)	; stack points.... 
-d28d			;	if DEBUG_STK_FAULT 
-d28d			;		DMARK "FAa" 
-d28d			;		CALLMONITOR 
-d28d			;	endif 
-d28d			;	call cmp16 
-d28d			;	jp z, .chk_faulta 
-d28d			; 
-d28d			;	ld de, sfaultsu 
-d28d			;	jp .chk_fault 
-d28d			 
-d28d 2a 00 ef		.chk_faulta: ld hl, (chk_stovr) 
-d290 ed 5b 77 e2		ld de,(chk_word) 
-d294				if DEBUG_STK_FAULT 
-d294					DMARK "FAb" 
-d294					CALLMONITOR 
-d294				endif 
-d294 cd d7 8a			call cmp16 
-d297 28 06			jr z, .chk_fault1 
-d299 11 3e d3			ld de, sfaultso 
-d29c c3 ee d2			jp .chk_fault 
-d29f			.chk_fault1:  
-d29f 2a c6 e9			ld hl, (chk_ret_und) 
-d2a2 ed 5b 77 e2		ld de,(chk_word) 
-d2a6				if DEBUG_STK_FAULT 
-d2a6					DMARK "FAU" 
-d2a6					CALLMONITOR 
-d2a6				endif 
-d2a6 cd d7 8a			call cmp16 
-d2a9 ca b2 d2			jp z, .chk_fault2 
-d2ac 11 4e d3			ld de, sfaultru 
-d2af c3 ee d2			jp .chk_fault 
-d2b2			.chk_fault2:  
-d2b2 2a 84 e9			ld hl, (chk_ret_ovr) 
-d2b5 ed 5b 77 e2		ld de,(chk_word) 
-d2b9				if DEBUG_STK_FAULT 
-d2b9					DMARK "FA1" 
-d2b9					CALLMONITOR 
-d2b9				endif 
-d2b9 cd d7 8a			call cmp16 
-d2bc ca c5 d2			jp z, .chk_fault3 
-d2bf 11 5c d3			ld de, sfaultro 
-d2c2 c3 ee d2			jp .chk_fault 
-d2c5			.chk_fault3:  
-d2c5 2a 02 e9			ld hl, (chk_loop_ovr) 
-d2c8 ed 5b 77 e2		ld de,(chk_word) 
-d2cc				if DEBUG_STK_FAULT 
-d2cc					DMARK "FA2" 
-d2cc					CALLMONITOR 
-d2cc				endif 
-d2cc cd d7 8a			call cmp16 
-d2cf ca d8 d2			jp z, .chk_fault4 
-d2d2 11 76 d3			ld de, sfaultlo 
-d2d5 c3 ee d2			jp .chk_fault 
-d2d8			.chk_fault4:  
-d2d8 2a 00 e8			ld hl, (chk_data_ovr) 
-d2db ed 5b 77 e2		ld de,(chk_word) 
-d2df				if DEBUG_STK_FAULT 
-d2df					DMARK "FA3" 
-d2df					CALLMONITOR 
-d2df				endif 
-d2df cd d7 8a			call cmp16 
-d2e2 ca eb d2			jp z, .chk_fault5 
-d2e5 11 90 d3			ld de, sfaultdo 
-d2e8 c3 ee d2			jp .chk_fault 
-d2eb			 
-d2eb			 
-d2eb			.chk_fault5:  
-d2eb d1				pop de 
-d2ec e1				pop hl 
-d2ed			 
-d2ed c9				ret 
-d2ee			 
-d2ee cd 15 88		.chk_fault: 	call clear_display 
-d2f1 3e 28				ld a, display_row_2 
-d2f3 cd 27 88				call str_at_display 
-d2f6 11 20 d3				   ld de, .stackfault 
-d2f9 3e 00				ld a, display_row_1 
-d2fb cd 27 88				call str_at_display 
-d2fe			if DEMARK_VERSION = 1 
-d2fe ed 5b 60 ee		ld de, (debug_mark) 
-d302			endif 
-d302			 
-d302			if DEMARK_VERSION = 0 
-d302				ld de, debug_mark 
-d302			endif 
-d302			;		    ld de, debug_mark 
-d302 3e 11				ld a, display_row_1+17 
-d304 cd 27 88				call str_at_display 
-d307 cd 4d 88				call update_display 
-d30a			 
-d30a				; prompt before entering montior for investigating issue 
-d30a			 
-d30a 3e 78			ld a, display_row_4 
-d30c 11 5a 97			ld de, endprog 
-d30f			 
-d30f cd 4d 88			call update_display		 
-d312			 
-d312 cd f0 99			call next_page_prompt 
-d315			 
-d315 d1				pop de 
-d316 e1				pop hl 
-d317 cd ae 97				call monitor 
-d31a cd 2c 9d				call forth_warmstart 
-d31d c3 ac 96				jp warmstart_afterauto 
-d320					;jp 0 
-d320					;halt 
-d320			 
-d320			 
-d320			 
-d320 .. 00		.stackfault: 	db "Stack fault:",0 
-d32d			 
-d32d .. 00		sfaultsu: 	db	"Stack under flow",0 
-d33e .. 00		sfaultso: 	db	"Stack over flow",0 
-d34e .. 00		sfaultru:	db "RTS underflow",0 
-d35c .. 00		sfaultro:	db "RTS overflow/LS underflow", 0 
-d376 .. 00		sfaultlo:	db "LS overflow/DTS underflow", 0 
-d390 .. 00		sfaultdo:	db "DTS overflow", 0 
-d39d			 
-d39d			 
-d39d			fault_dsp_under: 
-d39d 11 af d3			ld de, .dsp_under 
-d3a0 c3 67 d4			jp .show_fault 
-d3a3			 
-d3a3			fault_rsp_under: 
-d3a3 11 bd d3			ld de, .rsp_under 
-d3a6 c3 67 d4			jp .show_fault 
-d3a9			fault_loop_under: 
-d3a9 11 cb d3			ld de, .loop_under 
-d3ac c3 67 d4			jp .show_fault 
-d3af			 
-d3af .. 00		.dsp_under: db "DSP Underflow",0 
-d3bd .. 00		.rsp_under: db "RSP Underflow",0 
-d3cb .. 00		.loop_under: db "LOOP Underflow",0 
-d3da			 
-d3da			 
-d3da d5			type_faultn: 	push de 
-d3db e5					push hl 
-d3dc cd 15 88				call clear_display 
-d3df 11 0a d4				   ld de, .typefaultn 
-d3e2 3e 00				ld a, display_row_1 
-d3e4 cd 27 88				call str_at_display 
-d3e7			;		    ld de, debug_mark 
-d3e7			if DEMARK_VERSION = 1 
-d3e7 ed 5b 60 ee		ld de, (debug_mark) 
-d3eb			endif 
-d3eb			 
-d3eb			if DEMARK_VERSION = 0 
-d3eb				ld de, debug_mark 
-d3eb			endif 
-d3eb 3e 11				ld a, display_row_1+17 
-d3ed cd 27 88				call str_at_display 
-d3f0 cd 4d 88				call update_display 
-d3f3			 
-d3f3				; prompt before entering montior for investigating issue 
-d3f3			 
-d3f3 3e 78			ld a, display_row_4 
-d3f5 11 5a 97			ld de, endprog 
-d3f8			 
-d3f8 cd 4d 88			call update_display		 
-d3fb			 
-d3fb cd f0 99			call next_page_prompt 
-d3fe			 
-d3fe e5					push hl 
-d3ff d5					push de 
-d400 cd ae 97				call monitor 
-d403 cd 2c 9d				call forth_warmstart 
-d406 c3 ac 96				jp warmstart_afterauto 
-d409 76					halt 
+d277			 
+d277			 
+d277			 
+d277			; stack over and underflow checks 
+d277			 
+d277			; init the words to detect the under/overflow 
+d277			 
+d277			chk_stk_init: 
+d277				; a vague random number to check so we dont get any "lucky" hits 
+d277 3e 2d			ld a, 45 
+d279 6f				ld l, a 
+d27a 00				nop 
+d27b 3e 17			ld a, 23 
+d27d 67				ld h, a 
+d27e			 
+d27e 22 77 e2			ld (chk_word), hl     ; the word we need to check against 
+d281			 
+d281			;	ld (chk_stund), hl	; stack points.... 
+d281 22 00 ef			ld (chk_stovr), hl 
+d284 22 c6 e9			ld (chk_ret_und), hl 
+d287 22 84 e9			ld (chk_ret_ovr), hl 
+d28a 22 02 e9			ld (chk_loop_ovr), hl 
+d28d 22 00 e8			ld (chk_data_ovr), hl 
+d290 c9				ret 
+d291				 
+d291			check_stacks: 
+d291				; check all stack words for corruption 
+d291			 
+d291				; Stack checks  
+d291			 
+d291			 
+d291				; stack over 
+d291				; return under 
+d291				; return over 
+d291				; loop over 
+d291				; data over 
+d291			 
+d291			 
+d291 e5				push hl 
+d292 2a 74 ee			ld hl, (hardware_config+1) 
+d295 cb 7e			bit 7, (hl) 
+d297			 
+d297 20 02			jr nz, .dochecks 
+d299			 
+d299 e1				pop hl 
+d29a c9				ret 
+d29b			 
+d29b			.dochecks: 
+d29b			 
+d29b d5				push de 
+d29c			 
+d29c			;	ld de,(chk_word) 
+d29c			;	ld hl, (chk_stund)	; stack points.... 
+d29c			;	if DEBUG_STK_FAULT 
+d29c			;		DMARK "FAa" 
+d29c			;		CALLMONITOR 
+d29c			;	endif 
+d29c			;	call cmp16 
+d29c			;	jp z, .chk_faulta 
+d29c			; 
+d29c			;	ld de, sfaultsu 
+d29c			;	jp .chk_fault 
+d29c			 
+d29c 2a 00 ef		.chk_faulta: ld hl, (chk_stovr) 
+d29f ed 5b 77 e2		ld de,(chk_word) 
+d2a3				if DEBUG_STK_FAULT 
+d2a3					DMARK "FAb" 
+d2a3					CALLMONITOR 
+d2a3				endif 
+d2a3 cd d7 8a			call cmp16 
+d2a6 28 06			jr z, .chk_fault1 
+d2a8 11 4d d3			ld de, sfaultso 
+d2ab c3 fd d2			jp .chk_fault 
+d2ae			.chk_fault1:  
+d2ae 2a c6 e9			ld hl, (chk_ret_und) 
+d2b1 ed 5b 77 e2		ld de,(chk_word) 
+d2b5				if DEBUG_STK_FAULT 
+d2b5					DMARK "FAU" 
+d2b5					CALLMONITOR 
+d2b5				endif 
+d2b5 cd d7 8a			call cmp16 
+d2b8 ca c1 d2			jp z, .chk_fault2 
+d2bb 11 5d d3			ld de, sfaultru 
+d2be c3 fd d2			jp .chk_fault 
+d2c1			.chk_fault2:  
+d2c1 2a 84 e9			ld hl, (chk_ret_ovr) 
+d2c4 ed 5b 77 e2		ld de,(chk_word) 
+d2c8				if DEBUG_STK_FAULT 
+d2c8					DMARK "FA1" 
+d2c8					CALLMONITOR 
+d2c8				endif 
+d2c8 cd d7 8a			call cmp16 
+d2cb ca d4 d2			jp z, .chk_fault3 
+d2ce 11 6b d3			ld de, sfaultro 
+d2d1 c3 fd d2			jp .chk_fault 
+d2d4			.chk_fault3:  
+d2d4 2a 02 e9			ld hl, (chk_loop_ovr) 
+d2d7 ed 5b 77 e2		ld de,(chk_word) 
+d2db				if DEBUG_STK_FAULT 
+d2db					DMARK "FA2" 
+d2db					CALLMONITOR 
+d2db				endif 
+d2db cd d7 8a			call cmp16 
+d2de ca e7 d2			jp z, .chk_fault4 
+d2e1 11 85 d3			ld de, sfaultlo 
+d2e4 c3 fd d2			jp .chk_fault 
+d2e7			.chk_fault4:  
+d2e7 2a 00 e8			ld hl, (chk_data_ovr) 
+d2ea ed 5b 77 e2		ld de,(chk_word) 
+d2ee				if DEBUG_STK_FAULT 
+d2ee					DMARK "FA3" 
+d2ee					CALLMONITOR 
+d2ee				endif 
+d2ee cd d7 8a			call cmp16 
+d2f1 ca fa d2			jp z, .chk_fault5 
+d2f4 11 9f d3			ld de, sfaultdo 
+d2f7 c3 fd d2			jp .chk_fault 
+d2fa			 
+d2fa			 
+d2fa			.chk_fault5:  
+d2fa d1				pop de 
+d2fb e1				pop hl 
+d2fc			 
+d2fc c9				ret 
+d2fd			 
+d2fd cd 15 88		.chk_fault: 	call clear_display 
+d300 3e 28				ld a, display_row_2 
+d302 cd 27 88				call str_at_display 
+d305 11 2f d3				   ld de, .stackfault 
+d308 3e 00				ld a, display_row_1 
+d30a cd 27 88				call str_at_display 
+d30d			if DEMARK_VERSION = 1 
+d30d ed 5b 60 ee		ld de, (debug_mark) 
+d311			endif 
+d311			 
+d311			if DEMARK_VERSION = 0 
+d311				ld de, debug_mark 
+d311			endif 
+d311			;		    ld de, debug_mark 
+d311 3e 11				ld a, display_row_1+17 
+d313 cd 27 88				call str_at_display 
+d316 cd 4d 88				call update_display 
+d319			 
+d319				; prompt before entering montior for investigating issue 
+d319			 
+d319 3e 78			ld a, display_row_4 
+d31b 11 5a 97			ld de, endprog 
+d31e			 
+d31e cd 4d 88			call update_display		 
+d321			 
+d321 cd f0 99			call next_page_prompt 
+d324			 
+d324 d1				pop de 
+d325 e1				pop hl 
+d326 cd ae 97				call monitor 
+d329 cd 2c 9d				call forth_warmstart 
+d32c c3 ac 96				jp warmstart_afterauto 
+d32f					;jp 0 
+d32f					;halt 
+d32f			 
+d32f			 
+d32f			 
+d32f .. 00		.stackfault: 	db "Stack fault:",0 
+d33c			 
+d33c .. 00		sfaultsu: 	db	"Stack under flow",0 
+d34d .. 00		sfaultso: 	db	"Stack over flow",0 
+d35d .. 00		sfaultru:	db "RTS underflow",0 
+d36b .. 00		sfaultro:	db "RTS overflow/LS underflow", 0 
+d385 .. 00		sfaultlo:	db "LS overflow/DTS underflow", 0 
+d39f .. 00		sfaultdo:	db "DTS overflow", 0 
+d3ac			 
+d3ac			 
+d3ac			fault_dsp_under: 
+d3ac 11 be d3			ld de, .dsp_under 
+d3af c3 76 d4			jp .show_fault 
+d3b2			 
+d3b2			fault_rsp_under: 
+d3b2 11 cc d3			ld de, .rsp_under 
+d3b5 c3 76 d4			jp .show_fault 
+d3b8			fault_loop_under: 
+d3b8 11 da d3			ld de, .loop_under 
+d3bb c3 76 d4			jp .show_fault 
+d3be			 
+d3be .. 00		.dsp_under: db "DSP Underflow",0 
+d3cc .. 00		.rsp_under: db "RSP Underflow",0 
+d3da .. 00		.loop_under: db "LOOP Underflow",0 
+d3e9			 
+d3e9			 
+d3e9 d5			type_faultn: 	push de 
+d3ea e5					push hl 
+d3eb cd 15 88				call clear_display 
+d3ee 11 19 d4				   ld de, .typefaultn 
+d3f1 3e 00				ld a, display_row_1 
+d3f3 cd 27 88				call str_at_display 
+d3f6			;		    ld de, debug_mark 
+d3f6			if DEMARK_VERSION = 1 
+d3f6 ed 5b 60 ee		ld de, (debug_mark) 
+d3fa			endif 
+d3fa			 
+d3fa			if DEMARK_VERSION = 0 
+d3fa				ld de, debug_mark 
+d3fa			endif 
+d3fa 3e 11				ld a, display_row_1+17 
+d3fc cd 27 88				call str_at_display 
+d3ff cd 4d 88				call update_display 
+d402			 
+d402				; prompt before entering montior for investigating issue 
+d402			 
+d402 3e 78			ld a, display_row_4 
+d404 11 5a 97			ld de, endprog 
+d407			 
+d407 cd 4d 88			call update_display		 
 d40a			 
-d40a			 
-d40a .. 00		.typefaultn: db "NUM Type Expected TOS!",0 
-d421			 
-d421 d5			type_faults: 	push de 
-d422 e5					push hl 
-d423 cd 15 88				call clear_display 
-d426 11 50 d4				   ld de, .typefaults 
-d429 3e 00				ld a, display_row_1 
-d42b cd 27 88				call str_at_display 
-d42e			;		    ld de, debug_mark 
-d42e			if DEMARK_VERSION = 1 
-d42e ed 5b 60 ee		ld de, (debug_mark) 
-d432			endif 
-d432			 
-d432			if DEMARK_VERSION = 0 
-d432				ld de, debug_mark 
-d432			endif 
-d432 3e 11				ld a, display_row_1+17 
-d434 cd 27 88				call str_at_display 
-d437 cd 4d 88				call update_display 
-d43a			 
-d43a				; prompt before entering montior for investigating issue 
-d43a			 
-d43a 3e 78			ld a, display_row_4 
-d43c 11 5a 97			ld de, endprog 
-d43f			 
-d43f cd 4d 88			call update_display		 
-d442			 
-d442 cd f0 99			call next_page_prompt 
-d445			 
-d445 e1					pop hl 
-d446 d1					pop de 
-d447 cd ae 97				call monitor 
-d44a cd 2c 9d				call forth_warmstart 
-d44d c3 ac 96				jp warmstart_afterauto 
-d450			 
-d450			 
-d450 .. 00		.typefaults: db "STR Type Expected TOS!",0 
-d467			 
-d467			.show_fault: 	 
-d467 d5					push de 
-d468 cd 15 88				call clear_display 
-d46b d1					pop de 
-d46c 3e 00				ld a, display_row_1 
-d46e cd 27 88				call str_at_display 
-d471			;		    ld de, debug_mark 
-d471			if DEMARK_VERSION = 1 
-d471 ed 5b 60 ee		ld de, (debug_mark) 
-d475			endif 
-d475			 
-d475			if DEMARK_VERSION = 0 
-d475				ld de, debug_mark 
-d475			endif 
-d475 3e 11				ld a, display_row_1+17 
-d477 cd 27 88				call str_at_display 
-d47a cd 4d 88				call update_display 
-d47d			 
-d47d				; prompt before entering montior for investigating issue 
-d47d			 
-d47d 3e 78			ld a, display_row_4 
-d47f 11 5a 97			ld de, endprog 
-d482			 
-d482 cd 4d 88			call update_display		 
-d485			 
-d485 cd f0 99			call next_page_prompt 
-d488			 
-d488 e1					pop hl 
-d489 d1					pop de 
-d48a cd ae 97				call monitor 
-d48d			; do a dump to cli and not warmstart so we preserve all of the uwords.  
-d48d			; TODO Make optional fault restart to cli or warm boot? 
-d48d					;jp warmstart 
-d48d c3 ef 96				jp cli 
-d490 76					halt 
+d40a cd f0 99			call next_page_prompt 
+d40d			 
+d40d e5					push hl 
+d40e d5					push de 
+d40f cd ae 97				call monitor 
+d412 cd 2c 9d				call forth_warmstart 
+d415 c3 ac 96				jp warmstart_afterauto 
+d418 76					halt 
+d419			 
+d419			 
+d419 .. 00		.typefaultn: db "NUM Type Expected TOS!",0 
+d430			 
+d430 d5			type_faults: 	push de 
+d431 e5					push hl 
+d432 cd 15 88				call clear_display 
+d435 11 5f d4				   ld de, .typefaults 
+d438 3e 00				ld a, display_row_1 
+d43a cd 27 88				call str_at_display 
+d43d			;		    ld de, debug_mark 
+d43d			if DEMARK_VERSION = 1 
+d43d ed 5b 60 ee		ld de, (debug_mark) 
+d441			endif 
+d441			 
+d441			if DEMARK_VERSION = 0 
+d441				ld de, debug_mark 
+d441			endif 
+d441 3e 11				ld a, display_row_1+17 
+d443 cd 27 88				call str_at_display 
+d446 cd 4d 88				call update_display 
+d449			 
+d449				; prompt before entering montior for investigating issue 
+d449			 
+d449 3e 78			ld a, display_row_4 
+d44b 11 5a 97			ld de, endprog 
+d44e			 
+d44e cd 4d 88			call update_display		 
+d451			 
+d451 cd f0 99			call next_page_prompt 
+d454			 
+d454 e1					pop hl 
+d455 d1					pop de 
+d456 cd ae 97				call monitor 
+d459 cd 2c 9d				call forth_warmstart 
+d45c c3 ac 96				jp warmstart_afterauto 
+d45f			 
+d45f			 
+d45f .. 00		.typefaults: db "STR Type Expected TOS!",0 
+d476			 
+d476			.show_fault: 	 
+d476 d5					push de 
+d477 cd 15 88				call clear_display 
+d47a d1					pop de 
+d47b 3e 00				ld a, display_row_1 
+d47d cd 27 88				call str_at_display 
+d480			;		    ld de, debug_mark 
+d480			if DEMARK_VERSION = 1 
+d480 ed 5b 60 ee		ld de, (debug_mark) 
+d484			endif 
+d484			 
+d484			if DEMARK_VERSION = 0 
+d484				ld de, debug_mark 
+d484			endif 
+d484 3e 11				ld a, display_row_1+17 
+d486 cd 27 88				call str_at_display 
+d489 cd 4d 88				call update_display 
+d48c			 
+d48c				; prompt before entering montior for investigating issue 
+d48c			 
+d48c 3e 78			ld a, display_row_4 
+d48e 11 5a 97			ld de, endprog 
 d491			 
-d491			 
-d491			; handle the auto run of code from files in storage 
-d491			 
-d491			 
-d491			include "forth_startup.asm" 
-d491			; Which startup method to use? 
-d491			; 
-d491			; version 1 - allows for a single stored file to be selected to run at start up (if se storage is enabled) 
-d491			; followed by loading of a list of scripts in eeprom 
-d491			 
-d491			; version 2 - if se storage is enabled then auto load all files which begin with a '*' else use loading 
-d491			; from eeprom 
-d491			 
-d491			; Select with define in main stubs 
-d491			 
-d491			if STARTUP_V1 
-d491				include "forth_startupv1.asm" 
-d491			; Startup script loading version 1 
-d491			 
-d491			; If SE storage is available first stage is to use the selected file 
-d491			; then go through the eeprom list 
-d491			 
-d491 .. 00		sprompt1: db "Startup load...",0 
-d4a1 .. 00		sprompt2: db "Run? 1=No *=End #=All",0 
-d4b7			 
-d4b7			 
-d4b7			 
-d4b7			 
-d4b7			forth_startup: 
-d4b7 21 5b c3			ld hl, startcmds 
-d4ba 3e 00			ld a, 0 
-d4bc 32 c1 e6			ld (os_last_cmd), a    ; tmp var to skip prompts if doing all 
-d4bf			 
-d4bf e5			.start1:	push hl 
-d4c0 cd 15 88			call clear_display 
-d4c3 11 91 d4			ld de, sprompt1 
-d4c6 3e 00		        ld a, display_row_1 
-d4c8 cd 27 88			call str_at_display 
-d4cb 11 a1 d4			ld de, sprompt2 
-d4ce 3e 28		        ld a, display_row_2 
-d4d0 cd 27 88			call str_at_display 
-d4d3 e1				pop hl 
-d4d4 e5				push hl 
-d4d5 5e				ld e,(hl) 
-d4d6 23				inc hl 
-d4d7 56				ld d,(hl) 
-d4d8 3e 50		        ld a, display_row_3 
-d4da cd 27 88			call str_at_display 
-d4dd cd 4d 88			call update_display 
-d4e0			 
-d4e0			 
-d4e0 3a c1 e6			ld a, (os_last_cmd) 
-d4e3 fe 00			cp 0 
-d4e5 28 05			jr z, .startprompt 
-d4e7 cd 48 87			call delay250ms 
-d4ea 18 24			jr .startdo 
-d4ec				 
-d4ec				 
-d4ec			 
-d4ec			.startprompt: 
-d4ec			 
-d4ec 3e 9f			ld a,display_row_4 + display_cols - 1 
-d4ee 11 ee 99		        ld de, endprg 
-d4f1 cd 27 88			call str_at_display 
-d4f4 cd 4d 88			call update_display 
-d4f7 cd 54 87			call delay1s 
-d4fa cd 3d d6			call cin_wait 
-d4fd						 
-d4fd fe 2a			cp '*' 
-d4ff 28 5e			jr z, .startupend1 
-d501 fe 23			cp '#' 
-d503 20 07			jr nz, .startno 
-d505 3e 01			ld a, 1 
-d507 32 c1 e6			ld (os_last_cmd),a 
-d50a 18 04			jr .startdo 
-d50c fe 31		.startno:	cp '1' 
-d50e 28 3a			jr z,.startnxt  
-d510			 
-d510				; exec startup line 
-d510			.startdo:	 
-d510 e1				pop hl 
-d511 e5				push hl 
-d512				 
-d512 5e				ld e,(hl) 
-d513 23				inc hl 
-d514 56				ld d,(hl) 
-d515 eb				ex de,hl 
-d516			 
-d516 e5				push hl 
-d517			 
-d517 3e 00			ld a, 0 
-d519				;ld a, FORTH_END_BUFFER 
-d519 cd 1c 8e			call strlent 
-d51c 23				inc hl   ; include zero term to copy 
-d51d 06 00			ld b,0 
-d51f 4d				ld c,l 
-d520 e1				pop hl 
-d521 11 9b e2			ld de, scratch 
-d524 ed b0			ldir 
+d491 cd 4d 88			call update_display		 
+d494			 
+d494 cd f0 99			call next_page_prompt 
+d497			 
+d497 e1					pop hl 
+d498 d1					pop de 
+d499 cd ae 97				call monitor 
+d49c			; do a dump to cli and not warmstart so we preserve all of the uwords.  
+d49c			; TODO Make optional fault restart to cli or warm boot? 
+d49c					;jp warmstart 
+d49c c3 ef 96				jp cli 
+d49f 76					halt 
+d4a0			 
+d4a0			 
+d4a0			; handle the auto run of code from files in storage 
+d4a0			 
+d4a0			 
+d4a0			include "forth_startup.asm" 
+d4a0			; Which startup method to use? 
+d4a0			; 
+d4a0			; version 1 - allows for a single stored file to be selected to run at start up (if se storage is enabled) 
+d4a0			; followed by loading of a list of scripts in eeprom 
+d4a0			 
+d4a0			; version 2 - if se storage is enabled then auto load all files which begin with a '*' else use loading 
+d4a0			; from eeprom 
+d4a0			 
+d4a0			; Select with define in main stubs 
+d4a0			 
+d4a0			if STARTUP_V1 
+d4a0				include "forth_startupv1.asm" 
+d4a0			; Startup script loading version 1 
+d4a0			 
+d4a0			; If SE storage is available first stage is to use the selected file 
+d4a0			; then go through the eeprom list 
+d4a0			 
+d4a0 .. 00		sprompt1: db "Startup load...",0 
+d4b0 .. 00		sprompt2: db "Run? 1=No *=End #=All",0 
+d4c6			 
+d4c6			 
+d4c6			 
+d4c6			 
+d4c6			forth_startup: 
+d4c6 21 5b c3			ld hl, startcmds 
+d4c9 3e 00			ld a, 0 
+d4cb 32 c1 e6			ld (os_last_cmd), a    ; tmp var to skip prompts if doing all 
+d4ce			 
+d4ce e5			.start1:	push hl 
+d4cf cd 15 88			call clear_display 
+d4d2 11 a0 d4			ld de, sprompt1 
+d4d5 3e 00		        ld a, display_row_1 
+d4d7 cd 27 88			call str_at_display 
+d4da 11 b0 d4			ld de, sprompt2 
+d4dd 3e 28		        ld a, display_row_2 
+d4df cd 27 88			call str_at_display 
+d4e2 e1				pop hl 
+d4e3 e5				push hl 
+d4e4 5e				ld e,(hl) 
+d4e5 23				inc hl 
+d4e6 56				ld d,(hl) 
+d4e7 3e 50		        ld a, display_row_3 
+d4e9 cd 27 88			call str_at_display 
+d4ec cd 4d 88			call update_display 
+d4ef			 
+d4ef			 
+d4ef 3a c1 e6			ld a, (os_last_cmd) 
+d4f2 fe 00			cp 0 
+d4f4 28 05			jr z, .startprompt 
+d4f6 cd 48 87			call delay250ms 
+d4f9 18 24			jr .startdo 
+d4fb				 
+d4fb				 
+d4fb			 
+d4fb			.startprompt: 
+d4fb			 
+d4fb 3e 9f			ld a,display_row_4 + display_cols - 1 
+d4fd 11 ee 99		        ld de, endprg 
+d500 cd 27 88			call str_at_display 
+d503 cd 4d 88			call update_display 
+d506 cd 54 87			call delay1s 
+d509 cd 4c d6			call cin_wait 
+d50c						 
+d50c fe 2a			cp '*' 
+d50e 28 5e			jr z, .startupend1 
+d510 fe 23			cp '#' 
+d512 20 07			jr nz, .startno 
+d514 3e 01			ld a, 1 
+d516 32 c1 e6			ld (os_last_cmd),a 
+d519 18 04			jr .startdo 
+d51b fe 31		.startno:	cp '1' 
+d51d 28 3a			jr z,.startnxt  
+d51f			 
+d51f				; exec startup line 
+d51f			.startdo:	 
+d51f e1				pop hl 
+d520 e5				push hl 
+d521				 
+d521 5e				ld e,(hl) 
+d522 23				inc hl 
+d523 56				ld d,(hl) 
+d524 eb				ex de,hl 
+d525			 
+d525 e5				push hl 
 d526			 
-d526			 
-d526 21 9b e2			ld hl, scratch 
-d529 cd cc 9d			call forthparse 
-d52c cd 04 9e			call forthexec 
-d52f cd 26 9d			call forthexec_cleanup 
-d532			 
-d532 3e 78			ld a, display_row_4 
-d534 11 5a 97			ld de, endprog 
-d537			 
-d537 cd 4d 88			call update_display		 
-d53a			 
-d53a 3a c1 e6			ld a, (os_last_cmd) 
-d53d fe 00			cp 0 
-d53f 20 09			jr nz, .startnxt 
-d541 cd f0 99			call next_page_prompt 
-d544 cd 15 88		        call clear_display 
-d547 cd 4d 88			call update_display		 
-d54a			 
-d54a				; move onto next startup line? 
-d54a			.startnxt: 
-d54a			 
-d54a cd 48 87			call delay250ms 
-d54d e1				pop hl 
-d54e			 
-d54e 23				inc hl 
-d54f 23				inc hl 
-d550			 
-d550 e5				push hl 
-d551 5e				ld e, (hl) 
-d552 23				inc hl 
-d553 56				ld d, (hl) 
-d554 e1				pop hl 
-d555				; TODO replace 0 test 
-d555			 
-d555 eb				ex de, hl 
-d556 cd e2 8a			call ishlzero 
-d559			;	ld a,e 
-d559			;	add d 
-d559			;	cp 0    ; any left to do? 
-d559 eb				ex de, hl 
-d55a c2 bf d4			jp nz, .start1 
-d55d 18 01			jr .startupend 
+d526 3e 00			ld a, 0 
+d528				;ld a, FORTH_END_BUFFER 
+d528 cd 1c 8e			call strlent 
+d52b 23				inc hl   ; include zero term to copy 
+d52c 06 00			ld b,0 
+d52e 4d				ld c,l 
+d52f e1				pop hl 
+d530 11 9b e2			ld de, scratch 
+d533 ed b0			ldir 
+d535			 
+d535			 
+d535 21 9b e2			ld hl, scratch 
+d538 cd cc 9d			call forthparse 
+d53b cd 04 9e			call forthexec 
+d53e cd 26 9d			call forthexec_cleanup 
+d541			 
+d541 3e 78			ld a, display_row_4 
+d543 11 5a 97			ld de, endprog 
+d546			 
+d546 cd 4d 88			call update_display		 
+d549			 
+d549 3a c1 e6			ld a, (os_last_cmd) 
+d54c fe 00			cp 0 
+d54e 20 09			jr nz, .startnxt 
+d550 cd f0 99			call next_page_prompt 
+d553 cd 15 88		        call clear_display 
+d556 cd 4d 88			call update_display		 
+d559			 
+d559				; move onto next startup line? 
+d559			.startnxt: 
+d559			 
+d559 cd 48 87			call delay250ms 
+d55c e1				pop hl 
+d55d			 
+d55d 23				inc hl 
+d55e 23				inc hl 
 d55f			 
-d55f e1			.startupend1: pop hl 
-d560			.startupend: 
-d560			 
-d560 cd 15 88			call clear_display 
-d563 cd 4d 88			call update_display 
-d566 c9				ret 
-d567			if STORAGE_SE 
-d567			 
-d567			sprompt3: db "Loading from start-up file?:",0 
-d567			sprompt4: db "(Y=Any key/N=No)",0 
-d567			 
-d567			 
-d567			forth_autoload: 
-d567			 
-d567				; load block 0 of store 1 
-d567				 
-d567				ld a, $fe      ; bit 0 clear 
-d567				ld (spi_device), a 
-d567			 
-d567				call storage_get_block_0 
-d567			 
-d567				ld a, (store_page+STORE_0_AUTOFILE) 
-d567			 
-d567				cp 0 
-d567				ret z     ; auto start not enabled 
-d567			 
-d567				call clear_display 
-d567			 
-d567				; set bank 
-d567			 
-d567					ld a, (store_page+STORE_0_BANKRUN) 
-d567					ld (spi_device), a 
-d567			 
-d567				; get file id to load from and get the file name to display 
-d567			 
-d567					ld a, (store_page+STORE_0_FILERUN) 
-d567			 
-d567					ld l, 0 
-d567					ld h, a 
-d567					ld de, store_page 
-d567			 
-d567					if DEBUG_FORTH_WORDS 
-d567						DMARK "ASp" 
-d567						CALLMONITOR 
-d567					endif 
-d567					call storage_read 
-d567			 
-d567					if DEBUG_FORTH_WORDS 
-d567						DMARK "ASr" 
-d567						CALLMONITOR 
-d567					endif 
-d567			 
-d567					call ishlzero 
-d567					ret z             ; file not found 
-d567			 
-d567					ld a, display_row_2 + 10 
-d567					ld de, store_page+3 
-d567					call str_at_display 
-d567				 
-d567			; 
-d567			 
-d567				ld a, display_row_1+5 
-d567				ld de, sprompt3 
-d567				call str_at_display 
-d567				ld a, display_row_3+15 
-d567				ld de, sprompt4 
-d567				call str_at_display 
-d567			 
-d567				call update_display 
-d567			 
-d567				call cin_wait 
-d567				cp 'n' 
-d567				ret z 
-d567				cp 'N' 
-d567				ret z 
-d567			 
-d567				call delay1s 
-d567			 
-d567				ld a, (store_page+2) 
-d567				ld (store_openmaxext), a    ; save count of ext 
-d567				ld a, 1  
-d567				ld (store_openext), a    ; save count of ext 
-d567			 
-d567			.autof:  
-d567				ld l , a 
-d567				 
-d567				ld a, (store_page) 
-d567				ld h, a	 
-d567				ld de, store_page 
-d567					if DEBUG_FORTH_WORDS 
-d567						DMARK "ASl" 
-d567						CALLMONITOR 
-d567					endif 
-d567					call storage_read 
-d567				call ishlzero 
-d567				ret z 
-d567			;	jr z, .autoend 
-d567			 
-d567					if DEBUG_FORTH_WORDS 
-d567						DMARK "ASc" 
-d567						CALLMONITOR 
-d567					endif 
-d567				ld de, store_page+2 
-d567				ld a, display_row_4 
-d567				call str_at_display 
-d567			 
-d567				call update_display 
-d567				call delay250ms 
-d567			 
-d567			 
-d567			 
-d567				ld hl, store_page+2 
-d567				call forthparse 
-d567				call forthexec 
-d567				call forthexec_cleanup 
-d567			 
-d567				 
-d567				ld a, (store_openext) 
-d567				inc a 
-d567				ld (store_openext), a    ; save count of ext 
-d567			 
-d567				jr .autof 
-d567			;.autofdone: 
-d567			; 
-d567			;		if DEBUG_FORTH_WORDS 
-d567			;			DMARK "ASx" 
-d567			;			CALLMONITOR 
-d567			;		endif 
-d567			;;	call clear_display 
-d567			;	ret 
-d567			 
-d567			 
-d567			 
-d567			endif 
+d55f e5				push hl 
+d560 5e				ld e, (hl) 
+d561 23				inc hl 
+d562 56				ld d, (hl) 
+d563 e1				pop hl 
+d564				; TODO replace 0 test 
+d564			 
+d564 eb				ex de, hl 
+d565 cd e2 8a			call ishlzero 
+d568			;	ld a,e 
+d568			;	add d 
+d568			;	cp 0    ; any left to do? 
+d568 eb				ex de, hl 
+d569 c2 ce d4			jp nz, .start1 
+d56c 18 01			jr .startupend 
+d56e			 
+d56e e1			.startupend1: pop hl 
+d56f			.startupend: 
+d56f			 
+d56f cd 15 88			call clear_display 
+d572 cd 4d 88			call update_display 
+d575 c9				ret 
+d576			if STORAGE_SE 
+d576			 
+d576			sprompt3: db "Loading from start-up file?:",0 
+d576			sprompt4: db "(Y=Any key/N=No)",0 
+d576			 
+d576			 
+d576			forth_autoload: 
+d576			 
+d576				; load block 0 of store 1 
+d576				 
+d576				ld a, $fe      ; bit 0 clear 
+d576				ld (spi_device), a 
+d576			 
+d576				call storage_get_block_0 
+d576			 
+d576				ld a, (store_page+STORE_0_AUTOFILE) 
+d576			 
+d576				cp 0 
+d576				ret z     ; auto start not enabled 
+d576			 
+d576				call clear_display 
+d576			 
+d576				; set bank 
+d576			 
+d576					ld a, (store_page+STORE_0_BANKRUN) 
+d576					ld (spi_device), a 
+d576			 
+d576				; get file id to load from and get the file name to display 
+d576			 
+d576					ld a, (store_page+STORE_0_FILERUN) 
+d576			 
+d576					ld l, 0 
+d576					ld h, a 
+d576					ld de, store_page 
+d576			 
+d576					if DEBUG_FORTH_WORDS 
+d576						DMARK "ASp" 
+d576						CALLMONITOR 
+d576					endif 
+d576					call storage_read 
+d576			 
+d576					if DEBUG_FORTH_WORDS 
+d576						DMARK "ASr" 
+d576						CALLMONITOR 
+d576					endif 
+d576			 
+d576					call ishlzero 
+d576					ret z             ; file not found 
+d576			 
+d576					ld a, display_row_2 + 10 
+d576					ld de, store_page+3 
+d576					call str_at_display 
+d576				 
+d576			; 
+d576			 
+d576				ld a, display_row_1+5 
+d576				ld de, sprompt3 
+d576				call str_at_display 
+d576				ld a, display_row_3+15 
+d576				ld de, sprompt4 
+d576				call str_at_display 
+d576			 
+d576				call update_display 
+d576			 
+d576				call cin_wait 
+d576				cp 'n' 
+d576				ret z 
+d576				cp 'N' 
+d576				ret z 
+d576			 
+d576				call delay1s 
+d576			 
+d576				ld a, (store_page+2) 
+d576				ld (store_openmaxext), a    ; save count of ext 
+d576				ld a, 1  
+d576				ld (store_openext), a    ; save count of ext 
+d576			 
+d576			.autof:  
+d576				ld l , a 
+d576				 
+d576				ld a, (store_page) 
+d576				ld h, a	 
+d576				ld de, store_page 
+d576					if DEBUG_FORTH_WORDS 
+d576						DMARK "ASl" 
+d576						CALLMONITOR 
+d576					endif 
+d576					call storage_read 
+d576				call ishlzero 
+d576				ret z 
+d576			;	jr z, .autoend 
+d576			 
+d576					if DEBUG_FORTH_WORDS 
+d576						DMARK "ASc" 
+d576						CALLMONITOR 
+d576					endif 
+d576				ld de, store_page+2 
+d576				ld a, display_row_4 
+d576				call str_at_display 
+d576			 
+d576				call update_display 
+d576				call delay250ms 
+d576			 
+d576			 
+d576			 
+d576				ld hl, store_page+2 
+d576				call forthparse 
+d576				call forthexec 
+d576				call forthexec_cleanup 
+d576			 
+d576				 
+d576				ld a, (store_openext) 
+d576				inc a 
+d576				ld (store_openext), a    ; save count of ext 
+d576			 
+d576				jr .autof 
+d576			;.autofdone: 
+d576			; 
+d576			;		if DEBUG_FORTH_WORDS 
+d576			;			DMARK "ASx" 
+d576			;			CALLMONITOR 
+d576			;		endif 
+d576			;;	call clear_display 
+d576			;	ret 
+d576			 
+d576			 
+d576			 
+d576			endif 
 # End of file forth_startupv1.asm
-d567			endif 
-d567			if STARTUP_V2 
-d567				include "forth_startupv2.asm" 
-d567			endif 
-d567			 
+d576			endif 
+d576			if STARTUP_V2 
+d576				include "forth_startupv2.asm" 
+d576			endif 
+d576			 
 # End of file forth_startup.asm
-d567			 
-d567			; eof 
+d576			 
+d576			; eof 
 # End of file forth_kernel.asm
-d567			;include "nascombasic.asm" 
-d567			;include "basicZ80.asm" 
-d567			 
-d567			 
-d567			 
-d567			; find out where the code ends if loaded into RAM (for SC114) 
-d567			;endofcode:  
-d567			;	nop 
-d567			 
-d567			 
-d567			; jump to nmi vector 
-d567			 
-d567			init_nmi: 
-d567			 
-d567 3e c9			ld a, $c9   ; RET 
-d569 32 6e ee			ld (nmi_vector), a 
-d56c			if BASE_KEV 
-d56c				ld a, $c3   ; jp 
-d56c				ld (nmi_vector), a 
-d56c				ld hl, led_on 
-d56c				ld (nmi_vector+1), hl 
-d56c			endif 
-d56c c9				ret 
-d56d			 
-d56d			; Clear the hardware flag for nmi use 
-d56d			 
-d56d			clear_nmi: 
-d56d f5				push af 
-d56e 3a 72 ee		        ld a, (hardware_word+1) 
-d571 cb bf			res 7,a 
-d573 32 72 ee		        ld (hardware_word+1),a 
-d576 f1				pop af 
-d577 c9				ret 
-d578			 
-d578			nmi: 
-d578 e5				push hl 
-d579 d5				push de 
-d57a c5				push bc 
-d57b f5				push af 
+d576			;include "nascombasic.asm" 
+d576			;include "basicZ80.asm" 
+d576			 
+d576			 
+d576			 
+d576			; find out where the code ends if loaded into RAM (for SC114) 
+d576			;endofcode:  
+d576			;	nop 
+d576			 
+d576			 
+d576			; jump to nmi vector 
+d576			 
+d576			init_nmi: 
+d576			 
+d576 3e c9			ld a, $c9   ; RET 
+d578 32 6e ee			ld (nmi_vector), a 
+d57b			if BASE_KEV 
+d57b				ld a, $c3   ; jp 
+d57b				ld (nmi_vector), a 
+d57b				ld hl, led_on 
+d57b				ld (nmi_vector+1), hl 
+d57b			endif 
+d57b c9				ret 
 d57c			 
-d57c				; check to see if already nmi has been set 
+d57c			; Clear the hardware flag for nmi use 
 d57c			 
-d57c 3a 72 ee		        ld a, (hardware_word+1) 
-d57f			 
-d57f cb 7f			bit 7, a 
-d581 20 08			jr nz, .rest     ; yes so skip any vector calls	 
-d583				 
-d583			 
-d583				; set the hardware flag for nmi use 
-d583 cb ff			set 7,a 
-d585 32 72 ee		        ld (hardware_word+1),a 
-d588			 
-d588				; call user function 
-d588 cd 6e ee			call nmi_vector 
+d57c			clear_nmi: 
+d57c f5				push af 
+d57d 3a 72 ee		        ld a, (hardware_word+1) 
+d580 cb bf			res 7,a 
+d582 32 72 ee		        ld (hardware_word+1),a 
+d585 f1				pop af 
+d586 c9				ret 
+d587			 
+d587			nmi: 
+d587 e5				push hl 
+d588 d5				push de 
+d589 c5				push bc 
+d58a f5				push af 
 d58b			 
-d58b f5			.rest:	push af 
-d58c c5				push bc 
-d58d d5				push de 
-d58e e5				push hl 
-d58f ed 45			retn 
-d591			 
-d591			 
-d591			; eof 
-d591			 
+d58b				; check to see if already nmi has been set 
+d58b			 
+d58b 3a 72 ee		        ld a, (hardware_word+1) 
+d58e			 
+d58e cb 7f			bit 7, a 
+d590 20 08			jr nz, .rest     ; yes so skip any vector calls	 
+d592				 
+d592			 
+d592				; set the hardware flag for nmi use 
+d592 cb ff			set 7,a 
+d594 32 72 ee		        ld (hardware_word+1),a 
+d597			 
+d597				; call user function 
+d597 cd 6e ee			call nmi_vector 
+d59a			 
+d59a f5			.rest:	push af 
+d59b c5				push bc 
+d59c d5				push de 
+d59d e5				push hl 
+d59e ed 45			retn 
+d5a0			 
+d5a0			 
+d5a0			; eof 
+d5a0			 
 # End of file main.asm
-d591			;include "firmware_lcd_4x40.asm" 
-d591			;;include "firmware_lcd_4x20.asm" 
-d591			include "firmware_serial_display.asm" 
-d591			 
-d591			; Serial display interface for SC114 
-d591			 
-d591			 
-d591			display_row_1: equ 0 
-d591			display_row_2: equ display_row_1+display_cols 
-d591			display_row_3: equ display_row_2 + display_cols 
-d591			display_row_4: equ display_row_3 + display_cols 
-d591			 
-d591			kLCDWidth:  EQU display_cols             ;Width in characters 
-d591			kLCD_Line1: EQU 0x00  
-d591			kLCD_Line2: EQU kLCD_Line1+kLCDWidth 
-d591			; E1 
-d591			kLCD_Line3: EQU kLCD_Line2+kLCDWidth 
-d591			kLCD_Line4: EQU kLCD_Line3+kLCDWidth  
-d591			 
-d591			lcd_init: 
-d591				; no init as handled by the SCM bios 
-d591 c9				ret 
-d592			 
-d592			 
-d592			; low level functions for direct screen writes 
-d592			 
-d592			; output char at pos? 
-d592			fLCD_Str: 
-d592			        ;out (SC114_SIO_1_OUT),a 
-d592 c5				push bc 
-d593 0e 02			ld c, $02 
-d595 f7				rst $30 
-d596 c1				pop bc 
-d597 c9				ret 
-d598			 
-d598			; position the cursor on the screen using A as realtive point in screen buffer (i.e. A=(x+(width/y))) 
-d598			fLCD_Pos: 
-d598				; use ASCII escape to position 
-d598			        ;out (SC114_SIO_1_OUT),a 
-d598 c5				push bc 
-d599 0e 02			ld c, $02 
-d59b f7				rst $30 
-d59c c1				pop bc 
-d59d			 
-d59d c9				ret 
-d59e			 
-d59e			; output char at pos 
-d59e			fLCD_Data: 
-d59e			      ;  out (SC114_SIO_1_OUT),a 
-d59e c5				push bc 
-d59f 0e 02			ld c, $02 
-d5a1 f7				rst $30 
-d5a2 c1				pop bc 
-d5a3			 
-d5a3 c9				ret 
-d5a4			 
-d5a4			; ascii cls  
-d5a4			 
-d5a4 1b 5b 48 00	.cls:   db 27, '[', 'H', 0 
-d5a8			 
-d5a8			; write the frame buffer given in hl to hardware  
-d5a8			write_display: 
-d5a8			 
-d5a8			API: equ 0 
-d5a8			 
-d5a8			if API 
-d5a8				push bc 
-d5a8				ld b, 4 
-d5a8			 
-d5a8			        ld (display_write_tmp), hl 	  
-d5a8			 
-d5a8				; clear and home cursor 
-d5a8			 
-d5a8				ld c, 6 
-d5a8				ld de, .cls 
-d5a8				rst $30 
-d5a8			 
-d5a8			 
-d5a8			.writeln: 
-d5a8			 
-d5a8				ld de, (display_write_tmp) 
-d5a8				ld c, 6 
-d5a8				rst $30 
-d5a8				ld c, 7 
-d5a8				rst $30 
-d5a8			 
-d5a8				ld hl, (display_write_tmp) 
-d5a8				ld de, display_cols 
-d5a8				add hl,de 
-d5a8				ld (display_write_tmp),hl 
-d5a8			 
-d5a8				djnz  .writeln 
-d5a8			 
-d5a8				pop bc 
-d5a8			 
-d5a8			 
-d5a8				ret 
-d5a8			endif 
-d5a8 e5				push hl 
-d5a9 c5				push bc 
-d5aa d5				push de 
-d5ab			 
-d5ab			;	ld c, 2 
-d5ab			;	;ld de, .cls 
-d5ab			;	ld a, 27 
-d5ab			;	rst $30 
-d5ab			;	ld c, 2 
-d5ab			;	;ld de, .cls 
-d5ab			;	ld a, '[' 
-d5ab			;	rst $30 
-d5ab			; 
-d5ab			;	ld c, 2 
-d5ab			;	;ld de, .cls 
-d5ab			;	ld a, 'H' 
-d5ab			;	rst $30 
-d5ab			; 
-d5ab			 
-d5ab 0e 02			ld c, 2 
-d5ad				;ld de, .cls 
-d5ad 3e 1b			ld a, 27 
-d5af f7				rst $30 
-d5b0			 
-d5b0			 
-d5b0 0e 02			ld c, 2 
-d5b2				;ld de, .cls 
-d5b2 3e 5b			ld a, '[' 
-d5b4 f7				rst $30 
-d5b5 0e 02			ld c, 2 
-d5b7				;ld de, .cls 
-d5b7 3e 32			ld a, '2' 
-d5b9 f7				rst $30 
+d5a0			;include "firmware_lcd_4x40.asm" 
+d5a0			;;include "firmware_lcd_4x20.asm" 
+d5a0			include "firmware_serial_display.asm" 
+d5a0			 
+d5a0			; Serial display interface for SC114 
+d5a0			 
+d5a0			 
+d5a0			display_row_1: equ 0 
+d5a0			display_row_2: equ display_row_1+display_cols 
+d5a0			display_row_3: equ display_row_2 + display_cols 
+d5a0			display_row_4: equ display_row_3 + display_cols 
+d5a0			 
+d5a0			kLCDWidth:  EQU display_cols             ;Width in characters 
+d5a0			kLCD_Line1: EQU 0x00  
+d5a0			kLCD_Line2: EQU kLCD_Line1+kLCDWidth 
+d5a0			; E1 
+d5a0			kLCD_Line3: EQU kLCD_Line2+kLCDWidth 
+d5a0			kLCD_Line4: EQU kLCD_Line3+kLCDWidth  
+d5a0			 
+d5a0			lcd_init: 
+d5a0				; no init as handled by the SCM bios 
+d5a0 c9				ret 
+d5a1			 
+d5a1			 
+d5a1			; low level functions for direct screen writes 
+d5a1			 
+d5a1			; output char at pos? 
+d5a1			fLCD_Str: 
+d5a1			        ;out (SC114_SIO_1_OUT),a 
+d5a1 c5				push bc 
+d5a2 0e 02			ld c, $02 
+d5a4 f7				rst $30 
+d5a5 c1				pop bc 
+d5a6 c9				ret 
+d5a7			 
+d5a7			; position the cursor on the screen using A as realtive point in screen buffer (i.e. A=(x+(width/y))) 
+d5a7			fLCD_Pos: 
+d5a7				; use ASCII escape to position 
+d5a7			        ;out (SC114_SIO_1_OUT),a 
+d5a7 c5				push bc 
+d5a8 0e 02			ld c, $02 
+d5aa f7				rst $30 
+d5ab c1				pop bc 
+d5ac			 
+d5ac c9				ret 
+d5ad			 
+d5ad			; output char at pos 
+d5ad			fLCD_Data: 
+d5ad			      ;  out (SC114_SIO_1_OUT),a 
+d5ad c5				push bc 
+d5ae 0e 02			ld c, $02 
+d5b0 f7				rst $30 
+d5b1 c1				pop bc 
+d5b2			 
+d5b2 c9				ret 
+d5b3			 
+d5b3			; ascii cls  
+d5b3			 
+d5b3 1b 5b 48 00	.cls:   db 27, '[', 'H', 0 
+d5b7			 
+d5b7			; write the frame buffer given in hl to hardware  
+d5b7			write_display: 
+d5b7			 
+d5b7			API: equ 0 
+d5b7			 
+d5b7			if API 
+d5b7				push bc 
+d5b7				ld b, 4 
+d5b7			 
+d5b7			        ld (display_write_tmp), hl 	  
+d5b7			 
+d5b7				; clear and home cursor 
+d5b7			 
+d5b7				ld c, 6 
+d5b7				ld de, .cls 
+d5b7				rst $30 
+d5b7			 
+d5b7			 
+d5b7			.writeln: 
+d5b7			 
+d5b7				ld de, (display_write_tmp) 
+d5b7				ld c, 6 
+d5b7				rst $30 
+d5b7				ld c, 7 
+d5b7				rst $30 
+d5b7			 
+d5b7				ld hl, (display_write_tmp) 
+d5b7				ld de, display_cols 
+d5b7				add hl,de 
+d5b7				ld (display_write_tmp),hl 
+d5b7			 
+d5b7				djnz  .writeln 
+d5b7			 
+d5b7				pop bc 
+d5b7			 
+d5b7			 
+d5b7				ret 
+d5b7			endif 
+d5b7 e5				push hl 
+d5b8 c5				push bc 
+d5b9 d5				push de 
+d5ba			 
+d5ba			;	ld c, 2 
+d5ba			;	;ld de, .cls 
+d5ba			;	ld a, 27 
+d5ba			;	rst $30 
+d5ba			;	ld c, 2 
+d5ba			;	;ld de, .cls 
+d5ba			;	ld a, '[' 
+d5ba			;	rst $30 
+d5ba			; 
+d5ba			;	ld c, 2 
+d5ba			;	;ld de, .cls 
+d5ba			;	ld a, 'H' 
+d5ba			;	rst $30 
+d5ba			; 
+d5ba			 
 d5ba 0e 02			ld c, 2 
 d5bc				;ld de, .cls 
-d5bc 3e 4a			ld a, 'J' 
+d5bc 3e 1b			ld a, 27 
 d5be f7				rst $30 
-d5bf d1				pop de 
-d5c0 c1				pop bc 
-d5c1 e1				pop hl 
-d5c2			 
-d5c2			 
-d5c2 22 be eb		        ld (display_write_tmp), hl 	  
-d5c5 3e 00			ld a, kLCD_Line1 
-d5c7			        ;    CALL fLCD_Pos       ;Position cursor to location in A 
-d5c7 06 28			ld b, display_cols 
-d5c9 ed 5b be eb		ld de, (display_write_tmp) 
-d5cd cd 2b d6			call write_len_string 
-d5d0				 
-d5d0			 
-d5d0 e5			push hl 
-d5d1 d5			push de 
-d5d2 c5			push bc 
-d5d3 0e 07			ld c, 7 
-d5d5 f7				rst $30 
-d5d6 c1			pop bc 
-d5d7 d1			pop de 
-d5d8 e1			pop hl 
-d5d9			 
-d5d9				 
-d5d9 2a be eb			ld hl, (display_write_tmp) 
-d5dc 11 28 00			ld de, display_cols 
-d5df 19				add hl,de 
-d5e0 22 be eb			ld (display_write_tmp),hl 
-d5e3			 
-d5e3				 
-d5e3 3e 28			ld a, kLCD_Line2 
-d5e5			        ;    CALL fLCD_Pos       ;Position cursor to location in A 
-d5e5 06 28			ld b, display_cols 
-d5e7 ed 5b be eb		ld de, (display_write_tmp) 
-d5eb cd 2b d6			call write_len_string 
-d5ee				 
-d5ee 2a be eb			ld hl, (display_write_tmp) 
-d5f1 11 28 00			ld de, display_cols 
-d5f4 19				add hl,de 
-d5f5 22 be eb			ld (display_write_tmp),hl 
-d5f8			 
-d5f8 e5			push hl 
-d5f9 d5			push de 
-d5fa c5			push bc 
-d5fb 0e 07			ld c, 7 
-d5fd f7				rst $30 
-d5fe c1			pop bc 
-d5ff d1			pop de 
-d600 e1			pop hl 
-d601			 
-d601				 
-d601 3e 50			ld a, kLCD_Line3 
-d603			         ;   CALL fLCD_Pos       ;Position cursor to location in A 
-d603 06 28			ld b, display_cols 
-d605 ed 5b be eb		ld de, (display_write_tmp) 
-d609 cd 2b d6			call write_len_string 
-d60c				 
-d60c 2a be eb			ld hl, (display_write_tmp) 
-d60f 11 28 00			ld de, display_cols 
-d612 19				add hl,de 
-d613 22 be eb			ld (display_write_tmp),hl 
-d616			 
-d616 e5			push hl 
-d617 d5			push de 
-d618 c5			push bc 
-d619 0e 07			ld c, 7 
-d61b f7				rst $30 
-d61c c1			pop bc 
-d61d d1			pop de 
-d61e e1			pop hl 
-d61f			 
-d61f				 
-d61f 3e 78			ld a, kLCD_Line4 
-d621			          ;  CALL fLCD_Pos       ;Position cursor to location in A 
-d621 06 28			ld b, display_cols 
-d623 ed 5b be eb		ld de, (display_write_tmp) 
-d627 cd 2b d6			call write_len_string 
-d62a c9					ret 
-d62b			 
-d62b			 
-d62b				; write out a fixed length string given in b from de 
-d62b			 
-d62b 1a			write_len_string:   LD   A, (DE)        ;Get character from string 
-d62c cd 9e d5		            CALL fLCD_Data      ;Write character to display 
-d62f 13				inc de 
-d630 10 f9			djnz write_len_string 
-d632 c9				ret 
-d633			 
-d633			 
-d633			; eof 
+d5bf			 
+d5bf			 
+d5bf 0e 02			ld c, 2 
+d5c1				;ld de, .cls 
+d5c1 3e 5b			ld a, '[' 
+d5c3 f7				rst $30 
+d5c4 0e 02			ld c, 2 
+d5c6				;ld de, .cls 
+d5c6 3e 32			ld a, '2' 
+d5c8 f7				rst $30 
+d5c9 0e 02			ld c, 2 
+d5cb				;ld de, .cls 
+d5cb 3e 4a			ld a, 'J' 
+d5cd f7				rst $30 
+d5ce d1				pop de 
+d5cf c1				pop bc 
+d5d0 e1				pop hl 
+d5d1			 
+d5d1			 
+d5d1 22 be eb		        ld (display_write_tmp), hl 	  
+d5d4 3e 00			ld a, kLCD_Line1 
+d5d6			        ;    CALL fLCD_Pos       ;Position cursor to location in A 
+d5d6 06 28			ld b, display_cols 
+d5d8 ed 5b be eb		ld de, (display_write_tmp) 
+d5dc cd 3a d6			call write_len_string 
+d5df				 
+d5df			 
+d5df e5			push hl 
+d5e0 d5			push de 
+d5e1 c5			push bc 
+d5e2 0e 07			ld c, 7 
+d5e4 f7				rst $30 
+d5e5 c1			pop bc 
+d5e6 d1			pop de 
+d5e7 e1			pop hl 
+d5e8			 
+d5e8				 
+d5e8 2a be eb			ld hl, (display_write_tmp) 
+d5eb 11 28 00			ld de, display_cols 
+d5ee 19				add hl,de 
+d5ef 22 be eb			ld (display_write_tmp),hl 
+d5f2			 
+d5f2				 
+d5f2 3e 28			ld a, kLCD_Line2 
+d5f4			        ;    CALL fLCD_Pos       ;Position cursor to location in A 
+d5f4 06 28			ld b, display_cols 
+d5f6 ed 5b be eb		ld de, (display_write_tmp) 
+d5fa cd 3a d6			call write_len_string 
+d5fd				 
+d5fd 2a be eb			ld hl, (display_write_tmp) 
+d600 11 28 00			ld de, display_cols 
+d603 19				add hl,de 
+d604 22 be eb			ld (display_write_tmp),hl 
+d607			 
+d607 e5			push hl 
+d608 d5			push de 
+d609 c5			push bc 
+d60a 0e 07			ld c, 7 
+d60c f7				rst $30 
+d60d c1			pop bc 
+d60e d1			pop de 
+d60f e1			pop hl 
+d610			 
+d610				 
+d610 3e 50			ld a, kLCD_Line3 
+d612			         ;   CALL fLCD_Pos       ;Position cursor to location in A 
+d612 06 28			ld b, display_cols 
+d614 ed 5b be eb		ld de, (display_write_tmp) 
+d618 cd 3a d6			call write_len_string 
+d61b				 
+d61b 2a be eb			ld hl, (display_write_tmp) 
+d61e 11 28 00			ld de, display_cols 
+d621 19				add hl,de 
+d622 22 be eb			ld (display_write_tmp),hl 
+d625			 
+d625 e5			push hl 
+d626 d5			push de 
+d627 c5			push bc 
+d628 0e 07			ld c, 7 
+d62a f7				rst $30 
+d62b c1			pop bc 
+d62c d1			pop de 
+d62d e1			pop hl 
+d62e			 
+d62e				 
+d62e 3e 78			ld a, kLCD_Line4 
+d630			          ;  CALL fLCD_Pos       ;Position cursor to location in A 
+d630 06 28			ld b, display_cols 
+d632 ed 5b be eb		ld de, (display_write_tmp) 
+d636 cd 3a d6			call write_len_string 
+d639 c9					ret 
+d63a			 
+d63a			 
+d63a				; write out a fixed length string given in b from de 
+d63a			 
+d63a 1a			write_len_string:   LD   A, (DE)        ;Get character from string 
+d63b cd ad d5		            CALL fLCD_Data      ;Write character to display 
+d63e 13				inc de 
+d63f 10 f9			djnz write_len_string 
+d641 c9				ret 
+d642			 
+d642			 
+d642			; eof 
 # End of file firmware_serial_display.asm
-d633			;include "firmware_key_5x10.asm" 
-d633			;;include "firmware_key_4x10.asm" 
-d633			include "firmware_key_serial.asm" 
-d633			; Serial keyboard interface for SC114 
-d633			 
-d633			key_init: 
-d633				; init keyboard macro pointers 
-d633 21 00 00			ld hl, 0 
-d636 22 fe ee			ld (key_macroroot), hl 
-d639 22 fc ee			ld (key_macrolast), hl 
-d63c				; no init as handled by the SCM bios 
-d63c c9				ret 
-d63d			 
-d63d			 
-d63d			cin_wait: 
-d63d			;	ld a, 0 
-d63d			;	ret 
-d63d			 
-d63d				;in a,(SC114_SIO_1_IN) 
-d63d			        ; Use SCM API to get from whatever console device we are using 
-d63d c5				push bc 
-d63e 0e 01			ld c, $01 
-d640 f7				rst $30 
-d641 c1				pop bc 
-d642 c9				ret 
-d643			 
-d643			cinndb: 	 
-d643			cin: 
-d643			 
-d643			 
-d643 c5				push bc 
-d644			 
-d644				; any key waiting to process? 
-d644 0e 03			ld c, $03 
-d646 f7				rst $30 
-d647 28 05			jr z, .cin_skip 
-d649			 
-d649				; yep, get it 
-d649			 
-d649 0e 01			ld c, $01 
-d64b f7				rst $30 
-d64c c1				pop bc 
-d64d c9				ret 
-d64e			.cin_skip: 
-d64e 3e 00			ld a, 0 
+d642			;include "firmware_key_5x10.asm" 
+d642			;;include "firmware_key_4x10.asm" 
+d642			include "firmware_key_serial.asm" 
+d642			; Serial keyboard interface for SC114 
+d642			 
+d642			key_init: 
+d642				; init keyboard macro pointers 
+d642 21 00 00			ld hl, 0 
+d645 22 fe ee			ld (key_macroroot), hl 
+d648 22 fc ee			ld (key_macrolast), hl 
+d64b				; no init as handled by the SCM bios 
+d64b c9				ret 
+d64c			 
+d64c			 
+d64c			cin_wait: 
+d64c			;	ld a, 0 
+d64c			;	ret 
+d64c			 
+d64c				;in a,(SC114_SIO_1_IN) 
+d64c			        ; Use SCM API to get from whatever console device we are using 
+d64c c5				push bc 
+d64d 0e 01			ld c, $01 
+d64f f7				rst $30 
 d650 c1				pop bc 
 d651 c9				ret 
 d652			 
+d652			cinndb: 	 
+d652			cin: 
 d652			 
 d652			 
-d652			 
+d652 c5				push bc 
+d653			 
+d653				; any key waiting to process? 
+d653 0e 03			ld c, $03 
+d655 f7				rst $30 
+d656 28 05			jr z, .cin_skip 
+d658			 
+d658				; yep, get it 
+d658			 
+d658 0e 01			ld c, $01 
+d65a f7				rst $30 
+d65b c1				pop bc 
+d65c c9				ret 
+d65d			.cin_skip: 
+d65d 3e 00			ld a, 0 
+d65f c1				pop bc 
+d660 c9				ret 
+d661			 
+d661			 
+d661			 
+d661			 
 # End of file firmware_key_serial.asm
-d652			endofcode:  
-d652			baseram:  
-d652 00				nop 
-d653			 
-d653			heap_start: equ baseram+15  ; Starting address of heap 
-d653			free_list:  equ baseram+10      ; Block struct for start of free list (MUST be 4 bytes) 
-d653			heap_size: equ  heap_end-heap_start      ; Number of bytes available in heap   TODO make all of user ram 
-d653			;VDU:  EQU     endofcode           ; BASIC Work space 
-d653			; eof 
-d653			 
+d661			endofcode:  
+d661			baseram:  
+d661 00				nop 
+d662			 
+d662			heap_start: equ baseram+15  ; Starting address of heap 
+d662			free_list:  equ baseram+10      ; Block struct for start of free list (MUST be 4 bytes) 
+d662			heap_size: equ  heap_end-heap_start      ; Number of bytes available in heap   TODO make all of user ram 
+d662			;VDU:  EQU     endofcode           ; BASIC Work space 
+d662			; eof 
+d662			 
 # End of file os_mega_sc114.asm
-d653
+d662

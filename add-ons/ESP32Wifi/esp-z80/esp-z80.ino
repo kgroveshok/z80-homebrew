@@ -99,6 +99,7 @@ COMMAND_STREAM spi_getc = { SPI_GETC, 0, "Uart get", { OP_INBYTE, OP_BYTE_UART, 
 
 void SaveDebug() {
   if (debug_level) { Serial.println("Saving debug.txt..."); }
+  Serial.println(String(debug_level));
   writeFile(SPIFFS, "/debug.txt", String(debug_level));
 }
 
@@ -742,7 +743,7 @@ void setup(void) {
 }
 
 void loop(void) {
-debug_level=1;
+
   int sleep_ret;
 #ifdef RUN_WEBSERVER
 

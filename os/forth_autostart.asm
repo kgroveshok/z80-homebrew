@@ -187,6 +187,12 @@ spib7: db ": esp devsav #2 cartdev ; ",0
 ;spib5: db ": soctype aa ;",0
 ;spib5: db ": soctype spiceh spicel $00 do dup i + @ $20 spio spio loop ;",0
 
+spic1: db ": prtip espclr $21 spio #3 spio repeat spii dup emit #0 = not until ;",0
+spic2: db ": getip espclr $21 spio #3 spio getstrz ;", 0
+spic3: db ": espclr spiceh #1 pause spicel ;",0
+spic4: db ": getstrz repeat spii dup concat #0 = not until ;",0
+
+
 
 ; NETCHAT (TODO)
 ; Program to allow two nodes to chat with eachother

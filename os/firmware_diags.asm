@@ -566,6 +566,11 @@ create_startup:
     dw spi7
     dw spi3a
 
+    dw spic1
+    dw spic2
+    dw spic3
+    dw spic4
+
 ;    dw spi8
 ;    dw spi9
 ;    dw spi10

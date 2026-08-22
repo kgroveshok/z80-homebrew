@@ -7,17 +7,18 @@
 
 #define FORMAT_SPIFFS_IF_FAILED true
 
-void listDir(fs::FS &fs, String dirname, uint8_t levels) {
+String listDir(fs::FS &fs, String dirname, uint8_t levels) {
+  String list;
   Serial.printf("Listing directory: %s\r\n", dirname);
 
   File root = fs.open(dirname);
   if (!root) {
     Serial.println("- failed to open directory");
-    return;
+    return "";
   }
   if (!root.isDirectory()) {
     Serial.println(" - not a directory");
-    return;
+    return "";
   }
 
   File file = root.openNextFile();
@@ -25,10 +26,13 @@ void listDir(fs::FS &fs, String dirname, uint8_t levels) {
     if (file.isDirectory()) {
       Serial.print("  DIR : ");
       Serial.println(file.name());
+      list = list + "<br>DIR: "+ file.name() ;
       if (levels) {
-        listDir(fs, file.path(), levels - 1);
+        list=list+listDir(fs, file.path(), levels - 1);
       }
     } else {
+      list = list + "<br>File: <a href='/?file="+file.name()+"'>"+ file.name() + "</a> " + String(file.size());
+      list = list + "<a href='/?del="+file.name()+"'>Del</a> ";
       Serial.print("  FILE: ");
       Serial.print(file.name());
       Serial.print("\tSIZE: ");
@@ -36,6 +40,7 @@ void listDir(fs::FS &fs, String dirname, uint8_t levels) {
     }
     file = root.openNextFile();
   }
+  return list;
 }
 
 String readFile(fs::FS &fs, String path) {

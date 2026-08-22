@@ -27,3 +27,10 @@ cp OS2.COM ../../../Retro-Projects/RunCPM/go/A/0/
 cp os_mega-dl0.hex ~/Desktop
 cp os_mega-dl1.hex ~/Desktop
 cp os_mega-dl2.hex ~/Desktop
+
+
+if [[ "$1" = "-x" ]] ; then
+minipro -p AT28C256 -w os_mega-dl2.bin -s -u
+else
+echo "* Skip direct EEPROM burn"
+fi

@@ -86,12 +86,14 @@
 #define OP_STR_NEXT 0x42
 
 
+#define OP_SET_VAR_POS 0x43
+
 #define OP_END_PROC 0xff
 
 
 ///// 
 
-int op_vars[512];   // progressive vars for each get
+int op_vars[2048];   // progressive vars for each get
 //byte op_vars_str[255];
 //int op_param[5];   // param for an op
 byte *current_cmd;

@@ -36,8 +36,8 @@
 #define SPI_WIFI_GETDATE  0x0a
 #define SPI_WIFI_GETTIME  0x0b
 #define SPI_WIFI_SETTZ  0x0c    // set ntp time zone
-#define SPI_WIFI_USE_WEBSERVER  0x0d     // handled by bit 128 enabled on debug
-#define SPI_WIFI_USE_FTPSERVER  0x0e    // get rid
+#define SPI_WIFI_USE_WEBSERVER  0x0d     // done
+//#define SPI_WIFI_USE_FTPSERVER  0x0e    // get rid
 
 
 // Buffers

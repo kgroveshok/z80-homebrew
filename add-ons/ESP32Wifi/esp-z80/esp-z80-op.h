@@ -86,7 +86,9 @@
 #define OP_STR_NEXT 0x42
 
 
-#define OP_SET_VAR_POS 0x43
+#define OP_SET_VAR_POS 0x43           // set current op var position
+#define OP_VAR_POS_INC 0x44           // increment current op var position
+#define OP_VAR_POS_DEC 0x45           // decrement current op var position
 
 #define OP_END_PROC 0xff
 

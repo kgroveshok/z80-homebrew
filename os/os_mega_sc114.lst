@@ -192,7 +192,7 @@
 803b			 
 803b ..			buildtime: db   "Build: " 
 8042					include "romtimestamp.asm" 
-8042 ..			db '2026-08-22 17:00' 
+8042 ..			db '2026-10-17 13:14' 
 # End of file romtimestamp.asm
 8052 00				   db 0 
 8053			 
@@ -30496,6 +30496,15 @@ b67b					rst $18
 b67b				endif 
 b67b				endm 
 # End of macro FORTH_DSP_VALUEHL
+b67b					FORTH_DSP_POP  ; TODO add stock underflow checks and throws  
+b67b				if BASE_CPM=1 
+b67b				call macro_forth_dsp_pop 
+b67b				endif 
+b67b				if BASE_KEV=1 
+b67b					rst $10 
+b67b				endif 
+b67b				endm 
+# End of macro FORTH_DSP_POP
 b67b					; TODO save cursor col 
 b67b f1					pop af 
 b67c 85					add l		; add col offset 

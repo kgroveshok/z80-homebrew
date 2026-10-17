@@ -674,6 +674,7 @@ endif
 		ld h,0
 		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 		FORTH_DSP_VALUEHL     			; TODO skip type check and assume number.... lol
+		FORTH_DSP_POP  ; TODO add stock underflow checks and throws 
 		; TODO save cursor col
 		pop af
 		add l		; add col offset

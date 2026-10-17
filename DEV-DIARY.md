@@ -275,6 +275,11 @@ Enter a line, save in memory, provide scrolling and editing of in memory and the
 Done Items
 ----------
 
+17th Oct 2026
+-------------
+
+* DONE AT@ was only popping the first param off the stack. Now removes both params.
+
 15th July 2026
 --------------
 

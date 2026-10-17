@@ -352,6 +352,24 @@ ssv1cpm:          db ": ssvcpm cls repeat ssvposx ssvposy v0@ v1@ at ssvchr emit
 ;ssv5:            db ": ssvt ssvposx ssvposy v0@ .> v1@ .> ;",0
 ;ssv2:            db ": ssvchr $2a $2d rnd  ;",0
 
+; one dimension game of life
+
+odlifea:      db ": linit ( str cy -- ) lcs #0 #4 at . ;",0
+odlifeb:      db ": lcg ( -- get cycle ) #0 scratch @ ;", 0
+odlifec:      db ": lcs ( set cycle -- ) #0 scratch ! ;", 0
+odlifed:      db ": lnc ( -- next cycle ) lcg 1- dup lcs ;",0
+odlifee:      db ": lcc@ ( col -- cell is blank ) #3 at@ #32 = :",0
+odlifef1:      db ": lchkl2 v0@ #2 - lcc@ ;",0
+odlifef2:      db ": lchkl1 v0@ #1 - lcc@ ;",0
+odlifef3:      db ": lchkr1 v0@ #1 + lcc@ ;",0
+odlifef4:      db ": lchkr2 v0@ #2 + lcc@ ;",0
+odlifef5:      db ": lchkc v0@ lcc@ ;",0
+odlifeg:      db ": lchk lchkl2 lchkl1 lchkr1 lchkr2 + + + + ;",0
+odlifeh:      db ": lrow #35 #3 do i v0! lchk #5 = not if x i #4 at . then loop ;",0
+
+odlifez:      db ": odl cls linit repeat scroll lrow #1 pause lnc #0 = until ;",0
+
+
 
 
 ; minesweeper/battleship finding game

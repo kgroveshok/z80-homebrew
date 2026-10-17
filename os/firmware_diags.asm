@@ -544,6 +544,19 @@ create_startup:
 ;	dw game3sc
 ;	dw game3vsi
 ;	dw game3vs
+       dw odlifea
+       dw odlifeb
+       dw odlifec
+       dw odlifed
+       dw odlifee
+       dw odlifef1
+       dw odlifef2
+       dw odlifef3
+       dw odlifef4
+       dw odlifef5
+       dw odlifeg
+       dw odlifeh
+       dw odlifez
 	dw 0
 
 
